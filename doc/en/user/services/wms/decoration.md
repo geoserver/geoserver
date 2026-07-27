@@ -59,7 +59,7 @@ The **legend** decoration (`type="legend"`) overlays a graphic containing legend
 
 | Option Name | Meaning |
 |----|----|
-| `legend_options` | the list of legend_options used as in [GetLegendGraphic](./get_legend_graphic/index.md#controlling-legend-appearance-with-legend-options) |
+| `legend_options` | the list of legend_options used as in [GetLegendGraphic](./get_legend_graphic/index.md#get_legend_graphic_options) |
 | `opacity` | the legend opacity with a value between 0 and 1 |
 
 The **text** decoration (`type="text"`) overlays a parametric, single line text message on top of the map. The parameter values can be fed via the `env` request parameter, just like SLD environment parameters.
@@ -79,7 +79,7 @@ The **text** decoration (`type="text"`) overlays a parametric, single line text 
 
 A layout configuration file might look like this:
 
-``` xml
+```xml
 <layout>
     <decoration type="image" affinity="bottom,right" offset="6,6" size="80,31">
         <option name="url" value="pbGS_80x31glow.png"/>
@@ -105,7 +105,7 @@ However, it's also possible to make them dynamic using (E)CQL expressions, using
 
 For example, this decoration layout:
 
-``` xml
+```xml
 <layout>
     <decoration type="scaleline" affinity="${env('sla', 'bottom,left')}">
        <option name="bgcolor" value="${env('bg', '#AAAAAA')}"/>

@@ -26,7 +26,7 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geoserver.web.wicket.Icon;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 
 /** A page listing roles, allowing for removal, addition and linking to an edit page */
@@ -69,7 +69,7 @@ public class RolePanel extends Panel {
                             return editParentRoleLink(id, itemModel, property);
                         } else if (property == RoleListProvider.HASROLEPARAMS) {
                             if ((Boolean) property.getModel(itemModel).getObject())
-                                return new Icon(id, CatalogIconFactory.ENABLED_ICON);
+                                return new GsIcon(id, CatalogIconFactory.ENABLED_ICON);
                             else return new Label(id, "");
                         }
                         throw new RuntimeException("Uknown property " + property);

@@ -220,7 +220,7 @@ public class AclResourceAccessManagerTest extends AclGeoServerSystemTestSupport 
         ruleAdminService.insert(
                 Rule.allow().withPriority(2).withUsername("area").withWorkspace("sf"));
         ruleAdminService.setLimits(
-                rule.getId(),
+                rule.id(),
                 RuleLimits.builder()
                         .allowedArea((MultiPolygon<?>)
                                 Wkt.fromWkt("SRID=4326;MULTIPOLYGON(((48 62, 48 63, 49 63, 49 62, 48 62)))"))

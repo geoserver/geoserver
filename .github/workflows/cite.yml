@@ -3,6 +3,10 @@ name: Run CITE Tests
 on:
   pull_request:
     paths-ignore:
+      - 'doc/**'
+      - 'mkdocs.yml'
+      - 'requirements.txt'
+      - '.github/workflows/docs.yml'
       - '**/src/main/resources/GeoServerApplication_*.properties'
       - '!**/src/main/resources/GeoServerApplication_fr.properties'
 
@@ -16,7 +20,7 @@ jobs:
     name: Build GeoServer WAR
     steps:
       - name: Checkout repository (shallow clone)
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
 
@@ -28,9 +32,9 @@ jobs:
       - name: Set up Maven
         uses: stCarolas/setup-maven@v5
         with:
-          maven-version: 3.9.8
+          maven-version: 3.9.16
       - name: Maven repository caching
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.m2/repository
           key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -58,7 +62,7 @@ jobs:
         java-version: [17, 21, 25]
     steps:
       - name: Checkout repository (shallow clone)
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
 
@@ -76,8 +80,27 @@ jobs:
 
       - name: Pull teamengine and other required images
         working-directory: build/cite
+        # continue-on-error because some suites (gpkg12, wmts10, ogcapi-features10, wcs20)
+        # have ETS images that are not published to Docker Hub and must be built locally
+        # via build-ets.sh in the "Build the ETS docker image" step below.
+        # The pull is still useful for suites whose images ARE on Docker Hub.
         continue-on-error: true
-        run: make pull suite=${{ matrix.suite }}
+        run: |
+          for i in 1 2 3; do
+            make pull suite=${{ matrix.suite }} && break
+            echo "Docker pull attempt $i failed, retrying in 10s..."
+            sleep $((i * 10))
+            if [ "$i" = "3" ]; then echo "All pull attempts failed (may be expected for locally-built ETS images)"; fi
+          done
+
+      - name: Pull base Docker image with retry
+        run: |
+          for i in 1 2 3; do
+            docker pull tomcat:11.0-jdk${{ matrix.java-version }}-temurin-jammy && break
+            echo "Docker pull attempt $i failed, retrying in 10s..."
+            sleep $((i * 10))
+            if [ "$i" = "3" ]; then echo "All pull attempts failed" && exit 1; fi
+          done
 
       - name: Build ogccite/geoserver:${{ matrix.suite }} docker image
         working-directory: build/cite

@@ -30,7 +30,7 @@ The next step is to create a workspace for the geopackage. A workspace is a fold
 
 2.  Log into GeoServer as described in the [Logging In](../web-admin-quickstart/index.md#logging_in) section.
 
-3.  Navigate to **Data --> Workspaces**.
+3.  Navigate to **Data > Workspaces**.
 
     ![](../../data/webadmin/img/data_workspaces.png)
 
@@ -42,8 +42,8 @@ The next step is to create a workspace for the geopackage. A workspace is a fold
 
     | Field         | Value                                                  |
     |---------------|--------------------------------------------------------|
-    | Name:         | ``tutorial``                                 |
-    | Namespace URI | ``http://localhost:8080/geoserver/tutorial`` |
+    | Name:         | `tutorial`                                 |
+    | Namespace URI | `http://localhost:8080/geoserver/tutorial` |
 
 
     !!! note
@@ -64,7 +64,7 @@ The next step is to create a workspace for the geopackage. A workspace is a fold
 
 Once the workspace is created, we are ready to add a new store. The store tells GeoServer how to connect to the geopackage.
 
-1.  Navigate to **Data-->Stores**.
+1.  Navigate to **Data > Stores**.
 
     ![](images/stores.png)
 
@@ -91,7 +91,7 @@ Once the workspace is created, we are ready to add a new store. The store tells 
     | Description      | `GeoPackage of NaturalEarth data` |
 
 
-    > This information is internal to GeoServer and is not used as part of the web service protocols. We recommend keeping the **Data Source Name** simple as they will be used to form folders in the data directory (so keep any operating system restrictions on character use in mind).
+    This information is internal to GeoServer and is not used as part of the web service protocols. We recommend keeping the **Data Source Name** simple as they will be used to form folders in the data directory (so keep any operating system restrictions on character use in mind).
 
     ![](images/basic.png)
 
@@ -113,7 +113,7 @@ Once the workspace is created, we are ready to add a new store. The store tells 
     | Read only | checked                           |
 
 
-    > The use of **read_only** above indicates that we will not be writing to this GeoPackage, allowing GeoServer to avoid managing write locks when accessing this content for greater performance.
+    The use of **read_only** above indicates that we will not be writing to this GeoPackage, allowing GeoServer to avoid managing write locks when accessing this content for greater performance.
 
     ![](images/connection.png)
 
@@ -149,11 +149,11 @@ Now that we have connected to the GeoPackage, we can publish the layer.
     | Field    | Value                   |
     |----------|----------------------------|
     | Name     | `countries`             |
-    | Title    | ``Countries`` |
+    | Title    | `Countries` |
     | Abstract | `Sovereign states`      |
 
 
-    > The naming of a layer is important, and while GeoServer does not offer restrictions many of the individual protocols will only work with very simple names.
+    The naming of a layer is important, and while GeoServer does not offer restrictions many of the individual protocols will only work with very simple names.
 
     ![](images/layer_basic.png)
 
@@ -164,7 +164,7 @@ Now that we have connected to the GeoPackage, we can publish the layer.
     | Field         | Value            |
     |---------------|------------------|
     | Native SRS    | `EPSG:4326`      |
-    | Declaired SRS | `EPSG:4326`      |
+    | Declared SRS | `EPSG:4326`      |
     | SRS Handling  | `Force declared` |
 
 
@@ -196,14 +196,14 @@ Now that we have connected to the GeoPackage, we can publish the layer.
 
 In order to verify that the `tutorial:countries` layer is published correctly, we can preview the layer.
 
-1.  Navigate to the **Data > Layer Preview** page and find the `tutorial:countries` layer.
+1.  Navigate to the **GeoServer > Browse Layers** page and find the `tutorial:countries` layer.
 
     !!! note
-        Use the **Search** field with ``tutorial`` as shown to limit the number of layers to page through.
+        Use the **Search** field with `tutorial` as shown to limit the number of layers to page through.
 
     ![](images/preview.png)
 
-    *Layer Preview*
+    *Browse Layers*
 
 2.  Click the **OpenLayers** link in the **Common Formats** column.
 

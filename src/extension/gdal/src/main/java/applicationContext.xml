@@ -12,8 +12,7 @@
   <bean id="genericGDALStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
     <property name="id" value="genericGDALRaster"/>
     <property name="factoryClass" value="org.geotools.coverageio.gdal.BaseGDALGridFormat"/>
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication"/>
-    <property name="icon" value="img/icons/geosilk/page_white_raster.png"/>
+    <property name="icon" value="gs-icon-page-white-raster"/>
     <property name="componentClass" value="org.geoserver.web.data.store.raster.FileRasterEditPanel"/>
   </bean>
 

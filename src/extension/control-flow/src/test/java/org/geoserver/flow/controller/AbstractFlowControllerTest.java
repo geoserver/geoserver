@@ -38,6 +38,20 @@ public abstract class AbstractFlowControllerTest {
     }
 
     /**
+     * Like {@link #waitBlocked}, but also accepts the thread having already timed out.
+     *
+     * <p>Use this for threads with short flow-controller timeouts, where the timeout may expire before polling can
+     * detect the WAITING state.
+     */
+    void waitBlockedOrTimedOut(FlowControllerTestingThread fct, long maxWait) {
+        await().atMost(maxWait, MILLISECONDS)
+                .pollDelay(10, MILLISECONDS)
+                .until(() -> fct.getState() == State.WAITING
+                        || fct.getState() == State.TIMED_WAITING
+                        || fct.state == ThreadState.TIMED_OUT);
+    }
+
+    /**
      * Waits until the thread is terminated
      *
      * @param t the thread

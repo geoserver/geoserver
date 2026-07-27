@@ -104,13 +104,19 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
         return quietTests != null && !"false".equalsIgnoreCase(quietTests);
     }
 
-    @BeforeClass
-    public static final void setUpLogging() throws Exception {
+    @Before
+    public final void setUpLogging() throws Exception {
         if (isQuietTests()) {
             Logging.getLogger("org.geoserver").setLevel(Level.SEVERE);
             Logging.getLogger("org.vfny.geoserver").setLevel(Level.SEVERE);
             Logging.getLogger("org.geotools").setLevel(Level.SEVERE);
         }
+    }
+
+    @BeforeClass
+    public static final void setupXML() throws Exception {
+        // Allow resolution of XSDs from local file system for testing
+        Hints.putSystemDefault(Hints.ENTITY_RESOLVER, DevModeEntityResolver.INSTANCE);
     }
 
     @BeforeClass
@@ -120,6 +126,7 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
                 || !"http".equals(Hints.getSystemDefault(Hints.FORCE_AXIS_ORDER_HONORING))) {
             System.setProperty("org.geotools.referencing.forceXY", "true");
             Hints.putSystemDefault(Hints.FORCE_AXIS_ORDER_HONORING, "http");
+            Hints.scanSystemProperties();
         }
     }
 

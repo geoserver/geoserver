@@ -10,7 +10,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.util.HashMap;
 import java.util.Map;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.util.EntityResolverProvider;
+import org.geotools.util.NullEntityResolver;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -70,6 +74,16 @@ public final class IsolatedNamespacesWfsTest extends AbstractAppSchemaTestSuppor
                 "http://www.opengis.net/wfs/2.0",
                 "gml",
                 "http://www.opengis.net/gml/3.2");
+    }
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
     }
 
     @Override

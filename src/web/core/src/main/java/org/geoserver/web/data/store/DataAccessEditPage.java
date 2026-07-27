@@ -46,7 +46,7 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
         if (dsi == null) {
             getSession()
                     .error(new ParamResourceModel("DataAccessEditPage.notFound", this, storeName, wsName).getString());
-            doReturn(StorePage.class);
+            doReturn(getDefaultReturnPage());
             return;
         }
 
@@ -54,7 +54,7 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
             initUI(dsi);
         } catch (IllegalArgumentException e) {
             error(e.getMessage());
-            doReturn(StorePage.class);
+            doReturn(getDefaultReturnPage());
         }
     }
 
@@ -125,7 +125,7 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
                 if (!doSaveStore(info)) return;
 
                 if (doReturn) {
-                    doReturn(StorePage.class);
+                    doReturn(getDefaultReturnPage());
                 }
             } catch (IOException | RuntimeException e) {
                 LOGGER.log(Level.WARNING, "Error obtaining datastore with the modified values", e);
@@ -135,7 +135,7 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
             // store's disabled, no need to check the connection parameters
             if (!doSaveStore(info)) return;
             if (doReturn) {
-                doReturn(StorePage.class);
+                doReturn(getDefaultReturnPage());
             }
         }
     }
@@ -179,7 +179,7 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
             @Override
             public void onClose(AjaxRequestTarget target) {
                 if (accepted) {
-                    doReturn(StorePage.class);
+                    doReturn(getDefaultReturnPage());
                 }
             }
         });

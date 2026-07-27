@@ -1,6 +1,6 @@
 # Application Properties
 
-While many configuration and setup options are available through the Web Administration application **Settings > Global** page, more fundamental (and security minded) changes to how the application operates are made using "Application Properties" defined by (in order of priority):
+While many configuration and setup options are available through the Web Administration application **Server > Global Settings** page, more fundamental (and security minded) changes to how the application operates are made using "Application Properties" defined by (in order of priority):
 
 1.  Java System Properties
 2.  Web Application context parameters
@@ -22,6 +22,8 @@ For more information see [Configuration Considerations](../../production/config.
 | serviceStrategy<br>[/production/config](../../production/config.md), default PARTIAL-BUFFER2 | x               | x             | x            |
 | GEOSERVER_CONSOLE_DISABLED<br>[/production/config](../../production/config.md)        | x               |               |              |
 | GWC_DISKQUOTA_DISABLED                                                           | x               | x             | x            |
+| GWC_SEEDER_CORE_POOL_SIZE<br>Core thread pool size for seeding tasks (default 16). See [Seeding](../../geowebcache/seeding.md#seeder-thread-pool-size). | x               |               | x            |
+| GWC_SEEDER_MAX_POOL_SIZE<br>Maximum thread pool size for seeding tasks (default 32). See [Seeding](../../geowebcache/seeding.md#seeder-thread-pool-size). | x               |               | x            |
 | geoserver.login.autocomplete<br>[/production/config](../../production/config.md), default on. | x               |               | x            |
 | CONFIGURATION_TRYLOCK_TIMEOUT<br>Delay for REST API and Web Administration configuration changes (default 30000 MS) | x               | x             | x            |
 | COMPARISON_TOLERANCE<br>Referencing tolerance when matching PRJ to EPSG code (default 0.00000001) | x               | x             | x            |
@@ -52,6 +54,7 @@ For more information see [Configuration Considerations](../../production/config.
 | GEOSERVER_FREEMARKER_ALLOW_LIST<br>[/tutorials/GetFeatureInfo/html](../../tutorials/GetFeatureInfo/html.md) | x               | x             | x            |
 | GEOSERVER_FREEMARKER_BLOCK_LIST<br>[/tutorials/GetFeatureInfo/html](../../tutorials/GetFeatureInfo/html.md) | x               | x             | x            |
 | GEOSERVER_FREEMARKER_API_EXPOSED<br>[/tutorials/GetFeatureInfo/html](../../tutorials/GetFeatureInfo/html.md), default false | x               | x             | x            |
+| GS_FILETYPES_UNRESTRICTED<br>If true, do not validate uploaded file type.<br> default false |                 |             | x            |
 | ows10.exception.xml.responsetype<br>[/production/config](../../production/config.md)  | x               |               |              |
 | ows11.exception.xml.responsetype<br>[/production/config](../../production/config.md)  | x               |               |              |
 | ENABLE_MAP_WRAPPING<br>Default if setting unavailable (true)                     | x               | x             | x            |
@@ -135,7 +138,7 @@ Using `GEOSERVER_DATA_DIR` as an example:
     
           Other application servers provide a user interface to manage web application properties and are more intuitive.
 
-    - Not recommended: Hand editing the ``webapps/geoserver/WEB-INF/web.xml`` file:
+    - Not recommended: Hand editing the `webapps/geoserver/WEB-INF/web.xml` file:
 
       ``` xml
       <context-param>

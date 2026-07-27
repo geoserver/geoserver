@@ -301,7 +301,7 @@ The following properties must hold true in order to promote a community module:
 
     2.  Add the following to the new directory:
 
-        1.  A license called **`<module>-LICENSE.md`** which contains the license notice for the extension (linking to full ``licenses/`` documents included below).
+        1.  A license called **`<module>-LICENSE.md`** which contains the license notice for the extension (linking to full `licenses/` documents included below).
 
             Follow the [dxf-LICENSE.md](https://github.com/geoserver/geoserver/blob/main/src/release/extensions/dxf/dxf-LICENSE.md) example:
 
@@ -362,7 +362,7 @@ The following properties must hold true in order to promote a community module:
 
             An example would be data files or a proprietary driver not available for download via maven.
 
-    3.  Create a release assembly called **`ext-<module>.xml`** under the release ``src/assembly`` directory.
+    3.  Create a release assembly called **`ext-<module>.xml`** under the release `src/assembly` directory.
 
         Follow the example of [ext-dxf-xml](https://github.com/geoserver/geoserver/blob/main/src/release/ext-dxf.xml):
 
@@ -449,20 +449,20 @@ The following properties must hold true in order to promote a community module:
         </plugin>
         ```
 
-1.  Update the ``/doc/en/user/source/community`` documentation:
+1.  Update the `/doc/en/user/source/community` documentation:
 
     - Add a section to the user manual for the new module:
 
       Create a folder:
 
-      - ``community/%module%``
-      - ``community/%module%/files`` - example files
-      - ``community/%module%/img`` - screen snaps
-      - ``community/%module%/index.rst``
-      - ``community/%module%/installing.rst``
-      - ``community/%module%/usage.rst``
+      - `community/%module%`
+      - `community/%module%/files` - example files
+      - `community/%module%/img` - screen snaps
+      - `community/%module%/index.rst`
+      - `community/%module%/installing.rst`
+      - `community/%module%/usage.rst`
 
-    - Include module in ``community/index.rst`` toctree:
+    - Include module in `community/index.rst` toctree:
 
     ``` rst
     .. toctree::
@@ -474,7 +474,7 @@ The following properties must hold true in order to promote a community module:
        %module%/index.rst
     ```
 
-    - When writing ``installing.rst`` use the sphinx external link ``download_community`` to generate a download link for the current release.
+    - When writing `installing.rst` use the sphinx external link `download_community` to generate a download link for the current release.
 
           ``` rst
           To install the JDBCConfig module:

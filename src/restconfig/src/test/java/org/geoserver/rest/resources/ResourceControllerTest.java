@@ -189,7 +189,8 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
     @Test
     public void testResourceMetadataHTML() throws Exception {
         XMLUnit.setXpathNamespaceContext(NS_HTML);
-        Document doc = getAsDOM(RestBaseController.ROOT_PATH + "/resource/mydir/myres?operation=metadata&format=html");
+        Document doc =
+                getAsDOM(RestBaseController.ROOT_PATH + "/resource/mydir/myres?operation=metadata&format=html", false);
         // print(doc);
         XMLAssert.assertXpathEvaluatesTo("Name: 'myres'", "/x:html/x:body/x:ul/x:li[1]", doc);
         XMLAssert.assertXpathEvaluatesTo(

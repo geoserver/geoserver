@@ -24,10 +24,10 @@ This exercise makes use of the `ne:populated_places` layer.
 1.  Navigate to the **Styles** page.
 2.  Click **Add a new style** and choose the following:
 
-    | Name:      | ``point_example`` |
+    | Name:      | `point_example` |
     |------------|-----------------------------|
-    | Workspace: | ``No workspace``  |
-    | Format:    | ``CSS``           |
+    | Workspace: | `No workspace`  |
+    | Format:    | `CSS`           |
 
 
 1.  Replace the initial CSS definition with the following and click **apply**:
@@ -191,7 +191,7 @@ This technique was shown with the initial <file:%60airport.svg>` CSS example.
 
     Using the **symbol** function in the **mark** property.
 
-    The styles declarations have to icluded in the **:mark** pseudo-class.
+    The styles declarations have to included in the **:mark** pseudo-class.
 
     ``` scss
     /* @title red triangle with blue stroke */
@@ -384,7 +384,7 @@ The key properties **mark** and **label** are required to label Point locations.
 
 4.  We will use **label-offset** and **label-anchor** to position the label above each symbol.
 
-    Add the following two lines to the ``*`` selector:
+    Add the following two lines to the `*` selector:
 
     ```css hl_lines="8 9"
     * {
@@ -403,7 +403,7 @@ The key properties **mark** and **label** are required to label Point locations.
 
 5.  A little bit of work with vendor specific parameters will prevent our labels from colliding with each symbol, while giving the rendering engine some flexibility in how far it is allowed to relocate a label.
 
-    Add the following vendor options to the ``*`` selector:
+    Add the following vendor options to the `*` selector:
 
     ```css hl_lines="11-13"
     * {
@@ -432,7 +432,7 @@ The key properties **mark** and **label** are required to label Point locations.
 
     - **SCALERANK**: we have already used this attribute to control the level of detail displayed
     - **LABELRANK**: hint used for conflict resolution, allowing important cities such as capitals to be labeled even when they are close to a larger neighbor.
-    - **FEATURECLA**: used to indicate different types of cities. We will check for ``Admin-0 capital`` cities.
+    - **FEATURECLA**: used to indicate different types of cities. We will check for `Admin-0 capital` cities.
 
     The first thing we will do is calculate the **mark-size** using a quick expression:
 
@@ -572,7 +572,7 @@ The key properties **mark** and **label** are required to label Point locations.
 2.  **Challenge:** Try this yourself by rendering a polygon layer using a **mark** property.
 
     !!! note
-        Answer [discussed](#ysld-point-a1) at the end of the workbook.
+        Answer [discussed](done.md#css.point.a1) at the end of the workbook.
 
 ### Explore Dynamic Symbolization {: #css.point.q2 }
 
@@ -615,7 +615,7 @@ The key properties **mark** and **label** are required to label Point locations.
 
 3.  GeoServer recognizes this limitation of SLD Mark and ExternalGraphic and provides an opportunity for dynamic symbolization.
 
-    This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with ``\${ }`` as shown:
+    This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with `${ }` as shown:
 
     ``` css
     * {
@@ -642,7 +642,7 @@ The key properties **mark** and **label** are required to label Point locations.
 4.  **Challenge:** Use this approach to rewrite the *Dynamic Styling* example.
 
     !!! note
-        Answer [provided](#ysld-point-a2) at the end of the workbook.
+        Answer [provided](done.md#css.point.a2) at the end of the workbook.
 
 1.  Challenge: Use the **Interpolate** function to smoothly change **mark-size** based on city population.
 
@@ -651,7 +651,7 @@ The key properties **mark** and **label** are required to label Point locations.
 1.  Use a **Layer Group** to explore how symbology works together to form a map.
 
     - ne:NE1
-    - ne:states_provincces_shp
+    - ne:states_provinces_shp
     - ne: populated_places
 
 2.  To help start things out here is a style for `ne:states_provinces_shp`:
@@ -681,7 +681,7 @@ The key properties **mark** and **label** are required to label Point locations.
     ![image](../style/img/point_challenge_1.png)
 
     !!! note
-        Answer [provided](#ysld-point-a3) at the end of the workbook.
+        Answer [provided](done.md#css.point.a3) at the end of the workbook.
 
 ### Explore True Type Fonts
 

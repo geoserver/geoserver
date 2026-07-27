@@ -4,8 +4,6 @@
  */
 package org.geoserver.wfs.xml;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import org.eclipse.xsd.XSDConstrainingFacet;
 import org.eclipse.xsd.XSDEnumerationFacet;
@@ -26,9 +24,9 @@ import org.geotools.filter.visitor.AbstractFilterVisitor;
  * <p>The filters that this visitor will accept are:
  *
  * <ul>
+ *   <li>{@link Or}, to chain options equality checks
  *   <li>{@link PropertyIsEqualTo}, representing each element of {@link AttributeTypeInfo#getOptions() options
  *       restriction}
- *   <li>{@link Or}, to chain options equality checks
  *   <li>{@link PropertyIsBetween}, representing the {@link AttributeTypeInfo#getRange() range restriction}
  * </ul>
  */
@@ -41,37 +39,31 @@ public class RestrictionToXSDConstrainingFacetVisitor extends AbstractFilterVisi
     }
 
     @Override
-    public Object visit(Or filter, Object extraData) {
-        return visitChildren(filter.getChildren(), extraData);
-    }
-
-    private Object visitChildren(List<Filter> children, Object extraData) {
-        children.stream().map(c -> c.accept(this, extraData)).forEach(facetsLists -> ((ArrayList<XSDConstrainingFacet>)
-                        extraData)
-                .addAll((Collection<? extends XSDConstrainingFacet>) facetsLists));
-        return extraData;
+    public List<XSDConstrainingFacet> visit(Or filter, Object extraData) {
+        return filter.getChildren().stream()
+                .map(c -> c.accept(this, extraData))
+                .flatMap(result -> ((List<XSDConstrainingFacet>) result).stream())
+                .toList();
     }
 
     @Override
-    public Object visit(PropertyIsBetween filter, Object extraData) {
+    public List<XSDConstrainingFacet> visit(PropertyIsEqualTo filter, Object extraData) {
+        XSDEnumerationFacet enumerationFacet = factory.createXSDEnumerationFacet();
+        enumerationFacet.setLexicalValue(filter.getExpression2().toString());
+
+        return List.of(enumerationFacet);
+    }
+
+    @Override
+    public List<XSDConstrainingFacet> visit(PropertyIsBetween filter, Object extraData) {
         XSDMinInclusiveFacet minFacet = factory.createXSDMinInclusiveFacet();
         minFacet.setValue(filter.getLowerBoundary().toString());
         minFacet.setLexicalValue(filter.getLowerBoundary().toString());
+
         XSDMaxInclusiveFacet maxFacet = factory.createXSDMaxInclusiveFacet();
         maxFacet.setValue(filter.getUpperBoundary().toString());
         maxFacet.setLexicalValue(filter.getUpperBoundary().toString());
 
-        ((ArrayList<XSDConstrainingFacet>) extraData).addAll(List.of(minFacet, maxFacet));
-
-        return extraData;
-    }
-
-    @Override
-    public Object visit(PropertyIsEqualTo filter, Object extraData) {
-        XSDEnumerationFacet enumerationFacet = factory.createXSDEnumerationFacet();
-        enumerationFacet.setLexicalValue(filter.getExpression2().toString());
-
-        ((ArrayList<XSDConstrainingFacet>) extraData).add(enumerationFacet);
-        return extraData;
+        return List.of(minFacet, maxFacet);
     }
 }

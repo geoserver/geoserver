@@ -1,6 +1,6 @@
 # OGC API Service Configuration
 
-The OGC API modules provide additional services along side the existing Open Web Services (OWS).
+The OGC API modules provide additional services alongside the existing Open Web Services (OWS).
 
 ## Service
 
@@ -32,7 +32,7 @@ As an example OGC API - Features collections lists:
 
 The `collections` resource can have a number of additional links, beyond the basic ones that the service code already includes.
 
-Navigate to **Settings > Global**. The links are configured under heading **OGC API Settings**.
+Navigate to **Server > Global Settings**. <!--The links are configured under heading **OGC API Settings**.-->
 
 ![](img/global_links.png)
 
@@ -75,7 +75,7 @@ In this example the `license` is changed to reflect the natural earth terms of u
 
 Example from workspace OGC API - Features service ( `http://localhost:8080/geoserver/ne/ogc/features/v1/collections/?f=application%2Fjson`):
 
-``` json
+```json
 {
   "href": "https://www.naturalearthdata.com/about/terms-of-use/",
   "rel": "license",
@@ -104,13 +104,13 @@ Additional custom links can be provided for an individual layer. Use the Layer E
 
 ![](img/links.png)
 
-*Links used to define enclosure download for ne:counteries layer*
+*Links used to define enclosure download for ne:countries layer*
 
 The relationships are the same as for the `collections` resource, but used in case there is anything that is specific to the collection (e.g., the schema for the single collection).
 
 In addition, other relations can be specified, like the `tag` relation, to link to the eventual INSPIRE feature concept dictionary entry.
 
-Example from workspace `ne:counteries` collection providing enclosure for download:
+Example from workspace `ne:countries` collection providing enclosure for download:
 
 ```json
 {

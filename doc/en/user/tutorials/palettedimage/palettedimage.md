@@ -45,7 +45,7 @@ Optimal palette computation is anyways a repetitive work that can be done up fro
 
 Enough theory, let's have a look at how to deal with paletted images in practice. We'll use the `tiger-ny` basemap to gather some numbers, and in particular the following map request:
 
-> <http://localhost:8080/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=tiger-ny&BBOX=-74.022019,40.701196,-73.992366,40.720964&HEIGHT=400&WIDTH=600&FORMAT=image/png>
+`<http://localhost:8080/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=tiger-ny&BBOX=-74.022019,40.701196,-73.992366,40.720964&HEIGHT=400&WIDTH=600&FORMAT=image/png>`
 
 And we'll change various parameters in order to play with formats and palettes. Here goes the sampler:
 
@@ -71,7 +71,7 @@ And we'll change various parameters in order to play with formats and palettes. 
 
 ![](tiger-ny-png-custom-palette.png)
 
-*PNG + `custom palette <http://geoserver.org/download/attachments/1278244/nyp.pal?version=1>`_*
+*PNG + [custom palette](http://geoserver.org/download/attachments/1278244/nyp.pal?version=1)*
 
 The attachments include also the GIF outputs, whose size, appearance and generation time does not differ significantly from the PNG outputs.
 

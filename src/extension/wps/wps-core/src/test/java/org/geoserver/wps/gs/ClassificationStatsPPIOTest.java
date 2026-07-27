@@ -18,13 +18,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.LinkedHashSet;
 import java.util.List;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.easymock.EasyMock;
 import org.eclipse.imagen.media.range.Range;
 import org.eclipse.imagen.media.range.RangeFactory;
 import org.eclipse.imagen.media.stats.Statistics;
 import org.geotools.process.classify.ClassificationStats;
+import org.geotools.xml.XMLUtils;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.ContentHandler;
@@ -39,9 +39,7 @@ public class ClassificationStatsPPIOTest {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         ppio.encode(classStats, bout);
 
-        Document doc = DocumentBuilderFactory.newInstance()
-                .newDocumentBuilder()
-                .parse(new ByteArrayInputStream(bout.toByteArray()));
+        Document doc = XMLUtils.newDocumentBuilder().parse(new ByteArrayInputStream(bout.toByteArray()));
 
         assertEquals("Results", doc.getDocumentElement().getNodeName());
         XMLAssert.assertXpathExists("/Results/Class[@lowerBound='0.0']", doc);

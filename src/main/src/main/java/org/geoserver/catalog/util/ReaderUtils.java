@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.ConfigurationException;
 import javax.xml.parsers.DocumentBuilderFactory;
+import org.geotools.xml.XMLUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -47,7 +48,7 @@ public class ReaderUtils {
      */
     public static Element parse(Reader xml) {
         InputSource in = new InputSource(xml);
-        DocumentBuilderFactory dfactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory dfactory = XMLUtils.newDocumentBuilderFactory();
 
         dfactory.setNamespaceAware(false);
         dfactory.setValidating(false);
@@ -58,7 +59,7 @@ public class ReaderUtils {
         Document doc;
 
         try {
-            doc = dfactory.newDocumentBuilder().parse(in);
+            doc = XMLUtils.newDocumentBuilder(dfactory).parse(in);
         } catch (Exception e) {
             String msg = "Error reading : " + xml;
             throw new RuntimeException(msg, e);

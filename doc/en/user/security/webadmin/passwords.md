@@ -38,7 +38,7 @@ This section provides the options for adding, removing, and editing keystore pas
 
 *Keystore password provider list*
 
-Use **Add new** and **Remove selected** to manage the list of keystore passowrd providers.
+Use **Add new** and **Remove selected** to manage the list of keystore password providers.
 
 When creating or editing a **URL Keystore password Provider** the following settings are available.
 

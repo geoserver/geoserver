@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.platform.GeoServerExtensions;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.StepContribution;
-import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.job.JobExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
-import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.batch.core.step.StepContribution;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.repeat.RepeatStatus;
 
 /** Extension point for generic backup / restore jobs. */
 public final class GenericTasklet extends AbstractCatalogBackupRestoreTasklet {

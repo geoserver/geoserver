@@ -6,7 +6,7 @@ However, it's also possible to create a style with multiple layers, and then use
 
 For example, a style duplicating the Tasmania sample layer group could look like this (usage of the `Flat` mode is recommended):
 
-``` scss
+```scss
 @mode 'Flat';
 
 topp:tasmania_state_boundaries {
@@ -37,12 +37,8 @@ topp:tasmania_cities {
 
 The style can be previewed while editing by enabling the "preview as style group" option in the style editor.
 
-<figure>
-<img src="images/tasmania.png" />
-</figure>
+![](images/tasmania.png)
 
 The style group can then be used to form a layer group, by using the "add as style group" link in the layer group editor:
 
-<figure>
-<img src="images/style_group.png" />
-</figure>
+![](images/style_group.png)

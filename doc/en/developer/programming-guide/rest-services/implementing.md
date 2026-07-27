@@ -11,7 +11,7 @@ Before being able to proceed, GeoServer must be built on the local system. See t
 1.  Create a new module named `hello_rest` somewhere on the file system.
 2.  Add the following `pom.xml` to the root of the new module:
 
-``` xml
+```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd ">

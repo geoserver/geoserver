@@ -12,20 +12,18 @@
                   <wicket:message key="wcseo">wcseo</wicket:message>
                 </span>
               </legend>
-              <div class="gs-unordered-list-class">
-                <div class="gs-list-item-class choiceItem">
+              <div class="gs-form">
+                <div class="choiceItem">
                   <input type="checkbox" wicket:id="enabled"/>
                   <label for="enabled">
                     <wicket:message key="enabled">enable</wicket:message>
                   </label>
                 </div>
-                <div class="gs-list-item-class">
-                  <div class="gs-list-item-class">
-                    <label>
-                      <wicket:message key="defaultCount">defaultCount</wicket:message>
-                    </label>
-                    <input type="text" wicket:id="defaultCount" class="field"/>
-                  </div>
+                <div class="gs-form-group">
+                  <label>
+                    <wicket:message key="defaultCount">defaultCount</wicket:message>
+                  </label>
+                  <input type="text" wicket:id="defaultCount" class="w-md"/>
                 </div>
               </div>
             </fieldset>

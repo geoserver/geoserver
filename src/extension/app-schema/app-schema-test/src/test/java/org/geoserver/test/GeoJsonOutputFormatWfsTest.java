@@ -12,7 +12,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.geoserver.util.EntityResolverProvider;
+import org.geotools.util.NullEntityResolver;
 import org.hamcrest.CoreMatchers;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kordamp.json.JSON;
 import org.kordamp.json.JSONArray;
@@ -20,6 +24,16 @@ import org.kordamp.json.JSONObject;
 
 /** Validates JSON output format for complex features. */
 public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSupport {
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+    }
 
     @Override
     protected AbstractAppSchemaMockData createTestData() {

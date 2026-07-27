@@ -22,6 +22,7 @@ import org.geoserver.security.AbstractSecurityServiceTest;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.config.J2eeRoleServiceConfig;
 import org.geoserver.util.IOUtils;
+import org.geotools.xml.XMLUtils;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
@@ -73,7 +74,7 @@ public class GeoServerJ2eeRoleServiceTest extends AbstractSecurityServiceTest {
 
     protected void assertIsValid(String name) throws IOException, SAXException {
         // makes sure web.xml is XSD compliant (without requiring internet access in the process)
-        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = factory.newSchema(new Source[] {
             new StreamSource(new File("src/test/resources/org/geoserver/security/xsd/xml.xsd")),
             new StreamSource(new File("src/test/resources/org/geoserver/security/xsd/web-app_3_1.xsd")),

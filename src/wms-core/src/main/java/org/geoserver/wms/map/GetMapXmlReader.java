@@ -53,7 +53,10 @@ import org.geotools.feature.FeatureTypes;
 import org.geotools.filter.ExpressionDOMParser;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.util.factory.GeoTools;
+import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xml.styling.SLDParser;
 import org.locationtech.jts.geom.Coordinate;
 import org.vfny.geoserver.util.GETMAPValidator;
@@ -171,15 +174,15 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                 }
                 xml = new BufferedReader(new FileReader(temp)); // pretend like nothing has happened
             }
+            EntityResolver entityResolver = wms.getCatalog().getResourcePool().getEntityResolver();
 
-            javax.xml.parsers.DocumentBuilderFactory dbf = javax.xml.parsers.DocumentBuilderFactory.newInstance();
-
+            Hints hints = GeoTools.addDefaultHints(new Hints(Hints.ENTITY_RESOLVER, entityResolver));
+            javax.xml.parsers.DocumentBuilderFactory dbf = XMLUtils.newDocumentBuilderFactory(hints);
             dbf.setExpandEntityReferences(false);
             dbf.setValidating(false);
             dbf.setNamespaceAware(true);
 
-            javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();
-            EntityResolver entityResolver = wms.getCatalog().getResourcePool().getEntityResolver();
+            javax.xml.parsers.DocumentBuilder db = XMLUtils.newDocumentBuilder(dbf, hints);
             if (entityResolver != null) {
                 db.setEntityResolver(entityResolver);
             }

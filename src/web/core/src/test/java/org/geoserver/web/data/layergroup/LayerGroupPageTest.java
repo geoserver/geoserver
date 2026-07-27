@@ -6,12 +6,14 @@
 package org.geoserver.web.data.layergroup;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -41,6 +43,40 @@ public class LayerGroupPageTest extends LayerGroupBaseTest {
         Collections.sort(groups, (g1, g2) -> g1.getName().compareTo(g2.getName()));
 
         assertEquals(groups.get(0), lg);
+    }
+
+    @Test
+    public void testWorkspaceParameterFiltersToWorkspaceGroups() {
+        // ?workspace=cite → only the workspace-scoped "cite:bridges" group is returned;
+        // global groups ("lakes", "nestedLayerGroup", "styleGroup") are excluded.
+        login();
+        tester.startPage(LayerGroupPage.class, new PageParameters().add("workspace", "cite"));
+        tester.assertRenderedPage(LayerGroupPage.class);
+        tester.assertNoErrorMessage();
+
+        @SuppressWarnings("unchecked")
+        DataView<LayerGroupInfo> dv =
+                (DataView<LayerGroupInfo>) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        assertEquals(1, dv.size());
+
+        LayerGroupInfo group = dv.getDataProvider().iterator(0, 1).next();
+        assertEquals("bridges", group.getName());
+        assertNotNull(group.getWorkspace());
+        assertEquals("cite", group.getWorkspace().getName());
+    }
+
+    @Test
+    public void testWorkspaceParameterWithNoGroupsYieldsNoResults() {
+        // ?workspace=sf → no layer groups belong to the "sf" workspace
+        login();
+        tester.startPage(LayerGroupPage.class, new PageParameters().add("workspace", "sf"));
+        tester.assertRenderedPage(LayerGroupPage.class);
+        tester.assertNoErrorMessage();
+
+        @SuppressWarnings("unchecked")
+        DataView<LayerGroupInfo> dv =
+                (DataView<LayerGroupInfo>) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        assertEquals(0, dv.size());
     }
 
     @Test

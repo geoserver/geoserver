@@ -8,7 +8,7 @@ As with all formats, adding a PostGIS connection to GeoServer involves adding a 
 
 ### Using default connection
 
-To begin, navigate to **Stores --> Add a new store --> PostGIS**.
+To begin, navigate to **Data > Stores > Add a new store > PostGIS**.
 
 Fill in the *Basic Store Info* used to identify the database when managing layers.
 
@@ -80,7 +80,7 @@ Connection parameters supporting initial database creation:
 | Connection Parameter | Description |
 |----|----|
 | **create database** | Enable to define a new database on connection |
-| **create database params** | Additional CREATE DATABASE definition, example ``WITH TEMPLATE=postgis`` |
+| **create database params** | Additional CREATE DATABASE definition, example `WITH TEMPLATE=postgis` |
 
 When finished, click **Save**.
 
@@ -88,7 +88,7 @@ When finished, click **Save**.
 
 GeoServer can also connect to a PostGIS database using [JNDI](https://docs.oracle.com/javase/tutorial/jndi/overview/index.md) (Java Naming and Directory Interface). This is used to allow a PostGIS DataStore to share a named connection pool of PostGIS connections configured in your application server.
 
-To begin, navigate to **Stores --> Add a new store --> PostGIS (JNDI)**.
+To begin, navigate to **Data > Stores > Add a new store > PostGIS (JNDI)**.
 
 ![](images/postgisjndi.png)
 
@@ -171,12 +171,11 @@ GeoServer is able to translate the `jsonPointer` function to a query using Postg
 
 Having a json column storing jsonvalues like the following,
 
-> 
->
-> { "name": "city name",
-> :   "description": "the city description", "districts": [ { "name":"district1", "population": 2000 }, { "name":"district2", "population": 5000 } ] "population":{ "average_age": 35, "toal": 50000 }
->
-> }
+```json
+{ "name": "city name",
+   "description": "the city description", "districts": [ { "name":"district1", "population": 2000 }, { "name":"district2", "population": 5000 } ] "population":{ "average_age": 35, "total": 50000 }
+}
+```
 
 and assuming an attribute name as `city`, valid jsonPointer functions would be:
 
@@ -188,7 +187,7 @@ An example cql_filter would then be `jsonPointer(city, '/population/average_age'
 
 While an example rule in a sld style sheet could be:
 
-``` xml
+```xml
 <Rule>
   <Name>Cities</Name>
      <ogc:Filter>

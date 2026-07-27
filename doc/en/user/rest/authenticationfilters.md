@@ -20,7 +20,7 @@ The REST API allows you to list, create, upload, update, and delete authFilters 
 
 200 OK
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <authFilter>
     <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="securityInterceptorFilterConfig">
@@ -69,7 +69,7 @@ The REST API allows you to list, create, upload, update, and delete authFilters 
 
 200 OK
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <authFilters>
     <authFilter>

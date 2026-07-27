@@ -137,7 +137,10 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
     }
 
     private int fullSizeInternal() {
-        Filter filter = Predicates.acceptAll();
+        Filter filter = getContextFilter();
+        if (filter == null) {
+            filter = Predicates.acceptAll();
+        }
         return getCatalog().count(PublishedInfo.class, filter);
     }
 

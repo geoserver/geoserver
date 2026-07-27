@@ -31,6 +31,7 @@
     <property name="category" ref="gwcCategory"/>
     <property name="icon" value="../tilelayer.png"/>
     <property name="order" value="1"/>
+    <property name="contextParams" value="workspace,group" />
   </bean>
     
   <bean id="gwcSettingsMenuPage" class="org.geoserver.web.MenuPageInfo">
@@ -82,6 +83,7 @@
   </bean>
 
   <bean id="diskQuotaWarningProvider" class="org.geoserver.gwc.web.diskquota.DiskQuotaWarningProvider"/>
+  <bean id="tiledPreviewSectionProvider" class="org.geoserver.gwc.web.layer.TiledPreviewSectionProvider"/>
   
   <bean class="org.geoserver.gwc.web.blob.FileBlobStoreType" />
 
@@ -101,7 +103,6 @@
     <constructor-arg ref="catalog" />
     <constructor-arg value="/gwc/demo"/>
     <property name="alwaysUseFullPath" value="true" />
-    <property name="order" value="10" />
   </bean>
 
   <!-- Used for workspace-based web requests (i.e. for rest/web/openlayer/ol.js) -->
@@ -109,7 +110,6 @@
     <constructor-arg ref="catalog" />
     <constructor-arg type="java.lang.String"  value="/gwc/rest/web"/>
     <property name="alwaysUseFullPath" value="true" />
-    <property name="order" value="10" />
   </bean>
 
   <!-- Tile Caching - Workspace-based tile caching page -->

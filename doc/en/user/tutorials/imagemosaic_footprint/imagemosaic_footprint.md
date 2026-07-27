@@ -37,7 +37,7 @@ And the associated granules are:
 - ortho_1-1_1n_s_la087_2010_1.tif
 - ortho_2-2_1n_s_la075_2010_1.tif
 - ortho_1-1_1n_s_la103_2010_1.tif
-- and so on \...
+- and so on ...
 
 The associated **footprints.properties** file must be like this:
 
@@ -75,11 +75,11 @@ Here are presented a few steps for configuring a new ImageMosaic layer with foot
 
 ### Step 1: Create a new ImageMosaic Layer
 
-As seen before an ImageMosaic data store can be created by going to **Stores --> Add New Store --> ImageMosaic**.
+As seen before an ImageMosaic data store can be created by going to **Data > Stores > Add New Store > ImageMosaic**.
 
 ![](../../data/raster/imagemosaic/images/imagemosaicconfigure.png)
 
-An associated Layer can be created by going to **Layers --> Add New Resource**, choosing the name of the data store created above and then clicking on the **publish** button.
+An associated Layer can be created by going to **Data > Layers > Add New Resource**, choosing the name of the data store created above and then clicking on the **publish** button.
 
 ### Step 2: Configuring a new Layer for the Mosaic
 
@@ -176,9 +176,9 @@ Download data from the following [link](rastermask.zip) and configure an ImageMo
 
 Zip file contains two images and their related **.msk** files. For this example the two masks are two simple squares.
 
-### Step 2: Watch the layer using LayerPreview
+### Step 2: Watch the layer using Browse Layers
 
-Go to **LayerPreview --> rastermask --> OpenLayers**. The result should be similar to the one below.
+Go to **GeoServer > Browse Layers > rastermask > OpenLayers**. The result should be similar to the one below.
 
 ![](img/footprint_none.png)
 
@@ -190,7 +190,7 @@ Change the **FootprintBehavior** parameter to *Transparent*. *Cut* value should 
 
 ### Step 4: Check the result
 
-Go to **LayerPreview --> rastermask --> OpenLayers**. The result should be changed now.
+Go to **GeoServer > Browse Layers > rastermask > OpenLayers**. The result should be changed now.
 
 ![](img/footprint_transparent.png)
 
@@ -218,7 +218,7 @@ Notes:
 
 - *overviewsFootprintLoaderSPI*: Contains the fully qualified name of the SPI implementation for overviews footprints loading (Optional property. When not specified, same loader as footprintLoaderSpi will be used if provided);
 
-- *overviewsRoiInRasterSpace*: Specifies whether the overviews ROI footprint geometrys are in raster space or model space coordinates. (Optional property. Default is False, meaning that overviews footprints are in model space);
+- *overviewsRoiInRasterSpace*: Specifies whether the overviews ROI footprint geometries are in raster space or model space coordinates. (Optional property. Default is False, meaning that overviews footprints are in model space);
 
 - *overviewsSuffixFormat*: Specifies the String format syntax used to define the suffix of the overviews footprints file name. (Optional property. Default is _%d). To give an example, if granule file is R1C1.tif and related 1st overview footprint is stored into R1C1_1.wkt, overviewsSuffixFormat should be _%d. In case 1st overview footprint is stored into R1C1-Ov1.wkt, overviewsSuffixFormat should be -Ov%d.
 

@@ -213,7 +213,7 @@ width: 353px;
 height: 112px;
 overflow: hidden;
 text-indent: -9999em;
-background: url(./chrome/geoserver-logo.png) no-repeat;
+background: url(./chrome/geoserver-logo.svg) no-repeat;
 }
 
 #account-nav {

@@ -1,4 +1,4 @@
-site_name: GeoServer Documentation
+site_name: Documentation
 site_url: https://docs.geoserver.org/3.0.x/
 repo_url: https://github.com/geoserver/geoserver
 repo_name: geoserver/geoserver
@@ -11,6 +11,8 @@ site_dir: mkdocs_output
 exclude_docs: |
   README.md
   target
+  /index.html
+  venv
   en/user/styling/ysld/reference/symbolizers/include/
   en/developer/policies/gsip_voting.md
   en/developer/quickstart/checkout.md
@@ -18,22 +20,22 @@ exclude_docs: |
 theme:
   name: material
   custom_dir: doc/themes/geoserver
-  logo: img/geoserver-logo.png
+  logo: img/geoserver-logo.svg
   favicon: img/geoserver.ico
   palette:
-    # Light mode
+    # Light mode  (colours set via extra.css to match the GeoServer app)
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: blue
-      accent: light-blue
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
-    # Dark mode
+    # Dark mode  (colours set via extra.css to match the GeoServer app)
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: blue
-      accent: light-blue
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
@@ -49,50 +51,14 @@ theme:
     - navigation.top
     - navigation.tracking
     - navigation.indexes
-    - navigation.path
+#    - navigation.path
     - navigation.footer
 
 extra:
   version:
     default: latest
     provider: mike
-  version_selector:
-    # GitHub Pages versions (mike-managed)
-    - version: latest
-      title: Latest
-      aliases: [main, 3.0.x]
-      archive: false
-    # Archive versions (docs.geoserver.org)
-    - version: "https://docs.geoserver.org/2.28.x/en/user/"
-      title: "2.28.x (Stable)"
-      archive: false
-    - version: "https://docs.geoserver.org/2.27.x/en/user/"
-      title: "2.27.x (Maintenance)"
-      archive: false
-    - version: "https://docs.geoserver.org/2.26.x/en/user/"
-      title: "2.26.x"
-      archive: true
-    - version: "https://docs.geoserver.org/2.25.x/en/user/"
-      title: "2.25.x"
-      archive: true
-    - version: "https://docs.geoserver.org/2.24.x/en/user/"
-      title: "2.24.x"
-      archive: true
-    - version: "https://docs.geoserver.org/2.23.x/en/user/"
-      title: "2.23.x"
-      archive: true
-    - version: "https://docs.geoserver.org/2.22.x/en/user/"
-      title: "2.22.x"
-      archive: true
-    - version: "https://docs.geoserver.org/2.21.x/en/user/"
-      title: "2.21.x"
-      archive: true
-    - version: "https://docs.geoserver.org/2.20.x/en/user/"
-      title: "2.20.x"
-      archive: true
-    - version: "https://docs.geoserver.org/2.19.x/en/user/"
-      title: "2.19.x"
-      archive: true
+
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/geoserver/geoserver
@@ -136,6 +102,7 @@ markdown_extensions:
       permalink: true
 
 extra_css:
+  - stylesheets/geoserver-brand.css
   - stylesheets/extra.css
 
 extra_javascript:
@@ -147,6 +114,8 @@ not_in_nav: |
   en/index.md
   en/LICENSE.md
   en/release/rest.md
+  en/user/data/webadmin/layerpreview.md
+  en/user/installation/upgrade2.md
 
 nav:
   - Home: index.md
@@ -165,7 +134,7 @@ nav:
       - en/user/installation/win_installer.md
       - en/user/installation/war.md
       - en/user/installation/docker.md
-      - en/user/installation/upgrade.md
+      - en/user/installation/upgrade3.md
     - Getting started:
       - en/user/gettingstarted/index.md
       - Using the web administration interface: en/user/gettingstarted/web-admin-quickstart/index.md
@@ -184,7 +153,7 @@ nav:
       - en/user/data/index.md
       - Data settings:
         - en/user/data/webadmin/index.md
-        - en/user/data/webadmin/layerpreview.md
+        - en/user/data/webadmin/browselayers.md
         - en/user/data/webadmin/workspaces.md
         - en/user/data/webadmin/stores.md
         - en/user/data/webadmin/layers.md
@@ -724,6 +693,18 @@ nav:
         - en/user/extensions/geofence-wps/installing.md
         - en/user/extensions/geofence-wps/gui.md
       - CAS integration: en/user/extensions/cas/index.md
+      - OAuth2 OpenID Connect:
+        - en/user/extensions/oidc/index.md
+        - en/user/extensions/oidc/installing.md
+        - en/user/extensions/oidc/configuring.md
+        - en/user/extensions/oidc/oauth2/google.md
+        - en/user/extensions/oidc/oauth2/github.md
+        - en/user/extensions/oidc/oauth2/azure.md
+        - en/user/extensions/oidc/oauth2/keycloak.md
+        - en/user/extensions/oidc/oauth2/generic.md
+        - en/user/extensions/oidc/role-config.md
+        - en/user/extensions/oidc/advanced.md
+        - en/user/extensions/oidc/migrating.md
       - Parameters Extractor:
         - en/user/extensions/params-extractor/index.md
         - en/user/extensions/params-extractor/install.md
@@ -781,13 +762,15 @@ nav:
         - en/user/community/opensearch-eo/STAC.md
         - en/user/community/opensearch-eo/templates.md
         - en/user/community/opensearch-eo/upgrading.md
-      - Backup and Restore Documentation:
+      - Backup and Restore:
         - en/user/community/backuprestore/index.md
         - en/user/community/backuprestore/installation.md
         - en/user/community/backuprestore/usagegui.md
         - en/user/community/backuprestore/usagerest.md
+        - en/user/community/backuprestore/options.md
         - en/user/community/backuprestore/extensions.md
         - en/user/community/backuprestore/usecases.md
+        - en/user/community/backuprestore/migration.md
       - COG (Cloud Optimized GeoTIFF) Documentation:
         - en/user/community/cog/index.md
         - en/user/community/cog/cog.md
@@ -888,17 +871,6 @@ nav:
         - OGC API - 3D GeoVolumes: en/user/community/ogc-api/3dgeovolumes/index.md
         - en/user/community/ogc-api/testbed.md
       - OGR datastore: en/user/community/ogr-store/index.md
-      - OAuth2 OpenID Connect:
-        - en/user/community/oidc/index.md
-        - en/user/community/oidc/installing.md
-        - en/user/community/oidc/configuring.md
-        - en/user/community/oidc/oauth2/google.md
-        - en/user/community/oidc/oauth2/github.md
-        - en/user/community/oidc/oauth2/azure.md
-        - en/user/community/oidc/oauth2/keycloak.md
-        - en/user/community/oidc/oauth2/generic.md
-        - en/user/community/oidc/role-config.md
-        - en/user/community/oidc/advanced.md
       - PMTiles DataStore:
         - en/user/community/pmtiles-store/index.md
         - en/user/community/pmtiles-store/installing.md
@@ -962,7 +934,7 @@ nav:
       - WPS OpenAI process: en/user/community/wps-openai/index.md
     - Tutorials:
       - en/user/tutorials/index.md
-      - en/user/tutorials/freemarker.md
+      - en/user/tutorials/freemarker/index.md
       - en/user/tutorials/georss/georss.md
       - GetFeatureInfo Templates:
         - en/user/tutorials/GetFeatureInfo/index.md
@@ -980,6 +952,7 @@ nav:
       - en/user/tutorials/feature-pregeneralized/feature-pregeneralized_tutorial.md
       - INSPIRE metadata configuration using metadata and CSW: en/user/tutorials/metadata/index.md
       - en/user/tutorials/tomcat-jndi/tomcat-jndi.md
+      - Tomcat hardening: en/user/tutorials/tomcat-hardening/index.md
       - en/user/tutorials/jboss/jboss_tutorial.md
       - en/user/tutorials/cloud-foundry/run_cf.md
 
@@ -1056,7 +1029,7 @@ nav:
     - Quickfix: en/docguide/quickfix.md
     - Contributing: en/docguide/contributing.md
     - Workflow: en/docguide/workflow.md
-    - Installing mkdocs: en/docguide/install.md
+    - Installing MkDocs: en/docguide/install.md
     - Markdown Syntax: en/docguide/markdown.md
     - Style Guidelines: en/docguide/style.md
     - Writing a Tutorial: en/docguide/tutorial.md

@@ -27,22 +27,20 @@
   <body>
     <wicket:panel class="bordered-div">
       <div class="gs-panel-OverrideAddPanel">
-        <div class="qos-panel">
-          <h4>Add Override rule</h4>
-          <form wicket:id="addOverrideForm">
-            <div class="form-group">
-              <label>Key:</label>
-              <input type="text" wicket:id="addOverrideKey"/>
-            </div>
-            <div class="form-group">
-              <label>Expression:</label>
-              <input type="text" wicket:id="addOverrideExpression"/>
-            </div>
-            <div class="form-group">
-              <button type="submit" wicket:id="addOverrideSubmitButton">Add Override expression</button>
-            </div>
-          </form>
-        </div>
+        <h4>Add Override rule</h4>
+        <form class="gs-form" wicket:id="addOverrideForm">
+          <div class="gs-form-group">
+            <label>Key:</label>
+            <input type="text" wicket:id="addOverrideKey"/>
+          </div>
+          <div class="gs-form-group">
+            <label>Expression:</label>
+            <input type="text" wicket:id="addOverrideExpression"/>
+          </div>
+          <div class="gs-list-item-class">
+            <button type="submit" wicket:id="addOverrideSubmitButton">Add Override expression</button>
+          </div>
+        </form>
         <div wicket:id="addOverrideFeedback"/>
       </div>
     </wicket:panel>

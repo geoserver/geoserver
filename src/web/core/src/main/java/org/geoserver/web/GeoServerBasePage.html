@@ -28,13 +28,18 @@
                   <ul class="gs-dropdown-menu" role="menu">
                     <li class="gs-dropdown-item" wicket:id="category.links" role="none">
                       <a wicket:id="link" role="menuitem">
-                        <img src="#" wicket:id="link.icon" alt=""/><span wicket:id="link.label"></span>
+                        <i wicket:id="link.icon"></i><span wicket:id="link.label"></span><span wicket:id="link.ctxIndicator" class="gs-ctx-indicator" aria-hidden="true"></span>
                       </a>
                     </li>
                   </ul>
                 </li>
+                <li class="gs-dropdown-item" wicket:id="standalone" role="none">
+                  <a wicket:id="link" role="menuitem">
+                    <span wicket:id="link.label"></span><span wicket:id="link.ctxIndicator" class="gs-ctx-indicator" aria-hidden="true"></span>
+                  </a>
+                </li>
+                <div class="gs-dropdown devtoolbar" wicket:id="devButtons" title="Developer helper actions. This bar must not be available in releases"></div>
               </ul>
-              <div class="devtoolbar" wicket:id="devButtons" title="Developer helper actions. This bar must not be available in releases"></div>
             </div>
           </div>
           <div class="navigation-content-header">
@@ -47,6 +52,9 @@
         </div>
         <div class="gs-header-right">
           <div class="gs-spinner" id="ajaxFeedback"></div>
+          <div wicket:id="nodeIdContainer" id="nodeIdContainer">
+            <span wicket:id="nodeId"></span>
+          </div>
           <div id="localeSwitcher" class="gs-locale-selector" role="group" aria-label="Language">
             <select wicket:id="localeSwitcher"></select>
           </div>
@@ -65,6 +73,7 @@
                   <form wicket:id="loginform" method="post" action="../j_spring_security_check" class="gs-login-form">
                     <div wicket:id="login.include" class="authentication-form"></div>
                     <button type="submit" class="button primary">
+                      <i wicket:id="link.icon"></i>
                       <span wicket:id="link.label"></span>
                     </button>
                   </form>
@@ -89,7 +98,7 @@
                   <!-- 3. External links -->
                   <div wicket:id="loginExternalLinks" class="gs-login-external-links">
                     <a wicket:id="loginform">
-                      <div><img src="#" wicket:id="link.icon" alt=""/><span wicket:id="link.label"></span></div>
+                      <div><i wicket:id="link.icon"></i><span wicket:id="link.label"></span></div>
                     </a>
                   </div>
                   <!-- 4. Separator -->
@@ -97,7 +106,7 @@
                   <!-- 5. Buttons: logout when logged in -->
                   <li>
                     <a wicket:id="logoutform" role="menuitem">
-                      <img src="#" wicket:id="link.icon" alt=""/><span wicket:id="link.label"></span>
+                      <i wicket:id="link.icon"></i><span wicket:id="link.label"></span>
                     </a>
                   </li>
                 </ul>

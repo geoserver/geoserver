@@ -11,19 +11,24 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import javax.xml.namespace.QName;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.feature.ReprojectingFeatureCollection;
 import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.geometry.jts.CircularArc;
 import org.geotools.geometry.jts.CircularRing;
 import org.geotools.geometry.jts.CircularString;
+import org.geotools.geometry.jts.CompoundCurve;
 import org.geotools.geometry.jts.CompoundCurvedGeometry;
 import org.geotools.geometry.jts.CurvedGeometries;
 import org.geotools.geometry.jts.SingleCurvedGeometry;
@@ -90,6 +95,47 @@ public abstract class AbstractTransactionCurveTest extends WFSCurvesTestSupport 
         assertEquals(2, ls2.getNumPoints());
         assertEquals(new Coordinate(20, 51), ls2.getCoordinateN(0));
         assertEquals(new Coordinate(10, 51), ls2.getCoordinateN(1));
+    }
+
+    @Test
+    public void testInsertCompoundCurve() throws Exception {
+        String xml = IOUtils.toString(getClass().getResourceAsStream("insertCompoundCurve.xml"), UTF_8);
+        Document dom = postAsDOM("wfs", xml);
+
+        checkSuccesfulTransaction(dom, 1, 0, 0);
+
+        SimpleFeature first = getSingleFeature(CURVELINES, "Compound inserted");
+
+        Geometry g = (Geometry) first.getDefaultGeometry();
+        assertNotNull(g);
+        assertTrue(g instanceof CompoundCurvedGeometry<?>);
+        CompoundCurvedGeometry<?> compound = (CompoundCurvedGeometry<?>) g;
+        List<LineString> components = compound.getComponents();
+        assertEquals(3, components.size());
+
+        LineString ls1 = components.get(0);
+        assertEquals(2, ls1.getNumPoints());
+        assertEquals(new Coordinate(10, 45), ls1.getCoordinateN(0));
+        assertEquals(new Coordinate(20, 45), ls1.getCoordinateN(1));
+
+        CircularString cs = (CircularString) components.get(1);
+        assertArrayEquals(new double[] {20.0, 45.0, 23.0, 48.0, 20.0, 51.0}, cs.getControlPoints(), 0d);
+
+        LineString ls2 = components.get(2);
+        assertEquals(2, ls2.getNumPoints());
+        assertEquals(new Coordinate(20, 51), ls2.getCoordinateN(0));
+        assertEquals(new Coordinate(10, 51), ls2.getCoordinateN(1));
+
+        g.setUserData(new HashMap<>());
+
+        SimpleFeatureCollection collection = DataUtilities.collection(first);
+        ReprojectingFeatureCollection reprojected = new ReprojectingFeatureCollection(
+                collection, collection.getSchema().getCoordinateReferenceSystem());
+        try (SimpleFeatureIterator features = reprojected.features()) {
+            assertTrue(features.hasNext());
+            Geometry reprojectedGeometry = (Geometry) features.next().getDefaultGeometry();
+            assertTrue(reprojectedGeometry instanceof CompoundCurve);
+        }
     }
 
     @Test

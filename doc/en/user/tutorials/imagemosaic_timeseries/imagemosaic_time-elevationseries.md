@@ -77,7 +77,7 @@ The steps needed are the same shown the previous chapter. After the store is loa
 
 The WMS Capabilities document is a bit different, now there is also the dimension **elevation**. In this example both time and elevation dimension are set to **List** .
 
-``` xml
+```xml
 <Dimension name="time" default="current" units="ISO8601">
    2013-03-10T00:00:00.000Z,2013-03-11T00:00:00.000Z,2013-03-12T00:00:00.000Z,2013-03-13T00:00:00.000Z,2013-03-14T00:00:00.000Z,2013-03-15T00:00:00.000Z,2013-03-16T00:00:00.000Z,2013-03-17T00:00:00.000Z,2013-03-18T00:00:00.000Z
 </Dimension>

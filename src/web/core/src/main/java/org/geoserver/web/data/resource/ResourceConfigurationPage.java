@@ -22,6 +22,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.data.layer.LayerPage;
 import org.geoserver.web.publish.PublishedConfigurationPage;
 import org.geoserver.web.publish.PublishedConfigurationPanel;
@@ -52,6 +53,7 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
 
     public ResourceConfigurationPage(PageParameters parameters) {
         this(parameters.get(WORKSPACE).toOptionalString(), parameters.get(LAYER).toString());
+        captureReturnDestination(parameters);
     }
 
     public ResourceConfigurationPage(String workspaceName, String layerName) {
@@ -99,6 +101,35 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
                 isNew
                         ? info.getResource()
                         : getCatalog().getResource(info.getResource().getId(), ResourceInfo.class));
+    }
+
+    @Override
+    public PageParameters getPageParameters() {
+        PageParameters params = super.getPageParameters();
+        if (!hasNavigationContext(params) && myModel != null) {
+            LayerInfo layer = getPublishedInfo();
+            if (layer != null && layer.getResource() != null) {
+                PageParameters derived = new PageParameters();
+                WorkspaceInfo ws = layer.getResource().getStore().getWorkspace();
+                if (ws != null) derived.add(WORKSPACE, ws.getName());
+                derived.add(LAYER, layer.getName());
+                return derived;
+            }
+        }
+        return params;
+    }
+
+    /**
+     * True when page parameters carry workspace/layer (or group/name) context for navigation, not only return metadata.
+     */
+    private static boolean hasNavigationContext(PageParameters params) {
+        if (params == null || params.isEmpty()) {
+            return false;
+        }
+        return params.get(WORKSPACE).toOptionalString() != null
+                || params.get(LAYER).toOptionalString() != null
+                || params.get("group").toOptionalString() != null
+                || params.get("name").toOptionalString() != null;
     }
 
     private void updateResourceInLayerModel(ResourceInfo resource) {

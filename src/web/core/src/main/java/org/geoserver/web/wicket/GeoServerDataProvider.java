@@ -92,6 +92,19 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     }
 
     /**
+     * Returns the context filter, or {@code null} if none has been overridden.
+     *
+     * <p>The filter is referred to as "context" because it is used to contextualize the data provider based on specific
+     * content. It primarily stores filtering criteria originating from URL query parameters, such as {@code workspace},
+     * {@code layer}, and {@code group}, scoping the view to that specific context.
+     *
+     * @return the active context filter, or {@code null} if no filter is applied
+     */
+    protected Filter getContextFilter() {
+        return null;
+    }
+
+    /**
      * This method returns an array of regex matchers based on the defined {@link #keywords}, if any. If no keywords are
      * defined, an empty array is returned.
      *
@@ -331,20 +344,25 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     }
 
     /**
-     * This method returns a filter based on the defined {@link #keywords} if any, otherwise a {@link Filter#INCLUDE} is
-     * returned.
+     * This method returns a filter based on the defined {@link #keywords} if any, combined with the contextFilter if it
+     * is present. Otherwise a {@link Filter#INCLUDE} is returned.
      *
      * <p>Multiple keywords are joined with the <i>OR</i> operator. If a keyword is contained in quotes or
      * double-quotes, the filter for that specific search term is created for the exact match.
      *
-     * @return a {@link Filter} which uses the defined {@link #keywords}. If no keyword is present,
+     * @return a {@link Filter} which uses the defined {@link #keywords} and context. If neither is present,
      *     {@link Filter#INCLUDE} is returned.
      */
     protected Filter getFilter() {
-        return Streams.of(getKeywords())
+        Filter keywordFilter = Streams.of(getKeywords())
                 .map(this::computeKeywordFilter)
                 .reduce(Predicates::or)
                 .orElseGet(Predicates::acceptAll);
+        Filter contextFilter = getContextFilter();
+        if (contextFilter != null) {
+            return Predicates.and(keywordFilter, contextFilter);
+        }
+        return keywordFilter;
     }
 
     private Filter computeKeywordFilter(String keyword) {

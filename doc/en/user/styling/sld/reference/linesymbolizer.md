@@ -30,11 +30,11 @@ The `<Stroke>` element specifies the styling of a line. There are three elements
 
 ### GraphicFill
 
-The `<GraphicFill>` element specifies that the pixels of the line are to be filled with a repeating graphic image or symbol. The graphic is specified by a `<Graphic>` sub-element, which is described in the `PointSymbolizer` [Graphic](pointsymbolizer.md#sld_reference_graphic) section.
+The `<GraphicFill>` element specifies that the pixels of the line are to be filled with a repeating graphic image or symbol. The graphic is specified by a `<Graphic>` sub-element, which is described in the `PointSymbolizer` [Graphic](pointsymbolizer.md#graphic) section.
 
 ### GraphicStroke {: #sld_reference_linesymbolizer_graphicstroke }
 
-The `<GraphicStroke>` element specifies the line is to be drawn using a repeated graphic image or symbol following the line. The graphic is specified by a `<Graphic>` sub-element, which is described in the `PointSymbolizer` [Graphic](pointsymbolizer.md#sld_reference_graphic) section.
+The `<GraphicStroke>` element specifies the line is to be drawn using a repeated graphic image or symbol following the line. The graphic is specified by a `<Graphic>` sub-element, which is described in the `PointSymbolizer` [Graphic](pointsymbolizer.md#graphic) section.
 
 The spacing of the graphic symbol can be specified using the `<Size>` element in the `<Graphic>` element, or the `<CSSParameter name="stroke-dasharray">` in the `Stroke` element.
 
@@ -42,7 +42,7 @@ The spacing of the graphic symbol can be specified using the `<Size>` element in
 
 The `<CssParameter>` elements describe the basic styling of the line. Any number of `<CssParameter>` elements can be specified.
 
-The `name` **attribute** indicates what aspect of styling an element specifies, using the standard CSS/SVG styling model. The **content** of the element supplies the value of the styling parameter. The value may contain [expressions](pointsymbolizer.md#sld_reference_parameter_expressions).
+The `name` **attribute** indicates what aspect of styling an element specifies, using the standard CSS/SVG styling model. The **content** of the element supplies the value of the styling parameter. The value may contain [expressions](pointsymbolizer.md#using-expressions-in-parameter-values).
 
 The following parameters are supported:
 
@@ -53,7 +53,7 @@ The following parameters are supported:
 | `name="stroke-opacity"` | No | Specifies the opacity (transparency) of the line. The value is a number are between `0` (completely transparent) and `1` (completely opaque). Default is `1`. |
 | `name="stroke-linejoin"` | No | Determines how lines are rendered at intersections of line segments. Possible values are `mitre` (sharp corner), `round` (rounded corner), and `bevel` (diagonal corner). Default is `mitre`. |
 | `name="stroke-linecap"` | No | Determines how lines are rendered at their ends. Possible values are `butt` (sharp square edge), `round` (rounded edge), and `square` (slightly elongated square edge). Default is `butt`. |
-| `name="stroke-dasharray"` | No | Encodes a dash pattern as a series of numbers separated by spaces. Odd-indexed numbers (first, third, etc) determine the length in pxiels to draw the line, and even-indexed numbers (second, fourth, etc) determine the length in pixels to blank out the line. Default is an unbroken line. ``Starting from version 2.1`` dash arrays can be combined with graphic strokes to generate complex line styles with alternating symbols or a mix of lines and symbols. |
+| `name="stroke-dasharray"` | No | Encodes a dash pattern as a series of numbers separated by spaces. Odd-indexed numbers (first, third, etc) determine the length in pixels to draw the line, and even-indexed numbers (second, fourth, etc) determine the length in pixels to blank out the line. Default is an unbroken line. `Starting from version 2.1` dash arrays can be combined with graphic strokes to generate complex line styles with alternating symbols or a mix of lines and symbols. |
 | `name="stroke-dashoffset"` | No | Specifies the distance in pixels into the `dasharray` pattern at which to start drawing. Default is `0`. |
 
 ### PerpendicularOffset
@@ -70,7 +70,7 @@ Care should be taken when using it, as it might become a performance bottleneck.
 
 The following symbolizer is taken from the [Lines](../cookbook/lines.md) section in the [SLD Cookbook](../cookbook/index.md).
 
-``` xml
+```xml
 <LineSymbolizer>
   <Stroke>
     <CssParameter name="stroke">#0000FF</CssParameter>
@@ -90,7 +90,7 @@ The symbolizer styles a feature as a dashed blue line of width 3 pixels.
 
 The following style excerpt generates a solid line, and then a dashed blue line 3 pixels on the left of it.
 
-``` xml
+```xml
 <LineSymbolizer>
   <Stroke>
     <CssParameter name="stroke">#000000</CssParameter>
@@ -115,7 +115,7 @@ The following style excerpt generates a solid line, and then a dashed blue line 
 
 The following style excerpt builds a inward offset line for polygons.
 
-``` xml
+```xml
 <PolygonSymbolizer>
   <Stroke>
     <CssParameter name="stroke">#000000</CssParameter>

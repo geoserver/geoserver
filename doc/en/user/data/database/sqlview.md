@@ -2,18 +2,18 @@
 
 The traditional way to access database data is to configure layers against either tables or database views. Starting with GeoServer 2.1.0, layers can also be defined as SQL Views. SQL Views allow executing a custom SQL query on each request to the layer. This avoids the need to create a database view for complex queries.
 
-Even more usefuly, SQL View queries can be parameterized via string substitution. Parameter values can be supplied in both WMS and WFS requests. Default values can be supplied for parameters, and input values can be validated by Regular Expressions to eliminate the risk of SQL injection attacks.
+Even more usefully, SQL View queries can be parameterized via string substitution. Parameter values can be supplied in both WMS and WFS requests. Default values can be supplied for parameters, and input values can be validated by Regular Expressions to eliminate the risk of SQL injection attacks.
 
 !!! note
     SQL Views are read-only, and thus cannot be updated by WFS-T transactions.
 
 ## Creating a SQL View
 
-In order to create a SQL View the administrator invokes the **Create new layer** page. When a database store is selected, the usual list of tables and views available for publication appears, A link **Configure new SQL view\...** also appears:
+In order to create a SQL View the administrator invokes the **Create new layer** page. When a database store is selected, the usual list of tables and views available for publication appears, A **SQL Query** section, containing a **New SQL view...** button also appears:
 
 ![](images/createsqlview.png)
 
-Selecting the **Configure new SQL view\...** link opens a new page where the SQL view query can be specified:
+Selecting the **New SQL view...** button opens a new page where the SQL view query can be specified:
 
 ![](images/createsql.png)
 
@@ -69,11 +69,13 @@ Once the parameters have been defined, the **Attributes** **Refresh** link is cl
 
 The SQL view parameters are specified by adding the `viewparams` parameter to the WMS `GetMap` or the WFS `GetFeature` request. The `viewparams` argument is a list of `key:value` pairs, separated by semicolons:
 
-> `viewparams=p1:v1;p2:v2;...`
+```
+viewparams=p1:v1;p2:v2;...
+```
 
 If the values contain semicolons or commas these must be escaped with a backslash (e.g. `\,` and `\;`).
 
-For example, the `popstates` SQL View layer can be displayed by invoking the [Layer Preview](../webadmin/layerpreview.md). Initially no parameter values are supplied, so the defaults are used and all the states are displayed.
+For example, the `popstates` SQL View layer can be displayed by invoking the [Browse Layers](../webadmin/browselayers.md). Initially no parameter values are supplied, so the defaults are used and all the states are displayed.
 
 To display all states having more than 20 million inhabitants the following parameter is added to the `GetMap` request: `&viewparams=low:20000000`
 
@@ -85,7 +87,9 @@ To display all states having between 2 and 5 million inhabitants the view parame
 
 Parameters can be provided for multiple layers by separating each parameter map with a comma:
 
-> `&viewparams=l1p1:v1;l1p2:v2,l2p1:v1;l2p2:v2,...`
+```
+&viewparams=l1p1:v1;l1p2:v2,l2p1:v1;l2p2:v2,...
+```
 
 The number of parameter maps must match the number of layers (featuretypes) included in the request.
 
@@ -93,11 +97,15 @@ The number of parameter maps must match the number of layers (featuretypes) incl
 
 Aside the default SQL view parameters format, an XML format is available by using the request parameter/value:
 
-> `&viewParamsFormat=XML`
+```
+&viewParamsFormat=XML
+```
 
 XML alternative format example:
 
-> `&viewParams=<VP><PS><P n="m1">8302,802,8505</P><P n="m2">22,44</P></PS><PS/><PS><P n="csvInput">acv,rrp;1,0;0,7;22,1</P></PS></VP>`
+```
+&viewParams=<VP><PS><P n="m1">8302,802,8505</P><P n="m2">22,44</P></PS><PS/><PS><P n="csvInput">acv,rrp;1,0;0,7;22,1</P></PS></VP>
+```
 
 `viewParamsFormat` new optional parameter definition:
 
@@ -138,7 +146,7 @@ The SQL `WHERE` clause produced by GeoServer using the context filters, e.g. the
 
 A typical use case for this functionality is the execution of analytic functions on top of the filtered results:
 
-``` sql
+```sql
 SELECT STATION_NAME,
        MEASUREMENT,
        MEASUREMENT_TYPE,

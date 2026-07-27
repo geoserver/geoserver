@@ -33,7 +33,7 @@ To view or edit a layer group, click the layer group name. A layer group configu
 !!! note
     A layer group can contain layers with dissimilar bounds and projections. GeoServer automatically reprojects all layers to the projection of the layer group.
 
-The new **Enabled** checkbox, if disabled, will cause the layer group to just show up at configuration time (and in REST config), while the new **Advertised** checkbox, if unchecked, will make it to not be available in GetCapabilities request and in the layer preview. The behaviour of layer group regarding both checkboxes will not affect the behaviour of any of the layers being grouped, which will follow respectively that specified in the corresponding edit page.
+The new **Enabled** checkbox, if disabled, will cause the layer group to just show up at configuration time (and in REST config), while the new **Advertised** checkbox, if unchecked, will make it to not be available in GetCapabilities request and in the Browse Layers page. The behaviour of layer group regarding both checkboxes will not affect the behaviour of any of the layers being grouped, which will follow respectively that specified in the corresponding edit page.
 
 ![](img/data_layergroups_edit.png)
 
@@ -53,25 +53,25 @@ The **Style** column shows the style associated with each layer. To change the s
 
 To remove a **publishable element** from the layer group, select its button in the **Remove** column. You will now be prompted to confirm or cancel this deletion.
 
-A layer can be added to the list by clicking the **Add Layer\...** button at the top of the table. From the list of layers, select the layer to be added by clicking the layer name. The selected layer will be appended to the bottom of the **publishable** list.
+A layer can be added to the list by clicking the **Add Layer...** button at the top of the table. From the list of layers, select the layer to be added by clicking the layer name. The selected layer will be appended to the bottom of the **publishable** list.
 
 ![](img/data_layergroups_add_layer.png)
 
 *Dialog for adding a layer to a layer group*
 
-A layer group can be added by clicking the **Add Layer Group\...** button at the top of the table. From the list of layer groups, select the layer group to be added by clicking its name. The selected group will be appended to the bottom of the **publishable** list.
+A layer group can be added by clicking the **Add Layer Group...** button at the top of the table. From the list of layer groups, select the layer group to be added by clicking its name. The selected group will be appended to the bottom of the **publishable** list.
 
 ![](img/data_layergroups_add_layergroup.png)
 
 *Dialog for adding a layer group to a layer group*
 
-A style group can be added by clicking the **Add Style Group\...** button at the top of the table. From the list of styles, select the [style group](../../styling/sld/working.md) to be added by clicking its name. The selected style will be appended to the bottom of the **publishable** list.
+A style group can be added by clicking the **Add Style Group...** button at the top of the table. From the list of styles, select the [style group](../../styling/sld/working.md) to be added by clicking its name. The selected style will be appended to the bottom of the **publishable** list.
 
 ![](img/data_layergroups_add_stylegroup.png)
 
 *Dialog for adding a style group to a layer group*
 
-You can view layer groups in the [Layer Preview](layerpreview.md) section of the web admin.
+You can view layer groups in the [Browse Layers](browselayers.md) section of the web admin.
 
 ![](img/data_layergroups_tasmania.png)
 
@@ -124,7 +124,7 @@ To add a new layer group, select the "Add a new layer group" button. You will be
 
 *New layer group dialog*
 
-When finished, click **Submit**. You will be redirected to an empty layer group configuration page. Begin by adding layers by clicking the **Add layer\...** button (described in the previous section). Once the layers are positioned accordingly, press **Generate Bounds** to automatically generate the bounding box and projection. You may also press the **Generate Bounds From CRS** button to use the CRS bounds (if available). Press **Save** to save the new layer group.
+When finished, click **Submit**. You will be redirected to an empty layer group configuration page. Begin by adding layers by clicking the **Add layer...** button (described in the previous section). Once the layers are positioned accordingly, press **Generate Bounds** to automatically generate the bounding box and projection. You may also press the **Generate Bounds From CRS** button to use the CRS bounds (if available). Press **Save** to save the new layer group.
 
 ![](img/data_layergroups_edit.png)
 

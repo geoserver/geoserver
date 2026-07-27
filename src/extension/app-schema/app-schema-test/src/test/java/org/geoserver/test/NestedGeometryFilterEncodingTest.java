@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.feature.type.Name;
 import org.geotools.api.filter.Filter;
@@ -37,7 +38,10 @@ import org.geotools.data.jdbc.FilterToSQLException;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.feature.NameImpl;
 import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.util.NullEntityResolver;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
@@ -69,6 +73,16 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
     private FilterFactory ff;
 
     private WKTReader wktReader = new WKTReader();
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+    }
 
     @Override
     protected StationsMockData createTestData() {

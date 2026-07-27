@@ -24,10 +24,10 @@ This exercise makes use of the `ne:populated_places` layer.
 1.  Navigate to the **Styles** page.
 2.  Click **Add a new style** and choose the following:
 
-    | Name:      | ``point_example`` |
+    | Name:      | `point_example` |
     |------------|-----------------------------|
-    | Workspace: | ``No workspace``  |
-    | Format:    | ``MBStyle``       |
+    | Workspace: | `No workspace`  |
+    | Format:    | `MBStyle`       |
 
 
 1.  Replace the initial MBStyle definition with the following and click **apply**:
@@ -681,7 +681,7 @@ The **symbol** layer with the **label** property are used to label Point Locatio
     The `ne:populated_places` layer provides several attributes specifically to make styling easier:
 
     - **SCALERANK**: we have already used this attribute to control the level of detail displayed
-    - **FEATURECLA**: used to indicate different types of cities. We will check for ``Admin-0 capital`` cities.
+    - **FEATURECLA**: used to indicate different types of cities. We will check for `Admin-0 capital` cities.
 
     The first thing we will do is calculate the point **size** using a quick expression:
 
@@ -1161,7 +1161,7 @@ The **symbol** layer with the **label** property are used to label Point Locatio
 2.  **Challenge:** Try this yourself by rendering a polygon layer using a **mark** property.
 
     !!! note
-        Answer [discussed](#mbstyle-point-a1) at the end of the workbook.
+        Answer [discussed](done.md#mbstyle.point.a1) at the end of the workbook.
 
 ### Explore Dynamic Symbolization {: #mbstyle.point.q2 }
 
@@ -1277,6 +1277,6 @@ The **symbol** layer with the **label** property are used to label Point Locatio
 4.  **Challenge:** Use this approach to rewrite the *Dynamic Styling* example.
 
     !!! note
-        Answer [provided](#mbstyle-point-a2) at the end of the workbook.
+        Answer [provided](done.md#mbstyle.point.a2) at the end of the workbook.
 
 1.  Challenge: Use the **Interpolate** function to smoothly change the mark **size** based on city population.

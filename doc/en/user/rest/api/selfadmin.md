@@ -21,7 +21,7 @@ Formats for PUT (password change).
 
 ### XML
 
-``` xml
+```xml
 <userPassword>
    <newPassword>newPassword</newPassword>
 </userPassword>
@@ -29,7 +29,7 @@ Formats for PUT (password change).
 
 ### JSON
 
-``` json
+```json
 { "newPassword":"newPassword" }
 ```
 

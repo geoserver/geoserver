@@ -523,7 +523,7 @@ public class AclResourceAccessManagerIntegrationTest extends GeoServerSystemTest
         Rule limit2 = support.addRule(1, LIMIT, "anonymousUser", "ROLE_ANONYMOUS", "WMS", null, null, group2.getName());
 
         // add allowed Area only to the first layer group
-        support.setRuleLimits(limit1.getId(), HIDE, WKT_WGS84_1, 4326);
+        support.setRuleLimits(limit1.id(), HIDE, WKT_WGS84_1, 4326);
 
         // mock a WMS request to check contained layers direct access
         support.setDispatcherRequest("WMS", "GetMap");
@@ -822,7 +822,7 @@ public class AclResourceAccessManagerIntegrationTest extends GeoServerSystemTest
     }
 
     private MultiPolygon toJts(RuleLimits limits) {
-        return org.geolatte.geom.jts.JTS.to(limits.getAllowedArea());
+        return org.geolatte.geom.jts.JTS.to(limits.allowedArea());
     }
 
     private MultiPolygon intersect(MultiPolygon allowedArea1, MultiPolygon allowedArea2) {

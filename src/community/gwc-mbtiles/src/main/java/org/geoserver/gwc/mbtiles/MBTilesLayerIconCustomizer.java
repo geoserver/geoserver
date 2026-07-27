@@ -4,7 +4,6 @@
  */
 package org.geoserver.gwc.mbtiles;
 
-import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.gwc.web.GWCIconFactory;
 import org.geoserver.gwc.web.GWCTileLayerIconCustomizer;
 import org.geoserver.web.CatalogIconFactory;
@@ -23,7 +22,7 @@ public class MBTilesLayerIconCustomizer implements GWCTileLayerIconCustomizer {
     }
 
     @Override
-    public ResourceReference getLayerIcon(TileLayer layer) {
+    public String getLayerIcon(TileLayer layer) {
         if (layer instanceof MBTilesLayer mbTilesLayer) {
             if (mbTilesLayer.isVectorTiles()) {
                 return CatalogIconFactory.GEOMETRY_ICON;

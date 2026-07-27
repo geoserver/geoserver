@@ -10,6 +10,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.markup.repeater.data.IDataProvider;
@@ -17,6 +20,7 @@ import org.apache.wicket.request.mapper.parameter.INamedParameters.Type;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.StyleInfo;
@@ -246,6 +250,146 @@ public class StylePageTest extends GeoServerWicketTestSupport {
         tester.startPage(StylePage.class, pp);
         DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         assertEquals(expectedStyleIds.size(), dv.size());
+    }
+
+    @Test
+    public void testWorkspaceParameterFiltersToWorkspaceStyles() {
+        // ?workspace=cite → only cite-scoped styles; global defaults are excluded
+        login();
+        Catalog catalog = getCatalog();
+        WorkspaceInfo cite = catalog.getWorkspaceByName("cite");
+        List<StyleInfo> expectedStyles = catalog.getStylesByWorkspace(cite);
+
+        tester.startPage(StylePage.class, new PageParameters().add("workspace", "cite"));
+        tester.assertRenderedPage(StylePage.class);
+        tester.assertNoErrorMessage();
+
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        assertEquals(expectedStyles.size(), dv.size());
+
+        // every returned style must belong to the "cite" workspace
+        StyleProvider provider = (StyleProvider) dv.getDataProvider();
+        Iterator<StyleInfo> it = provider.iterator(0, dv.size());
+        while (it.hasNext()) {
+            StyleInfo style = it.next();
+            assertNotNull(style.getWorkspace());
+            assertEquals("cite", style.getWorkspace().getName());
+        }
+    }
+
+    @Test
+    public void testLayerParameterFiltersToLayerStyles() {
+        // ?layer=BasicPolygons → styles of that layer (default + additional, deduplicated)
+        login();
+        LayerInfo layer = getCatalog().getLayerByName("cite:BasicPolygons");
+        Set<String> expectedIds = layerStyleIds(layer);
+
+        tester.startPage(StylePage.class, new PageParameters().add("layer", "BasicPolygons"));
+        tester.assertRenderedPage(StylePage.class);
+        tester.assertNoErrorMessage();
+
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        assertEquals(expectedIds.size(), dv.size());
+    }
+
+    @Test
+    public void testGroupParameterFiltersToGroupLayerStyles() {
+        // ?group=testGroup → union of styles from all layers in the group
+        login();
+        LayerInfo citeLayer = getCatalog().getLayerByName("cite:BasicPolygons");
+        LayerInfo sfLayer = getCatalog().getLayerByName("sf:PrimitiveGeoFeature");
+
+        // Pre-compute expected style IDs (same deduplication as the page)
+        Set<String> expectedIds = new LinkedHashSet<>();
+        expectedIds.addAll(layerStyleIds(citeLayer));
+        expectedIds.addAll(layerStyleIds(sfLayer));
+
+        LayerGroupInfo group = getCatalog().getFactory().createLayerGroup();
+        group.setName("testGroup");
+        group.getLayers().add(citeLayer);
+        group.getLayers().add(sfLayer);
+        group.getStyles().add(null);
+        group.getStyles().add(null);
+        getCatalog().add(group);
+
+        try {
+            tester.startPage(StylePage.class, new PageParameters().add("group", "testGroup"));
+            tester.assertRenderedPage(StylePage.class);
+            tester.assertNoErrorMessage();
+
+            DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+            assertEquals(expectedIds.size(), dv.size());
+        } finally {
+            getCatalog().remove(getCatalog().getLayerGroupByName("testGroup"));
+        }
+    }
+
+    @Test
+    public void testUnknownGroupParameterYieldsNoResults() {
+        // An explicit group param that doesn't match any group → EXCLUDE
+        login();
+        tester.startPage(StylePage.class, new PageParameters().add("group", "nonExistentGroup"));
+        tester.assertRenderedPage(StylePage.class);
+        tester.assertNoErrorMessage();
+
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        assertEquals(0, dv.size());
+    }
+
+    @Test
+    public void testWorkspaceAndLayerParameterFiltersScopedLayerStyles() {
+        // ?workspace=cite&layer=BasicPolygons → layer lookup is now "cite:BasicPolygons" (fix 3)
+        login();
+        LayerInfo layer = getCatalog().getLayerByName("cite:BasicPolygons");
+        Set<String> expectedIds = layerStyleIds(layer);
+
+        tester.startPage(
+                StylePage.class, new PageParameters().add("workspace", "cite").add("layer", "BasicPolygons"));
+        tester.assertRenderedPage(StylePage.class);
+        tester.assertNoErrorMessage();
+
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        assertEquals(expectedIds.size(), dv.size());
+    }
+
+    @Test
+    public void testWorkspaceAndGroupParameterFiltersScopedGroup() {
+        // ?workspace=cite&group=testGroup → group lookup is now "cite:testGroup" (fix 1)
+        login();
+        LayerInfo layer = getCatalog().getLayerByName("cite:BasicPolygons");
+        Set<String> expectedIds = layerStyleIds(layer);
+
+        LayerGroupInfo group = getCatalog().getFactory().createLayerGroup();
+        group.setName("testGroup");
+        group.setWorkspace(getCatalog().getWorkspaceByName("cite"));
+        group.getLayers().add(layer);
+        group.getStyles().add(null);
+        getCatalog().add(group);
+
+        try {
+            tester.startPage(
+                    StylePage.class,
+                    new PageParameters().add("workspace", "cite").add("group", "testGroup"));
+            tester.assertRenderedPage(StylePage.class);
+            tester.assertNoErrorMessage();
+
+            DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+            assertEquals(expectedIds.size(), dv.size());
+        } finally {
+            getCatalog().remove(getCatalog().getLayerGroupByName("cite:testGroup"));
+        }
+    }
+
+    /** Collects unique style IDs (default + additional) for a layer, matching the page logic. */
+    private Set<String> layerStyleIds(LayerInfo layer) {
+        Set<String> ids = new LinkedHashSet<>();
+        StyleInfo def = layer.getDefaultStyle();
+        if (def != null && def.getId() != null) ids.add(def.getId());
+        if (layer.getStyles() != null)
+            layer.getStyles().stream()
+                    .filter(s -> s != null && s.getId() != null)
+                    .forEach(s -> ids.add(s.getId()));
+        return ids;
     }
 
     @Test

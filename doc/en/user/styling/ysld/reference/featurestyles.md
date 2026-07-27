@@ -13,12 +13,12 @@ A Feature Style is a **top-level element** in a YSLD style.
 Consider the following hierarchy:
 
 - Feature Style 1
-  - Rule 1a
-  - Rule 1b
+    - Rule 1a
+    - Rule 1b
 - Feature Style 2
-  - Rule 2a
-  - Rule 2b
-  - Rule 2c
+    - Rule 2a
+    - Rule 2b
+    - Rule 2c
 
 In this case, the rules contained inside Feature Style 1 will be processed and their [symbolizers](symbolizers/index.md) drawn first. After Rule 1a and 1b are processed, the renderer will move on to Feature Style 2, where Rule 2a, 2b, and 2c will then be processed and their symbolizers drawn.
 
@@ -72,7 +72,7 @@ This final map is produced by composition:
 
 The following is the basic syntax of a feature style. Note that the contents of the block are not all expanded here.
 
-``` yaml
+```yaml
 feature-styles:
 - name: <text>
   title: <text>
@@ -101,7 +101,7 @@ The following properties are equivalent to SLD "vendor options".
 
 | Property | Required? | Description | Default value |
 |----|----|----|----|
-| `x-ruleEvaluation` | No | When equals to `first` - stops rule evaluation after the first match. Can make the rendering more efficient by reducing the number of rules that need to be traversed by features, as well as simplyfing the rule filters. | `all` |
+| `x-ruleEvaluation` | No | When equals to `first` - stops rule evaluation after the first match. Can make the rendering more efficient by reducing the number of rules that need to be traversed by features, as well as simplifying the rule filters. | `all` |
 | `x-composite` | No | Allows for both alpha compositing and color blending options between buffers. There are many options; [see below](#ysld_reference_featurestyles_composite). | N/A |
 | `x-composite-base` | No | Allows the rendering engine to use that feature-style as a "base", and will compose all subsequent feature-styles and layers on top of it, until another base is found. Once the full set of layers against a base is composed, then the base itself will be composed against the next set of composed layers using its own compositing operator, if present. This is useful to fine-tune the use of `x-composite`, and to make sure that only the desired content is composited/blended and not all of the drawn content. | `false` |
 | `x-inclusion` | No | Define if rule should be included in style for `legendOnly` or `mapOnly` (see [Rendering Selection](../../sld/extensions/rendering-selection.md)) | `normal` |
@@ -165,7 +165,7 @@ When a style has a single feature style, it is possible to omit the syntax for t
 
 So the following complete styles are both equivalent:
 
-``` yaml
+```yaml
 feature-styles:
 - rules:
   - name: rule1
@@ -182,7 +182,7 @@ feature-styles:
         stroke-width: 1
 ```
 
-``` yaml
+```yaml
 rules:
 - name: rule1
   scale: [min,50000]
@@ -204,7 +204,7 @@ rules:
 
 This example shows how a smaller line can be drawn on top of a larger line, creating the effect of lines being drawn with a border or "casing":
 
-``` yaml
+```yaml
 feature-styles:
 - name: outer
   title: Outer line
@@ -336,7 +336,7 @@ feature-styles:
 
 Layer 2 (bottom/destination):
 
-``` yaml
+```yaml
 feature-styles:
 - rules:
   - title: Bottom/destination
@@ -367,7 +367,7 @@ feature-styles:
 
 Layer 2 (bottom/destination):
 
-``` yaml
+```yaml
 feature-styles:
 - rules:
   - title: Bottom/destination

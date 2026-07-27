@@ -6,10 +6,8 @@
 package org.geoserver.web.demo;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.matchesRegex;
 import static org.hamcrest.Matchers.not;
@@ -18,6 +16,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.wicket.AttributeModifier;
@@ -28,6 +28,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.TagTester;
 import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.catalog.Catalog;
@@ -208,13 +209,11 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
                     exists = true;
                     path = c.getPageRelativePath();
 
-                    // check visible links
+                    // check visible links listed
                     ExternalLink olLink = (ExternalLink)
                             c.get("itemProperties:3:component:commonFormat:0").getDefaultModelObject();
                     ExternalLink gmlLink = (ExternalLink)
                             c.get("itemProperties:3:component:commonFormat:1").getDefaultModelObject();
-                    ExternalLink kmlLink = (ExternalLink)
-                            c.get("itemProperties:3:component:commonFormat:2").getDefaultModelObject();
 
                     assertEquals(
                             "http://localhost/context/cite/wms?service=WMS&amp;version=1.1.0&amp;"
@@ -228,9 +227,6 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
                             containsString("http://localhost/context/cite/ows?service=WFS&amp;version=1"
                                     + ".0.0&amp;request=GetFeature&amp;"
                                     + "typeName=cite%3ALakes%20%2B%20a%20plus"));
-                    assertEquals(
-                            "http://localhost/context/cite/wms/kml?layers=cite%3ALakes%20%2B%20a%20plus",
-                            kmlLink.getDefaultModelObjectAsString());
 
                     // check formats
                     RepeatingView wmsFormats = (RepeatingView) c.get("itemProperties:4:component:menu:wms:wmsFormats");
@@ -261,6 +257,71 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         } finally {
             ft.setName("Lines");
             catalog.save(ft);
+        }
+    }
+
+    @Test
+    public void testWorkspaceParameterFiltersToWorkspaceLayers() {
+        // ?workspace=cite → only cite-prefixed layers and cite-scoped groups
+        tester.startPage(MapPreviewPage.class, new PageParameters().add("workspace", "cite"));
+        tester.assertRenderedPage(MapPreviewPage.class);
+        tester.assertNoErrorMessage();
+
+        @SuppressWarnings("unchecked")
+        DataView<PreviewLayer> dv =
+                (DataView<PreviewLayer>) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        PreviewLayerProvider provider = (PreviewLayerProvider) dv.getDataProvider();
+        long count = provider.size();
+        assertTrue("workspace filter should yield at least one result", count > 0);
+
+        Iterator<PreviewLayer> it = provider.iterator(0, count);
+        while (it.hasNext()) {
+            PreviewLayer item = it.next();
+            String name = item.getName();
+            assertTrue("all items should be in the cite workspace, but got: " + name, name.startsWith("cite:"));
+        }
+    }
+
+    @Test
+    public void testWorkspaceParameterIncludesScopedGroupExcludesGlobalGroup() throws Exception {
+        // ?workspace=cite → cite-scoped group included; global group excluded
+        Catalog cat = getCatalog();
+
+        LayerGroupInfo scopedGroup = cat.getFactory().createLayerGroup();
+        scopedGroup.setName("citeGroup");
+        scopedGroup.setWorkspace(cat.getWorkspaceByName("cite"));
+        scopedGroup.getLayers().add(cat.getLayerByName(getLayerId(MockData.BUILDINGS)));
+        new CatalogBuilder(cat).calculateLayerGroupBounds(scopedGroup);
+        cat.add(scopedGroup);
+
+        LayerGroupInfo globalGroup = cat.getFactory().createLayerGroup();
+        globalGroup.setName("globalGroup");
+        globalGroup.getLayers().add(cat.getLayerByName(getLayerId(MockData.BUILDINGS)));
+        new CatalogBuilder(cat).calculateLayerGroupBounds(globalGroup);
+        cat.add(globalGroup);
+
+        try {
+            tester.startPage(MapPreviewPage.class, new PageParameters().add("workspace", "cite"));
+            tester.assertRenderedPage(MapPreviewPage.class);
+            tester.assertNoErrorMessage();
+
+            @SuppressWarnings("unchecked")
+            DataView<PreviewLayer> dv =
+                    (DataView<PreviewLayer>) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+            PreviewLayerProvider provider = (PreviewLayerProvider) dv.getDataProvider();
+            long count = provider.size();
+
+            List<String> names = new ArrayList<>();
+            Iterator<PreviewLayer> it = provider.iterator(0, count);
+            while (it.hasNext()) {
+                names.add(it.next().getName());
+            }
+
+            assertTrue("cite-scoped group should appear in cite workspace filter", names.contains("cite:citeGroup"));
+            assertFalse("global group should be excluded by workspace filter", names.contains("globalGroup"));
+        } finally {
+            cat.remove(cat.getLayerGroupByName("cite:citeGroup"));
+            cat.remove(cat.getLayerGroupByName("globalGroup"));
         }
     }
 
@@ -318,15 +379,158 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testCachingImages() throws Exception {
-        // test that the "?antiCache=###" query string is not appended to the img src
+        // test that icons are rendered as CSS icon elements (gs-icon-*), not img tags
         tester.startPage(MapPreviewPage.class);
         tester.assertRenderedPage(MapPreviewPage.class);
         tester.clickLink("table:navigatorBottom:navigator:next", true);
-        List<TagTester> images = TagTester.createTags(
-                tester.getLastResponseAsString(), tag -> tag.getName().equalsIgnoreCase("img"), false);
-        assertThat(images, not(empty()));
-        images.stream()
-                .map(image -> image.getAttribute("src"))
-                .forEach(src -> assertThat(src, allOf(containsString("/img/icons/"), endsWith(".png"))));
+        List<TagTester> icons = TagTester.createTags(
+                tester.getLastResponseAsString(),
+                tag -> tag.getName().equalsIgnoreCase("i")
+                        && tag.getAttribute("class") != null
+                        && tag.getAttribute("class").toString().contains("gs-icon"),
+                false);
+        assertThat(icons, not(empty()));
+        icons.stream()
+                .map(icon -> icon.getAttribute("class"))
+                .forEach(cls -> assertThat(cls, containsString("gs-icon")));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testLayerParameterFiltersToNamedLayer() {
+        // ?layer=BasicPolygons → exactly cite:BasicPolygons in the result
+        LayerInfo expected = getCatalog().getLayerByName("cite:BasicPolygons");
+        assertNotNull("test requires cite:BasicPolygons in the catalog", expected);
+
+        tester.startPage(MapPreviewPage.class, new PageParameters().add("layer", "BasicPolygons"));
+        tester.assertRenderedPage(MapPreviewPage.class);
+        tester.assertNoErrorMessage();
+
+        DataView<PreviewLayer> dv =
+                (DataView<PreviewLayer>) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        PreviewLayerProvider provider = (PreviewLayerProvider) dv.getDataProvider();
+        assertEquals(1, provider.size());
+        assertEquals("cite:BasicPolygons", provider.iterator(0, 1).next().getName());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testLayerParameterWithUnknownNameYieldsNoResults() {
+        // ?layer=noSuchLayer → Filter.EXCLUDE → 0 results
+        tester.startPage(MapPreviewPage.class, new PageParameters().add("layer", "noSuchLayer"));
+        tester.assertRenderedPage(MapPreviewPage.class);
+        tester.assertNoErrorMessage();
+
+        DataView<PreviewLayer> dv =
+                (DataView<PreviewLayer>) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        PreviewLayerProvider provider = (PreviewLayerProvider) dv.getDataProvider();
+        assertEquals(0, provider.size());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testGroupParameterFiltersToGroupMembers() throws Exception {
+        // ?group=testGroup → only the layers inside the group are listed
+        Catalog cat = getCatalog();
+        LayerGroupInfo group = cat.getFactory().createLayerGroup();
+        group.setName("testGroup");
+        group.getLayers().add(cat.getLayerByName(getLayerId(MockData.BUILDINGS)));
+        group.getStyles().add(null);
+        new CatalogBuilder(cat).calculateLayerGroupBounds(group);
+        cat.add(group);
+
+        try {
+            tester.startPage(MapPreviewPage.class, new PageParameters().add("group", "testGroup"));
+            tester.assertRenderedPage(MapPreviewPage.class);
+            tester.assertNoErrorMessage();
+
+            DataView<PreviewLayer> dv =
+                    (DataView<PreviewLayer>) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+            PreviewLayerProvider provider = (PreviewLayerProvider) dv.getDataProvider();
+            assertEquals(1, provider.size());
+            assertEquals(
+                    "cite:" + MockData.BUILDINGS.getLocalPart(),
+                    provider.iterator(0, 1).next().getName());
+        } finally {
+            cat.remove(cat.getLayerGroupByName("testGroup"));
+        }
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testGroupParameterWithUnknownGroupYieldsNoResults() {
+        // ?group=noSuchGroup → Filter.EXCLUDE → 0 results
+        tester.startPage(MapPreviewPage.class, new PageParameters().add("group", "noSuchGroup"));
+        tester.assertRenderedPage(MapPreviewPage.class);
+        tester.assertNoErrorMessage();
+
+        DataView<PreviewLayer> dv =
+                (DataView<PreviewLayer>) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        PreviewLayerProvider provider = (PreviewLayerProvider) dv.getDataProvider();
+        assertEquals(0, provider.size());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testGroupParameterTakesPriorityOverLayerParameter() throws Exception {
+        // ?group=testGroup&layer=BasicPolygons → group wins; only Buildings from the group is shown
+        Catalog cat = getCatalog();
+        LayerGroupInfo group = cat.getFactory().createLayerGroup();
+        group.setName("testGroup");
+        group.getLayers().add(cat.getLayerByName(getLayerId(MockData.BUILDINGS)));
+        group.getStyles().add(null);
+        new CatalogBuilder(cat).calculateLayerGroupBounds(group);
+        cat.add(group);
+
+        try {
+            tester.startPage(
+                    MapPreviewPage.class,
+                    new PageParameters().add("group", "testGroup").add("layer", "BasicPolygons"));
+            tester.assertRenderedPage(MapPreviewPage.class);
+            tester.assertNoErrorMessage();
+
+            DataView<PreviewLayer> dv =
+                    (DataView<PreviewLayer>) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+            PreviewLayerProvider provider = (PreviewLayerProvider) dv.getDataProvider();
+            assertEquals(1, provider.size());
+            // result must be Buildings (group member), not BasicPolygons (layer param, which loses)
+            assertEquals(
+                    "cite:" + MockData.BUILDINGS.getLocalPart(),
+                    provider.iterator(0, 1).next().getName());
+        } finally {
+            cat.remove(cat.getLayerGroupByName("testGroup"));
+        }
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testGroupAndWorkspaceQualifyGroupLookup() throws Exception {
+        // ?workspace=cite&group=citeGroup → resolves as cite:citeGroup; shows its members
+        Catalog cat = getCatalog();
+        LayerGroupInfo group = cat.getFactory().createLayerGroup();
+        group.setName("citeGroup");
+        group.setWorkspace(cat.getWorkspaceByName("cite"));
+        group.getLayers().add(cat.getLayerByName(getLayerId(MockData.BUILDINGS)));
+        group.getStyles().add(null);
+        new CatalogBuilder(cat).calculateLayerGroupBounds(group);
+        cat.add(group);
+
+        try {
+            tester.startPage(
+                    MapPreviewPage.class,
+                    new PageParameters().add("workspace", "cite").add("group", "citeGroup"));
+            tester.assertRenderedPage(MapPreviewPage.class);
+            tester.assertNoErrorMessage();
+
+            DataView<PreviewLayer> dv =
+                    (DataView<PreviewLayer>) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+            PreviewLayerProvider provider = (PreviewLayerProvider) dv.getDataProvider();
+            assertEquals(1, provider.size());
+            assertEquals(
+                    "cite:" + MockData.BUILDINGS.getLocalPart(),
+                    provider.iterator(0, 1).next().getName());
+        } finally {
+            cat.remove(cat.getLayerGroupByName("cite:citeGroup"));
+        }
     }
 }

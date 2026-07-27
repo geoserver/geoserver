@@ -7,6 +7,10 @@ package org.geoserver.security.ldap;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.config.util.XStreamPersister;
@@ -42,7 +46,17 @@ public class LDAPSecurityProvider extends GeoServerSecurityProvider {
     }
 
     @Override
+    public Map<Class<?>, Set<String>> getFieldsForEncryption() {
+        Map<Class<?>, Set<String>> map = new HashMap<>();
+        Set<String> fields = new HashSet<>();
+        fields.add("password");
+        map.put(LDAPBaseSecurityServiceConfig.class, fields);
+        return map;
+    }
+
+    @Override
     public void configure(XStreamPersister xp) {
+        super.configure(xp);
         xp.getXStream().alias("ldap", LDAPSecurityServiceConfig.class);
     }
 

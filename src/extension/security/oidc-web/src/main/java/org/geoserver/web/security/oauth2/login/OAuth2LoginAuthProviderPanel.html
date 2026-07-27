@@ -1,0 +1,331 @@
+<!--
+   ~ (c) 2018 Open Source Geospatial Foundation - all rights reserved
+   ~ This code is licensed under the GPL 2.0 license, available at the root
+   ~ application directory.
+   ~
+   -->
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+</wicket:head>
+<body>
+   <wicket:extend>
+      <div class="gs-unordered-list-class">
+         <div class="gs-list-item-class">
+            <fieldset>
+               <legend>
+                  <wicket:message key="geoserverParameters"></wicket:message>
+               </legend>
+               <div class="gs-form">
+                  <div class="gs-form-group">
+                     <label for="baseRedirectUri">
+                        <span>
+                           <wicket:message key="baseRedirectUri"></wicket:message>
+                        </span>
+                        <a href="#" wicket:id="baseRedirectUriHelp" class="help-link"></a>
+                     </label>
+                     <input id="baseRedirectUri" wicket:id="baseRedirectUri" type="text" class="field" />
+                  </div>
+                  <div class="gs-form-group">
+                     <label for="postLogoutRedirectUri">
+                        <span>
+                           <wicket:message key="postLogoutRedirectUri"></wicket:message>
+                        </span>
+                        <a href="#" wicket:id="postLogoutRedirectUriHelp" class="help-link"></a>
+                     </label>
+                     <input id="postLogoutRedirectUri" wicket:id="postLogoutRedirectUri" type="text" class="field" />
+                  </div>
+                  <div class="choiceItem">
+                     <input id="enableRedirectAuthenticationEntryPoint"
+                        wicket:id="enableRedirectAuthenticationEntryPoint" type="checkbox"
+                     />
+                     <label for="enableRedirectAuthenticationEntryPoint">
+                        <span>
+                           <wicket:message key="enableRedirectAuthenticationEntryPoint"></wicket:message>
+                        </span>
+                        <a href="#" wicket:id="enableRedirectAuthenticationEntryPointHelp" class="help-link"></a>
+                     </label>
+                  </div>
+                  <div class="choiceItem">
+                     <input id="enableResourceServerMode"
+                        wicket:id="enableResourceServerMode" type="checkbox"
+                     />
+                     <label for="enableResourceServerMode">
+                        <span>
+                           <wicket:message key="enableResourceServerMode"></wicket:message>
+                        </span>
+                        <a href="#" wicket:id="enableResourceServerModeHelp" class="help-link"></a>
+                     </label>
+                  </div>
+                  <div class="choiceItem">
+                     <input id="oidcAllowUnSecureLogging" wicket:id="oidcAllowUnSecureLogging" type="checkbox" />
+                     <label for="oidcAllowUnSecureLogging">
+                        <span>
+                           <wicket:message key="oidcAllowUnSecureLogging"></wicket:message>
+                        </span>
+                        <a href="#" wicket:id="oidcAllowUnSecureLoggingHelp" class="help-link"></a>
+                     </label>
+                  </div>
+               </div>
+            </fieldset>
+         </div>
+      </div>
+      <br />
+
+      <fieldset>
+         <legend>
+            <wicket:message key="providerSelection"></wicket:message>
+         </legend>
+         <div class="gs-form">
+           <div class="gs-form-group">
+              <label for="providerSelector">
+                 <span>
+                    <wicket:message key="providerSelectorLabel"></wicket:message>
+                    <a href="#" wicket:id="providerSelectorHelp" class="help-link"></a>
+                 </span>
+              </label>
+              <select wicket:id="providerSelector"></select>
+             </div>
+         </div>
+      </fieldset>
+
+      <div wicket:id="pfv">
+         <h3 wicket:id="providerHeadline"></h3>
+         <div wicket:id="settings">
+            <div class="gs-unordered-list-class">
+               <div class="gs-list-item-class">
+                  <fieldset>
+                     <legend>
+                        <span wicket:id="infoFromProvider"> </span>
+                        <a href="#" wicket:id="connectionFromParametersHelp" class="help-link"></a>
+                     </legend>
+                     <div class="gs-form">
+                        <div class="gs-form-group">
+                           <label for="clientId">
+                              <span>
+                                 <wicket:message key="clientId"></wicket:message>
+                              </span>
+                              <a href="#" wicket:id="clientIdHelp" class="help-link"></a>
+                           </label>
+                           <input id="clientId" wicket:id="clientId" type="text" class="field" />
+                        </div>
+                        <div class="gs-form-group">
+                           <label for="clientSecret">
+                              <span>
+                                 <wicket:message key="clientSecret"></wicket:message>
+                              </span>
+                              <a href="#" wicket:id="clientSecretHelp" class="help-link"></a>
+                           </label>
+                           <input id="clientSecret" wicket:id="clientSecret" type="text" class="field" />
+                        </div>
+                     </div>
+                  </fieldset>
+               </div>
+            </div>
+            <div class="gs-unordered-list-class">
+               <div class="gs-list-item-class">
+                  <fieldset>
+                     <legend>
+                        <span wicket:id="infoForProvider"> </span>
+                        <a href="#" wicket:id="connectionForParametersHelp" class="help-link"></a>
+                     </legend>
+                     <div class="gs-form">
+                        <div class="gs-form-group">
+                           <label for="redirectUri">
+                              <span>
+                                 <wicket:message key="redirectUri"></wicket:message>
+                              </span>
+                              <a href="#" wicket:id="redirectUriHelp" class="help-link"></a>
+                           </label>
+                           <input wicket:id="redirectUri" type="text" class="field" />
+                        </div>
+                     </div>
+                  </fieldset>
+               </div>
+            </div>
+            <div class="gs-unordered-list-class">
+               <div class="gs-list-item-class">
+                  <fieldset>
+                     <legend>
+                        <span>
+                           <wicket:message key="protocolSettings"></wicket:message>
+                        </span>
+                     </legend>
+                     <div class="gs-form">
+                        <div class="gs-form-group">
+                           <label for="userNameAttribute">
+                              <span>
+                                 <wicket:message key="userNameAttribute"></wicket:message>
+                              </span>
+                              <a href="#" wicket:id="userNameAttributeHelp" class="help-link"></a>
+                           </label>
+                           <input wicket:id="userNameAttribute" type="text" class="field" />
+                        </div>
+
+                        <div class="gs-form-group" wicket:id="displayOnScopeSupport">
+                           <label for="scopes">
+                              <span>
+                                 <wicket:message key="scopes"></wicket:message>
+                              </span>
+                              <a href="#" wicket:id="scopesHelp" class="help-link"></a>
+                           </label>
+                           <input wicket:id="scopes" type="text" class="field" />
+                        </div>
+                     </div>
+                  </fieldset>
+                  <div wicket:id="displayOnOidc">
+                     <fieldset>
+                        <div class="gs-form">
+                           <div class="gs-form-group">
+                              <div wicket:id="topPanel"></div>
+                           </div>
+                           <div class="gs-form-group">
+                              <label for="oidcAuthorizationUri">
+                                 <span>
+                                    <wicket:message key="oidcAuthorizationUri"></wicket:message>
+                                 </span>
+                                 <a href="#" wicket:id="oidcAuthorizationUriHelp" class="help-link"></a>
+                              </label>
+                              <input id="oidcAuthorizationUri" wicket:id="oidcAuthorizationUri" class="field" type="text" />
+                           </div>
+                           <div class="gs-form-group">
+                              <label for="oidcTokenUri">
+                                 <span>
+                                    <wicket:message key="oidcTokenUri"></wicket:message>
+                                 </span>
+                                 <a href="#" wicket:id="oidcTokenUriHelp" class="help-link"></a>
+                              </label>
+                              <input id="oidcTokenUri" wicket:id="oidcTokenUri" type="text" class="field" />
+                           </div>
+                           <div class="gs-form-group">
+                              <label for="oidcUserInfoUri">
+                                 <span>
+                                    <wicket:message key="oidcUserInfoUri"></wicket:message>
+                                 </span>
+                                 <a href="#" wicket:id="oidcUserInfoUriHelp" class="help-link"></a>
+                              </label>
+                              <input id="oidcUserInfoUri" wicket:id="oidcUserInfoUri" type="text" class="field" />
+                           </div>
+                           <div class="gs-form-group">
+                              <label for="oidcJwkSetUri">
+                                 <span>
+                                    <wicket:message key="oidcJwkSetUri"></wicket:message>
+                                 </span>
+                                 <a href="#" wicket:id="oidcJwkSetUriHelp" class="help-link"></a>
+                              </label>
+                              <input id="oidcJwkSetUri" wicket:id="oidcJwkSetUri" type="text" class="field" />
+                           </div>
+                           <div class="gs-form-group">
+                              <label for="oidcLogoutUri">
+                                 <span>
+                                    <wicket:message key="oidcLogoutUri"></wicket:message>
+                                 </span>
+                                 <a href="#" wicket:id="oidcLogoutUriHelp" class="help-link"></a>
+                              </label>
+                              <input id="oidcLogoutUri" wicket:id="oidcLogoutUri" type="text" class="field" />
+                           </div>
+                        </div>
+                     </fieldset>
+                     <fieldset>
+                        <legend>
+                           <span>
+                              <wicket:message key="oidcAdvancedSettings"></wicket:message>
+                           </span>
+                           <a href="#" wicket:id="oidcAdvancedSettingsHelp" class="help-link"></a>
+                        </legend>
+                        <div class="gs-form">
+                           <div class="choiceItem">
+                              <input id="oidcForceTokenUriHttps" wicket:id="oidcForceTokenUriHttps" type="checkbox" />
+                              <label for="oidcForceTokenUriHttps">
+                                 <span>
+                                    <wicket:message key="oidcForceTokenUriHttps"></wicket:message>
+                                 </span>
+                              </label>
+                           </div>
+                           <div class="choiceItem">
+                              <input id="oidcForceAuthorizationUriHttps" wicket:id="oidcForceAuthorizationUriHttps"
+                                 type="checkbox"
+                              />
+                              <label for="oidcForceAuthorizationUriHttps">
+                                 <span>
+                                    <wicket:message key="oidcForceAuthorizationUriHttps"></wicket:message>
+                                 </span>
+                              </label>
+                           </div>
+                           <div class="choiceItem">
+                              <input id="disableSignatureValidation" wicket:id="disableSignatureValidation"
+                                     type="checkbox"
+                              />
+                              <label for="disableSignatureValidation">
+                                 <span>
+                                    <wicket:message key="disableSignatureValidation"></wicket:message>
+                                 </span>
+                                 <a href="#" wicket:id="disableSignatureValidationHelp" class="help-link"></a>
+                              </label>
+
+                           </div>
+                           <div class="choiceItem">
+                              <input id="oidcUsePKCE" wicket:id="oidcUsePKCE" type="checkbox" />
+                              <label for="oidcUsePKCE">
+                                 <span>
+                                    <wicket:message key="oidcUsePKCE"></wicket:message>
+                                 </span>
+                                 <a href="#" wicket:id="oidcUsePKCEHelp" class="help-link"></a>
+                              </label>
+                           </div>
+                        </div>
+                     </fieldset>
+                     <fieldset>
+                        <legend>
+                           <span>
+                              <wicket:message key="oidcProviderSettings"></wicket:message>
+                           </span>
+                           <a href="#" wicket:id="oidcProviderSettingsHelp" class="help-link"></a>
+                        </legend>
+                        <div class="gs-form">
+                           <div class="gs-form-group">
+                              <label for="oidcResponseMode">
+                                 <span>
+                                    <wicket:message key="oidcResponseMode"></wicket:message>
+                                 </span>
+                                 <a href="#" wicket:id="oidcResponseModeHelp" class="help-link"></a>
+                              </label>
+                              <input id="oidcResponseMode" wicket:id="oidcResponseMode" type="text" class="field" />
+                           </div>
+                           <div class="gs-form-group">
+                              <label for="oidcIntrospectionUrl">
+                                 <span>
+                                    <wicket:message key="oidcIntrospectionUrl"></wicket:message>
+                                 </span>
+                                 <a href="#" wicket:id="oidcIntrospectionUrlHelp" class="help-link"></a>
+                              </label>
+                              <input id="oidcIntrospectionUrl" wicket:id="oidcIntrospectionUrl" type="text" class="field" />
+                           </div>
+                           <div class="choiceItem">
+                              <input id="oidcAuthenticationMethodPostSecret"
+                                 wicket:id="oidcAuthenticationMethodPostSecret" type="checkbox"
+                              />
+                              <label for="oidcAuthenticationMethodPostSecret">
+                                 <span>
+                                    <wicket:message key="oidcAuthenticationMethodPostSecret"></wicket:message>
+                                 </span>
+                                 <a href="#" wicket:id="oidcAuthenticationMethodPostSecretHelp" class="help-link"></a>
+                              </label>
+                           </div>
+                        </div>
+                     </fieldset>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <br />
+         <br />
+      </div>
+      <h3>
+         <wicket:message key="authorization"></wicket:message>
+      </h3>
+   </wicket:extend>
+</body>
+
+</html>

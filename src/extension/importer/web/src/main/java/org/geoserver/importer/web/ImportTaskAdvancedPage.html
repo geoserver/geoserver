@@ -11,33 +11,31 @@
   <form wicket:id="form">
    <div class="gs-unordered-list-class plain pt-5">
      <div class="gs-list-item-class">
-     <fieldset>
-       <legend>
-         <span><wicket:message key="reprojection">Reprojection</wicket:message></span>
-       </legend>
-       <div class="gs-unordered-list-class plain pt-2">
-         <div class="gs-list-item-class">
-           <input type="checkbox" wicket:id="enableReprojection"></input>
-           <span><wicket:message key="enabled"></wicket:message></span>
-            
-            <div wicket:id="reprojection">
-            </div>
+      <fieldset>
+        <legend>
+          <span><wicket:message key="reprojection">Reprojection</wicket:message></span>
+        </legend>
+        <div class="gs-form">
+          <div class="choiceItem">
+            <input type="checkbox" wicket:id="enableReprojection"></input>
+            <div><wicket:message key="enabled"></wicket:message></div>
           </div>
+          <div wicket:id="reprojection"></div>
         </div>
-     </fieldset>
+      </fieldset>
      </div>
      <div class="gs-list-item-class">
-     <fieldset>
-       <legend>
-         <span><wicket:message key="attributeRemapping">Attribute Remapping</wicket:message></span>
-       </legend>
-       <div class="gs-unordered-list-class plain pt-2">
-         <div class="gs-list-item-class">
-            <div wicket:id="remapping">
+      <fieldset>
+        <legend>
+          <span><wicket:message key="attributeRemapping">Attribute Remapping</wicket:message></span>
+        </legend>
+        <div class="gs-unordered-list-class plain pt-2">
+          <div class="gs-list-item-class">
+              <div wicket:id="remapping">
+              </div>
             </div>
           </div>
-        </div>
-     </fieldset>
+      </fieldset>
      </div>
    </div>
    <div class="button-group toolbar-sticky selfclear">

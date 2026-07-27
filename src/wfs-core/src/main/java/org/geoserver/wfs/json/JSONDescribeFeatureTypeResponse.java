@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.List;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.GeoServer;
@@ -165,17 +166,26 @@ public class JSONDescribeFeatureTypeResponse extends WFSDescribeFeatureTypeOutpu
                 String upperBoundary = ((IsBetweenImpl) f).getUpperBoundary().toString();
                 jw.key("minInclusive").value(renderExpression(isExpressionNumeric, lowerBoundary));
                 jw.key("maxInclusive").value(renderExpression(isExpressionNumeric, upperBoundary));
-            } else if (filterClass == OrImpl.class) {
+            } else if (filterClass == OrImpl.class || filterClass == IsEqualsToImpl.class) {
                 jw.key("enumeration");
                 jw.array();
-                for (Filter eq : ((OrImpl) f).getChildren()) {
-                    String expression = ((IsEqualsToImpl) eq).getExpression2().toString();
+                for (Filter filter : extractEnumerationFilters(f, filterClass)) {
+                    String expression =
+                            ((IsEqualsToImpl) filter).getExpression2().toString();
                     jw.value(renderExpression(isExpressionNumeric, expression));
                 }
                 jw.endArray();
             }
         }
         jw.endObject(); // end restriction object
+    }
+
+    private static List<Filter> extractEnumerationFilters(Filter f, Class<? extends Filter> filterClass) {
+        if (filterClass == OrImpl.class) {
+            return ((OrImpl) f).getChildren();
+        } else {
+            return List.of(f);
+        }
     }
 
     private static Object renderExpression(boolean isExpressionNumeric, String expression) {

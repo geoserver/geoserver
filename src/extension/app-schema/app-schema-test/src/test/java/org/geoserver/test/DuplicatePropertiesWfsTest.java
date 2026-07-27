@@ -10,6 +10,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import org.geoserver.util.EntityResolverProvider;
+import org.geotools.util.NullEntityResolver;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -19,6 +23,16 @@ import org.w3c.dom.Document;
  * @author Florence Tan, CSIRO Earth Science and Resource Engineering
  */
 public class DuplicatePropertiesWfsTest extends AbstractAppSchemaTestSupport {
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+    }
 
     @Override
     protected DuplicatePropertiesMockData createTestData() {

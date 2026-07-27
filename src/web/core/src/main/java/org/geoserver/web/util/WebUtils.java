@@ -50,6 +50,20 @@ public class WebUtils {
     static final Pattern patternWhiteSpace = Pattern.compile("\\s+", Pattern.DOTALL);
 
     /**
+     * Obtains resource reference, being mindful of {@code $} use by inner classes.
+     *
+     * @param clazz Class to obtain resource reference for
+     * @param extension resource extension (e.g. "css", "js")
+     * @return Resource reference
+     */
+    public static String toResourceName(Class clazz, String extension) {
+        if (clazz.getName().contains("$")) {
+            return clazz.getName().substring(clazz.getPackage().getName().length() + 1) + "." + extension;
+        } else {
+            return clazz.getSimpleName() + "." + extension;
+        }
+    }
+    /**
      * This looks for the "sidecar" .css file for a Wicket Panel class.
      *
      * <p>ie. <br>
@@ -69,7 +83,7 @@ public class WebUtils {
     public static boolean IsWicketCssFileEmpty(Class<?> clazz) {
         try {
             PackageResourceReference packageResourceReference =
-                    new PackageResourceReference(clazz, clazz.getSimpleName() + ".css");
+                    new PackageResourceReference(clazz, toResourceName(clazz, "css"));
             try (InputStream stream =
                     packageResourceReference.getResource().getResourceStream().getInputStream()) {
                 String text = new String(stream.readAllBytes(), StandardCharsets.UTF_8);

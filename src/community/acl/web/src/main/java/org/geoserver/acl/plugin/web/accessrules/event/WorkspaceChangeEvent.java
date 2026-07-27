@@ -4,11 +4,6 @@
  */
 package org.geoserver.acl.plugin.web.accessrules.event;
 
-import lombok.Value;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 
-@Value
-public class WorkspaceChangeEvent {
-    private String workspace;
-    private AjaxRequestTarget target;
-}
+public record WorkspaceChangeEvent(String workspace, AjaxRequestTarget target) {}

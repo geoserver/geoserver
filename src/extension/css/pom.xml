@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>extension</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-css</artifactId>
@@ -29,6 +29,13 @@
       <groupId>org.geotools</groupId>
       <artifactId>gt-css</artifactId>
     </dependency>
+    <!-- Runtime-only: ship asm 9.2 to match the -tree/-analysis/-util pulled transitively by parboiled -->
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
+      <version>9.2</version>
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
@@ -37,18 +44,10 @@
     <dependency>
       <groupId>org.apache.wicket</groupId>
       <artifactId>wicket-tester</artifactId>
-      <version>10.7.0</version>
       <scope>test</scope>
     </dependency>
 
     <!-- Test dependencies -->
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-main</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-gwc</artifactId>
@@ -59,13 +58,6 @@
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wms1_1</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.web</groupId>
-      <artifactId>gs-web-core</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -92,6 +84,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
   <build>
     <testResources>
       <testResource>
@@ -111,4 +104,32 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>gs-test-dependences</id>
+      <activation>
+        <property>
+          <name>!maven.test.skip</name>
+        </property>
+      </activation>
+      <dependencies>
+        <!-- isolate gs reactor test dependencies when building fresh version -->
+        <dependency>
+          <groupId>org.geoserver</groupId>
+          <artifactId>gs-main</artifactId>
+          <version>${project.version}</version>
+          <classifier>tests</classifier>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.web</groupId>
+          <artifactId>gs-web-core</artifactId>
+          <version>${project.version}</version>
+          <classifier>tests</classifier>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 </project>

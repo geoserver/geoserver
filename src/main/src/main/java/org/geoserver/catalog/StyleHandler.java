@@ -150,7 +150,7 @@ public abstract class StyleHandler {
     /**
      * Returns the format version for the specified mime type.
      *
-     * <p>This method should only be overriden by formats that support multiple versions. The default implementation
+     * <p>This method should only be overridden by formats that support multiple versions. The default implementation
      * just returns 1.0.0.
      */
     public Version versionForMimeType(String mimeType) {
@@ -219,7 +219,7 @@ public abstract class StyleHandler {
         return false;
     }
 
-    /** Returns a URL where the style specification can be found, or null if no specification is available */
+    /** Returns a URL where the style specification can be found, or {@code null} if no specification is available */
     public URL getSpecification(Version version) throws MalformedURLException {
         return null;
     }

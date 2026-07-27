@@ -39,9 +39,9 @@ When service output is saved as a file, the vendor-option `filename` is used to 
 
 GeoServer is less strict than the WFS specification when it comes to the validity of an XML request. To force incoming XML requests to be valid, use the following parameter:
 
-``
+```
 strict=[true|false]
-``
+```
 
 The default option for this parameter is `false`.
 
@@ -80,9 +80,9 @@ WFS [GetCapabilities](reference.md#wfs_getcap) requests may be filtered to retur
 
 To apply this filter, add the following code to your request:
 
-``
+```
 namespace=<namespace>
-``
+```
 
 Although providing an invalid namespace will not result in any errors, the GetCapabilities document returned will not contain any layer information.
 
@@ -102,23 +102,23 @@ For full details see the [ECQL Reference](../../filter/ecql_reference.md) and [C
 
 The following example illustrates a GET request OGC filter:
 
-``
+```
 filter=%3CFilter%20xmlns:gml=%22http://www.opengis.net/gml%22%3E%3CIntersects%3E%3CPropertyName%3Ethe_geom%3C/PropertyName%3E%3Cgml:Point%20srsName=%224326%22%3E%3Cgml:coordinates%3E-74.817265,40.5296504%3C/gml:coordinates%3E%3C/gml:Point%3E%3C/Intersects%3E%3C/Filter%3E
-``
+```
 
 Using ECQL, the identical filter would be defined as follows:
 
-``
+```
 cql_filter=INTERSECTS(the_geom,%20POINT%20(-74.817265%2040.5296504))
-``
+```
 
 ## Format options
 
 The `format_options` parameter is a container for other parameters that are format-specific. The syntax is:
 
-``
+```
 format_options=param1:value1;param2:value2;...
-``
+```
 
 The supported format option is:
 
@@ -131,7 +131,7 @@ The supported format option is:
 
 As WFS 1.1.0 and 2.0.0 both support data reprojection, GeoServer can store the data in one projection and return GML in another projection. While not part of the specification, GeoServer supports this using WFS 1.0.0 as well. When submitting a WFS [GetFeature](reference.md#wfs_getfeature) GET request, you can add this parameter to specify the reprojection SRS as follows:
 
-``
+```
 srsName=<srsName>
 ```
 

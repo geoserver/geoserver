@@ -4,7 +4,7 @@ This section gives an overview of the structure and contents of the GeoServer da
 
 This is not intended to be a complete reference to the GeoServer configuration information, since generally the data directory configuration files should not be accessed directly.
 
-Instead, the ``web_admin`` can be used to view and modify the configuration, and for programmatic access and manipulation the [REST API](#../rest/index.md)_ should be used.
+Instead, the `web_admin` can be used to view and modify the configuration, and for programmatic access and manipulation the [REST API](../rest/index.md) should be used.
 
 The directories that do contain user-modifiable content are:
 
@@ -47,7 +47,7 @@ The main benefit of storing data files under the `data` directory is portability
 
 Consider a shapefile stored external to the data directory at a location **`C:\gis_data\foo.shp`**. The `datastore` entry in **`catalog.xml`** for this shapefile would look like the following:
 
-``` xml
+```xml
 <datastore id="foo_shapefile">
    <connectionParams>
      <parameter name="url" value="file://C:/gis_data/foo.shp" />
@@ -59,7 +59,7 @@ Now consider trying to port this data directory to another host running GeoServe
 
 This problem can be avoided by storing **`foo.shp`** in the `data` directory. In this case the `datastore` entry in **`catalog.xml`** becomes:
 
-``` xml
+```xml
 <datastore id="foo_shapefile">
   <connectionParams>
     <parameter name="url" value="file:data/foo.shp"/>
@@ -111,7 +111,7 @@ The `styles` directory contains files which contain styling information used by 
 
 For each SLD file in this directory there is a corresponding XML file:
 
-``` xml
+```xml
 <style>
   <id>StyleInfoImpl--570ae188:124761b8d78:-7fe1</id>
   <name>grass</name>

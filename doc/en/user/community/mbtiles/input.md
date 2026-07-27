@@ -2,7 +2,7 @@
 
 ## Adding an MBTiles Mosaic Raster Data Source
 
-When the extension has been installed, :guilabel:MBTiles` will be an option in the **Raster Data Sources** list when creating a new data store.
+When the extension has been installed, **MBTiles** will be an option in the **Raster Data Sources** list when creating a new data store.
 
 ![](images/mbtilescreate.png)
 

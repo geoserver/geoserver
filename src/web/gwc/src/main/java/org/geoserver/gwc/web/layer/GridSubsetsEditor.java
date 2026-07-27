@@ -38,7 +38,7 @@ import org.apache.wicket.validation.ValidationError;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.web.GWCIconFactory;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
-import org.geoserver.web.wicket.Icon;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.Select2DropDownChoice;
@@ -345,7 +345,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                 target.add(availableGridSets);
             }
         };
-        addGridsubsetLink.add(new Icon("addIcon", GWCIconFactory.ADD_ICON));
+        addGridsubsetLink.add(new GsIcon("addIcon", GWCIconFactory.ADD_ICON));
         add(addGridsubsetLink);
 
         availableGridSets = new Select2DropDownChoice<>("availableGridsets", new Model<>(), gridSetNames);

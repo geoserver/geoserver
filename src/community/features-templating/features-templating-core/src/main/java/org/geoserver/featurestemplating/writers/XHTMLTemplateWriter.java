@@ -20,7 +20,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.Attribute;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -139,7 +139,7 @@ public class XHTMLTemplateWriter extends XMLTemplateWriter {
 
     @Override
     protected String escape(String value) {
-        return StringEscapeUtils.escapeHtml(value);
+        return StringEscapeUtils.escapeHtml4(value);
     }
 
     @Override

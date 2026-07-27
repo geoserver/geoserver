@@ -10,9 +10,9 @@ This tutorial walks through the steps of defining a style and associating it wit
 First let's gather the data that we'll be publishing.
 
 1.  Complete the previous tutorials:
-    - [Publishing a GeoPackage](../geopkg-quickstart/index.md) defining the ``tutorial:countries`` layer
-    - [Publishing a GeoTIFF](../image-quickstart/index.md) defining the ``tutorial:shaded`` layer
-    - [Publishing a Layer Group](../group-quickstart/index.md) defining the ``tutorial:basemap`` layer
+    - [Publishing a GeoPackage](../geopkg-quickstart/index.md) defining the `tutorial:countries` layer
+    - [Publishing a GeoTIFF](../image-quickstart/index.md) defining the `tutorial:shaded` layer
+    - [Publishing a Layer Group](../group-quickstart/index.md) defining the `tutorial:basemap` layer
 
 ## Create a style
 
@@ -31,7 +31,7 @@ First let's gather the data that we'll be publishing.
 
 4.  Locate **Style Data** and define the style:
 
-    | Name      | ``background`` |
+    | Name      | `background` |
     |-----------|--------------------------|
     | Workspace | `tutorial`               |
     | Format    | `SLD`                    |

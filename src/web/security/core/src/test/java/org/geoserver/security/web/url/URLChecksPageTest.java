@@ -20,7 +20,7 @@ import org.geoserver.security.urlchecks.AbstractURLCheck;
 import org.geoserver.security.urlchecks.RegexURLCheck;
 import org.geoserver.security.urlchecks.URLCheckDAO;
 import org.geoserver.web.GeoServerWicketTestSupport;
-import org.geoserver.web.wicket.Icon;
+import org.geoserver.web.wicket.GsIcon;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -77,7 +77,7 @@ public class URLChecksPageTest extends GeoServerWicketTestSupport {
         tester.assertLabel("table:listContainer:items:1:itemProperties:0:component:link:label", TEST_RULE.getName());
         tester.assertLabel("table:listContainer:items:1:itemProperties:1:component", TEST_RULE.getDescription());
         tester.assertLabel("table:listContainer:items:1:itemProperties:2:component", TEST_RULE.getRegex());
-        tester.assertComponent("table:listContainer:items:1:itemProperties:3:component", Icon.class);
+        tester.assertComponent("table:listContainer:items:1:itemProperties:3:component", GsIcon.class);
     }
 
     @Test

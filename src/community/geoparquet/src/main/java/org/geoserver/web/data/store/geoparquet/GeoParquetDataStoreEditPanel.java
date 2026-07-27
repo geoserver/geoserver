@@ -7,11 +7,16 @@ package org.geoserver.web.data.store.geoparquet;
 import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 import static org.geotools.data.geoparquet.GeoParquetDataStoreFactory.AWS_PROFILE;
 import static org.geotools.data.geoparquet.GeoParquetDataStoreFactory.AWS_REGION;
+import static org.geotools.data.geoparquet.GeoParquetDataStoreFactory.ENDPOINT;
 import static org.geotools.data.geoparquet.GeoParquetDataStoreFactory.MAX_HIVE_DEPTH;
+import static org.geotools.data.geoparquet.GeoParquetDataStoreFactory.MEMORY_LIMIT;
+import static org.geotools.data.geoparquet.GeoParquetDataStoreFactory.THREADS;
 import static org.geotools.data.geoparquet.GeoParquetDataStoreFactory.URI_PARAM;
+import static org.geotools.data.geoparquet.GeoParquetDataStoreFactory.URL_STYLE;
 import static org.geotools.data.geoparquet.GeoParquetDataStoreFactory.USE_AWS_CREDENTIAL_CHAIN;
 
 import java.util.Map;
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -98,14 +103,14 @@ public class GeoParquetDataStoreEditPanel extends StoreEditPanel {
         final IModel<Map<String, Object>> paramsModel = new PropertyModel<>(model, "connectionParameters");
 
         add(buildUriParamPanel(paramsModel));
-
         add(buildMaxHiveDepth(paramsModel));
-
         add(buildUseAwsCredentialChain(paramsModel));
-
         add(buildAwsRegion(paramsModel));
-
         add(buildAwsProfile(paramsModel));
+        add(buildS3Endpoint(paramsModel));
+        add(buildUrlStyle(paramsModel));
+        add(buildDuckDBMemoryLimit(paramsModel));
+        add(buildDuckDBMaxThreads(paramsModel));
     }
 
     /**
@@ -132,8 +137,13 @@ public class GeoParquetDataStoreEditPanel extends StoreEditPanel {
      * @return A configured {@link NumberParamPanel} for the max_hive_depth parameter
      */
     private NumberParamPanel<Integer> buildMaxHiveDepth(final IModel<Map<String, Object>> paramsModel) {
-        String key = MAX_HIVE_DEPTH.key;
-        boolean required = MAX_HIVE_DEPTH.required;
+        return buildNumberParamPanel(MAX_HIVE_DEPTH, paramsModel, 0, 1);
+    }
+
+    private NumberParamPanel<Integer> buildNumberParamPanel(
+            Param param, IModel<Map<String, Object>> paramsModel, int minimum, int step) {
+        String key = param.key;
+        boolean required = param.required;
 
         // Use ConverterModel to ensure proper conversion from String to Integer
         // This handles cases where the max_hive_depth might be stored as a String
@@ -145,8 +155,8 @@ public class GeoParquetDataStoreEditPanel extends StoreEditPanel {
 
         return new NumberParamPanel<>(key, model, resourceModel, Integer.class)
                 .setRequired(required)
-                .setMinimum(0)
-                .setStep(1);
+                .setMinimum(minimum)
+                .setStep(step);
     }
 
     /**
@@ -240,11 +250,7 @@ public class GeoParquetDataStoreEditPanel extends StoreEditPanel {
      * @return A configured {@link TextParamPanel} for the aws_region parameter
      */
     private TextParamPanel<String> buildAwsRegion(final IModel<Map<String, Object>> paramsModel) {
-        String key = AWS_REGION.key;
-        boolean required = AWS_REGION.required;
-        IModel<String> model = new MapModel<>(paramsModel, key);
-        ParamResourceModel resourceModel = new ParamResourceModel(key, this);
-        return new TextParamPanel<>(key, model, resourceModel, required);
+        return buildTextParamPanel(AWS_REGION, paramsModel);
     }
 
     /**
@@ -269,8 +275,28 @@ public class GeoParquetDataStoreEditPanel extends StoreEditPanel {
      * @return A configured {@link TextParamPanel} for the aws_profile parameter
      */
     private TextParamPanel<String> buildAwsProfile(final IModel<Map<String, Object>> paramsModel) {
-        String key = AWS_PROFILE.key;
-        boolean required = AWS_PROFILE.required;
+        return buildTextParamPanel(AWS_PROFILE, paramsModel);
+    }
+
+    private TextParamPanel<String> buildS3Endpoint(final IModel<Map<String, Object>> paramsModel) {
+        return buildTextParamPanel(ENDPOINT, paramsModel);
+    }
+
+    private Component buildUrlStyle(IModel<Map<String, Object>> paramsModel) {
+        return buildTextParamPanel(URL_STYLE, paramsModel);
+    }
+
+    private Component buildDuckDBMemoryLimit(IModel<Map<String, Object>> paramsModel) {
+        return buildTextParamPanel(MEMORY_LIMIT, paramsModel);
+    }
+
+    private Component buildDuckDBMaxThreads(IModel<Map<String, Object>> paramsModel) {
+        return buildNumberParamPanel(THREADS, paramsModel, 0, 1);
+    }
+
+    private TextParamPanel<String> buildTextParamPanel(Param param, IModel<Map<String, Object>> paramsModel) {
+        String key = param.key;
+        boolean required = param.required;
         IModel<String> model = new MapModel<>(paramsModel, key);
         ParamResourceModel resourceModel = new ParamResourceModel(key, this);
         return new TextParamPanel<>(key, model, resourceModel, required);

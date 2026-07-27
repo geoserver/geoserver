@@ -29,6 +29,7 @@
     <constructor-arg ref="rawCatalog" />
     <constructor-arg ref="gwcDefaultStorageFinder"/>
     <constructor-arg ref="gwcJdbcConfigurationStorage"/>
+    <constructor-arg ref="gwcBlobStoreAggregator"/>
     <constructor-arg ref="gwcSynchEnv"/>
   </bean>
 
@@ -147,6 +148,24 @@
 
   <bean id="gwcZoomContextFinder" class="org.geoserver.gwc.GWCZoomContextFinder">
     <constructor-arg ref="gwcGridSetBroker"/>
+  </bean>
+
+  <!-- GWC security parameter filter -->
+
+  <bean id="gwcIgnorableParameterRegistry"
+        class="org.geoserver.gwc.security.IgnorableParameterRegistry"/>
+
+  <bean id="gwcAccessLimitsKeyBuilder"
+        class="org.geoserver.gwc.security.AccessLimitsKeyBuilder">
+    <constructor-arg ref="gwcIgnorableParameterRegistry"/>
+  </bean>
+
+  <bean id="gwcSecurityCacheInvalidator"
+        class="org.geoserver.gwc.security.SecurityCacheInvalidator">
+    <constructor-arg ref="gwcStorageBroker"/>
+    <constructor-arg ref="gwcTLDispatcher"/>
+    <constructor-arg ref="rawCatalog"/>
+    <constructor-arg ref="layerGroupContainmentCache"/>
   </bean>
 
 </beans>

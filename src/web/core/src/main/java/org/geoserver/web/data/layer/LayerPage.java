@@ -15,6 +15,8 @@ import static org.geoserver.web.data.layer.LayerProvider.STORE;
 import static org.geoserver.web.data.layer.LayerProvider.TITLE;
 import static org.geoserver.web.data.layer.LayerProvider.TYPE;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -23,9 +25,11 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.LayerGroupHelper;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.StoreInfo;
@@ -52,24 +56,66 @@ import org.geotools.api.filter.Filter;
  * layers and to add new ones
  */
 public class LayerPage extends GeoServerSecuredPage {
+
+    private String targetWorkspaceStr = null;
+    private String targetLayerStr = null;
+    private String targetGroupStr = null;
+
     LayerProvider provider = new LayerProvider() {
         @Override
-        protected Filter getFilter() {
-            Filter baseFilter = super.getFilter();
-            StringValue wsParam = getPageParameters().get("workspace");
-            if (wsParam.isNull() || wsParam.isEmpty()) {
-                return baseFilter;
+        protected Filter getContextFilter() {
+
+            String targetLayerOrGroup = targetGroupStr != null ? targetGroupStr : targetLayerStr;
+
+            if (targetLayerOrGroup != null) {
+                String targetLayer;
+                if (targetWorkspaceStr != null) {
+                    targetLayer = targetWorkspaceStr + ":" + targetLayerOrGroup;
+                } else {
+                    targetLayer = targetLayerOrGroup;
+                }
+
+                LayerGroupInfo gi = getCatalog().getLayerGroupByName(targetLayer);
+                if (gi != null) {
+                    LayerGroupHelper helper = new LayerGroupHelper(gi);
+                    List<String> ids = new ArrayList<>();
+                    for (LayerInfo li : helper.allLayers()) {
+                        ids.add(li.getId());
+                    }
+                    return ids.isEmpty() ? Filter.EXCLUDE : Predicates.in("id", ids);
+                }
+
+                LayerInfo li = getCatalog().getLayerByName(targetLayer);
+                if (li != null) {
+                    return Predicates.equal("id", li.getId());
+                }
+                return Filter.EXCLUDE;
             }
-            String targetWs = wsParam.toString();
-            Filter workspaceFilter = Predicates.equal("resource.store.workspace.name", targetWs);
-            return Predicates.and(baseFilter, workspaceFilter);
+
+            if (targetWorkspaceStr != null) {
+                return Predicates.equal("resource.store.workspace.name", targetWorkspaceStr);
+            }
+            return null;
         }
     };
     GeoServerTablePanel<LayerInfo> table;
     GeoServerDialog dialog;
     SelectionRemovalLink removal;
 
-    public LayerPage() {
+    public LayerPage(PageParameters parameters) {
+        StringValue wsParam = parameters.get("workspace");
+        StringValue layerParam = parameters.get("layer");
+        StringValue groupParam = parameters.get("group");
+
+        if (!wsParam.isEmpty()) {
+            this.targetWorkspaceStr = wsParam.toString();
+        }
+        if (!layerParam.isEmpty()) {
+            this.targetLayerStr = layerParam.toString();
+        }
+        if (!groupParam.isEmpty()) {
+            this.targetGroupStr = groupParam.toString();
+        }
         final CatalogIconFactory icons = CatalogIconFactory.get();
         table = new GeoServerTablePanel<>("table", provider, true) {
 
@@ -89,7 +135,7 @@ public class LayerPage extends GeoServerSecuredPage {
                     // ask for enabled() instead of isEnabled() to account for disabled
                     // resource/store
                     boolean enabled = layerInfo.enabled();
-                    ResourceReference icon = enabled ? icons.getEnabledIcon() : icons.getDisabledIcon();
+                    String icon = enabled ? icons.getEnabledIcon() : icons.getDisabledIcon();
                     Fragment f = new Fragment(id, "iconFragment", LayerPage.this);
                     f.add(icons.getIcon("layerIcon", icon));
                     return f;
@@ -119,6 +165,10 @@ public class LayerPage extends GeoServerSecuredPage {
         // the confirm dialog
         add(dialog = new GeoServerDialog("dialog"));
         setHeaderPanel(headerPanel());
+    }
+
+    public LayerPage() {
+        this(new PageParameters());
     }
 
     private Component titleLink(String id, IModel<LayerInfo> itemModel) {

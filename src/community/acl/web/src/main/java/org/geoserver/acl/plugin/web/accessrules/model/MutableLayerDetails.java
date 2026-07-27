@@ -41,16 +41,15 @@ public class MutableLayerDetails implements Serializable {
     public MutableLayerDetails() {}
 
     public MutableLayerDetails(@NonNull LayerDetails ld) {
-        setLayerType(ld.getType());
-        setDefaultStyle(ld.getDefaultStyle());
-        setCqlFilterRead(ld.getCqlFilterRead());
-        setCqlFilterWrite(ld.getCqlFilterWrite());
-        setArea(ld.getArea());
-        setCatalogMode(ld.getCatalogMode());
-        setSpatialFilterType(ld.getSpatialFilterType());
-        setAllowedStyles(ld.getAllowedStyles());
-        setAttributes(
-                ld.getAttributes().stream().map(MutableLayerAttribute::new).collect(Collectors.toList()));
+        setLayerType(ld.type());
+        setDefaultStyle(ld.defaultStyle());
+        setCqlFilterRead(ld.cqlFilterRead());
+        setCqlFilterWrite(ld.cqlFilterWrite());
+        setArea(ld.area());
+        setCatalogMode(ld.catalogMode());
+        setSpatialFilterType(ld.spatialFilterType());
+        setAllowedStyles(ld.allowedStyles());
+        setAttributes(ld.attributes().stream().map(MutableLayerAttribute::new).collect(Collectors.toList()));
     }
 
     public void setAllowedStyles(Set<String> styles) {

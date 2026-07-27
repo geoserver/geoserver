@@ -53,27 +53,27 @@ public class MutableRule implements Serializable, Cloneable {
     }
 
     public MutableRule(@NonNull Rule rule, LayerDetails layerDetails) {
-        setId(rule.getId());
-        setPriority(rule.getPriority());
-        setAccess(rule.getIdentifier().getAccess());
+        setId(rule.id());
+        setPriority(rule.priority());
+        setAccess(rule.identifier().access());
 
-        setExtId(rule.getExtId());
-        setName(rule.getName());
-        setDescription(rule.getDescription());
+        setExtId(rule.extId());
+        setName(rule.name());
+        setDescription(rule.description());
 
-        setAddressRange(rule.getIdentifier().getAddressRange());
+        setAddressRange(rule.identifier().addressRange());
 
-        setUserName(rule.getIdentifier().getUsername());
-        setRoleName(rule.getIdentifier().getRolename());
+        setUserName(rule.identifier().username());
+        setRoleName(rule.identifier().rolename());
 
-        setService(rule.getIdentifier().getService());
-        setRequest(rule.getIdentifier().getRequest());
-        setSubfield(rule.getIdentifier().getSubfield());
-        setWorkspace(rule.getIdentifier().getWorkspace());
-        setLayer(rule.getIdentifier().getLayer());
+        setService(rule.identifier().service());
+        setRequest(rule.identifier().request());
+        setSubfield(rule.identifier().subfield());
+        setWorkspace(rule.identifier().workspace());
+        setLayer(rule.identifier().layer());
 
-        if (null != rule.getRuleLimits()) {
-            setRuleLimits(new MutableRuleLimits(rule.getRuleLimits()));
+        if (null != rule.ruleLimits()) {
+            setRuleLimits(new MutableRuleLimits(rule.ruleLimits()));
         } else if (null != layerDetails) {
             setLayerDetails(new MutableLayerDetails(layerDetails));
         }

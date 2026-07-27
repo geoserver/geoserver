@@ -13,7 +13,7 @@ First off, you need to find the JDBC driver for your database. Most often it is 
 
 Once that is done, the Tomcat configuration file **`{TOMCAT_HOME}/conf/context.xml`** needs to be edited in order to setup the connection pool. In the case of a local Oracle XE the setup might look like:
 
-``` xml
+```xml
 <Context>
    ...
    <Resource name="jdbc/oralocal"
@@ -58,7 +58,7 @@ Other parameters to setup connection pool:
 - timeBetweenEvictionRunsMillis (default -1) The number of milliseconds to sleep between runs of the idle object evictor thread. When non-positive, no idle object evictor thread will be run.
 - numTestsPerEvictionRun (default 3) The number of objects to examine during each run of the idle object evictor thread (if any).
 - minEvictableIdleTimeMillis (default 1000 * 60 * 30) The minimum amount of time an object may sit idle in the pool before it is eligible for eviction by the idle object evictor (if any).
-- removeAbandoned (default false) Flag to remove abandoned connections if they exceed the removeAbandonedTimout. If set to true a connection is considered abandoned and eligible for removal if it has been idle longer than the removeAbandonedTimeout. Setting this to true can recover db connections from poorly written applications which fail to close a connection.
+- removeAbandoned (default false) Flag to remove abandoned connections if they exceed the removeAbandonedTimeout. If set to true a connection is considered abandoned and eligible for removal if it has been idle longer than the removeAbandonedTimeout. Setting this to true can recover db connections from poorly written applications which fail to close a connection.
 - removeAbandonedTimeout (default 300) Timeout in seconds before an abandoned connection can be removed.
 - logAbandoned (default false) Flag to log stack traces for application code which abandoned a Statement or Connection.
 
@@ -94,7 +94,7 @@ For configuring the JNDI pool you need to move the Postgres JDBC driver (it shou
 
 Then the following code must be added to the Tomcat configuration file **`{TOMCAT_HOME}/conf/context.xml`** inside a Context tag.
 
-``` xml
+```xml
 <Context>
    <Resource name="jdbc/postgres"
       auth="Container"
@@ -135,7 +135,7 @@ For configuring the connection pool for SQLServer you need to configure the SQLS
 
 Then the following code must be written in the Tomcat configuration file **`{TOMCAT_HOME}/conf/context.xml`**
 
-``` xml
+```xml
 <Context>
    ...
       <Resource name="jdbc/sqlserver"

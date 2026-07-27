@@ -15,7 +15,7 @@ Here is an outline of a mapping file:
     <includedTypes>...</includedTypes>
     <sourceDataStores>...</sourceDataStores>
     <catalog>...</catalog>
-    <targetTypes...</targetTypes>
+    <targetTypes>...</targetTypes>
     <typeMappings>...</typeMappings>
 ```
 </as:AppSchemaDataAccess>
@@ -126,12 +126,12 @@ The `typeMappings` section is the heart of the app-schema module. It defines the
 
 - `sourceType` is the simple feature type name. For example:
 
-  - a table or view name, lowercase for PostGIS, uppercase for Oracle.
-  - a property file name (without the .properties suffix)
+    - a table or view name, lowercase for PostGIS, uppercase for Oracle.
+    - a property file name (without the .properties suffix)
 
 - `targetElement` is the element name in the target application schema. This is the same as the WFS feature type name.
 
-- `isDenormalised` is an optional tag (default true) to indicate whether this type contains denormalised data or not. If data is not denormalised, then app-schema will build a more efficient query to apply the global feature limit. When combined with a low global feature limit (via ``Services --> WFS``), setting this option to false can prevent unnecessary processing and database lookups from taking place.
+- `isDenormalised` is an optional tag (default true) to indicate whether this type contains denormalised data or not. If data is not denormalised, then app-schema will build a more efficient query to apply the global feature limit. When combined with a low global feature limit (via `Services --> WFS`), setting this option to false can prevent unnecessary processing and database lookups from taking place.
 
 - `defaultGeometry` can be used to explicitly define the attribute of the feature type that should be used as the default geometry, this is more relevant in WMS than WFS. The default geometry XML path can reference any attribute of the feature type, exactly the same path that would be used to reference the desired property in a OGC filter. The path can reference a nested attribute belonging to a chained feature having a zero or one relationship with the root feature type.
 
@@ -396,7 +396,7 @@ CQL functions enable data conversion and conditional behaviour to be specified i
 
 - The uDig manual includes a list of CQL functions:
 
-  - <http://udig.github.io/docs/user/concepts/Constraint%20Query%20Language.html>
+    - <http://udig.github.io/docs/user/concepts/Constraint%20Query%20Language.html>
 
 - CQL string literals are enclosed in single quotes, for example `'urn:ogc:def:nil:OGC:missing'`.
 
@@ -469,7 +469,7 @@ When using JDBC based data stores attributes with a 1..N relationship can be map
 
 The `targetValue` refers to the value of the `<st:tag>` element, the client property is mapped with the usual syntax. Behind the scenes App-Schema will take care of associating the `st:code` attribute value with the correct tag.
 
-Another variant of this feature can be used for nested elements on an unbounded anonymous sequence, Using 'anonymousAttribute' element definition for generating child elements and values inside an anonymous umbounded sequence:
+Another variant of this feature can be used for nested elements on an unbounded anonymous sequence, Using 'anonymousAttribute' element definition for generating child elements and values inside an anonymous unbounded sequence:
 
 ```xml
 (...)
@@ -661,6 +661,7 @@ Using the stations use case as an example, our data will be stored in a relation
 
 Our mapping file will look like this:
 
+```xml
 <as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd">
       <namespaces>
         <Namespace>
@@ -756,6 +757,7 @@ Our mapping file will look like this:
         </FeatureTypeMapping>
       </typeMappings>
 </as:AppSchemaDataAccess>
+```
 
 To be able to use an external Apache Solr index, we need at least to:
 
@@ -763,4 +765,4 @@ To be able to use an external Apache Solr index, we need at least to:
 - **map the Solr index field that matches the database primary key**: this is done id mapping of the root feature type, e.g.`<indexField>id</indexField>`.
 - **map each attribute that is indexed in Apache Solr**: this is done using the *indexField* element, e.g `<indexField>description_txt</indexField>`.
 
-Is worth mentioning that if an external Solr index was defined, App-Schema will always query the external Solr index first and then query the relational database.
+It is worth mentioning that if an external Solr index was defined, App-Schema will always query the external Solr index first and then query the relational database.

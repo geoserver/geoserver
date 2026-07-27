@@ -2,7 +2,7 @@
 
 Starting with GeoServer 2.3.4 it is possible to add white space around symbols used inside graphic fills, effectively allowing to control the density of the symbols in the map.
 
-``` xml
+```xml
 <PolygonSymbolizer>
   <Fill>
     <GraphicFill>
@@ -27,7 +27,7 @@ The above forces 10 pixels of white space above, below and on either side of the
 
 The ability to specify different margins allows to use more than one symbol in a fill, and synchronize the relative positions of the various symbols to generate a composite fill:
 
-``` xml
+```xml
 <PolygonSymbolizer>
   <Fill>
     <GraphicFill>

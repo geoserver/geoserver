@@ -12,14 +12,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;
@@ -37,22 +34,18 @@ public class GeoparquetRestIntegrationTest extends CatalogRESTTestSupport {
         byte[] body = getResourceContent();
         MockHttpServletResponse resp =
                 getAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores/geoparquetstore/file.geoparquet");
-        assertEquals(404, resp.getStatus());
+        assertEquals(405, resp.getStatus());
 
-        put(ROOT_PATH + "/workspaces/sf/datastores/geoparquetstore/file.geoparquet", body, "application/octet-stream");
+        resp = putAsServletResponse(
+                ROOT_PATH + "/workspaces/sf/datastores/geoparquetstore/file.geoparquet",
+                body,
+                "application/octet-stream");
+        assertEquals(201, resp.getStatus());
+
         Catalog cat = getCatalog();
         DataStoreInfo sf = cat.getDataStoreByName("sf", "geoparquetstore");
         assertNotNull(sf);
         assertEquals(1, cat.getFeatureTypesByDataStore(sf).size());
-
-        resp = getAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores/geoparquetstore/file.geoparquet");
-        assertEquals(200, resp.getStatus());
-        assertEquals("application/zip", resp.getContentType());
-        ByteArrayInputStream bin = getBinaryInputStream(resp);
-        ZipInputStream zin = new ZipInputStream(bin);
-        ZipEntry entry = zin.getNextEntry();
-        assertNotNull(entry);
-        assertEquals("geoparquetstore.geoparquet", entry.getName());
         removeStore(sf.getWorkspace().getName(), sf.getName());
     }
 

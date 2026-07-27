@@ -4,15 +4,9 @@
  */
 package org.geoserver.acl.plugin.web.accessrules.event;
 
-import java.util.Optional;
-import lombok.Value;
+import jakarta.annotation.Nullable;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.geoserver.catalog.PublishedInfo;
 
-@Value
-public class PublishedInfoChangeEvent {
-    private String workspace;
-    private String layer;
-    Optional<PublishedInfo> info;
-    private AjaxRequestTarget target;
-}
+public record PublishedInfoChangeEvent(
+        String workspace, String layer, @Nullable PublishedInfo info, AjaxRequestTarget target) {}

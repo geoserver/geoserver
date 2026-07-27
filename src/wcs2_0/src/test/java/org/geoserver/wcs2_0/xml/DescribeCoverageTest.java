@@ -15,6 +15,8 @@ import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.DevModeEntityResolver;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.PreventLocalEntityResolver;
@@ -52,15 +54,20 @@ public class DescribeCoverageTest extends WCSTestSupport {
 
     @Test
     public void testEntityExpansion() throws Exception {
-        final File xml = new File("./src/test/resources/testDescribeCoverageEntityExpansion.xml");
-        final String request = FileUtils.readFileToString(xml, "UTF-8");
+        try {
+            EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+            final File xml = new File("./src/test/resources/testDescribeCoverageEntityExpansion.xml");
+            final String request = FileUtils.readFileToString(xml, "UTF-8");
 
-        Document dom = postAsDOM("wcs", request);
-        assertNotNull(dom);
-        // print(dom, System.out);
+            Document dom = postAsDOM("wcs", request, null, false);
+            assertNotNull(dom);
+            // print(dom, System.out);
 
-        String text = xpath.evaluate("//ows:ExceptionText", dom);
-        assertTrue(text.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
+            String text = xpath.evaluate("//ows:ExceptionText", dom);
+            assertTrue(text.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
+        } finally {
+            EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+        }
     }
 
     @Test

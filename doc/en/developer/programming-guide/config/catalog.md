@@ -6,12 +6,12 @@ The following types of information are stored:
 
 - namespaces and workspaces
 - coverage (raster) and data (vector) stores
-- coverages and feature resoures
+- coverages and feature resources
 - styles
 
 The Catalog can be acquired from GeoServer:
 
-``` java
+```java
 Catalog catalog = geoServer.getCatalog();
 ```
 
@@ -69,20 +69,20 @@ List<FeatureTypeInfo> featureTypes = catalog.getResourcesByNamespace(ns, Feature
 
 A layer is used to publish a resource. The `getLayers()` method provides access to all layers in the catalog. A layer is uniquely identified by its name. The `getLayerByName(String)` method provides access to a layer by its name. The `getLayers(ResourceInfo)` method returns all the layers published from a specific resource. Some examples:
 
-``` java
+```java
 //get a layer by its name
 LayerInfo layer = catalog.getLayer( "myLayer" );
 
-//get all the layers for a particualr feature type
+//get all the layers for a particular feature type
 FeatureTypeInfo ft = catalog.getFeatureType( "http://myNamespace", "myFeatureType" );
 List<LayerInfo> layers = catalog.getLayers( ft );
 ```
 
-## Modifing the Catalog
+## Modifying the Catalog
 
-Catalog objects such as stores and resoures are mutable and can be modified. However, any modifications made on an object do not apply until they are saved. For instance, consider the following example of modifying a feature type:
+Catalog objects such as stores and resources are mutable and can be modified. However, any modifications made on an object do not apply until they are saved. For instance, consider the following example of modifying a feature type:
 
-``` java
+```java
 //get a feature type
 FeatureTypeInfo featureType = catalog.getFeatureType( "http://myNamespace.org", "myFeatureType" );
 

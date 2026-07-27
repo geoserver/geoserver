@@ -41,7 +41,7 @@ This page serves as a reference for configuration options, but a step by step tu
 |----|----|
 | Name | Name of the filter |
 | CAS server URL including context root | The CAS server location (GeoServer will redirect to it, for example, in order to login, adding the necessary extra path elements) |
-| No single sign on | If checkecd, will send the "renew=true" options to the CAS server, forcing the user to login on the server at each request (unless session creation is allowed) |
+| No single sign on | If checked, will send the "renew=true" options to the CAS server, forcing the user to login on the server at each request (unless session creation is allowed) |
 | Participate in single sign out | Whether GeoServer should receive and handle callbacks for Single Sign Out. |
 | URL in CAS loutput page | CAS logout page location |
 | Proxy callback URL | The URL CAS will call back to after proxy ticket authentication |
@@ -62,7 +62,7 @@ In order to use the CAS custom attributes the server must be configured to extra
 
 For example, the following `cas.properties` file sets up a JDBC user source, as well as JDBC attribute repository (this configuration file might useful for testing purposes, but not setup for production):
 
-``` none
+```none
 cas.server.name=https://localhost:8443
 cas.server.prefix=${cas.server.name}/cas
 server.ssl.key-store=file:/etc/cas/config/thekeystore
@@ -100,7 +100,7 @@ cas.service-registry.json.location=classpath:/services
 
 The database has the following two tables for users and roles:
 
-``` sql
+```sql
 CREATE TABLE public.users (
     id bigint NOT NULL,
     disabled boolean,
@@ -120,7 +120,7 @@ CREATE TABLE public.roles (
 
 A sample service configuration for GeoServer might look as follows (again, setup for testing and development only):
 
-``` json
+```json
 {
   "@class" : "org.apereo.cas.services.RegexRegisteredService",
   "serviceId" : "^http(s)?://localhost:[\\d]+/geoserver/.*",
@@ -151,7 +151,7 @@ Since anonymous access is not allowed, any attempt to access the GeoServer web c
 
 ![](images/webCasLogout.png)
 
-A second option is to allow anonymous access in the web chain, allowing users to access the layer preview and other demo functionality without logging in:
+A second option is to allow anonymous access in the web chain, allowing users to access the Browse Layers page and other demo functionality without logging in:
 
 ![](images/webCasAnonymous.png)
 

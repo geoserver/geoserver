@@ -73,7 +73,7 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
 
     private SLDHandler sldHandler;
 
-    protected CssHandler(GeoServerExtensions extensions, SLDHandler sldHandler) {
+    public CssHandler(GeoServerExtensions extensions, SLDHandler sldHandler) {
         super("CSS", FORMAT);
         this.sldHandler = sldHandler;
         this.zoomContextFinders = extensions.extensions(ZoomContextFinder.class);

@@ -71,7 +71,7 @@ public enum DataPacking {
             double min = stats.getMin();
             double max = stats.getMax();
             double scale = (max - min) / getDenominator();
-            double offset = (min - scale);
+            double offset = min - scale;
             return new DataPacker(offset, scale, getReservedValue());
         }
     },
@@ -152,11 +152,11 @@ public enum DataPacking {
      * need a reserved value to represent it. The reserved value formula is: -(2^(n-1)) where n is the output dataType's
      * number of bits.
      */
-    private static final Integer SHORT_RESERVED = -((int) Math.pow(2, 15));
+    private static final Integer SHORT_RESERVED = -(int) Math.pow(2, 15);
 
-    private static final Integer INT_RESERVED = -((int) Math.pow(2, 31));
+    private static final Integer INT_RESERVED = -(int) Math.pow(2, 31);
 
-    private static final Integer LONG_RESERVED = -((int) Math.pow(2, 63));
+    private static final Integer LONG_RESERVED = -(int) Math.pow(2, 63);
 
     /** Return the denominator to be used in computing the scale_factor */
     public abstract Integer getDenominator();
@@ -213,7 +213,7 @@ public enum DataPacking {
             if (Double.isNaN(sample)) {
                 return reservedValue;
             }
-            double unrounded = ((sample - offset) / scale);
+            double unrounded = (sample - offset) / scale;
             return (int) (unrounded + 0.5);
         }
     }

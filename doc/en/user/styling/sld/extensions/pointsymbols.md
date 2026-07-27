@@ -10,7 +10,7 @@ Graphic symbology is supported via the SLD `<Graphic>` element. This element can
 
 `<Graphic>` contains either a `<Mark>` or an `<ExternalGraphic>` element. **Marks** are pure vector symbols whose geometry is predefined but with stroke and fill defined in the SLD itself. **External Graphics** are external files (such as PNG images or SVG graphics) that contain the shape and color information defining how to render a symbol.
 
-In standard SLD the `<Mark>` and `<ExternalGraphic>` names are fixed strings. GeoServer extends this by providing ``dynamic symbolizers``, which allow computing symbol names on a per-feature basis by embedding CQL expressions in them.
+In standard SLD the `<Mark>` and `<ExternalGraphic>` names are fixed strings. GeoServer extends this by providing `dynamic symbolizers`, which allow computing symbol names on a per-feature basis by embedding CQL expressions in them.
 
 ## Marks
 
@@ -159,7 +159,7 @@ For example, to use the "shield" symbol contained in the WebDings font, the Gnom
 
 The SLD to use the shield glyph as a symbol is:
 
-``` xml
+```xml
 <PointSymbolizer>
     <Graphic>
       <Mark>
@@ -194,7 +194,7 @@ For further information see the Javadoc of the GeoTools [MarkFactory](https://gi
 
 `<ExternalGraphic>` is the other way to define point symbology. Unlike marks, external graphics are used as-is, so the specification is somewhat simpler. The element content specifies a graphic `<OnlineResource>` using a URL or file path, and the graphic `<Format>` using a MIME type:
 
-``` xml
+```xml
 <PointSymbolizer>
     <Graphic>
        <ExternalGraphic>
@@ -209,7 +209,7 @@ As with `<Mark>`, a `<Size>` element can be optionally specified. When using ima
 
 If the path of the symbol file is relative, the file is looked for under `$GEOSERVER_DATA_DIR/styles`. For example:
 
-``` xml
+```xml
 <PointSymbolizer>
   <Graphic>
     <ExternalGraphic>
@@ -229,40 +229,40 @@ GeoServer can handle SVG images in which parts of the SVG-attributes are named p
 
 SVG Parameters are represented in a file like: [poi_peak.svg](https://github.com/qgis/QGIS/blob/master/images/svg/symbol/poi_peak.svg) as:
 
-``` xml
+```xml
 <svg enable-background="new 0 0 580 580" height="580" viewBox="0 0 580 580" width="580" xmlns="http://www.w3.org/2000/svg">
 <path d="m290.565 67.281l-255.498 442.534-1.087 1.885 511.229.393 2.18.002z" fill="param(fill)" 
  fill-opacity="param(fill-opacity)" stroke="param(outline)" stroke-opacity="param(outline-opacity)" stroke-width="param(outline-width)"/>
 </svg>
 ```
 
-The 'param'-constructs mean that you can define the parameters: ``fill``, ``fill-opacity``, ``outline``, ``outline-opacity`` and ``outline-width`` as part of an SVG URL reference, where a reference to this image with red fill would be: `poi_peak.svg?fill=#FF0000`.
+The 'param'-constructs mean that you can define the parameters: `fill`, `fill-opacity`, `outline`, `outline-opacity` and `outline-width` as part of an SVG URL reference, where a reference to this image with red fill would be: `poi_peak.svg?fill=#FF0000`.
 
-Note: When editng **`SVG`** files (e.g. in Inkscape) save using 'simple svg' format.
+Note: When editing **`SVG`** files (e.g. in Inkscape) save using 'simple svg' format.
 
 Default behaviour:
 
-- OnlineResource ``href`` URI without any parameters.
+- OnlineResource `href` URI without any parameters.
 
   ``` xml
   <se:OnlineResource xlink:href="poi_peak.svg" xlink:type="simple"/>
   ```
 
-- Displays **`poi_peak.svg`** with the default black ``fill``.
+- Displays **`poi_peak.svg`** with the default black `fill`.
 
   ![](images/peak_black.png)
 
   *SVG image with default black fill*
 
-Using ``#ff000`` red parameter:
+Using `#ff000` red parameter:
 
-- OnlineResource ``href`` URI with parameter:
+- OnlineResource `href` URI with parameter:
 
   ``` xml
   <se:OnlineResource xlink:href="poi_peak.svg?fill=#ff0000" xlink:type="simple"/>
   ```
 
-- Displays **`poi_peak.svg`** with supplied red ``fill``.
+- Displays **`poi_peak.svg`** with supplied red `fill`.
 
   ![](images/peak_redfill.png)
 
@@ -270,7 +270,7 @@ Using ``#ff000`` red parameter:
 
 To define several parameters, the query-parameters should be url-encoded.
 
-- A green peak with 25% opacity: ``?fill=#00ff00&opacity=0.25``, requires encoding both the '#' ( `%23` ) and the '&' ( `&amp;` ) signs:
+- A green peak with 25% opacity: `?fill=#00ff00&opacity=0.25`, requires encoding both the '#' ( `%23` ) and the '&' ( `&amp;` ) signs:
 
   ``` xml
   <se:OnlineResource xlink:href="poi_peak.svg?fill=%2300ff00&amp;opacity=0.25" xlink:type="simple"/>
@@ -290,7 +290,7 @@ Parameters names are defined by the SVG file:
   stroke="param(outline)"
   ```
 
-- OnlineResource ``href`` URI referencing parameters ``fill``, ``outline`` and `outline-width`:
+- OnlineResource `href` URI referencing parameters `fill`, `outline` and `outline-width`:
 
   ``` xml
   <se:OnlineResource xlink:href="poi_peak.svg?fill=%23ffffff&amp;outline=%23ff0000&amp;outline-width=5" xlink:type="simple"/>
@@ -302,15 +302,15 @@ Parameters names are defined by the SVG file:
 
   *SVG image with fill*
 
-The use of SVG parameters can be combinded with dynamic symbolizers (covered below) to supply SVG parameter values based on feature attribute data and expressions.
+The use of SVG parameters can be combined with dynamic symbolizers (covered below) to supply SVG parameter values based on feature attribute data and expressions.
 
-- OnlineResource ``href`` URI referencing SVG Parameter with dynamic CQL expression:
+- OnlineResource `href` URI referencing SVG Parameter with dynamic CQL expression:
 
   ``` xml
   <se:OnlineResource xlink:href="poi_peak.svg?fill=${COLOR}" xlink:type="simple"/>
   ```
 
-- Display depends on the feature attribute ``COLOR``.
+- Display depends on the feature attribute `COLOR`.
 
 ### Bulk WKT Shapes
 
@@ -325,7 +325,7 @@ block=POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))
 
 The SLD to use the symbols defined in **`example.properties`** is:
 
-``` xml
+```xml
 <PointSymbolizer>
   <Graphic>
     <ExternalGraphic>
@@ -356,7 +356,7 @@ GeoServer improves this by allowing [CQL expressions](../../../filter/ecql_refer
 
 The simplest form of expression is a single attribute name, such as `${STATE_ABBR}`. For example, suppose we want to display the flags of the US states using symbols whose file names match the state name. The following style specifies the flag symbols using a single rule:
 
-``` xml
+```xml
 <ExternalGraphic>
    <OnlineResource xlink:type="simple" 
                    xlink:href="http://mysite.com/tn_${STATE_ABBR}.jpg"/>
@@ -366,7 +366,7 @@ The simplest form of expression is a single attribute name, such as `${STATE_ABB
 
 If manipulation of the attribute values is required a full CQL expression can be specified. For example, if the values in the `STATE_ABBR` attribute are uppercase but the URL requires a lowercase name, the CQL `strToLowerCase` function can be used:
 
-``` xml
+```xml
 <ExternalGraphic>
    <OnlineResource xlink:type="simple"
             xlink:href="http://mysite.com/tn_${strToLowerCase(STATE_ABBR)}.jpg" />

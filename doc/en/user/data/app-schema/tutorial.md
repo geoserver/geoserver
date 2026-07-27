@@ -6,7 +6,7 @@ This tutorial demonstrates how to configure two complex feature types using the 
 
 This example uses [Geoscience Markup Language (GeoSciML) 2.0](http://geosciml.org/doc/geosciml/2.0/documentation/html/), a GML 3.1 application schema:
 
-> *"GeoSciML is an application schema that specifies a set of feature-types and supporting structures for information used in the solid-earth geosciences."*
+*"GeoSciML is an application schema that specifies a set of feature-types and supporting structures for information used in the solid-earth geosciences."*
 
 The tutorial defines two feature types:
 
@@ -21,9 +21,9 @@ Because a single `gsml:GeologicUnit` can be observed at several distinct locatio
 
 - Install the app-schema plugin `geoserver-*-app-schema-plugin.zip`:
 
-  - Place the jar files in `WEB-INF/lib`.
+    - Place the jar files in `WEB-INF/lib`.
 
-  - The `tutorial` folder contains the GeoServer configuraration (data directory) used for this tutorial.
+    - The `tutorial` folder contains the GeoServer configuration (data directory) used for this tutorial.
 
       - Either replace your existing `data` directory with the tutorial data directory,
       - Or edit `WEB-INF/web.xml` to set `GEOSERVER_DATA_DIR` to point to the tutorial data directory. (Be sure to uncomment the section that sets `GEOSERVER_DATA_DIR`.)

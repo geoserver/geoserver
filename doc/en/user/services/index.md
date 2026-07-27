@@ -15,7 +15,7 @@ Requests for referenced raster data and imagery.
 
 - [Web Coverage Service (WCS)](wcs/index.md)
 
-Pre-rendered georeferenced map tiles generated from vector data, raster data and imagry.
+Pre-rendered georeferenced map tiles generated from vector data, raster data and imagery.
 
 - [Web Map Tile Service (WMTS)](wmts/index.md)
 

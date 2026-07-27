@@ -180,7 +180,7 @@ feature-styles:
 
 Using more than one point symbolizer allows the composition of more complex symbology. This example shows two symbolizers along with the `x-composite` parameter in order to *subtract* a shape from a square mark, allowing the background to show through.
 
-``` yaml
+```yaml
 symbolizers:
 - point:
     symbols:
@@ -205,7 +205,7 @@ symbolizers:
 
 Sometimes it is useful to generate a point using a CQL expression. The following example generates a point at the end of each line in the shape of an arrow, rotated such that it matches the orientation of the line.
 
-``` yaml
+```yaml
 name: arrow
 symbolizers:
 - line:

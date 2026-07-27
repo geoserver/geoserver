@@ -13,9 +13,13 @@ import org.apache.wicket.ajax.attributes.IAjaxCallListener;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.image.ContextImage;
+import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.request.resource.ContextRelativeResource;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
-import org.geoserver.web.CatalogIconFactory;
 
 /**
  * A panel which encapsulates a link containing a image and an optional label.
@@ -62,7 +66,42 @@ public abstract class ImageAjaxLink<T> extends Panel {
             }
         };
         add(link);
-        image = CatalogIconFactory.get().getIcon("image", imageRef);
+        if (imageRef instanceof PackageResourceReference) {
+            image = new CachingImage("image", imageRef);
+        } else if (imageRef instanceof ContextRelativeResourceReference) {
+            ContextRelativeResource resource = ((ContextRelativeResourceReference) imageRef).getResource();
+            String path = (String) resource.getCacheKey();
+            path = path.substring(path.indexOf("//") + 2);
+            image = new ContextImage("image", path);
+        } else {
+            image = new Image("image", imageRef);
+        }
+        link.add(image);
+        link.add(new Label("label", label));
+    }
+
+    /** Constructs the panel with a link containing a CSS icon. */
+    public ImageAjaxLink(String id, String cssClass) {
+        this(id, cssClass, "");
+    }
+
+    /** Constructs the panel with a link containing a CSS icon and a label. */
+    public ImageAjaxLink(String id, String cssClass, String label) {
+        super(id);
+        link = new AjaxLink<>("link") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                ImageAjaxLink.this.onClick(target);
+            }
+
+            @Override
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
+                attributes.getAjaxCallListeners().add(ImageAjaxLink.this.getAjaxCallListener());
+            }
+        };
+        add(link);
+        image = new GsIcon("image", cssClass);
         link.add(image);
         link.add(new Label("label", label));
     }

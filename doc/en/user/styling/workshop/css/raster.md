@@ -12,9 +12,9 @@ Review of raster symbology:
 
 - When queried with a "sample" location:
 
-  - A grid coverage can determine the appropriate array location and retrieve a value. Different techniques may be used interpolate an appropriate value from several measurements (higher quality) or directly return the "nearest neighbor" (faster).
-  - A vector coverages would use a point-in-polygon check and return an appropriate attribute value.
-  - A scientific model can calculate a value for each sample location
+    - A grid coverage can determine the appropriate array location and retrieve a value. Different techniques may be used interpolate an appropriate value from several measurements (higher quality) or directly return the "nearest neighbor" (faster).
+    - A vector coverages would use a point-in-polygon check and return an appropriate attribute value.
+    - A scientific model can calculate a value for each sample location
 
 - Many raster formats organize information into bands of content. Values recorded in these bands and may be mapped into colors for display (a process similar to theming an attribute for vector data).
 
@@ -34,15 +34,15 @@ The exercise makes use of the `usgs:dem` and `ne:ne1` layers.
 
 ## Image
 
-The **raster-channels** is the **key property** for display of images and raster data. The value ``auto`` is recommended, allowing the image format to select the appropriate red, green and blue channels for display.
+The **raster-channels** is the **key property** for display of images and raster data. The value `auto` is recommended, allowing the image format to select the appropriate red, green and blue channels for display.
 
 1.  Navigate to the **Styles** page.
 2.  Click **Add a new style** and choose the following:
 
-    | Name:      | ``image_example`` |
+    | Name:      | `image_example` |
     |------------|-----------------------------|
-    | Workspace: | ``No workspace``  |
-    | Format:    | ``CSS``           |
+    | Workspace: | `No workspace`  |
+    | Format:    | `CSS`           |
 
 
 1.  Replace the initial CSS definition with:
@@ -78,13 +78,13 @@ The `usgs:dem` layer used for this exercise:
 1.  Return to the **Styles** page.
 2.  Click **Add a new style** and choose the following:
 
-    | Name:      | ``raster_example`` |
+    | Name:      | `raster_example` |
     |------------|------------------------------|
-    | Workspace: | ``No workspace``   |
-    | Format:    | ``CSS``            |
+    | Workspace: | `No workspace`   |
+    | Format:    | `CSS`            |
 
 
-1.  When we use the **raster-channels** property set to ``auto`` the rendering engine will select our single band of raster content, and do its best to map these values into a grayscale image. Replace the content of the style with:
+1.  When we use the **raster-channels** property set to `auto` the rendering engine will select our single band of raster content, and do its best to map these values into a grayscale image. Replace the content of the style with:
 
     ``` css
     * {
@@ -115,7 +115,7 @@ The approach of mapping a data channel directly to a color channel is only suita
 
 For qualitative data (such as land use) or simply to use color, we need a different approach:
 
-1.  Apply the following CSS to our ``usgs:DEM`` layer:
+1.  Apply the following CSS to our `usgs:DEM` layer:
 
     ``` css
     * {
@@ -252,20 +252,20 @@ This exploration focuses on accurately communicating differences in value, rathe
     ![image](../style/img/raster_contrast_1.png)
 
     !!! note
-        Discussion [provided](#ysld-raster-a1) at the end of the workbook.
+        Discussion [provided](done.md#css.raster.a1) at the end of the workbook.
 
 ## Challenge Intervals {: #css.raster.q2 }
 
 1.  The **raster-color-map-type** property dictates how the values are used to generate a resulting color.
 
-    - ``ramp`` is used for quantitative data, providing a smooth interpolation between the provided color values.
-    - ``intervals`` provides categorization for quantitative data, assigning each range of values a solid color.
-    - ``values`` is used for qualitative data, each value is required to have a **color-map-entry** or it will not be displayed.
+    - `ramp` is used for quantitative data, providing a smooth interpolation between the provided color values.
+    - `intervals` provides categorization for quantitative data, assigning each range of values a solid color.
+    - `values` is used for qualitative data, each value is required to have a **color-map-entry** or it will not be displayed.
 
 2.  **Challenge:** Update your DEM example to use **intervals** for presentation. What are the advantages of using this approach for elevation data?
 
     !!! note
-        Answer [provided](#ysld-raster-a2) at the end of the workbook.
+        Answer [provided](done.md#css.raster.a2) at the end of the workbook.
 
     !!! abstract "Instructor Notes"
         By using intervals it becomes very clear how relatively flat most of the continent is. The ramp presentation provided lots of fascinating detail which distracted from this fact.
@@ -301,7 +301,7 @@ Additional properties are available to provide slight image processing during vi
 
 Image processing can be used to enhance the output to highlight small details or to balance images from different sensors allowing them to be compared.
 
-1.  The **raster-contrast-enhancement** property is used to turn on a range of post processing effects. Settings are provided for ``normalize`` or ``histogram`` or ``none``;
+1.  The **raster-contrast-enhancement** property is used to turn on a range of post processing effects. Settings are provided for `normalize` or `histogram` or `none`;
 
     ``` css
     * {
@@ -335,7 +335,7 @@ Image processing can be used to enhance the output to highlight small details or
 2.  **Challenge:** Use what you have learned to present the `usgs:dem` clearly.
 
     !!! note
-        Answer [provided](#ysld-raster-a3) at the end of the workbook.
+        Answer [provided](done.md#css.raster.a3) at the end of the workbook.
 
     !!! abstract "Instructor Notes"
         The original was a dark mess, students will hopefully make use of the mid-tones (or even check color brewer) in order to fix this. I have left the ocean dark so the mountains can stand out more.
@@ -358,4 +358,4 @@ Image processing can be used to enhance the output to highlight small details or
 2.  **Challenge:** Can you think of an example where this would be useful?
 
     !!! note
-        Discussion [provided](#ysld-raster-a4) at the end of the workbook.
+        Discussion [provided](done.md#css.raster.a4) at the end of the workbook.

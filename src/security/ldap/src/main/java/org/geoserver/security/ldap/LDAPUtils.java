@@ -34,7 +34,6 @@ public class LDAPUtils {
             ldapContext.setPooled(false);
 
             DefaultTlsDirContextAuthenticationStrategy tls = new DefaultTlsDirContextAuthenticationStrategy();
-            tls.setHostnameVerifier((hostname, session) -> true);
 
             ldapContext.setAuthenticationStrategy(tls);
         }

@@ -8,7 +8,7 @@ import org.geoserver.config.ServiceFactoryExtension;
 
 public class WMTSFactoryExtension extends ServiceFactoryExtension<WMTSInfo> {
 
-    protected WMTSFactoryExtension() {
+    public WMTSFactoryExtension() {
         super(WMTSInfo.class);
     }
 

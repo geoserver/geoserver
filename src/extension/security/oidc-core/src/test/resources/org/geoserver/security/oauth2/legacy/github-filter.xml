@@ -1,0 +1,8 @@
+<githubOauth2Authentication>
+  <id>legacy-github-0001</id>
+  <name>github</name>
+  <className>org.geoserver.security.oauth2.GitHubOAuthAuthenticationFilter</className>
+  <cliendId>Iv1.0123456789abcdef</cliendId>
+  <clientSecret>s3cr3t</clientSecret>
+  <scopes>user:email</scopes>
+</githubOauth2Authentication>

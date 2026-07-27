@@ -17,14 +17,13 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.geoserver.security.csp.CSPConfiguration;
 import org.geoserver.security.csp.CSPPolicy;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.wicket.GeoServerDataProvider.BeanProperty;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDataProvider.PropertyPlaceholder;
-import org.geoserver.web.wicket.Icon;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.ReorderableTablePanel;
@@ -115,7 +114,7 @@ public class CSPPolicyPanel extends Panel {
             } else if (property == REMOVE) {
                 return removeLink(id, itemModel.getObject());
             } else if (Boolean.TRUE.equals(property.getModel(itemModel).getObject())) {
-                return new Icon(id, CatalogIconFactory.ENABLED_ICON);
+                return new GsIcon(id, CatalogIconFactory.ENABLED_ICON);
             } else if (Boolean.FALSE.equals(property.getModel(itemModel).getObject())) {
                 return new Label(id, "");
             }
@@ -137,17 +136,16 @@ public class CSPPolicyPanel extends Panel {
         }
 
         private Component removeLink(String id, CSPPolicy policy) {
-            ImageAjaxLink<Void> link =
-                    new ImageAjaxLink<>(id, new ContextRelativeResourceReference("img/icons/silk/delete.png")) {
-                        @Serial
-                        private static final long serialVersionUID = 190400999968840349L;
+            ImageAjaxLink<Void> link = new ImageAjaxLink<>(id, "gs-icon-delete") {
+                @Serial
+                private static final long serialVersionUID = 190400999968840349L;
 
-                        @Override
-                        protected void onClick(AjaxRequestTarget target) {
-                            CSPPolicyPanel.this.config.getPolicies().remove(policy);
-                            target.add(CSPPolicyPanel.this.tablePanel);
-                        }
-                    };
+                @Override
+                protected void onClick(AjaxRequestTarget target) {
+                    CSPPolicyPanel.this.config.getPolicies().remove(policy);
+                    target.add(CSPPolicyPanel.this.tablePanel);
+                }
+            };
             link.getImage().add(new AttributeModifier("alt", new ParamResourceModel("th.remove", CSPPolicyPanel.this)));
             return link;
         }

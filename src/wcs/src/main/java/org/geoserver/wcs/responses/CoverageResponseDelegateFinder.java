@@ -25,8 +25,6 @@ public class CoverageResponseDelegateFinder implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
-    private CoverageResponseDelegateFinder() {}
-
     /** Locates an encoder for a specific GetCoverage results output format */
     public CoverageResponseDelegate encoderFor(String outputFormat) {
 

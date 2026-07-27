@@ -6,13 +6,17 @@
 package org.geoserver.gwc.layer;
 
 import static org.geoserver.gwc.GWC.tileLayerName;
+import static org.geoserver.gwc.security.SecurityParameterFilter.ACCESS_LIMITS_KEY;
+import static org.geoserver.gwc.security.SecurityParameterFilter.SECURITY_TAGS_KEY;
 import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -94,9 +98,15 @@ import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.GWCSynchEnv;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.dispatch.GwcServiceDispatcherCallback;
+import org.geoserver.gwc.security.AccessLimitsKeyBuilder;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.Request;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
+import org.geoserver.security.DataAccessLimits;
+import org.geoserver.security.ResourceAccessManager;
+import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.util.DimensionWarning;
 import org.geoserver.util.DimensionWarning.WarningType;
 import org.geoserver.util.HTTPWarningAppender;
@@ -134,12 +144,14 @@ import org.geowebcache.locks.MemoryLockProvider;
 import org.geowebcache.mime.ApplicationMime;
 import org.geowebcache.mime.FormatModifier;
 import org.geowebcache.mime.MimeType;
+import org.geowebcache.service.HttpErrorCodeException;
 import org.geowebcache.storage.StorageBroker;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -174,6 +186,10 @@ public class GeoServerTileLayerTest {
     public void tearDown() throws Exception {
         GWC.set(null, null);
         Dispatcher.REQUEST.remove();
+        // tests that set a context via setApplicationContext close it in their own
+        // try-with-resources; reset to null (not just clear caches) so the closed
+        // context is not referenced by later test methods
+        GeoServerExtensionsHelper.init(null);
     }
 
     @Before
@@ -272,6 +288,7 @@ public class GeoServerTileLayerTest {
         layerGroup.setLayers(Collections.singletonList(layerInfo));
 
         defaults = GWCConfig.getOldDefaults();
+        when(mockGWC.getConfig()).thenReturn(defaults);
 
         when(catalog.getLayer(eq(layerInfoId))).thenReturn(layerInfo);
         when(catalog.getLayerGroup(eq(layerGroupId))).thenReturn(layerGroup);
@@ -414,6 +431,83 @@ public class GeoServerTileLayerTest {
             } else {
                 assertEquals(Collections.singletonMap("STYLES", legalStyle), modifiedParams);
             }
+        }
+    }
+
+    @Test
+    public void testGetParameterFiltersSecurityOn() {
+        defaults.setSecurityEnabled(true);
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        List<ParameterFilter> parameterFilters = layerInfoTileLayer.getParameterFilters();
+        assertEquals(3, parameterFilters.size()); // STYLES + ACCESS_LIMITS_KEY + SECURITY_TAGS_KEY
+        assertThat(parameterFilters, hasItem(hasProperty("key", is(ACCESS_LIMITS_KEY))));
+        assertThat(parameterFilters, hasItem(hasProperty("key", is(SECURITY_TAGS_KEY))));
+    }
+
+    @Test
+    public void testGetParameterFiltersSecurityOff() {
+        defaults.setSecurityEnabled(false);
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        List<ParameterFilter> parameterFilters = layerInfoTileLayer.getParameterFilters();
+        assertEquals(1, parameterFilters.size()); // STYLES
+        assertThat(parameterFilters, not(hasItem(hasProperty("key", is(ACCESS_LIMITS_KEY)))));
+        assertThat(parameterFilters, not(hasItem(hasProperty("key", is(SECURITY_TAGS_KEY)))));
+    }
+
+    @Test
+    public void testGetDefaultParameterFiltersSecurityOn() {
+        defaults.setSecurityEnabled(true);
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        Map<String, String> defaultFilters = layerInfoTileLayer.getDefaultParameterFilters();
+        assertEquals(3, defaultFilters.size()); // STYLES + ACCESS_LIMITS_KEY + SECURITY_TAGS_KEY
+        assertEquals("", defaultFilters.get(ACCESS_LIMITS_KEY));
+        assertEquals("", defaultFilters.get(SECURITY_TAGS_KEY));
+    }
+
+    @Test
+    public void testModifiableParamsUnrestricted() throws GeoWebCacheException {
+        defaults.setSecurityEnabled(true);
+        // mock key builder returning null = unrestricted access
+        AccessLimitsKeyBuilder mockKeyBuilder = mock(AccessLimitsKeyBuilder.class);
+        ResourceAccessManager mockRam = mock(ResourceAccessManager.class);
+        when(mockRam.getAccessLimits(any(), any(LayerInfo.class))).thenReturn(mock(DataAccessLimits.class));
+        when(mockKeyBuilder.buildKey(any())).thenReturn(null);
+        SecureCatalogImpl mockSecureCatalog = mock(SecureCatalogImpl.class);
+        when(mockSecureCatalog.getResourceAccessManager()).thenReturn(mockRam);
+        try (GenericApplicationContext ctx = new GenericApplicationContext()) {
+            ctx.getBeanFactory().registerSingleton("keyBuilder", mockKeyBuilder);
+            ctx.getBeanFactory().registerSingleton("secureCatalog", mockSecureCatalog);
+            ctx.refresh();
+            new GeoServerExtensions().setApplicationContext(ctx);
+
+            layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+            // non-default STYLES: result must not contain ACCESS_LIMITS_KEY
+            Map<String, String> params = Collections.singletonMap("sTyLeS", "alternateStyle-1");
+            Map<String, String> result = layerInfoTileLayer.getModifiableParameters(params, "UTF-8");
+            assertEquals(Collections.singletonMap("STYLES", "alternateStyle-1"), result);
+        }
+    }
+
+    @Test
+    public void testModifiableParamsWithSecurityKey() throws GeoWebCacheException {
+        defaults.setSecurityEnabled(true);
+        AccessLimitsKeyBuilder mockKeyBuilder = mock(AccessLimitsKeyBuilder.class);
+        ResourceAccessManager mockRam = mock(ResourceAccessManager.class);
+        when(mockRam.getAccessLimits(any(), any(LayerInfo.class))).thenReturn(mock(DataAccessLimits.class));
+        when(mockKeyBuilder.buildKey(any())).thenReturn("user_hash");
+        SecureCatalogImpl mockSecureCatalog = mock(SecureCatalogImpl.class);
+        when(mockSecureCatalog.getResourceAccessManager()).thenReturn(mockRam);
+        try (GenericApplicationContext ctx = new GenericApplicationContext()) {
+            ctx.getBeanFactory().registerSingleton("keyBuilder", mockKeyBuilder);
+            ctx.getBeanFactory().registerSingleton("secureCatalog", mockSecureCatalog);
+            ctx.refresh();
+            new GeoServerExtensions().setApplicationContext(ctx);
+
+            layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+            Map<String, String> params = Collections.singletonMap("sTyLeS", "alternateStyle-1");
+            Map<String, String> result = layerInfoTileLayer.getModifiableParameters(params, "UTF-8");
+            assertEquals("alternateStyle-1", result.get("STYLES"));
+            assertEquals("user_hash", result.get(ACCESS_LIMITS_KEY));
         }
     }
 
@@ -819,7 +913,8 @@ public class GeoServerTileLayerTest {
         try {
             layerInfoTileLayer.getTile(tile);
             fail("Expected exception, requested mime is invalid for the layer");
-        } catch (IllegalArgumentException e) {
+        } catch (HttpErrorCodeException e) {
+            assertEquals(400, e.getErrorCode());
             assertTrue(e.getMessage().contains("is not a supported format"));
         }
 
@@ -998,7 +1093,6 @@ public class GeoServerTileLayerTest {
     public void testGetTileWithMetaTilingExecutor() throws Exception {
         GetTileMockTester tester = new GetTileMockTester();
         GeoServerTileLayer tileLayer = tester.prepareTileLayer();
-
         ExecutorService executorServiceSpy = spy(Executors.newFixedThreadPool(2));
         when(mockGWC.getMetaTilingExecutor()).thenReturn(executorServiceSpy);
 
@@ -1029,6 +1123,7 @@ public class GeoServerTileLayerTest {
 
         // 16 tiles to put in storage
         verify(result.getStorageBroker(), times(16)).put(Mockito.any());
+        executorServiceSpy.shutdown();
     }
 
     /**
@@ -1040,7 +1135,6 @@ public class GeoServerTileLayerTest {
     public void testGetTileWithMetaTilingExecutorButNoDispatcherRequest() throws Exception {
         GetTileMockTester tester = new GetTileMockTester();
         GeoServerTileLayer tileLayer = tester.prepareTileLayer();
-
         ExecutorService executorServiceSpy = spy(Executors.newFixedThreadPool(2));
         when(mockGWC.getMetaTilingExecutor()).thenReturn(executorServiceSpy);
 
@@ -1071,6 +1165,7 @@ public class GeoServerTileLayerTest {
 
         // 16 tiles to put in storage
         verify(result.getStorageBroker(), times(16)).put(Mockito.any());
+        executorServiceSpy.shutdown();
     }
 
     @Test

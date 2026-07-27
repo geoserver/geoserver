@@ -22,7 +22,9 @@ public class FlowControllerTestingThread extends Thread {
     Request request;
     long timeout;
     long processingDelay;
-    ThreadState state;
+    /** volatile because it is written by the worker thread and read by the test's main thread. */
+    volatile ThreadState state;
+
     Throwable error;
     CountDownLatch waitLatch;
 

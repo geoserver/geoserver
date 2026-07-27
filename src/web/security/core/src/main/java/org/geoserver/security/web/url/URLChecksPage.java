@@ -32,7 +32,7 @@ import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geoserver.web.wicket.Icon;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
 import org.geotools.data.ows.URLChecker;
@@ -72,7 +72,7 @@ public class URLChecksPage extends GeoServerSecuredPage {
                     return new Label(id, itemModel.getObject().getDescription());
                 }
                 if (property == URLCheckProvider.ENABLED) {
-                    if (itemModel.getObject().isEnabled()) return new Icon(id, CatalogIconFactory.ENABLED_ICON);
+                    if (itemModel.getObject().isEnabled()) return new GsIcon(id, CatalogIconFactory.ENABLED_ICON);
                     else return new Label(id, "");
                 }
                 if (property == URLCheckProvider.CONFIGURATION) {

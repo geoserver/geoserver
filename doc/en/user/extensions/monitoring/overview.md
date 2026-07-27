@@ -11,7 +11,7 @@ As a request is processed the monitor inserts itself at particular points in the
 - Timestamp of the origin of the request
 - Total time it took for the request to complete
 - Origin of the request
-- HTTP information such as the body content type, header information, etc\...
+- HTTP information such as the body content type, header information, etc...
 
 And more. See the [Data Reference](reference.md) section for a complete list.
 

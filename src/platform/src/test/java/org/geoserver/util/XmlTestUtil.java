@@ -18,13 +18,13 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
+import org.geotools.xml.XMLUtils;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -148,8 +148,7 @@ public class XmlTestUtil {
         Transformer trans;
         PrintWriter w = new PrintWriter(os);
         try {
-            TransformerFactory fact = TransformerFactory.newInstance();
-            trans = fact.newTransformer();
+            trans = XMLUtils.newTransformer(); // XMLUtils.newTransformer()
             trans.transform(new DOMSource(dom), new StreamResult(new OutputStreamWriter(os)));
         } catch (TransformerException e) {
             w.println("An error ocurred while transforming the given DOM:");

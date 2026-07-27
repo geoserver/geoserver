@@ -19,7 +19,7 @@ For each feature the rules are evaluated resulting in a list of symbolizers that
 
 Consider the following two symbolizers:
 
-``` yaml
+```yaml
 symbolizers:
 - point:
     symbols:

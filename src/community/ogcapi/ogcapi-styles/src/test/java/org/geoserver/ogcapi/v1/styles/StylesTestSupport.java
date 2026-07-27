@@ -37,6 +37,10 @@ public class StylesTestSupport extends OGCApiTestSupport {
         testData.addWorkspace("ws", "http://www.geoserver.org/ws", catalog);
         WorkspaceInfo ws = catalog.getWorkspaceByName("ws");
         testData.addStyle(ws, "NamedPlacesWS", "NamedPlaces.sld", SystemTestData.class, catalog);
+        // add a second workspace with its own style, to verify cross-workspace isolation
+        testData.addWorkspace("ws2", "http://www.geoserver.org/ws2", catalog);
+        WorkspaceInfo ws2 = catalog.getWorkspaceByName("ws2");
+        testData.addStyle(ws2, "NamedPlacesWS2", "NamedPlaces.sld", SystemTestData.class, catalog);
         // add a style with a comment that can be used for raw style return
         testData.addStyle(POLYGON_COMMENT, "polygonComment.sld", StylesTestSupport.class, catalog);
 

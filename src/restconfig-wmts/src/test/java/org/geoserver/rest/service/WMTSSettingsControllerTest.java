@@ -11,13 +11,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.StringWriter;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.wmts.WMTSInfo;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;
+import org.geotools.xml.XMLUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.kordamp.json.JSON;
@@ -119,8 +119,7 @@ public class WMTSSettingsControllerTest extends CatalogRESTTestSupport {
         DOMSource domSource = new DOMSource(doc);
         StringWriter writer = new StringWriter();
         StreamResult result = new StreamResult(writer);
-        TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer transformer = tf.newTransformer();
+        Transformer transformer = XMLUtils.newTransformer();
         transformer.transform(domSource, result);
         return writer.toString();
     }

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.util.ISO8601Formatter;
@@ -63,7 +63,7 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
             else {
                 streamWriter.writeStartElement(name);
                 evaluateChildren(encodingHints);
-                streamWriter.writeCharacters(StringEscapeUtils.escapeHtml(staticContent.toString()));
+                streamWriter.writeCharacters(StringEscapeUtils.escapeHtml4(staticContent.toString()));
                 streamWriter.writeEndElement();
             }
         } catch (XMLStreamException e) {
@@ -180,7 +180,7 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
      * @return the string value with escaped xml.
      */
     protected String escape(String value) {
-        return StringEscapeUtils.escapeXml(value);
+        return StringEscapeUtils.escapeXml10(value);
     }
 
     private void writeAsAttribute(String key, Object elementValue, EncodingHints encodingHints) throws IOException {

@@ -46,7 +46,7 @@ This example specifies lines be colored black with a thickness of 3 pixels.
 
 ### Code
 
-``` css
+```css
 * { 
   stroke: black;
   stroke-width: 3px;
@@ -67,7 +67,7 @@ This example shows how to draw lines with borders (sometimes called "cased lines
 
 ### Code
 
-``` css
+```css
 * { 
   stroke: #333333, #6699FF;
   stroke-width: 5px, 3px;
@@ -98,7 +98,7 @@ This example alters the [Simple line](#css_cookbook_lines_simpleline) to create 
 
 ### Code
 
-``` css
+```css
 * { 
   stroke: blue;
   stroke-width: 3px;
@@ -120,7 +120,7 @@ This example uses hatching to create a railroad style. Both the line and the hat
 
 ### Code
 
-``` scss
+```scss
 * { 
   stroke: #333333, symbol("shape://vertline");
   stroke-width: 3px;
@@ -148,7 +148,7 @@ This example uses a graphic stroke along with dash arrays to create a "dot and s
 
 ### Code
 
-``` scss
+```scss
 * { 
   stroke: symbol(circle);
   stroke-dasharray: 4 6;
@@ -176,7 +176,7 @@ This example shows how to create a complex line style which alternates a dashed 
 - `stroke-dasharray` controls pen-down/pen-up behavior to generate dashed lines
 - `symbol(...)` places symbols along a line combining the two allows control of symbol spacing
 
-This also shows the usage of a ``dash offset``, which controls where rendering starts in the dash array. For example, with a dash array of `5 10` and a dash offset of `7` the renderer starts drawing the pattern 7 pixels from the beginning. It skips the 5 pixels pen-down section and 2 pixels of the pen-up section, then draws the remaining 8 pixels of pen-up, then 5 down, 10 up, and so on.
+This also shows the usage of a `dash offset`, which controls where rendering starts in the dash array. For example, with a dash array of `5 10` and a dash offset of `7` the renderer starts drawing the pattern 7 pixels from the beginning. It skips the 5 pixels pen-down section and 2 pixels of the pen-up section, then draws the remaining 8 pixels of pen-up, then 5 down, 10 up, and so on.
 
 The example shows how to use these features to create two synchronized sequences of dash arrays, one drawing line segments and the other symbols.
 
@@ -186,7 +186,7 @@ The example shows how to use these features to create two synchronized sequences
 
 ### Code
 
-``` scss
+```scss
 * { 
   stroke: blue, symbol(circle);
   stroke-width: 1px;
@@ -218,7 +218,7 @@ This example shows a text label on the simple line. This is how a label will be 
 
 ### Code
 
-``` css
+```css
 * { 
   stroke: red;
   label: [name];
@@ -240,7 +240,7 @@ This example shows a text label on the simple line, just like the previous examp
 
 ### Code
 
-``` css
+```css
 * { 
   stroke: red;
   label: [name];
@@ -263,7 +263,7 @@ This example renders the text label to follow the contour of the lines.
 
 ### Code
 
-``` css
+```css
 * { 
   stroke: red;
   label: [name];
@@ -276,7 +276,7 @@ This example renders the text label to follow the contour of the lines.
 
 As the [Line with default label](#css_cookbook_lines_defaultlabel) example showed, the default label behavior isn't optimal.
 
-This example is similar to the [Line with default label](#css_cookbook_lines_defaultlabel) example with the exception of **line 5** where the "label-follow-line" option is specified, which forces the labels to strickly follow the line.
+This example is similar to the [Line with default label](#css_cookbook_lines_defaultlabel) example with the exception of **line 5** where the "label-follow-line" option is specified, which forces the labels to strictly follow the line.
 
 Not all labels are visible partly because of conflict resolution, and partly because the renderer cannot find a line segment long and "straight" enough to paint the label (labels are not painted over sharp turns by default).
 
@@ -290,7 +290,7 @@ This example optimizes label placement for lines such that the maximum number of
 
 ### Code
 
-``` css
+```css
 * { 
   stroke: red;
   label: [name];
@@ -316,7 +316,7 @@ This example improves the style of the labels from the [Optimized label placemen
 
 ### Code
 
-``` css
+```css
 * { 
   stroke: red;
   label: [name];
@@ -350,7 +350,7 @@ This example styles the lines differently based on the "type" (Road class) attri
 
 ### Code
 
-``` css
+```css
 [type = 'local-road'] {
   stroke: #009933;
   stroke-width: 2;
@@ -409,7 +409,7 @@ This example alters the [Simple line](#css_cookbook_lines_simpleline) style at d
 
 ### Code
 
-``` css
+```css
 * {
   stroke: #009933;
 }

@@ -6,6 +6,10 @@
 
 package org.geoserver.test;
 
+import org.geoserver.util.EntityResolverProvider;
+import org.geotools.util.NullEntityResolver;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -15,6 +19,16 @@ import org.w3c.dom.Document;
  * @author Ben Caradoc-Davies, CSIRO Earth Science and Resource Engineering
  */
 public class DuplicateTypeTest extends AbstractAppSchemaTestSupport {
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+    }
 
     @Override
     protected DuplicateTypeMockData createTestData() {

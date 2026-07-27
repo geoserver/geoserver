@@ -128,9 +128,9 @@ import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.NameImpl;
-import org.geotools.util.PreventLocalEntityResolver;
 import org.geotools.util.logging.Log4J2LoggerFactory;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xsd.XSD;
 import org.jsoup.Jsoup;
 import org.junit.After;
@@ -163,6 +163,7 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import org.xml.sax.ext.EntityResolver2;
 
 /**
  * Base test class for GeoServer system tests that require a fully configured spring context and work off a real data
@@ -218,65 +219,11 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     /**
      * In IDEs during development GeoTools sources can be in the classpath of GeoServer tests, this resolver allows them
      * to be resolved while blocking the rest
+     *
+     * @deprecated Moved to DevModeEntityResolver.INSTANCE
      */
-    public static final EntityResolver RESOLVE_DISABLED_PROVIDER_DEVMODE = new PreventLocalEntityResolver() {
-        @Override
-        public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-            if (isLocalGeoToolsSchema(null, systemId) || isDataDirectory(systemId)) {
-                return null;
-            }
-
-            return super.resolveEntity(publicId, systemId);
-        }
-
-        @Override
-        public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId)
-                throws SAXException, IOException {
-            if (isLocalGeoToolsSchema(baseURI, systemId) || isDataDirectory(systemId)) {
-                return null;
-            }
-
-            return super.resolveEntity(name, publicId, baseURI, systemId);
-        }
-
-        private boolean isLocalGeoToolsSchema(String baseURI, String systemId) {
-            if (systemId.startsWith("file:/")) {
-                return isLocalGeotoolsSchema(systemId);
-            } else if (!systemId.contains("://") && baseURI != null) {
-                // location relative to a baseURI
-                return isLocalGeotoolsSchema(baseURI);
-            }
-            return false;
-        }
-
-        private boolean isLocalGeotoolsSchema(String path) {
-            // Windows case insensitive filesystem work-around
-            path = path.toLowerCase();
-            // Match the GeoTools locations having schemas we resolve against
-            return path.matches(".*modules[\\\\/]extension[\\\\/]xsd[\\\\/].*\\.xsd")
-                    || path.matches(".*modules[\\\\/]ogc[\\\\/].*\\.xsd");
-        }
-
-        private boolean isDataDirectory(String systemId) {
-            if (applicationContext != null) {
-                GeoServerDataDirectory dd = applicationContext.getBean(GeoServerDataDirectory.class);
-                try {
-                    String path = dd.getRoot("workspaces").dir().getCanonicalPath();
-                    if (systemId.startsWith("file:")) systemId = systemId.substring(5);
-                    String canonicalSystemId = new File(systemId).getCanonicalPath();
-                    return canonicalSystemId.startsWith(path);
-                } catch (IOException e) {
-                    return false;
-                }
-            }
-            return false;
-        }
-
-        @Override
-        public String toString() {
-            return "PreventLocalEntityResolver";
-        }
-    };
+    @Deprecated
+    public static final EntityResolver RESOLVE_DISABLED_PROVIDER_DEVMODE = DevModeEntityResolver.INSTANCE;
 
     @Override
     protected final void setUp(SystemTestData testData) throws Exception {
@@ -303,7 +250,11 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         Logging.ALL.setLoggerFactory("org.geotools.util.logging.Log4J2LoggerFactory");
         GeoServerResourceLoader loader = new GeoServerResourceLoader(testData.getDataDirectoryRoot());
         LoggingUtils.initLogging(loader, getLogConfiguration(), false, true, null);
-
+        if (isQuietTests()) {
+            Logging.getLogger("org.geoserver").setLevel(Level.SEVERE);
+            Logging.getLogger("org.vfny.geoserver").setLevel(Level.SEVERE);
+            Logging.getLogger("org.geotools").setLevel(Level.SEVERE);
+        }
         setUpTestData(testData);
 
         // put the mock http server in test mode
@@ -345,8 +296,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
             dispatcher = buildDispatcher();
 
-            // Allow resolution of XSDs from local file system
-            EntityResolverProvider.setEntityResolver(RESOLVE_DISABLED_PROVIDER_DEVMODE);
+            // Connect DevModeEntityResolver
+            EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
 
             // Use GeoServer's ImageN ImagingListener
             GeoserverInitStartupListener.initImageNDefaultInstance();
@@ -1308,8 +1259,21 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @return A result of the request parsed into a dom.
      */
     protected Document getAsDOM(final String path, int statusCode) throws Exception {
+        return getAsDOM(path, true, statusCode);
+    }
+
+    /**
+     * Executes an ows request using the GET method and returns the result as an xml document.
+     *
+     * @param path The portion of the request after the context, example: 'wms?request=GetMap&version=1.1.1&..."
+     * @param offlineResourceResolution if true, will avoid loading and validating against the response document schema
+     *     or DTD
+     * @param statusCode Expected status code
+     * @return A result of the request parsed into a dom.
+     */
+    protected Document getAsDOM(final String path, boolean offlineResourceResolution, int statusCode) throws Exception {
         try (InputStream responseContent = get(path, statusCode)) {
-            return dom(responseContent, true);
+            return dom(responseContent, offlineResourceResolution);
         }
     }
 
@@ -1437,12 +1401,13 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * Executes an ows request using the GET method and returns the result as an xml document.
      *
      * @param path The portion of the request after the context, example: 'wms?request=GetMap&version=1.1.1&..."
-     * @param skipDTD if true, will avoid loading and validating against the response document schema or DTD
+     * @param offlineResourceResolution if true, will avoid loading and validating against the response document schema
+     *     or DTD
      * @return A result of the request parsed into a dom.
      */
-    protected Document getAsDOM(final String path, final boolean skipDTD) throws Exception {
+    protected Document getAsDOM(final String path, final boolean offlineResourceResolution) throws Exception {
         try (InputStream responseContent = get(path)) {
-            return dom(responseContent, skipDTD);
+            return dom(responseContent, offlineResourceResolution);
         }
     }
 
@@ -1450,12 +1415,14 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * Executes an ows request using the GET method and returns the result as an xml document.
      *
      * @param path The portion of the request after the context, example: 'wms?request=GetMap&version=1.1.1&..."
-     * @param skipDTD if true, will avoid loading and validating against the response document schema or DTD
+     * @param offlineResourceResolution if true, will avoid loading and validating against the response document schema
+     *     or DTD
      * @param encoding Overide for the encoding of the document.
      * @return A result of the request parsed into a dom.
      */
-    protected Document getAsDOM(final String path, final boolean skipDTD, String encoding) throws Exception {
-        return dom(get(path, encoding), skipDTD, encoding);
+    protected Document getAsDOM(final String path, final boolean offlineResourceResolution, String encoding)
+            throws Exception {
+        return dom(get(path, encoding), offlineResourceResolution, encoding);
     }
 
     /**
@@ -1516,6 +1483,20 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         return dom(post(path, xml));
     }
 
+    /**
+     * Executes an ows request using the POST method and returns the result as an xml document.
+     *
+     * <p>
+     *
+     * @param path The porition of the request after the context ( no query string ), example: 'wms'.
+     * @return An input stream which is the result of the request.
+     */
+    protected Document postAsDOM(
+            String path, String xml, List<Exception> validationErrors, boolean offlineResourceResolution)
+            throws Exception {
+        return dom(post(path, xml), offlineResourceResolution);
+    }
+
     protected String getAsString(String path) throws Exception {
         return string(get(path));
     }
@@ -1548,40 +1529,46 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     }
 
     /**
-     * Parses a stream into a dom.
+     * Parses a stream into a dom using default charset encoding.
      *
-     * @param skipDTD If true, will skip loading and validating against the associated DTD
+     * @param offlineResourceResolution If true, will provide empty xml document for DTD references
      */
-    protected Document dom(InputStream input, boolean skipDTD)
+    protected Document dom(InputStream input, boolean offlineResourceResolution)
             throws ParserConfigurationException, SAXException, IOException {
-        return dom(input, skipDTD, null);
+        return dom(input, offlineResourceResolution, null);
     }
 
-    protected Document dom(InputStream stream, boolean skipDTD, String encoding)
+    /**
+     * Parse input stream into document, be sure to use {@code offlineResourceResolution} when content includes DOCTYPE
+     * to substitute in an empty xml document.
+     *
+     * @param stream InputStream
+     * @param offlineResourceResolution {@code true} to intercept external entity references with empty xml document.
+     * @param encoding stream encoding, or {@code null} for default Charset encoding.
+     * @return Document
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws IOException
+     */
+    protected Document dom(InputStream stream, boolean offlineResourceResolution, String encoding)
             throws ParserConfigurationException, SAXException, IOException {
 
         InputSource input = new InputSource(stream);
-        if (encoding != null) {
-            input.setEncoding(encoding);
-        } else {
-            input.setEncoding(Charset.defaultCharset().name());
-        }
+        input.setEncoding(encoding != null ? encoding : Charset.defaultCharset().name());
 
-        if (skipDTD) {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-
+        if (offlineResourceResolution) {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // NOPMD AvoidDocumentBuilderFactory
             factory.setNamespaceAware(true);
             factory.setValidating(false);
-
-            DocumentBuilder builder = factory.newDocumentBuilder();
+            DocumentBuilder builder = factory.newDocumentBuilder(); // NOPMD AvoidDocumentBuilder
             builder.setEntityResolver(new EmptyResolver());
             Document dom = builder.parse(input);
 
             return dom;
         } else {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // NOPMD AvoidDocumentBuilderFactory
             factory.setNamespaceAware(true);
-            DocumentBuilder builder = factory.newDocumentBuilder();
+            DocumentBuilder builder = factory.newDocumentBuilder(); // NOPMD AvoidDocumentBuilder
             return builder.parse(input);
         }
     }
@@ -2060,7 +2047,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      *
      * @author Andrea Aime - TOPP
      */
-    static class EmptyResolver implements org.xml.sax.EntityResolver {
+    public static class EmptyResolver implements EntityResolver2 {
+        public static final EmptyResolver INSTANCE = new EmptyResolver();
+
         @Override
         public InputSource resolveEntity(String publicId, String systemId)
                 throws org.xml.sax.SAXException, IOException {
@@ -2071,10 +2060,31 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
             return source;
         }
+
+        @Override
+        public InputSource getExternalSubset(String name, String baseURI) throws SAXException, IOException {
+            return null;
+        }
+
+        @Override
+        public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId)
+                throws SAXException, IOException {
+            StringReader reader = new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            InputSource source = new InputSource(reader);
+            source.setPublicId(publicId);
+            source.setSystemId(systemId);
+
+            return source;
+        }
+
+        @Override
+        public String toString() {
+            return "EmptyResolver";
+        }
     }
 
     protected void checkValidationErorrs(Document dom, String schemaLocation) throws SAXException, IOException {
-        final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        final SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = factory.newSchema(new File(schemaLocation));
         checkValidationErrors(dom, schema);
     }
@@ -2315,9 +2325,11 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      */
     protected void print(Document document, OutputStream output) {
         try {
-            Transformer tx = TransformerFactory.newInstance().newTransformer();
+            TransformerFactory txFactory = XMLUtils.newTransformerFactory();
+            txFactory.setAttribute("indent-number", 2);
+
+            Transformer tx = XMLUtils.newTransformer(txFactory);
             tx.setOutputProperty(OutputKeys.INDENT, "yes");
-            tx.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             tx.transform(new DOMSource(document), new StreamResult(output));
         } catch (Exception e) {
             throw new RuntimeException(e);

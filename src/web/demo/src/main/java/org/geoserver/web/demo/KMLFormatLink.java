@@ -4,9 +4,9 @@
  */
 package org.geoserver.web.demo;
 
-import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.web.PreviewLink;
 
 public class KMLFormatLink extends CommonFormatLink {
 
@@ -22,12 +22,9 @@ public class KMLFormatLink extends CommonFormatLink {
     }
 
     @Override
-    public ExternalLink getFormatLink(PreviewLayer layer) {
-        ExternalLink kmlLink = new ExternalLink(
-                this.getComponentId(),
-                layer.getKmlLink(),
-                (new StringResourceModel(this.getTitleKey(), null, null)).getString());
-        kmlLink.setVisible(layer.hasServiceSupport("WMS") && kmlAvailable);
-        return kmlLink;
+    public PreviewLink getFormatLink(PreviewLayer layer) {
+        if (!layer.hasServiceSupport("WMS") || !kmlAvailable) return null;
+        String label = new StringResourceModel(this.getTitleKey(), null, null).getString();
+        return new PreviewLink(label, layer.getKmlLink(), label);
     }
 }

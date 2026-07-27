@@ -21,7 +21,7 @@ The REST API allows you to list, create, upload, update, and delete styles in Ge
 
 *Response*
 
-``` json
+```json
 {"styles":{"style":[{"name":"burg","href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/burg.json"},{"name":"capitals","href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/capitals.json"},{"name":"dem","href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/dem.json"},{"name":"generic","href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/generic.json"},{"name":"giant_polygon","href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/giant_polygon.json"},{"name":"grass","href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/grass.json"},{"name":"green","href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/green.json"},{"name":"line","href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/line.json"},{"name":"poi","href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/poi.json"},{"name":"point","href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/point.json"},{"name":"polygon","href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/polygon.json"},{"name":"poly_landmarks","href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/poly_landmarks.json"},{"name":"pophatch","href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/pophatch.json"},{"name":"population","href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/population.json"},{"name":"rain","href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/rain.json"},{"name":"raster","href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/raster.json"},{"name":"restricted","href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/restricted.json"},{"name":"simple_roads","href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/simple_roads.json"},{"name":"simple_streams","href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/simple_streams.json"},{"name":"tiger_roads","href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/tiger_roads.json"}]}}
 ```
 
@@ -35,7 +35,7 @@ The REST API allows you to list, create, upload, update, and delete styles in Ge
 
 *Response*
 
-``` xml
+```xml
 <styles>
   <style>
     <name>citerain</name>
@@ -56,7 +56,7 @@ The REST API allows you to list, create, upload, update, and delete styles in Ge
 
 *Response*
 
-``` xml
+```xml
 <StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
   xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">

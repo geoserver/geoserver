@@ -1,0 +1,6 @@
+.cluster-page-settings table td.gs-inline-group input.w-sm {
+  max-width: 3.75rem !important;
+}
+.cluster-page-settings table td.gs-inline-group input.w-md {
+  max-width: 5.5rem !important;
+}

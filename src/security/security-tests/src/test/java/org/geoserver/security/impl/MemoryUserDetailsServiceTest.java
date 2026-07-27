@@ -14,7 +14,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 import org.geoserver.catalog.Catalog;
@@ -36,6 +35,7 @@ import org.geoserver.security.password.DecodingUserDetailsService;
 import org.geoserver.security.password.GeoServerPasswordEncoder;
 import org.geoserver.security.password.PasswordValidator;
 import org.geoserver.test.SystemTest;
+import org.geotools.xml.XMLUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -180,10 +180,8 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         assertTrue(roleFile.exists());
         assertTrue(ugFile.exists());
 
-        Document ugDoc =
-                DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(ugFile);
-        Document roleDoc =
-                DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(roleFile);
+        Document ugDoc = XMLUtils.newDocumentBuilder().parse(ugFile);
+        Document roleDoc = XMLUtils.newDocumentBuilder().parse(roleFile);
         Element roleElem = (Element) roleDoc.getDocumentElement()
                 .getElementsByTagName("toBeEncrypted")
                 .item(0);
@@ -207,8 +205,8 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         getSecurityManager().saveSecurityConfig(config);
         getSecurityManager().updateConfigurationFilesWithEncryptedFields();
 
-        ugDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(ugFile);
-        roleDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(roleFile);
+        ugDoc = XMLUtils.newDocumentBuilder().parse(ugFile);
+        roleDoc = XMLUtils.newDocumentBuilder().parse(roleFile);
         roleElem = (Element) roleDoc.getDocumentElement()
                 .getElementsByTagName("toBeEncrypted")
                 .item(0);
@@ -248,10 +246,8 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         assertTrue(roleFile.exists());
         assertTrue(ugFile.exists());
 
-        Document ugDoc =
-                DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(ugFile);
-        Document roleDoc =
-                DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(roleFile);
+        Document ugDoc = XMLUtils.newDocumentBuilder().parse(ugFile);
+        Document roleDoc = XMLUtils.newDocumentBuilder().parse(roleFile);
         Element roleElem = (Element) roleDoc.getDocumentElement()
                 .getElementsByTagName("toBeEncrypted")
                 .item(0);
@@ -276,8 +272,8 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         getSecurityManager().saveSecurityConfig(config);
         getSecurityManager().updateConfigurationFilesWithEncryptedFields();
 
-        ugDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(ugFile);
-        roleDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(roleFile);
+        ugDoc = XMLUtils.newDocumentBuilder().parse(ugFile);
+        roleDoc = XMLUtils.newDocumentBuilder().parse(roleFile);
         roleElem = (Element) roleDoc.getDocumentElement()
                 .getElementsByTagName("toBeEncrypted")
                 .item(0);
@@ -332,7 +328,7 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
 
         // MockData data = getTestData();
         File store = new File(getDataDirectory().root(), "workspaces/password/password/datastore.xml");
-        Document dom = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(store);
+        Document dom = XMLUtils.newDocumentBuilder().parse(store);
         XPath xpath = XPathFactory.newInstance().newXPath();
         String encrypted = xpath.evaluate("//entry[@key='passwd']", dom.getDocumentElement());
         assertThat(encrypted, equalTo(prefix + "secret"));
@@ -357,7 +353,7 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         //            System.out.println(line);
         //        fi.close();
 
-        dom = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(store);
+        dom = XMLUtils.newDocumentBuilder().parse(store);
         xpath = XPathFactory.newInstance().newXPath();
         encrypted = xpath.evaluate("//entry[@key='passwd']", dom.getDocumentElement());
 

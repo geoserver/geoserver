@@ -122,7 +122,6 @@ public abstract class AbstractURLPublisher extends AbstractController {
             // count < 1 -> empty file
             if (count > 0) {
                 // send out the first four bytes read
-                @SuppressWarnings("PMD.CloseResource") // managed by servlet container
                 OutputStream output = response.getOutputStream();
                 output.write(b4, 0, count);
 

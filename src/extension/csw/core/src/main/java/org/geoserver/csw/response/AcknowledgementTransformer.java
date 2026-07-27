@@ -10,7 +10,6 @@ import java.io.StringReader;
 import java.util.Date;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import net.opengis.cat.csw20.RequestBaseType;
@@ -21,6 +20,7 @@ import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSW;
 import org.geotools.util.Converters;
 import org.geotools.xlink.XLINK;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xml.transform.Translator;
 import org.geotools.xsd.ows.OWS;
 import org.w3c.dom.Document;
@@ -108,9 +108,7 @@ public class AcknowledgementTransformer extends AbstractCSWTransformer {
 
         private void dumpAsXML(Document document) {
             try {
-                TransformerFactory.newInstance()
-                        .newTransformer()
-                        .transform(new DOMSource(document), new SAXResult(contentHandler));
+                XMLUtils.newTransformer().transform(new DOMSource(document), new SAXResult(contentHandler));
             } catch (Exception e) {
                 throw new ServiceException("Failed to re-encode the original request in the Acknowledgement response");
             }
@@ -118,11 +116,11 @@ public class AcknowledgementTransformer extends AbstractCSWTransformer {
 
         private Document parseAsXML(String data) {
             try {
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
                 factory.setNamespaceAware(true);
                 factory.setValidating(false);
 
-                DocumentBuilder builder = factory.newDocumentBuilder();
+                DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory);
                 if (!data.startsWith("<?xml")) {
                     data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + data;
                 }

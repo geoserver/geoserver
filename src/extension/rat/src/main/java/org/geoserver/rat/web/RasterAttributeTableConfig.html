@@ -12,18 +12,26 @@
               </span>
             </legend>
             <div class="gs-unordered-list-class">
-              <div class="gs-list-item-class genericToolbar" wicket:id="styleToolbar">
-                <span>Band</span>
-                <select wicket:id="bands"/>
-                <span>Classification</span>
-                <select wicket:id="classifications"/>
-                <span>Style name</span>
-                <input type="text" wicket:id="styleName"/>
-                <button wicket:id="createStyles" type="submit">
-                  <wicket:message key="RasterAttributeTableConfig.create">Create style</wicket:message>
-                </button>
+              <div class="gs-form genericToolbar" wicket:id="styleToolbar">
+                <div class="gs-form-group">
+                  <span>Band</span>
+                  <select wicket:id="bands" class="w-md" />
+                </div>
+                <div class="gs-form-group">
+                  <span>Classification</span>
+                  <select wicket:id="classifications" class="w-md" />
+                </div>
+                <div class="gs-form-group">
+                  <span>Style name</span>
+                  <div class="gs-input-group">
+                    <input class="w-md" type="text" wicket:id="styleName"/>
+                    <button wicket:id="createStyles" type="submit" class="w-md">
+                      <wicket:message key="RasterAttributeTableConfig.create">Create style</wicket:message>
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div class="gs-list-item-class">
+              <div class="gs-form-group">
                 <div wicket:id="rat" class="largeTable"/>
               </div>
             </div>

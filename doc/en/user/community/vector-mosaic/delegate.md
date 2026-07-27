@@ -6,9 +6,9 @@ The delegate datastore can be in any format that GeoServer supports but there ar
 
 - There must be a geometry field representing the index spatial area in either Polygon or MultiPolygon form. There are not requirements on the name of such field.
 - There should be a field called `params`, in text format, that contains either:
-  - The name of a store already configured in GeoServer (useful to handle few granule stores, and avoid re-creating the store at every read). The string is considered a potential name if it does not contain an equal sign (making it a candidate for property format) or a colon or having path separators (making it a candidate for URI/URL).
-  - The URI/URL pointing at granule resources like shapefiles, GeoPackage, FlatGeobuf, etc. (for simplicity).
-  - A configuration string in .properties format. (See [Java Properties file](https://en.wikipedia.org/wiki/.properties) for more details about the format).
+    - The name of a store already configured in GeoServer (useful to handle few granule stores, and avoid re-creating the store at every read). The string is considered a potential name if it does not contain an equal sign (making it a candidate for property format) or a colon or having path separators (making it a candidate for URI/URL).
+    - The URI/URL pointing at granule resources like shapefiles, GeoPackage, FlatGeobuf, etc. (for simplicity).
+    - A configuration string in .properties format. (See [Java Properties file](https://en.wikipedia.org/wiki/.properties) for more details about the format).
 
 In addition to that, the following fields are optional:
 
@@ -29,7 +29,7 @@ Here is an example that generates a delegate shapefile from a directory of shape
 1. ogrtindex  -write_absolute_path -tileindex "params" delegate_raw.shp *.shp 
 1. ogr2ogr delegate.shp delegate_raw.shp -dialect SQLite -sql "SELECT Geometry,'file://'||SUBSTR(params,1,LENGTH(params)-2) AS params from delegate_raw"  
 
-The `delegate.shp` shapefile can then be published as a store in GeoServer (no need to publish the layer), and then the mosaic store can be created, referencing to it:  For example, let's say one downloads the [TIGER shapefile](https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html) for the ``PLACE`` theme, providing a shapefile with urban areas for each of the US states.
+The `delegate.shp` shapefile can then be published as a store in GeoServer (no need to publish the layer), and then the mosaic store can be created, referencing to it:  For example, let's say one downloads the [TIGER shapefile](https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html) for the `PLACE` theme, providing a shapefile with urban areas for each of the US states.
 
 ![](images/places-files.png)
 

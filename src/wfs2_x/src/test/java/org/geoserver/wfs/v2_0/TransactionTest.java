@@ -25,6 +25,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.WFSException;
@@ -1271,16 +1272,18 @@ public class TransactionTest extends WFS20TestSupport {
     public void testEntityExpansionLimitOnTransaction() throws Exception {
         try {
             System.getProperties().setProperty(WFSXmlUtils.ENTITY_EXPANSION_LIMIT, "1");
-            Document dom = postAsDOM("wfs", xmlEntityExpansionLimitBody());
+            System.getProperties().setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
+            Document dom = postAsDOM("wfs", xmlEntityExpansionLimitBody(), null, false);
             NodeList serviceExceptionList = dom.getElementsByTagName("ows:ExceptionText");
             assertEquals(1, serviceExceptionList.getLength());
             Node serviceException = serviceExceptionList.item(0);
             // the service exception should contain the JAXP00010001 error code, that means entity
             // expansion limit is working.
             String textContent = serviceException.getTextContent();
-            assertThat(textContent, containsString("JAXP00010001"));
+            assertThat("JAXP00010001", textContent, containsString("JAXP00010001"));
         } finally {
             System.getProperties().remove(WFSXmlUtils.ENTITY_EXPANSION_LIMIT);
+            System.getProperties().remove(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
         }
     }
 

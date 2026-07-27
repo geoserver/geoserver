@@ -24,7 +24,7 @@ The examples below use the [cURL](http://curl.haxx.se/) tool, though the example
 
 The following returns the current disk quota configuration in **XML** format:
 
-``` console
+```console
 curl -u admin:geoserver -v -XGET http://localhost:8080/geoserver/gwc/rest/diskquota.xml
 ```
 
@@ -52,7 +52,7 @@ curl -u admin:geoserver -v -XGET http://localhost:8080/geoserver/gwc/rest/diskqu
 
 The following returns the current disk quota configuration in **JSON** format:
 
-``` xml
+```xml
 curl -u admin:geoserver -v -XGET http://localhost:8080/geoserver/gwc/rest/diskquota.json
 ```
 
@@ -85,7 +85,7 @@ curl -u admin:geoserver -v -XGET http://localhost:8080/geoserver/gwc/rest/diskqu
 
 The following XML example successfully enables the quota and sets the globalQuota size:
 
-``` console
+```console
 curl -v -u admin:geoserver "http://localhost:8090/geoserver/gwc/rest/diskquota.xml" -X PUT -d "<gwcQuotaConfiguration><enabled>true</enabled><globalQuota><value>100</value><units>GiB</units></globalQuota></gwcQuotaConfiguration>"
 ```
 
@@ -113,7 +113,7 @@ curl -v -u admin:geoserver "http://localhost:8090/geoserver/gwc/rest/diskquota.x
 
 The following JSON example changes the globalQuote and expirationPolicyName parameters:
 
-``` console
+```console
 curl -v -u admin:geoserver "http://localhost:8090/geoserver/gwc/rest/diskquota.json" -X PUT -d "{"gwcQuotaConfiguration":{"globalQuota":{"value":"100","units":"MiB"},"globalExpirationPolicyName":"LRU"}}"
 ```
 
@@ -131,7 +131,7 @@ curl -v -u admin:geoserver "http://localhost:8090/geoserver/gwc/rest/diskquota.j
 
 The following *invalid* XML example has an invalid parameter (maxConcurrentCleanUps must be > 0). It returns a 400 response code and contains an error message as plain text:
 
-``` console
+```console
 curl -v -u admin:geoserver "http://localhost:8090/geoserver/gwc/rest/diskquota.xml" -X PUT -d "<gwcQuotaConfiguration><maxConcurrentCleanUps>-1</maxConcurrentCleanUps></gwcQuotaConfiguration>"
 ```
 
@@ -149,7 +149,7 @@ maxConcurrentCleanUps shall be a positive integer: -1
 
 The following *invalid* JSON example uses an unknown unit of measure (ZZiB). It returns a 400 response code and contains an error message as plain text:
 
-``` console
+```console
 curl -v -u admin:geoserver "http://localhost:8090/geoserver/gwc/rest/diskquota.json" -X PUT -d "{"gwcQuotaConfiguration":{"globalQuota":{"value":"100","units":"ZZiB"}}}"
 ```
 

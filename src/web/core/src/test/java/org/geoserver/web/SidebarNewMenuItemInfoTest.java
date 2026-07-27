@@ -44,8 +44,8 @@ public class SidebarNewMenuItemInfoTest {
     @Test
     public void testSetIcon() {
         SidebarNewMenuItemInfo info = new SidebarNewMenuItemInfo();
-        info.setIcon("img/icons/silk/add.png");
-        assertEquals("img/icons/silk/add.png", info.getIcon());
+        info.setIcon("gs-icon-add");
+        assertEquals("gs-icon-add", info.getIcon());
     }
 
     @Test

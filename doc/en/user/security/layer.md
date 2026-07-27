@@ -24,15 +24,15 @@ The parameters include:
 
 - `workspace`--- Name of the workspace. The wildcard `*` is used to indicate all workspaces.
 
-- `layer`--- Name of a resource (featuretype/coverage/etc\...). The wildcard `*` is used to indicate all layers.
+- `layer`--- Name of a resource (featuretype/coverage/etc...). The wildcard `*` is used to indicate all layers.
 
 - `workspaceLayerGroup`--- Name of a workspace specific layer group.
 
 - `permission`--- Type of access permission/mode.
 
-  - `r`---Read access
-  - `w`---Write access
-  - `a`---Admin access
+    - `r`---Read access
+    - `w`---Write access
+    - `a`---Admin access
 
   See [Access modes](#access_mode) for more details.
 

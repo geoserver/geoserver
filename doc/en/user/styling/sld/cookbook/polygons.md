@@ -34,7 +34,7 @@ This example shows a polygon filled in blue.
 
 [View and download the full "Simple polygon" SLD](artifacts/polygon_simplepolygon.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <PolygonSymbolizer>
@@ -65,7 +65,7 @@ This example adds a 2 pixel white stroke to the [Simple polygon](#sld_cookbook_p
 
 [View and download the full "Simple polygon with stroke" SLD](artifacts/polygon_simplepolygonwithstroke.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <PolygonSymbolizer>
@@ -97,7 +97,7 @@ This example builds on the [Simple polygon with stroke](#sld_cookbook_polygons_s
 
 [View and download the full "Transparent polygon" SLD](artifacts/polygon_transparentpolygon.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <PolygonSymbolizer>
@@ -130,7 +130,7 @@ Shows how to draw inner buffer lines inside a polygon.
 
 [View and download the full "Inner offset lines" SLD](artifacts/polygon_offset.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <PolygonSymbolizer>
@@ -166,7 +166,7 @@ This example fills the polygons with a tiled graphic.
 
 [View and download the full "Graphic fill" SLD](artifacts/polygon_graphicfill.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <PolygonSymbolizer>
@@ -211,7 +211,7 @@ This example fills the polygons with a hatching pattern.
 
 [View and download the full "Hatching fill" SLD](artifacts/polygon_hatchingfill.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <PolygonSymbolizer>
@@ -250,7 +250,7 @@ This example shows a text label on the polygon. In the absence of any other cust
 
 [View and download the full "Polygon with default label" SLD](artifacts/polygon_polygonwithdefaultlabel.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <PolygonSymbolizer>
@@ -287,7 +287,7 @@ This example alters the look of the [Polygon with default label](#sld_cookbook_p
 
 [View and download the full "Label halo" SLD](artifacts/polygon_labelhalo.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <PolygonSymbolizer>
@@ -333,7 +333,7 @@ This example improves the label style from the [Polygon with default label](#sld
 
 [View and download the full "Polygon with styled label" SLD](artifacts/polygon_polygonwithstyledlabel.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <PolygonSymbolizer>
@@ -393,7 +393,7 @@ This example styles the polygons differently based on the "pop" (Population) att
 
 [View and download the full "Attribute-based polygon" SLD](artifacts/polygon_attributebasedpolygon.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <Name>SmallPop</Name>
@@ -492,7 +492,7 @@ This example alters the style of the polygon at different zoom levels.
 
 [View and download the full "Zoom-based polygon" SLD](artifacts/polygon_zoombasedpolygon.sld)
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Rule>
     <Name>Large</Name>

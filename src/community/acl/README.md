@@ -66,6 +66,32 @@ In order to completely disabling the plugin, set it to `false`:
 -Dgeoserver.acl.client.enabled=false
 ```
 
+#### Startup API probe
+
+At startup the plugin verifies it can reach the ACL API server before letting GeoServer come up. The probe can be
+tuned or disabled through two additional properties:
+
+- `geoserver.acl.client.startupCheck` — whether to perform the server API check during startup. Defaults to `true`.
+  Set to `false` to let GeoServer start even when the ACL server is unreachable at boot time; the client will
+  keep retrying on demand. Useful for offline smoke tests or environments where the ACL server starts after
+  GeoServer.
+
+- `geoserver.acl.client.initTimeout` — timeout, in seconds, to wait for the API server to become available during
+  the startup probe. Defaults to a short grace period; raise it when the ACL server has a slower cold start than
+  GeoServer, lower it to fail fast in CI.
+
+```
+-Dgeoserver.acl.client.startupCheck=false
+-Dgeoserver.acl.client.initTimeout=60
+```
+
+Or via environment variables:
+
+```
+export GEOSERVER_ACL_CLIENT_STARTUPCHECK=false
+export GEOSERVER_ACL_CLIENT_INITTIMEOUT=60
+```
+
 ### Environment variables
 
 In production environments it's usually more convenient to control configuration options through

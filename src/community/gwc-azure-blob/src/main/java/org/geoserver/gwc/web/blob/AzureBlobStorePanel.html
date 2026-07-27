@@ -4,52 +4,74 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-AzureBlobStorePanel">
-        <fieldset>
-          <label for="container">
-            <wicket:message key="container"></wicket:message>
-          </label>
-          <input id="container" wicket:id="container" type="text" />
-          <label for="accountName">
-            <wicket:message key="accountName"></wicket:message>
-          </label>
-          <input id="accountName" wicket:id="accountName" type="text" />
-          <label for="accountKey">
-            <wicket:message key="accountKey"></wicket:message>
-          </label>
-          <input id="accountKey" wicket:id="accountKey" type="text" />
-          <label for="prefix">
-            <wicket:message key="prefix"></wicket:message>
-          </label>
-          <input id="prefix" wicket:id="prefix" type="text" />
-          <label for="serviceURL">
-            <wicket:message key="serviceURL"></wicket:message>
-          </label>
-          <input id="serviceURL" wicket:id="serviceURL" type="text" />
-          <label for="maxConnections">
-            <wicket:message key="maxConnections"></wicket:message>
-          </label>
-          <input id="maxConnections" wicket:id="maxConnections" type="text" />
-          <label for="useHTTPS">
-            <wicket:message key="useHTTPS"></wicket:message>
-          </label>
-          <input id="useHTTPS" wicket:id="useHTTPS" type="checkbox" />
-          <label for="proxyHost">
-            <wicket:message key="proxyHost"></wicket:message>
-          </label>
-          <input id="proxyHost" wicket:id="proxyHost" type="text" />
-          <label for="proxyPort">
-            <wicket:message key="proxyPort"></wicket:message>
-          </label>
-          <input id="proxyPort" wicket:id="proxyPort" type="text" />
-          <label for="proxyUsername">
-            <wicket:message key="proxyUsername"></wicket:message>
-          </label>
-          <input id="proxyUsername" wicket:id="proxyUsername" type="text" />
-          <label for="proxyPassword">
-            <wicket:message key="proxyPassword"></wicket:message>
-          </label>
-          <input id="proxyPassword" wicket:id="proxyPassword" type="text" />
-        </fieldset>
+        <div class="gs-form">
+          <div class="gs-form-group">
+            <label for="container">
+              <wicket:message key="container"></wicket:message>
+            </label>
+            <input id="container" wicket:id="container" type="text" />
+          </div>
+          <div class="gs-form-group">
+            <label for="accountName">
+              <wicket:message key="accountName"></wicket:message>
+            </label>
+            <input id="accountName" wicket:id="accountName" type="text" />
+          </div>
+          <div class="gs-form-group">
+            <label for="accountKey">
+              <wicket:message key="accountKey"></wicket:message>
+            </label>
+            <input id="accountKey" wicket:id="accountKey" type="text" />
+          </div>
+          <div class="gs-form-group">
+            <label for="prefix">
+              <wicket:message key="prefix"></wicket:message>
+            </label>
+            <input id="prefix" wicket:id="prefix" type="text" />
+          </div>
+          <div class="gs-form-group">
+            <label for="serviceURL">
+              <wicket:message key="serviceURL"></wicket:message>
+            </label>
+            <input id="serviceURL" wicket:id="serviceURL" type="text" />
+          </div>
+          <div class="gs-form-group">
+            <label for="maxConnections">
+              <wicket:message key="maxConnections"></wicket:message>
+            </label>
+            <input id="maxConnections" wicket:id="maxConnections" type="text" />
+          </div>
+          <div class="choiceItem">
+            <input id="useHTTPS" wicket:id="useHTTPS" type="checkbox" />
+            <label for="useHTTPS">
+              <wicket:message key="useHTTPS"></wicket:message>
+            </label>
+          </div>
+          <div class="gs-form-group">
+            <label for="proxyHost">
+              <wicket:message key="proxyHost"></wicket:message>
+            </label>
+            <input id="proxyHost" wicket:id="proxyHost" type="text" />
+          </div>
+          <div class="gs-form-group">
+            <label for="proxyPort">
+              <wicket:message key="proxyPort"></wicket:message>
+            </label>
+            <input id="proxyPort" wicket:id="proxyPort" type="text" />
+          </div>
+          <div class="gs-form-group">
+            <label for="proxyUsername">
+              <wicket:message key="proxyUsername"></wicket:message>
+            </label>
+            <input id="proxyUsername" wicket:id="proxyUsername" type="text" />
+          </div>
+          <div class="gs-form-group">
+            <label for="proxyPassword">
+              <wicket:message key="proxyPassword"></wicket:message>
+            </label>
+            <input id="proxyPassword" wicket:id="proxyPassword" type="text" />
+          </div>
+        </div>
       </div>
     </wicket:panel>
   </body>

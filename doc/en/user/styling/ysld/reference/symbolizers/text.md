@@ -223,9 +223,9 @@ feature-styles:
 
 ### Grouped labels
 
-Grouping and other properties can be used to better control where labels are placed. The `x-group` option combines all labels with identical text into a single label. This can be useful to show only a single label for a street rather than having a label on every block of the street. The `x-goodnesOfFit` option determines whether or not to draw labels based on how well they fit into the available space. The `x-maxDisplacement` option determines the maximum distance a label can be moved to avoid overlaps.
+Grouping and other properties can be used to better control where labels are placed. The `x-group` option combines all labels with identical text into a single label. This can be useful to show only a single label for a street rather than having a label on every block of the street. The `x-goodnessOfFit` option determines whether or not to draw labels based on how well they fit into the available space. The `x-maxDisplacement` option determines the maximum distance a label can be moved to avoid overlaps.
 
-The following example uses `x-group` to ensure only one label is drawn for each feature, and sets `x-goodnesOfFit` to zero so that labels will be drawn even if they have a poor fit:
+The following example uses `x-group` to ensure only one label is drawn for each feature, and sets `x-goodnessOfFit` to zero so that labels will be drawn even if they have a poor fit:
 
 ```yaml
 feature-styles:

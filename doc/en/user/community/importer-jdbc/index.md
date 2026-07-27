@@ -11,7 +11,7 @@ The module zip just need to be unpacked in the GeoServer `WEB-INF\lib`. On start
 
 The property file can be modified to point to an external database, for example, the following contents are suitable for a PostGIS database (PostGIS extensions mandatory, even if not used):
 
-``` scss
+```scss
 dbtype=postgis
 user=myUserName
 passwd=myPassword
@@ -23,7 +23,7 @@ schema=public
 
 On connection the code will create one table and the suitable indexes to track the imports. In case the user above is not allowed to create tables, the following SQL statement can be used (adapt to the specific database):
 
-``` sql
+```sql
 CREATE TABLE public.import_context
 (
   fid serial,

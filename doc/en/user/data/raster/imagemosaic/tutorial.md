@@ -8,7 +8,7 @@ This is a process very similar to creating a featuretype. More specifically, one
 
 ### Create a new store
 
-1.  Go to **Data Panel --> Stores** and click **Add new Store**.
+1.  Go to **Data > Stores** and click **Add new Store**.
 
 2.  Select **ImageMosaic** under **Raster Data Source**:
 
@@ -19,7 +19,7 @@ This is a process very similar to creating a featuretype. More specifically, one
 3.  In order to create a new mosaic it is necessary to choose a workspace and store name in the **Basic Store Info** section, as well as a URL in the **Connection Parameters** section. Valid URLs include:
 
     - The absolute path to the shapefile index, or a directory containing the shapefile index.
-    - The absolute path to the configuration file (``\*.properties````) or a directory containing the configuration file. If ````datastore.properties```` and ````indexer.properties``\` exist, they should be in the same directory as this configuration file.
+    - The absolute path to the configuration file (`*.properties`) or a directory containing the configuration file. If **`datastore.properties`** and **`indexer.properties`** exist, they should be in the same directory as this configuration file.
     - The absolute path of a directory where the files you want to mosaic reside. In this case GeoServer automatically creates the needed mosaic files (.dbf, .prj, .properties, .shp and .shx) by inspecting the data present in the given directory and any subdirectories.
 
 4.  Click **Save**:
@@ -30,7 +30,7 @@ This is a process very similar to creating a featuretype. More specifically, one
 
 ### Create a new coverage
 
-1.  Navigate to **Data Panel \--\> Layers** and click **Add a new resource**.
+1.  Navigate to **Data > Layers** and click **Add a new resource**.
 
 2.  Choose the name of the store you just created:
 
@@ -48,7 +48,7 @@ This is a process very similar to creating a featuretype. More specifically, one
 
 5.  Click **Save**.
 
-6.  Use the **Layer Preview** to view the mosaic.
+6.  Use the **Browse Layers** to view the mosaic.
 
 !!! warning
     If the created layer appears to be all black, it may be that GeoServer has not found any acceptable granules in the provided index. It is also possible that the shapefile index is empty (no granules were found in the provided directory) or it might be that the granules' paths in the shapefile index are not correct, which could happen if an existing index (using absolute paths) is moved to another place. If the shapefile index paths are not correct, then the DBF file can be opened and fixed with an editor. Alternately, you can delete the index and let GeoServer recreate it from the root directory.
@@ -65,7 +65,7 @@ The first operation is to create the CoverageStore specifying, for example, the 
 
 Inside the Coverage Editor Publishing tab, you can specify the **dem** default style in order to represent the visualization style of the mosaic. The following is an example style:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <StyledLayerDescriptor version="1.0.0"
   xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
@@ -137,7 +137,7 @@ The configuration parameters are as follows:
 
 In this example we are going to create a mosaic that will serve aerial imagery, specifically RGB GeoTIFFs. Because this is visual data, in the Coverage Editor you can use the basic `raster` style, which is just a stub SLD to instruct the GeoServer raster renderer to not do anything particular in terms of color management:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <StyledLayerDescriptor version="1.0.0"
   xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
@@ -229,7 +229,7 @@ A mosaic need not be static. It can contain granules which change, are added or 
 
 ![](images/tutorial_dynamic1.png)
 
-*This mosaic contains 5 granules. Note that ``InputTransparentColor`` is set to ``#FFFFFF`` here.*
+*This mosaic contains 5 granules. Note that `InputTransparentColor` is set to `#FFFFFF` here.*
 
 To add new granules, the index that was created when the mosaic was originally created needs to be regenerated. There are two ways to do this:
 
@@ -240,12 +240,12 @@ To update an ImageMosaic through the file system:
 
 1.  Update the contents of the mosaic by copying the new files into place. (Subdirectories are acceptable.)
 2.  Delete the index files. These files are contained in the top level directory containing the mosaic files and include (but are not limited to) the following:
-    - **\`\<mosaic_name\>.dbf\`**
-    - **\`\<mosaic_name\>.fix\`**
-    - **\`\<mosaic_name\>.prj\`**
-    - **\`\<mosaic_name\>.properties\`**
-    - **\`\<mosaic_name\>.shp\`**
-    - **\`\<mosaic_name\>.shx\`**
+    - **`<mosaic_name>.dbf`**
+    - **`<mosaic_name>.fix`**
+    - **`<mosaic_name>.prj`**
+    - **`<mosaic_name>.properties`**
+    - **`<mosaic_name>.shp`**
+    - **`<mosaic_name>.shx`**
 3.  *(Optional but recommended)* Edit the layer definition in GeoServer, making to sure to update the bounding box information (if changed).
 4.  Save the layer. The index will be recreated.
 
@@ -266,11 +266,11 @@ In this example, we will serve up overlapping granules that have varying resolut
 
 2.  Create the mosaic in GeoServer.
 
-3.  One important configuration setting is the **SORTING** parameter of the layer. In order to see the highest resolution imagery on top (the typical case), it must be set to ``resolution A``. (For the case of lowest resolution on top, use ``resolution D`` .)
+3.  One important configuration setting is the **SORTING** parameter of the layer. In order to see the highest resolution imagery on top (the typical case), it must be set to `resolution A`. (For the case of lowest resolution on top, use `resolution D`.)
 
 4.  Make any other configuration changes.
 
-5.  Also, in order to allow for multiple CRSs in a single mosaic, an **\`indexer.properties\`** file will need to be created. Use the following :
+5.  Also, in order to allow for multiple CRSs in a single mosaic, an **`indexer.properties`** file will need to be created. Use the following :
 
     ```properties
     GranuleAcceptors=org.geotools.gce.imagemosaic.acceptors.HeterogeneousCRSAcceptorFactory
@@ -297,7 +297,7 @@ In this example, we will serve up overlapping granules that have varying resolut
 
 ## Referring to a datastore configured in GeoServer
 
-It is possible to make the mosaic refer to an existing data store. The **\`\`datastore.properties\`\`** file in this case will contain only one or two properties, referring to the store to be used via the `StoreName` property. For simple cases, e.g., a PostGIS store, the following will be sufficient:
+It is possible to make the mosaic refer to an existing data store. The **`datastore.properties`** file in this case will contain only one or two properties, referring to the store to be used via the `StoreName` property. For simple cases, e.g., a PostGIS store, the following will be sufficient:
 
 ```properties
 StoreName=workspace:storename
@@ -310,11 +310,11 @@ StoreName=workspace:storename
 SPI=org.geotools.data.oracle.OracleNGDataStoreFactory
 ```
 
-The above will be sufficient in case the image mosaic can create the index table and perform normal indexing, using the directory name as the table name. In case a specific table name needs to be used, add an **\`\`indexer.properties\`\`** specifying the `TypeName` property, e.g.:
+The above will be sufficient in case the image mosaic can create the index table and perform normal indexing, using the directory name as the table name. In case a specific table name needs to be used, add an **`indexer.properties`** specifying the `TypeName` property, e.g.:
 
-> TypeName=myMosaicTypeName
+`TypeName=myMosaicTypeName`
 
-In case the index "table" already exists instead, then a **\`\`indexer.properties\`\`** file will be required, with the following contents:
+In case the index "table" already exists instead, then a **`indexer.properties`** file will be required, with the following contents:
 
 ```properties
 UseExistingSchema=true

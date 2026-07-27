@@ -20,6 +20,9 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.util.EntityResolverProvider;
+import org.geotools.util.NullEntityResolver;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -54,6 +57,16 @@ public final class LayersNamesAliasingTest extends AbstractAppSchemaTestSupport 
         // instantiate WFS 2.0 xpath engine
         WFS20_XPATH_ENGINE = StationsMockData.buildXpathEngine(
                 getBaseNamespaces(), "wfs", "http://www.opengis.net/wfs/2.0", "gml", "http://www.opengis.net/gml/3.2");
+    }
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
     }
 
     @Override

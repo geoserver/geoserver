@@ -255,7 +255,7 @@ With the use of virtual services being available additional configuration option
 
 ### Turning off global services {: #global_services_off }
 
-It is possible to completely restrict access to the global OWS services by adjusing [Enable Global Services](globalsettings.md#config_globalsettings_global). When global access is disabled OWS services may only occur through a virtual workspace or layer service.
+It is possible to completely restrict access to the global OWS services by adjusting [Enable Global Services](globalsettings.md#config_globalsettings_global). When global access is disabled OWS services may only occur through a virtual workspace or layer service.
 
 ![](img/global-services-disabled.png)
 
@@ -269,9 +269,9 @@ To disable global services, log into the GeoServer web administration interface 
 
 ### Isolated Workspaces {: #workspace_isolated }
 
-When publishing XML content each FeatureType is published into an XML Namespace. This allows a layer with the same name to be differentiated as they end up with a unique qualified name (in the form ``<namespace>:<layer-name>``). For this approach to avoid any conflicts each workspace is required to have a unique XML Namesapce.
+When publishing XML content each FeatureType is published into an XML Namespace. This allows a layer with the same name to be differentiated as they end up with a unique qualified name (in the form `<namespace>:<layer-name>`). For this approach to avoid any conflicts each workspace is required to have a unique XML Namespace.
 
-Isolated workspaces allow GeoServer to configure two workspaces with the same XML Namespace, with the with the guarantee that can only be accessed different WFS or WMS Services. This places some restrictions (outlined in examples below) to ensure there is no opportunity for namespace conflict.
+Isolated workspaces allow GeoServer to configure two workspaces with the same XML Namespace, with the guarantee that can only be accessed different WFS or WMS Services. This places some restrictions (outlined in examples below) to ensure there is no opportunity for namespace conflict.
 
 Isolated workspaces content is only visible and queryable in the context of a virtual service bound to the isolated workspace. This means that isolated workspaces content will not show up in global capabilities documents and global services cannot query isolated workspaces contents. Note that these restrictions do not apply to the REST API.
 
@@ -281,7 +281,7 @@ A workspace can be made isolated by checking the **Isolated Workspace** checkbox
 
 *Making a workspace isolated*
 
-An isolated workspace will be able to reuse an XML namespace already used by another workspace, but its resources (layers, styles, etc \...) can only be retrieved when using that workspace virtual services and will only show up in those virtual services capabilities documents.
+An isolated workspace will be able to reuse an XML namespace already used by another workspace, but its resources (layers, styles, etc ...) can only be retrieved when using that workspace virtual services and will only show up in those virtual services capabilities documents.
 
 It is only possible to create two or more workspaces with the same XML namespace in GeoServer if only one of them is non isolated, i.e. isolated workspaces have no restrictions in namespaces usage but two non isolated workspaces can't use the same namespace.
 
@@ -316,4 +316,4 @@ In the example above st2 is the isolated workspace. Consider the following WFS G
 
 The first request is targeting WFS global service and requesting layer2, this request will use layer2 contained by workspace st1. The second request is targeting st2 workspace WFS virtual service, layer2 belonging to workspace st2 will be used. Request three and four will use layer2 belonging to workspace, respectively, st1 and st2. The last two requests will fail saying that the feature type was not found, isolated workspaces content is not visible globally.
 
-**The rule of thumb is that resources (layers, styles, etc \...) belonging to an isolated workspace can only be retrieved when using that workspaces virtual services and will only show up in those virtual services capabilities documents.**
+**The rule of thumb is that resources (layers, styles, etc ...) belonging to an isolated workspace can only be retrieved when using that workspaces virtual services and will only show up in those virtual services capabilities documents.**

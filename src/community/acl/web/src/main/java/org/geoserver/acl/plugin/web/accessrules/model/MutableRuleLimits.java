@@ -23,9 +23,9 @@ public class MutableRuleLimits implements Serializable, Cloneable {
     public MutableRuleLimits() {}
 
     public MutableRuleLimits(@NonNull RuleLimits limits) {
-        allowedArea = limits.getAllowedArea();
-        spatialFilterType = limits.getSpatialFilterType();
-        catalogMode = limits.getCatalogMode();
+        allowedArea = limits.allowedArea();
+        spatialFilterType = limits.spatialFilterType();
+        catalogMode = limits.catalogMode();
     }
 
     public @Override MutableRuleLimits clone() {

@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.collections4.iterators.NodeListIterator;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -39,6 +38,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -259,7 +259,7 @@ public class MapDecorationLayout {
     public static MapDecorationLayout fromFile(Resource f, boolean tiled) throws Exception {
         MapDecorationLayout dl = tiled ? new MetatiledMapDecorationLayout() : new MapDecorationLayout();
 
-        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        DocumentBuilder builder = XMLUtils.newDocumentBuilder();
         Document confFile;
         try (InputStream in = f.in()) {
             confFile = builder.parse(in);
@@ -278,7 +278,7 @@ public class MapDecorationLayout {
     public static MapDecorationLayout fromString(String definition, boolean tiled) throws Exception {
         MapDecorationLayout dl = tiled ? new MetatiledMapDecorationLayout() : new MapDecorationLayout();
 
-        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        DocumentBuilder builder = XMLUtils.newDocumentBuilder();
         InputSource source = new InputSource(new StringReader(definition));
         Document confFile = builder.parse(source);
 

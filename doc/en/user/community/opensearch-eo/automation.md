@@ -16,7 +16,7 @@ In general terms, one would:
 
 ## Understanding the zip file uploads
 
-The description of a collection and product is normally made of various components, in order to expedite data creation and reduce protocol chattines, it is possible to bulk-upload all files composing the description of collections and products as a single zip file.
+The description of a collection and product is normally made of various components, in order to expedite data creation and reduce protocol chattiness, it is possible to bulk-upload all files composing the description of collections and products as a single zip file.
 
 ### Collection components
 

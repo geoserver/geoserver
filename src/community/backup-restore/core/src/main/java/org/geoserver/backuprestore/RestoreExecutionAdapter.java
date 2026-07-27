@@ -5,7 +5,7 @@
 package org.geoserver.backuprestore;
 
 import org.geoserver.catalog.Catalog;
-import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.job.JobExecution;
 
 /**
  * Wraps a Spring Batch Restore {@link JobExecution} by adding specific {@link Backup} I/O parameters.

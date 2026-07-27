@@ -140,7 +140,7 @@ abstract class AclGeoServerSystemTestSupport extends GeoServerSystemTestSupport 
      */
     private void createDefaultRules(RuleAdminService ruleAdminService) {
         List<Rule> rules = ruleAdminService.getAll().collect(Collectors.toList());
-        rules.stream().map(Rule::getId).forEach(ruleAdminService::delete);
+        rules.stream().map(Rule::id).forEach(ruleAdminService::delete);
         ruleAdminService.insert(Rule.allow().withUsername("admin"));
         ruleAdminService.insert(Rule.allow().withService("WMS"));
         ruleAdminService.insert(Rule.deny());

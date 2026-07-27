@@ -49,7 +49,7 @@ import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.StyleParameterFilter;
 import org.geoserver.gwc.web.GWCIconFactory;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
-import org.geoserver.web.wicket.Icon;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.filter.parameters.FloatParameterFilter;
@@ -224,7 +224,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                         target.add(container);
                     }
                 };
-                removeLink.add(new Icon("removeIcon", GWCIconFactory.DELETE_ICON));
+                removeLink.add(new GsIcon("removeIcon", GWCIconFactory.DELETE_ICON));
                 removeLink.setDefaultModel(item.getModel());
                 removeLink.add(new AttributeModifier("title", new ResourceModel("ParameterFilterEditor.removeLink")));
                 item.add(removeLink);
@@ -261,7 +261,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                 target.add(container);
             }
         };
-        addStyleFilterLink.add(new Icon("addIcon", GWCIconFactory.ADD_ICON));
+        addStyleFilterLink.add(new GsIcon("addIcon", GWCIconFactory.ADD_ICON));
         add(addStyleFilterLink);
 
         // FIXME: make this extensible so new kinds of filter can be supported by
@@ -347,7 +347,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                 target.add(container);
             }
         };
-        addFilterLink.add(new Icon("addIcon", GWCIconFactory.ADD_ICON));
+        addFilterLink.add(new GsIcon("addIcon", GWCIconFactory.ADD_ICON));
         add(addFilterLink);
     }
 

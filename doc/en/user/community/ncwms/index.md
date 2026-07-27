@@ -31,7 +31,7 @@ Several ready to use palettes coming from the popular "color brewer" site are av
 
 The palette translates on the fly into a SLD with rendering transformation using the [Dynamic colormap generation](../colormap/index.md) module, in particular, the above style translates to the following style:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" version="1.0.0">
   <sld:NamedLayer>
@@ -165,20 +165,20 @@ For example:
 - Getting a time series as PNG: <http://localhost:8080/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetTimeSeries&FORMAT=image%2Fjpeg&TIME=2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z&QUERY_LAYERS=watertemp&STYLES&LAYERS=watertemp&INFO_FORMAT=image%2Fpng&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG%3A4326&WIDTH=101&HEIGHT=101&BBOX=3.724365234375%2C40.81420898437501%2C5.943603515625%2C43.03344726562501>
 - Getting a time series as JPG: <http://localhost:8080/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetTimeSeries&FORMAT=image%2Fjpeg&TIME=2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z&QUERY_LAYERS=watertemp&STYLES&LAYERS=watertemp&INFO_FORMAT=image%2Fjpg&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG%3A4326&WIDTH=101&HEIGHT=101&BBOX=3.724365234375%2C40.81420898437501%2C5.943603515625%2C43.03344726562501>
 
-The INFO_FORMAT accepts the following values: ``image/png``, ``image/jpg`` and ``text/csv``
+The INFO_FORMAT accepts the following values: `image/png`, `image/jpg` and `text/csv`
 
 The TIME parameter accepts a time range as defined for other operations in the WMS standard (see Annex D of the 06-042 Web Map Server Implementation Specification). Examples:
 
-- ``TIME=2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z``
-- ``TIME=2008-10-31T00:00:00.000Z/2008-10-31T00:00:00.000Z``
+- `TIME=2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z`
+- `TIME=2008-10-31T00:00:00.000Z/2008-10-31T00:00:00.000Z`
 
 Since GeoServer 2.17, TIME parameter also supports 2 additional syntax even if not expressly supported by ncWMS specification:
 
 1.  A List of Times:
-    - Example: ``TIME=2014-01,2015-01,2016-01,2017-01,2018-01``
-    - Example: ``TIME=2017-01-01T00:00:00Z,2017-02-01T00:00:00Z,2017-01-03T00:00:00Z``
+    - Example: `TIME=2014-01,2015-01,2016-01,2017-01,2018-01`
+    - Example: `TIME=2017-01-01T00:00:00Z,2017-02-01T00:00:00Z,2017-01-03T00:00:00Z`
 2.  A periodic time within a range:
-    - Example: ``TIME=2015-01/2019-01/P1Y``
+    - Example: `TIME=2015-01/2019-01/P1Y`
 
     !!! note
         - Shortened time specifications in a list are parsed as time ranges by GeoServer. Therefore, a Time like 2014-01 will represent the whole month of January 2014, so a time range: 2014-01-01T00:00:00/2014-01-31T23:59:59.
@@ -199,7 +199,7 @@ Since GeoServer 2.17, TIME parameter also supports 2 additional syntax even if n
 
 Sample CSV output:
 
-``` none
+```none
 # Latitude: 40.396728515625
 # Longitude: -0.6921386718750019
 Time (UTC),Temperature (degrees)
@@ -215,7 +215,7 @@ Sample chart output:
 
 **Note:** Since GeoServer 2.17, nodata pixels will not be reported in the result chart. Moreover, entries in CSV list related to nodata pixels will report time but will have no pixel value reported, as in the example below for times 2014-02-01 and 2014-05-01:
 
-``` none
+```none
 # Latitude: 40.396728515625
 # Longitude: -0.6921386718750019
 Time (UTC),Temperature (degrees)

@@ -9,13 +9,15 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -103,7 +105,14 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
         paramsForm.add(storeEditPanel);
 
         // cancel/submit buttons
-        paramsForm.add(new BookmarkablePageLink<>("cancel", StorePage.class));
+        paramsForm.add(new Link<Void>("cancel") {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void onClick() {
+                doReturn(StorePage.class);
+            }
+        });
         paramsForm.add(saveLink());
         paramsForm.add(applyLink());
         paramsForm.setDefaultButton(saveLink());
@@ -176,5 +185,17 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
     @Override
     protected ComponentAuthorizer getPageAuthorizer() {
         return ComponentAuthorizer.WORKSPACE_ADMIN;
+    }
+
+    @Override
+    public PageParameters getPageParameters() {
+        PageParameters params = super.getPageParameters();
+        if (params.isEmpty() && workspacePanel != null) {
+            WorkspaceInfo ws = (WorkspaceInfo) workspacePanel.getDefaultModelObject();
+            if (ws != null) {
+                return new PageParameters().add("workspace", ws.getName());
+            }
+        }
+        return params;
     }
 }

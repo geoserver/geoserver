@@ -18,7 +18,7 @@ import org.geoserver.catalog.PublishedInfo;
  * @author Niels Charlier
  */
 public class LayerConfigurationPanelInfo extends PublishedConfigurationPanelInfo<LayerInfo> {
-    public static final long serialVersionUID = -1l;
+    public static final long serialVersionUID = -4013252211140367780L;
 
     private static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.config");
 

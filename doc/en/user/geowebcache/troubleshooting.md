@@ -14,19 +14,19 @@ Direct integration allows WMS requests served through GeoServer to be cached as 
 
 Sometimes requests that should go to GeoWebCache will instead be passed through to GeoServer, resulting in no tiles saved. That said, it is possible to determine why a request was not handled by GeoWebCache when intended. This is done by using the command-line utility [cURL](http://curl.haxx.se) and inspecting the response headers.
 
-First, obtain a sample request. This can easily be done by going to the Layer Preview for a given layer, setting the **Tiled** parameter to **Tiled**, then right-clicking on an area of the map and copy the full path to the image location. If done correctly, the result will be a GET request that looks something like this:
+First, obtain a sample request. This can easily be done by going to the Browse Layers for a given layer, setting the **Tiled** parameter to **Tiled**, then right-clicking on an area of the map and copy the full path to the image location. If done correctly, the result will be a GET request that looks something like this:
 
     http://localhost:8090/geoserver/nurc/wms?LAYERS=nurc%3AArc_Sample&STYLES=&FORMAT=image%2Fjpeg&TILED=true&TILESORIGIN=-180%2C-90&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&BBOX=-45,-45,0,0&WIDTH=256&HEIGHT=256
 
 You can then paste this URL into a curl request:
 
-``` console
+```console
 curl -v "URL"
 ```
 
 For example:
 
-``` console
+```console
 curl -v "http://localhost:8090/geoserver/nurc/wms?LAYERS=nurc%3AArc_Sample&STYLES=&FORMAT=image%2Fjpeg&TILED=true&TILESORIGIN=-180%2C-90&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&BBOX=-45,-45,0,0&WIDTH=256&HEIGHT=256"
 ```
 
@@ -46,7 +46,7 @@ This request was successfully handled by the GeoWebCache WMS.
 
 Request:
 
-``` console
+```console
 curl -v "http://localhost:8080/geoserver/topp/wms?TILED=true&LAYERS=states&FORMAT=image/png&REQUEST=GetMap&STYLES=&SRS=EPSG:4326&BBOX=-135,45,-112.5,67.5&WIDTH=256&HEIGHT=256"
 ```
 
@@ -70,7 +70,7 @@ The following request is not handled by the GeoWebCache WMS because the image re
 
 Request:
 
-``` console
+```console
 curl -v "http://localhost:8080/geoserver/topp/wms?TILED=true&LAYERS=states&FORMAT=image/png&REQUEST=GetMap&STYLES=&SRS=EPSG:4326&BBOX=-135,45,-112.5,67.5&WIDTH=256&HEIGHT=257"
 ```
 
@@ -87,7 +87,7 @@ The following request is not handled by the GeoWebCache WMS because the layer re
 
 Request:
 
-``` console
+```console
 curl -v "http://localhost:8080/geoserver/topp/wms?TILED=true&LAYERS=tasmania_roads&FORMAT=image/png&REQUEST=GetMap&STYLES=&SRS=EPSG:4326&BBOX=-135,45,-112.5,67.5&WIDTH=256&HEIGHT=256"
 ```
 
@@ -104,7 +104,7 @@ The following request is not handled by the GeoWebCache WMS because the request 
 
 Request:
 
-``` console
+```console
 curl -v "http://localhost:8080/geoserver/topp/wms?BGCOLOR=0xAAAAAA&TILED=true&LAYERS=states&FORMAT=image/png&REQUEST=GetMap&STYLES=&SRS=EPSG:4326&BBOX=-135,45,-112.5,67.5&WIDTH=256&HEIGHT=256"
 ```
 
@@ -121,7 +121,7 @@ The following request is not handled by the GeoWebCache WMS because the request 
 
 Request:
 
-``` console
+```console
 curl -v "http://localhost:8080/geoserver/topp/wms?TILED=true&LAYERS=states&FORMAT=image/png&REQUEST=GetMap&STYLES=&SRS=EPSG:26986&BBOX=-135,45,-112.5,67.5&WIDTH=256&HEIGHT=256"
 ```
 
@@ -136,7 +136,7 @@ Response:
 
 If a cached layer uses a style which is tied to a workspace, the layer needs to be viewed in the context of that workspace in order for the style to be visible. Trying to cache such a layer will result in an error.
 
-By default, the embeded GeoWebCache uses the global workspace. This can be overridden using a `WORKSPACE` parameter. To enable this, create a List of Strings Parameter filter for the layer named `WORKSPACE`. Set the default to the name of the workspace containing the style. Setting the other values will not be useful in most cases.
+By default, the embedded GeoWebCache uses the global workspace. This can be overridden using a `WORKSPACE` parameter. To enable this, create a List of Strings Parameter filter for the layer named `WORKSPACE`. Set the default to the name of the workspace containing the style. Setting the other values will not be useful in most cases.
 
 Moving the style to a new workspace will require updating the filter.
 

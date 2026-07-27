@@ -68,9 +68,8 @@ class LayerTypeFormComponent extends FormComponentPanel<LayerType> {
     }
 
     private void onPublishedInfoChangeEvent(PublishedInfoChangeEvent event) {
-        PublishedInfo info = event.getInfo().orElse(null);
-        init(info);
-        event.getTarget().add(this);
+        init(event.info());
+        event.target().add(this);
     }
 
     private void init(PublishedInfo info) {

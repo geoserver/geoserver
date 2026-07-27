@@ -17,6 +17,7 @@
       <outputDirectory></outputDirectory>
       <includes>
 		<include>*vsi*.jar</include>
+        <include>*gdal*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

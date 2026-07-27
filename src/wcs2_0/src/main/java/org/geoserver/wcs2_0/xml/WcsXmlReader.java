@@ -15,6 +15,7 @@ import org.geotools.wcs.v2_0.WCS;
 import org.geotools.wcs.v2_0.WCSConfiguration;
 import org.geotools.xsd.Parser;
 import org.vfny.geoserver.wcs.WcsException;
+import org.xml.sax.EntityResolver;
 
 /**
  * Xml reader for wcs 2.0.1 xml requests.
@@ -37,7 +38,13 @@ public class WcsXmlReader extends XmlRequestReader {
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
         // create the parser instance
         Parser parser = new Parser(configuration);
-        parser.setEntityResolver(resolverProvider.getEntityResolver());
+        EntityResolver entityResolver = resolverProvider.getEntityResolver();
+        parser.setEntityResolver(entityResolver);
+        if (entityResolver != null
+                && (entityResolver.getClass().getSimpleName().equals("DevModeEntityResolver")
+                        || entityResolver.getClass().getSimpleName().equals("InternalEntityResolver"))) {
+            parser.setAllowDTD(true); // Test case using DTD to verify EntityResolver functionality
+        }
 
         // uncomment this once we have a working validator (now it fails due to
         // xlink issues)

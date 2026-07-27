@@ -5,10 +5,15 @@
  */
 package org.geoserver.wfs.xml;
 
+import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.Map;
 import java.util.Optional;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.XmlRequestReader;
@@ -22,6 +27,7 @@ import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.gml2.FeatureTypeCache;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.util.Converters;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.OptionalComponentParameter;
 import org.geotools.xsd.Parser;
@@ -31,7 +37,9 @@ import org.picocontainer.Parameter;
 import org.picocontainer.PicoContainer;
 import org.picocontainer.defaults.BasicComponentParameter;
 import org.picocontainer.defaults.SetterInjectionComponentAdapter;
+import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * Some utilities shared among WFS xml readers/writers.
@@ -62,6 +70,22 @@ public class WFSXmlUtils {
 
         // "inject" namespace mappings
         parser.getNamespaces().add(new CatalogNamespaceSupport(catalog));
+    }
+
+    public static Document xmlDocument(String xmlString)
+            throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
+
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+        factory.setXIncludeAware(false);
+
+        DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory);
+
+        return builder.parse(new InputSource(new StringReader(xmlString)));
     }
 
     public static Object parseRequest(Parser parser, Reader reader, WFSInfo wfs) throws Exception {

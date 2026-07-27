@@ -96,7 +96,7 @@ public class DataAccessRuleEditModel extends AbstractRuleEditModel<MutableRule> 
         }
         LayerDetails ld = modelRule.toLayerDetails();
         if (null != ld) {
-            service.setLayerDetails(rule.getId(), ld);
+            service.setLayerDetails(rule.id(), ld);
         }
         getModel().setObject(new MutableRule(rule, ld));
     }
@@ -181,7 +181,7 @@ public class DataAccessRuleEditModel extends AbstractRuleEditModel<MutableRule> 
         }
         PublishedInfo info = publishedInfoModel.setObject(workspace, layer);
         updateModelFor(info);
-        return Optional.of(new PublishedInfoChangeEvent(workspace, layer, Optional.ofNullable(info), target));
+        return Optional.of(new PublishedInfoChangeEvent(workspace, layer, info, target));
     }
 
     private void updateModelFor(PublishedInfo info) {

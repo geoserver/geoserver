@@ -110,11 +110,11 @@ public class BruteForceAttackTest extends GeoServerSystemTestSupport {
         // idea, setup several threads to do the same failing auth in parallel,
         // ensuring they are all ready to go at the same time using a latch
         final int NTHREADS = 32;
-        ExecutorService service = Executors.newFixedThreadPool(NTHREADS);
         CountDownLatch latch = new CountDownLatch(NTHREADS);
         AtomicInteger concurrentLoginsPrevented = new AtomicInteger(0);
         List<Future<?>> futures = new ArrayList<>();
         long start = System.currentTimeMillis();
+        ExecutorService service = Executors.newFixedThreadPool(NTHREADS);
         for (int i = 0; i < NTHREADS; i++) {
             final int idx = i;
             Future<?> future = service.submit(() -> {

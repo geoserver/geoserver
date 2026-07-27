@@ -11,12 +11,12 @@ import java.util.Map;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import org.geoserver.ows.XmlRequestReader;
 import org.geoserver.ows.xml.v1_0.OWS;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wms.GetCapabilitiesRequest;
+import org.geotools.xml.XMLUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -52,8 +52,7 @@ public class CapabilitiesXmlReader extends XmlRequestReader {
 
         // read in XML file and parse to content handler
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser parser = factory.newSAXParser();
+            SAXParser parser = XMLUtils.newSAXParser();
             ParserAdapter adapter = new ParserAdapter(parser.getParser());
             adapter.setEntityResolver(resolverProvider.getEntityResolver());
             adapter.setContentHandler(currentRequest);

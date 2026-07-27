@@ -22,7 +22,7 @@ In case this is not satisfactory, a `hazelcast.xml` file can be created/edited i
 
 The file is not using a GeoServer specific syntax, it's instead a regular [Hazelcast configuration](https://docs.hazelcast.com/hazelcast/5.3/configuration/configuring-declaratively) file with a simple distributed map declaration:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 Configure Hazelcast for clustering GeoServer's WPS process status.

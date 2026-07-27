@@ -118,16 +118,16 @@ Encoding of a list of rules in JSON:
 | subfield | string | O | An additional generic field for filtering rules. At the moment only used to specify WPS processes in WPS calls. |
 | workspace | string | O | The workspace this rule should be applied to |
 | layer | string | O | The layer this rule should be applied to |
-| access | string | M | The type of access granted. May be `ALLOW | DENY | LIMIT`. When `LIMIT` the ``limits`` element should be declared. |
+| access | string | M | The type of access granted. May be `ALLOW | DENY | LIMIT`. When `LIMIT` the `limits` element should be declared. |
 | limits | complex | C | Mandatory when `access=LIMIT`. Allowed when `access=ALLOW`. Tells how the access should be limited. |
 | allowedArea | EWKT | O | Limit the geographic area that will be returned. |
-| catalogMode | String | O | GeoServer cataog mode to be applied. May be `HIDE | CHALLENGE | MIXED`. |
+| catalogMode | String | O | GeoServer catalog mode to be applied. May be `HIDE | CHALLENGE | MIXED`. |
 | layerDetails | complex | C | Only allowed when `layer` is specified. Set further limitations to the data access when the rule is matched. |
 | defaultStyle | String | O | If not null, forces a different style |
 | cqlFilterRead | CQL | O | Apply the CQL filter to the returned data. |
 | cqlFilterWrite | CQL | O | Limits the features that can be modified. |
 | allowedArea | EWKT | O | Limit the geographic area that will be returned. |
-| catalogMode | String | O | GeoServer cataog mode to be applied. May be `HIDE | CHALLENGE | MIXED`. |
+| catalogMode | String | O | GeoServer catalog mode to be applied. May be `HIDE | CHALLENGE | MIXED`. |
 | attributes | complex | O | Set R/W privileges to the single attributes |
 
 ### Filter Parameters
@@ -144,7 +144,7 @@ All filter parameters are optional.
 | roleAny | 0 or 1. | Specify whether rules matching any rolename are included or not. |
 | ipAddress | string | Filter rules on IP address range (only select rules with an address range that includes the passed IP address). |
 | ipAddressAny | 0 or 1. | Specify whether rules matching any IP address are included or not. |
-| date | string | Filter rules by date. Only returns rules where `date` is between `validAfter` and `validBefore`. Format is ``yyyy-MM-dd``. |
+| date | string | Filter rules by date. Only returns rules where `date` is between `validAfter` and `validBefore`. Format is `yyyy-MM-dd`. |
 | dateAny | 0 or 1. | Specify whether rules with no data range defined are included or not |
 | service | string | Filter rules on service (excludes all other specific services). |
 | serviceAny | 0 or 1. | Specify whether rules matching any service are included or not. |

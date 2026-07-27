@@ -13,7 +13,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Collections;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.util.EntityResolverProvider;
+import org.geotools.util.NullEntityResolver;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -22,6 +26,16 @@ public final class ReprojectionAxisFlipTest extends AbstractAppSchemaTestSupport
 
     private static final String STATIONS_PREFIX = "st";
     private static final String STATIONS_URI = "http://www.stations.org/1.0";
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+    }
 
     @Override
     protected StationsMockData createTestData() {

@@ -12,7 +12,7 @@ A shapefile is actually a collection of files (with the extensions: `.shp`, `.db
 !!! warning
     The `.prj` file, while not mandatory, is strongly recommended when working with GeoServer as it contains valuable projection info. GeoServer may not be able to load your shapefile without it!
 
-To begin, navigate to **Stores --> Add a new store --> Shapefile**.
+To begin, navigate to **Data > Stores > Add a new store > Shapefile**.
 
 ![](images/shapefile.png)
 

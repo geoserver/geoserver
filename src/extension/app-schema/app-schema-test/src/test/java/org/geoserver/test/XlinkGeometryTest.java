@@ -6,6 +6,10 @@
 
 package org.geoserver.test;
 
+import org.geoserver.util.EntityResolverProvider;
+import org.geotools.util.NullEntityResolver;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -14,6 +18,16 @@ import org.w3c.dom.Document;
  *     <p>Tests manual and automatic xlink:href for Geometries
  */
 public class XlinkGeometryTest extends AbstractAppSchemaTestSupport {
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+    }
 
     @Override
     protected AbstractAppSchemaMockData createTestData() {

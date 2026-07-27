@@ -83,8 +83,8 @@
   <bean id="gwcBlobStore" class="org.geowebcache.storage.CompositeBlobStore" destroy-method="destroy">
     <constructor-arg ref="gwcTLDispatcher"/>
     <constructor-arg ref="gwcDefaultStorageFinder" />
-    <constructor-arg ref="gwcBlobStoreAggregator"/>
     <constructor-arg ref="gwcXmlConfig"/>
+    <constructor-arg ref="gwcBlobStoreAggregator"/>
   </bean>
   
   <!-- Static definition of where to put the blobstore. 
@@ -167,8 +167,7 @@
   <!-- Thread pool for seeding -->
   <bean id="gwcSeederThreadPoolExec" 
     class="org.geoserver.gwc.seed.SeederThreadLocalTransferExecutor">
-    <constructor-arg value="16"/><!-- Size of core pool -->
-    <constructor-arg value="32"/><!-- Maximum size of pool -->
+    <constructor-arg ref="gwcGeoServervConfigPersister"/>
   </bean>
 
   <!-- Breeder (the one that seeds) -->

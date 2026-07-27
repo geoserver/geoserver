@@ -5,17 +5,18 @@
 <body>
 <wicket:extend>
 
-    <form wicket:id="form">
-
-    <div class="mb-3">
-      <label for="name"><wicket:message key="name">name</wicket:message></label>
-      <input type="text" wicket:id="name"/>
-    </div>
-    <div wicket:id="coverages"></div>
-
-    <div class="button-group toolbar-sticky selfclear"><a href="#" class="form-button-save button primary" wicket:id="save"><wicket:message
-        key="save">Save</wicket:message></a> <a href="#" class="form-button-cancel button outline-danger" wicket:id="cancel"><wicket:message
-        key="cancel">Cancel</wicket:message></a></div>
+    <form wicket:id="form" class="gs-form">
+      <div class="gs-form-group">
+        <label for="name"><wicket:message key="name">name</wicket:message></label>
+        <input type="text" wicket:id="name" class="w-md"/>
+      </div>
+      <div wicket:id="coverages"></div>
+      <div class="button-group">
+        <a href="#" class="button primary" wicket:id="save"><wicket:message
+          key="save">Save</wicket:message></a> 
+        <a href="#" class="button outline-danger" wicket:id="cancel"><wicket:message
+          key="cancel">Cancel</wicket:message></a>
+      </div>
     </form>
 
 </wicket:extend>

@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -38,6 +37,7 @@ import org.geotools.process.geometry.GeometryProcessFactory;
 import org.geotools.process.raster.RasterProcessFactory;
 import org.geotools.util.NumberRange;
 import org.geotools.util.URLs;
+import org.geotools.xml.XMLUtils;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -163,7 +163,7 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
 
     Document dom(String xml) throws ParserConfigurationException, SAXException, IOException {
         try (InputStream is = new ByteArrayInputStream(xml.getBytes())) {
-            return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
+            return XMLUtils.newDocumentBuilder().parse(is);
         }
     }
 

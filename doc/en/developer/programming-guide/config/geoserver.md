@@ -11,7 +11,7 @@ The `GeoServer` interface is configured as a spring bean with access to:
 
 Access to `GeoServer` configuration is available to spring beans during application startup and shutdown:
 
-``` java
+```java
 public Bean implements DisposableBean {} 
 
     GeoServer gs;
@@ -27,19 +27,19 @@ public Bean implements DisposableBean {}
 
 `GeoServer` can be looked up once the application is running:
 
-``` java
+```java
 GeoServer gs = GeoServerExtensions.bean(GeoServer.class);
 ```
 
 Also available for use via wicket (via `GeoServerApplication` web application):
 
-``` java
+```java
 GeoServer gs = page.getGeoServerApplication().getGeoServer();
 ```
 
 ## Info {: #config_info }
 
-All Configuration `Info` objects have an `getId()` identifier used during persistance.
+All Configuration `Info` objects have an `getId()` identifier used during persistence.
 
 ## GeoServerInfo {: #config_geoserver_info }
 
@@ -73,7 +73,7 @@ Manages the remaining global configuration settings:
 - proxyBaseUrl: Public location of GeoServer instance, if managed behind a proxy or as part of a cluster.
 - schemaBaseUrl
 - verbose: Flag to control pretty printing and formatting of xml output
-- verboseException: flag to include full strack trace in web service expections
+- verboseException: flag to include full stack trace in web service exceptions
 - metadata: generic metadata map available to store additional settings
 - clientProperties: transient information
 - localWorkspaceIncludesPrefix
@@ -82,4 +82,4 @@ Manages the remaining global configuration settings:
 - defaultLocale
 - userHeadsProxyURL
 
-Some of these settings can be overriden on a workspace by workspace basis. This allows a workspace to have its own contact information and information policies.
+Some of these settings can be overridden on a workspace by workspace basis. This allows a workspace to have its own contact information and information policies.

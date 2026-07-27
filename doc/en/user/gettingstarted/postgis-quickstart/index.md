@@ -40,7 +40,7 @@ The next step is to create a workspace for the data. A workspace is a container 
 
 2.  Log into GeoServer as described in the [Logging In](../web-admin-quickstart/index.md#logging_in) section.
 
-3.  Navigate to **Data --> Workspaces**.
+3.  Navigate to **Data > Workspaces**.
 
     ![](../../data/webadmin/img/data_workspaces.png)
 
@@ -65,7 +65,7 @@ The next step is to create a workspace for the data. A workspace is a container 
 
 Once the workspace is created we are ready to add a new store. The store tells GeoServer how to connect to the database.
 
-1.  Navigate to **Data-->Stores**.
+1.  Navigate to **Data > Stores**.
 
 2.  Click on `Add new Store`.
 
@@ -91,12 +91,11 @@ Once the workspace is created we are ready to add a new store. The store tells G
 
     | Option                   | Value                              |
     |--------------------------|------------------------------------|
-    | **dbtype**               | ``postgis``              |
-    | **host**                 | ``localhost``            |
-    | **port**                 | ``5432``                 |
-    | **database**             | ``nyc``                  |
-    | **schema**               | ``public``               |
-    | **user**                 | ``postgres``             |
+    | **host**                 | `localhost`            |
+    | **port**                 | `5432`                 |
+    | **database**             | `nyc`                  |
+    | **schema**               | `public`               |
+    | **user**                 | `postgres`             |
     | **passwd**               | (Password for the `postgres` user) |
     | **validate connections** | (Checked)                          |
 
@@ -114,11 +113,11 @@ Once the workspace is created we are ready to add a new store. The store tells G
 
 Now that the store is loaded we can publish the layer.
 
-1.  Navigate to **Data --> Layers**.
+1.  Navigate to **Data > Layers**.
 
 2.  Click **Add a new resource**.
 
-3.  From the **New Layer chooser** menu, select `nyc:nyc_buidings`.
+3.  From the **New Layer chooser** menu, select `nyc:nyc_buildings`.
 
     ![](newlayerchooser.png)
 
@@ -156,7 +155,7 @@ Now that the store is loaded we can publish the layer.
 
 In order to verify that the `nyc_buildings` layer is published correctly, we can preview the layer.
 
-1.  Navigate to the **Layer Preview** screen and find the `nyc:nyc_buildings` layer.
+1.  Navigate to the **Browse Layers** screen and find the `nyc:nyc_buildings` layer.
 
 2.  Click the **OpenLayers** link in the **Common Formats** column.
 

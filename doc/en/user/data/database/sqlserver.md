@@ -58,7 +58,7 @@ Once the extension is properly installed `SQL Server` will show up as an option 
 
 You can determine the port in use by connecting to your SQL server instance using some other software, and then using ***netstat*** to display details on network connections. In the following example on a Windows PC, the port is 2646 :
 
-``` batch
+```batch
 C:\>netstat -a | find "sql1"
 ```
 
@@ -68,7 +68,7 @@ C:\>netstat -a | find "sql1"
 
 The SQL server data store can determine the geometry type and native SRID of a particular column only by data inspection, by looking at the first row in the table. Of course this is error prone, and works only if there is data in the table. The administrator can address the above issue by manually creating a geometry metadata table describing each geometry column. Its presence is indicated via the SQL Server datastore connection parameter named *Geometry metadata table* (which may be a simple table name or a schema-qualified one). The table has the following structure (the table name is flexible, just specify the one chosen in the data store connection parameter):
 
-``` sql
+```sql
 CREATE TABLE GEOMETRY_COLUMNS(
    F_TABLE_SCHEMA VARCHAR(30) NOT NULL,
    F_TABLE_NAME VARCHAR(30) NOT NULL,

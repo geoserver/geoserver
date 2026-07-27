@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.web.passwd;
 
+import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
@@ -17,6 +19,18 @@ import org.geoserver.web.wicket.HelpLink;
 
 @SuppressWarnings("serial")
 public class URLMasterPasswordProviderPanel extends MasterPasswordProviderPanel<URLMasterPasswordProviderConfig> {
+
+    private static final boolean isCssEmpty = IsWicketCssFileEmpty(URLMasterPasswordProviderPanel.class);
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
 
     public URLMasterPasswordProviderPanel(String id, IModel<URLMasterPasswordProviderConfig> model) {
         super(id, model);

@@ -14,7 +14,7 @@
               <div class="gs-unordered-list-class">
                 <div class="gs-list-item-class">
                   <!--  <label for="name"><wicket:message key="name">process</wicket:message></label> -->
-                  <select wicket:id="process"/>
+                  <select wicket:id="process" class="w-fit" />
                   <p wicket:id="descriptionContainer"><span wicket:id="processDescription"/> 
               	(<a href="#" wicket:id="describeProcess"><wicket:message key="describe">describe</wicket:message></a>)</p>
                 </div>
@@ -28,11 +28,12 @@
                   <wicket:message key="inputs">inputs</wicket:message>
                 </span>
               </legend>
-              <div class="gs-unordered-list-class">
-                <div class="gs-list-item-class mb-2" wicket:id="inputs">
-                  <label wicket:id="param"/>
-                  <span wicket:id="paramDescription"/>
-                  <br/>
+              <div class="gs-form">
+                <div class="gs-form-group" wicket:id="inputs">
+                  <div>
+                    <label wicket:id="param"/>
+                    <span wicket:id="paramDescription"/>
+                  </div>
                   <span wicket:id="paramValue"/>
                 </div>
               </div>
@@ -45,9 +46,17 @@
                   <wicket:message key="outputs">outputs</wicket:message>
                 </span>
               </legend>
-              <div class="gs-unordered-list-class">
-                <div class="gs-list-item-class mb-2" wicket:id="outputs"><label wicket:id="param"/><span wicket:id="paramDescription"/><br/><input class="field d-inline" type="checkbox" wicket:id="include"/> Generate <select wicket:id="mime"/>
-            </div>
+              <div class="gs-form">
+                <div class="gs-form-group" wicket:id="outputs">
+                  <div>
+                    <label wicket:id="param"/>
+                    <span wicket:id="paramDescription"/>
+                  </div>
+                  <div class="gs-inline-group">
+                    <input class="field d-inline" type="checkbox" wicket:id="include"/> Generate 
+                    <select wicket:id="mime" class="w-fit" />
+                  </div>
+                </div>
               </div>
             </fieldset>
           </div>
@@ -58,26 +67,26 @@
                   <wicket:message key="authentication">authentication</wicket:message>
                 </span>
               </legend>
-              <div class="gs-unordered-list-class">
-                <div class="gs-list-item-class choiceItem">
+              <div class="gs-form">
+                <div class="choiceItem">
                   <input type="checkbox" wicket:id="authenticate" id="authenticate"/>
                   <label for="authenticate">
                     <wicket:message key="authenticate">authenticate</wicket:message>
                   </label>
                 </div>
                 <div class="gs-list-item-class" wicket:id="userpwdContainer">
-                  <div class="gs-unordered-list-class">
-                    <div class="gs-list-item-class">
+                  <div class="gs-form">
+                    <div class="gs-form-group">
                       <label>
                         <wicket:message key="username">username</wicket:message>
                       </label>
-                      <input type="text" size="30" name="username" wicket:id="username" id="WPSusername"/>
+                      <input type="text" size="30" name="username" wicket:id="username" id="WPSusername" class="w-md" />
                     </div>
-                    <div class="gs-list-item-class">
+                    <div class="gs-form-group">
                       <label>
                         <wicket:message key="password">password</wicket:message>
                       </label>
-                      <input type="password" size="30" name="password" wicket:id="password" id="WPSpassword"/>
+                      <input type="password" size="30" name="password" wicket:id="password" id="WPSpassword" class="w-md" />
                     </div>
                   </div>
                 </div>

@@ -7,7 +7,6 @@ package org.geoserver.wms.web.data;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.Objects;
 import java.util.Set;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -18,6 +17,7 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -40,85 +40,115 @@ import org.geotools.api.filter.Filter;
 @SuppressWarnings("serial")
 public class StylePage extends GeoServerSecuredPage {
 
+    private String targetWorkspaceStr = null;
+    private String targetLayerStr = null;
+    private String targetGroupStr = null;
+
     GeoServerTablePanel<StyleInfo> table;
 
     SelectionRemovalLink removal;
 
     GeoServerDialog dialog;
 
-    public StylePage() {
-        StyleProvider provider = new StyleProvider() {
-            @Override
-            protected Filter getFilter() {
-                Filter baseFilter = Objects.requireNonNull(super.getFilter());
-
-                StringValue wsParam = getPageParameters().get("workspace");
-                StringValue layerParam = getPageParameters().get("layer");
-
-                String targetWs = wsParam != null ? wsParam.toOptionalString() : null;
-                String targetLayer = layerParam != null ? layerParam.toOptionalString() : null;
-
-                // If a layer is specified, resolve it to styles and filter by those.
-                if (targetLayer != null && !targetLayer.isEmpty()) {
-                    Set<String> styleIds = new LinkedHashSet<>();
-
-                    LayerInfo layer = getCatalog().getLayerByName(targetLayer);
-                    if (layer != null) {
-                        collectStyleIds(styleIds, layer.getDefaultStyle(), targetWs);
-                        if (layer.getStyles() != null) {
-                            for (StyleInfo s : layer.getStyles()) {
-                                collectStyleIds(styleIds, s, targetWs);
+    StyleProvider provider = new StyleProvider() {
+        @Override
+        protected Filter getContextFilter() {
+            if (targetGroupStr != null && !targetGroupStr.isEmpty()) {
+                Set<String> styleIds = new LinkedHashSet<>();
+                String qualifiedGroupName = (targetWorkspaceStr != null && !targetWorkspaceStr.isEmpty())
+                        ? targetWorkspaceStr + ":" + targetGroupStr
+                        : targetGroupStr;
+                LayerGroupInfo layerGroup = getCatalog().getLayerGroupByName(qualifiedGroupName);
+                if (layerGroup != null) {
+                    for (LayerInfo li : layerGroup.layers()) {
+                        if (li == null) continue;
+                        collectStyleIds(styleIds, li.getDefaultStyle());
+                        if (li.getStyles() != null) {
+                            for (StyleInfo s : li.getStyles()) {
+                                collectStyleIds(styleIds, s);
                             }
                         }
-                    } else {
-                        LayerGroupInfo layerGroup = getCatalog().getLayerGroupByName(targetLayer);
-                        if (layerGroup != null) {
-                            for (LayerInfo li : layerGroup.layers()) {
-                                if (li == null) continue;
-                                collectStyleIds(styleIds, li.getDefaultStyle(), targetWs);
-                                if (li.getStyles() != null) {
-                                    for (StyleInfo s : li.getStyles()) {
-                                        collectStyleIds(styleIds, s, targetWs);
-                                    }
+                    }
+                }
+                if (styleIds.isEmpty()) {
+                    return Filter.EXCLUDE;
+                }
+                return Predicates.in("id", new ArrayList<>(styleIds));
+            }
+            // If a layer is specified, resolve it to styles and filter by those.
+            if (targetLayerStr != null && !targetLayerStr.isEmpty()) {
+                Set<String> styleIds = new LinkedHashSet<>();
+
+                String qualifiedLayerName = (targetWorkspaceStr != null && !targetWorkspaceStr.isEmpty())
+                        ? targetWorkspaceStr + ":" + targetLayerStr
+                        : targetLayerStr;
+                LayerInfo layer = getCatalog().getLayerByName(qualifiedLayerName);
+                if (layer != null) {
+                    collectStyleIds(styleIds, layer.getDefaultStyle());
+                    if (layer.getStyles() != null) {
+                        for (StyleInfo s : layer.getStyles()) {
+                            collectStyleIds(styleIds, s);
+                        }
+                    }
+                } else {
+                    // fallback to layer group
+                    LayerGroupInfo layerGroup = getCatalog().getLayerGroupByName(qualifiedLayerName);
+                    if (layerGroup != null) {
+                        for (LayerInfo li : layerGroup.layers()) {
+                            if (li == null) continue;
+                            collectStyleIds(styleIds, li.getDefaultStyle());
+                            if (li.getStyles() != null) {
+                                for (StyleInfo s : li.getStyles()) {
+                                    collectStyleIds(styleIds, s);
                                 }
                             }
                         }
                     }
-
-                    if (styleIds.isEmpty()) {
-                        return Objects.requireNonNull(Predicates.acceptNone());
-                    }
-
-                    Filter combined = Predicates.and(
-                            Objects.requireNonNull(baseFilter),
-                            Objects.requireNonNull(Predicates.in("id", new ArrayList<>(styleIds))));
-                    return Objects.requireNonNull(combined);
                 }
 
-                // If only workspace is specified, filter by style workspace.
-                if (targetWs != null && !targetWs.isEmpty()) {
-                    Filter combined = Predicates.and(
-                            Objects.requireNonNull(baseFilter),
-                            Objects.requireNonNull(Predicates.equal("workspace.name", targetWs)));
-                    return Objects.requireNonNull(combined);
+                if (styleIds.isEmpty()) {
+                    return Filter.EXCLUDE;
                 }
 
-                return baseFilter;
+                return Predicates.in("id", new ArrayList<>(styleIds));
             }
 
-            private void collectStyleIds(Set<String> styleIds, StyleInfo style, String targetWs) {
-                if (style == null) return;
-                if (style.getId() == null) return;
-                if (targetWs != null && !targetWs.isEmpty()) {
-                    // Keep global (workspace-less) styles as well when filtering by a layer workspace.
-                    if (style.getWorkspace() != null
-                            && !targetWs.equals(style.getWorkspace().getName())) {
-                        return;
-                    }
-                }
-                styleIds.add(style.getId());
+            // If only workspace is specified, filter by style workspace.
+            if (targetWorkspaceStr != null && !targetWorkspaceStr.isEmpty()) {
+                return Predicates.equal("workspace.name", targetWorkspaceStr);
             }
-        };
+
+            return null;
+        }
+
+        private void collectStyleIds(Set<String> styleIds, StyleInfo style) {
+            if (style == null) return;
+            if (style.getId() == null) return;
+            if (targetWorkspaceStr != null && !targetWorkspaceStr.isEmpty()) {
+                // Keep global (workspace-less) styles as well when filtering by a layer workspace.
+                if (style.getWorkspace() != null
+                        && !targetWorkspaceStr.equals(style.getWorkspace().getName())) {
+                    return;
+                }
+            }
+            styleIds.add(style.getId());
+        }
+    };
+
+    public StylePage(PageParameters parameters) {
+        StringValue wsParam = parameters.get("workspace");
+        StringValue layerParam = parameters.get("layer");
+        StringValue groupParam = parameters.get("group");
+        if (!wsParam.isEmpty()) {
+            this.targetWorkspaceStr = wsParam.toString();
+        }
+        if (!layerParam.isEmpty()) {
+            this.targetLayerStr = layerParam.toString();
+        }
+        if (!groupParam.isEmpty()) {
+            this.targetGroupStr = groupParam.toString();
+        }
+
         add(
                 table = new GeoServerTablePanel<>("table", provider, true) {
 
@@ -161,6 +191,10 @@ public class StylePage extends GeoServerSecuredPage {
         // the confirm dialog
         add(dialog = new GeoServerDialog("dialog"));
         setHeaderPanel(headerPanel());
+    }
+
+    public StylePage() {
+        this(new PageParameters());
     }
 
     protected Component headerPanel() {

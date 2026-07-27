@@ -23,10 +23,10 @@ This exercise makes use of the `ne:populated_places` layer.
 1.  Navigate to the **Styles** page.
 2.  Click **Add a new style** and choose the following:
 
-    | Name:      | ``point_example`` |
+    | Name:      | `point_example` |
     |------------|-----------------------------|
-    | Workspace: | ``No workspace``  |
-    | Format:    | ``YSLD``          |
+    | Workspace: | `No workspace`  |
+    | Format:    | `YSLD`          |
 
 
 1.  Choose **point** from the `Generate a default style` dropdown and click **generate**.
@@ -384,7 +384,7 @@ The **text** symbolizer with the **label** property are required to label Point 
     ![image](../style/img/point_04_scale.png)
 
     !!! note
-        This YSLD makes use of a **define** to avoid repeating the point symbolizer content multiple times. As an example the [scale: [min, '4000000.0']]{.title-ref} rule, combined with the ``define:`` results in the following collection of properties:
+        This YSLD makes use of a **define** to avoid repeating the point symbolizer content multiple times. As an example the `scale: [min, '4000000.0']` rule, combined with the `define:` results in the following collection of properties:
     
         ``` yaml
         - scale: [min, '4000000.0']
@@ -473,7 +473,7 @@ The **text** symbolizer with the **label** property are required to label Point 
 
 4.  We will use **displacement** and **anchor** to position the label above each symbol.
 
-    Add the following two lines to the ``label`` define:
+    Add the following two lines to the `label` define:
 
     ```yaml hl_lines="9 10"
     define: &label
@@ -492,7 +492,7 @@ The **text** symbolizer with the **label** property are required to label Point 
 
 5.  A little bit of work with vendor specific parameters will prevent our labels from colliding with each symbol, while giving the rendering engine some flexibility in how far it is allowed to relocate a label.
 
-    Add the following vendor options to the ``label`` define:
+    Add the following vendor options to the `label` define:
 
     ```yaml hl_lines="11 12"
     define: &label
@@ -509,7 +509,7 @@ The **text** symbolizer with the **label** property are required to label Point 
       x-spaceAround: 2
     ```
 
-    Add the following vendor option to the ``point`` define:
+    Add the following vendor option to the `point` define:
 
     ```yaml hl_lines="9"
     define: &point
@@ -533,7 +533,7 @@ The **text** symbolizer with the **label** property are required to label Point 
 
     - **SCALERANK**: we have already used this attribute to control the level of detail displayed
     - **LABELRANK**: hint used for conflict resolution, allowing important cities such as capitals to be labeled even when they are close to a larger neighbor.
-    - **FEATURECLA**: used to indicate different types of cities. We will check for ``Admin-0 capital`` cities.
+    - **FEATURECLA**: used to indicate different types of cities. We will check for `Admin-0 capital` cities.
 
     The first thing we will do is calculate the point **size** using a quick expression:
 
@@ -757,7 +757,7 @@ The **text** symbolizer with the **label** property are required to label Point 
 
 3.  GeoServer recognizes this limitation of SLD Mark and ExternalGraphic and provides an opportunity for dynamic symbolization.
 
-    This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with ``\${ }`` as shown:
+    This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with `${ }` as shown:
 
     ``` yaml
     - point:
@@ -783,7 +783,7 @@ The **text** symbolizer with the **label** property are required to label Point 
 4.  **Challenge:** Use this approach to rewrite the *Dynamic Styling* example.
 
     !!! note
-        Answer [provided](#ysld-point-a2) at the end of the workbook.
+        Answer [provided](done.md#ysld.point.a2) at the end of the workbook.
 
 1.  Challenge: Use the **Interpolate** function to smoothly change the mark **size** based on city population.
 
@@ -792,7 +792,7 @@ The **text** symbolizer with the **label** property are required to label Point 
 1.  Use a **Layer Group** to explore how symbology works together to form a map.
 
     - ne:NE1
-    - ne:states_provincces_shp
+    - ne:states_provinces_shp
     - ne:populated_places
 
 2.  To help start things out here is a style for `ne:states_provinces_shp`:
@@ -822,7 +822,7 @@ The **text** symbolizer with the **label** property are required to label Point 
     ![image](../style/img/point_challenge_1.png)
 
     !!! note
-        Answer [provided](#ysld-point-a3) at the end of the workbook.
+        Answer [provided](done.md#ysld.point.a3) at the end of the workbook.
 
 ### Explore True Type Fonts
 

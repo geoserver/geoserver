@@ -28,18 +28,18 @@ The *Download Process* calls the *Download Estimator Process*, checks the file s
 - `targetSizeX` : size X in pixels of the output (optional, applies for raster input only)
 - `targetSizeY` : size Y in pixels of the output (optional, applies for raster input only)
 - `selectedBands` : a set of the band indices of the original raster that will be used for producing the final result (optional, applies for raster input only)
-- `writeParameters` : a set of writing parameters (optional, applies for raster input only). See [Writing parameters](#writing_params) below section for more details on writing parameters defintion.
+- `writeParameters` : a set of writing parameters (optional, applies for raster input only). See [Writing parameters](#writing_params) below section for more details on writing parameters definition.
 - `minimizeReprojections` : since 2.17, parameter to control CRS management when dealing with heterogeneous CRS's coverages, in order to minimize reprojections when granules in ROI match the TargetCRS. See [RasterDownload of Heterogeneous CRS ImageMosaic](#heterogeneous_imagemosaic) below section for more details on this param.
 - `bestResolutionOnMatchingCRS` : since 2.17, parameter to control CRS and resolution management when dealing with heterogeneous CRS's coverages. See [RasterDownload of Heterogeneous CRS ImageMosaic](#heterogeneous_imagemosaic) below section for more details on this param.
 - `targetVerticalCRS` : optional TargetVerticalCRS, to be used to transform elevation data from a VerticalCRS to another one. See [Vertical data resampling on download](#vertical_resampling) below section for more details on this param
 - `resolutionsDifferenceTolerance` : the parameter allows to specify a tolerance value to control the use of native resolution of the data, when no target size has been specified and granules are reprojected. If
-  - the percentage difference between original and reprojected coverages resolutions is below the specified tolerance value,
-  - native resolution is the same for all the requested granules,
-  - the unit of measure is the same for native and target CRS,
+    - the percentage difference between original and reprojected coverages resolutions is below the specified tolerance value,
+    - native resolution is the same for all the requested granules,
+    - the unit of measure is the same for native and target CRS,
 
     the reprojected coverage will be forced to use native resolutions. For example by specifying a value of 5.0, if the percentage difference between native and reprojected data is below 5%, assuming that also the other two conditions are respected, the native resolutions will be preserved. Default values is 0.
 
-The `targetCRS` and `RoiCRS` parameters are using EPSG code terminology, so, valid parameters are literals like `EPSG:4326` (if we are referring to a the Geogaphic WGS84 CRS), `EPSG:3857` (for WGS84 Web Mercator CRS), etc.
+The `targetCRS` and `RoiCRS` parameters are using EPSG code terminology, so, valid parameters are literals like `EPSG:4326` (if we are referring to a the Geographic WGS84 CRS), `EPSG:3857` (for WGS84 Web Mercator CRS), etc.
 
 ## ROI Definition
 
@@ -69,7 +69,7 @@ would be represented in the following forms:
 - in text/xml:`500116.08576537756,499994.25579707103 500116.08576537756,500110.1012210889 500286.2657688021,500110.1012210889 500286.2657688021,499994.25579707103 500116.08576537756,499994.25579707103`
 - in application/xml: the following xml
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?><gml:Polygon xmlns:gml="http://www.opengis.net/gml" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink">
   <gml:outerBoundaryIs>
     <gml:LinearRing>
@@ -81,7 +81,7 @@ would be represented in the following forms:
 
 The general structure of a WPS Download request POST payload consists of two parts: the first (`<wps:DataInputs>`) contains the input parameters for the process, and the second (`<wps:ResponseForm>`) contains details about delivering the output. A typical pseudo payload is the following:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
  <ows:Identifier>gs:WPS_Process_Name_Here</ows:Identifier>
  <wps:DataInputs>
@@ -104,7 +104,7 @@ The general structure of a WPS Download request POST payload consists of two par
 
 Each parameter for the process is defined in its own `<wps:Input>` xml block. In case of simple type data, such as layerName, outputFormat, targetCRS, etc, input params xml blocks have the following form:
 
-``` xml
+```xml
 <wps:Input>
  <ows:Identifier>layerName</ows:Identifier>
  <wps:Data>
@@ -115,7 +115,7 @@ Each parameter for the process is defined in its own `<wps:Input>` xml block. In
 
 Note the `<wps:LiteralData>` tags wrapping the parameter value. In case of geometry parameters, such as filter, ROI, the parameter's `<wps:Input>` block is different:
 
-``` xml
+```xml
 <wps:Input>
   <ows:Identifier>ROI</ows:Identifier>
   <wps:Data>
@@ -130,7 +130,7 @@ Note that if the ROI parameter is defined as WKT, you will need to specify a Roi
 
 In case the ROI is defined using a REFERENCE source, the input block is slightly different:
 
-``` xml
+```xml
 <wps:Input>
   <ows:Identifier>ROI</ows:Identifier>
   <wps:Reference mimeType="application/wkt" xlink:href="url_to_fetch_data" method="GET"/>
@@ -139,7 +139,7 @@ In case the ROI is defined using a REFERENCE source, the input block is slightly
 
 Note the `<wps:Reference>` tag replacing `<wps:ComplexData>` tag, and the extra `xlink:href="url_to_fetch_data"` parameter, which defines the url to perform the HTTP GET request. For POST request cases, tech method is switched to POST, and a `<wps:Body>` tag is used to wrap POST data:
 
-``` xml
+```xml
 <wps:Reference mimeType="application/wkt" xlink:href="url_to_fetch_data" method="POST">
   <wps:Body><![CDATA[request_body_data]]></wps:Body>
 </wps:Reference>
@@ -161,7 +161,7 @@ Compatible text formats for filter definitions are:
 
 For more details on filter formats/languages, one can see [../../filter/syntax](../../filter/syntax.md) and [../../filter/function](../../filter/function.md). Filter parameter applies to vector data. If this is the case with input data, a sample `<wps:Input>` block of a filter intersecting the polygon we used earlier as an example for ROI definition would be:
 
-``` xml
+```xml
 <wps:Input>
   <ows:Identifier>filter</ows:Identifier>
   <wps:Data>
@@ -191,7 +191,7 @@ Assuming that a local geoserver instance (setup for wps/wps-download support) is
 
 using the following payload:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
  <ows:Identifier>gs:Download</ows:Identifier>
  <wps:DataInputs>
@@ -236,7 +236,7 @@ using the following payload:
 
 More parameters (from the parameter list above) can be used, for example, we can only select bands **0 and 2** from the original raster:
 
-``` xml
+```xml
 <wps:Input>
  <ows:Identifier>bandIndices</ows:Identifier>
  <wps:Data>
@@ -253,7 +253,7 @@ More parameters (from the parameter list above) can be used, for example, we can
 
 Or, use a **Region Of Interest** to crop the dataset:
 
-``` xml
+```xml
 <wps:Input>
   <ows:Identifier>ROI</ows:Identifier>
   <wps:Data>
@@ -274,7 +274,7 @@ The result produced is a zipped file to download.
 
 The process can also be performed asynchronously. In this case, the second part (`wps:ResponseForm`) of the wps download payload slightly changes, by using the **storeExecuteResponse** and **status** parameters, set to **true** for the `<wps:ResponseDocument>`:
 
-``` xml
+```xml
 <wps:ResponseForm>
   <wps:ResponseDocument storeExecuteResponse="true" status="true">
     <wps:RawDataOutput mimeType="application/zip">
@@ -286,7 +286,7 @@ The process can also be performed asynchronously. In this case, the second part 
 
 In case of asynchronous execution, the initial request to download data returns an xml indication that the process has successfully started:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?><wps:ExecuteResponse xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en" service="WPS" serviceInstance="http://127.0.0.1:8080/geoserver/ows?" statusLocation="http://127.0.0.1:8080/geoserver/ows?service=WPS&amp;version=1.0.0&amp;request=GetExecutionStatus&amp;executionId=dd0d61f5-7da3-41ed-bd3f-15311fa660ba" version="1.0.0">
   <wps:Process wps:processVersion="1.0.0">
       <ows:Identifier>gs:Download</ows:Identifier>
@@ -305,7 +305,7 @@ The response contains a `<wps:Status>` block indicating successful process creat
 
 When issued (and process has finished on the server), this GET request returns the result to download/process as a base64 encoded zip:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <wps:ExecuteResponse xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en" service="WPS" serviceInstance="http://127.0.0.1:8080/geoserver/ows?" statusLocation="http://127.0.0.1:8080/geoserver/ows?service=WPS&amp;version=1.0.0&amp;request=GetExecutionStatus&amp;executionId=0c596a4d-7ddb-4a4e-bf35-4a64b47ee0d3" version="1.0.0">
   <wps:Process wps:processVersion="1.0.0">
@@ -321,7 +321,7 @@ When issued (and process has finished on the server), this GET request returns t
           <ows:Identifier>result</ows:Identifier>
           <ows:Title>Zipped output files to download</ows:Title>
           <wps:Data>
-              <wps:ComplexData encoding="base64" mimeType="application/zip">UEsDBBQACAgIAFdyCEkAAAAAAAAAAAAAAAApAAAAMGEwYmJkYmQtMjdkNi00...(more zipped raster data following, ommited for space saving)...</wps:ComplexData>
+              <wps:ComplexData encoding="base64" mimeType="application/zip">UEsDBBQACAgIAFdyCEkAAAAAAAAAAAAAAAApAAAAMGEwYmJkYmQtMjdkNi00...(more zipped raster data following, omitted for space saving)...</wps:ComplexData>
           </wps:Data>
       </wps:Output>
   </wps:ProcessOutputs>
@@ -332,7 +332,7 @@ When issued (and process has finished on the server), this GET request returns t
 
 The `<wps:ResponseForm>` of the previous asynchronous request payload example can be modified to get back a link to the file to be downloaded instead of the base64 encoded data.
 
-``` xml
+```xml
 ...
 <wps:ResponseForm>
   <wps:ResponseDocument storeExecuteResponse="true" status="true">
@@ -347,7 +347,7 @@ Note `<wps:ResponseDocument>` contains a `<wps:Output>` instead of a `<wps:RawDa
 
 This time, when issued (and process has finished on the server), the GET request returns the result to download as a link as part of `<wps:Output><wps:Reference>` .
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
   <wps:ExecuteResponse xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en" service="WPS" serviceInstance="http://127.0.0.1:8080/geoserver/ows?" statusLocation="http://127.0.0.1:8080/geoserver/ows?service=WPS&amp;version=1.0.0&amp;request=GetExecutionStatus&amp;executionId=c1074100-446a-4963-94ad-cbbf8b8a7fd1" version="1.0.0">
   <wps:Process wps:processVersion="1.0.0">
@@ -374,7 +374,7 @@ By default, downloading vector data results in a Shapefile, compressed in a zip 
 
 Similarly, for raster data, by default the downloaded raster gets zipped, along with the SLD style associated to the layer. In some cases, this can be unnecessary, especially if the output TIFF already has some type of internal compression or if we simply want to get back the TIFF output file without the ancillary SLD. Let's consider downloading a RGB TIFF: the default raster.sld style won't add anything useful to the output. In that case it's possible to specify `image/tiff` in the Response's output `mimeType`: the output TIFF will be provided as is, without extra steps of compression and file management.
 
-``` xml
+```xml
 ...
 <wps:ResponseForm>
   <wps:ResponseDocument storeExecuteResponse="true" status="true">
@@ -397,7 +397,7 @@ Moreover, when copying back data resources from within the WPS machinery to the 
 
 The `writeParameters` input element of a process execution allows to specify parameters to be applied by the `outputFormat` encoder when producing the output file. Writing parameters are listed as multiple `<dwn:Parameter key="writingParameterName">value</dwn:Parameter>` within a `<dwn:Parameters>` parent element. See the below xml containing full syntax of a valid example for TIFF output format:
 
-``` xml
+```xml
 <wps:Input>
   <ows:Identifier>writeParameters</ows:Identifier>
     <wps:Data>
@@ -420,15 +420,15 @@ The supported writing parameters are:
 - `tilewidth` : Width of internal tiles, in pixels
 - `tileheight` : Height of internal tiles, in pixels
 - `compression` : Compression type used to store internal tiles. Supported values are:
-  - `CCITT RLE` (Lossless) (Huffman)
-  - `LZW` (Lossless)
-  - `JPEG` (Lossy)
-  - `ZLib` (Lossless)
-  - `PackBits` (Lossless)
-  - `Deflate` (Lossless)
+    - `CCITT RLE` (Lossless) (Huffman)
+    - `LZW` (Lossless)
+    - `JPEG` (Lossy)
+    - `ZLib` (Lossless)
+    - `PackBits` (Lossless)
+    - `Deflate` (Lossless)
 - `quality` : Compression quality. Value is in the range [0 : 1]
-  - for `JPEG` lossy compression, 0 is for worst quality/higher compression and 1 is for best quality/lower compression. (default is 1).
-  - for `Deflate` lossless compression, input value in the range [0 : 1] is linearly mapped to output deflate level in the range [1 : 9]: `(deflate level = 1 + 8 * (quality))`, where level 1 is for best speed and level 9 is for best compression. (default level is 9)
+    - for `JPEG` lossy compression, 0 is for worst quality/higher compression and 1 is for best quality/lower compression. (default is 1).
+    - for `Deflate` lossless compression, input value in the range [0 : 1] is linearly mapped to output deflate level in the range [1 : 9]: `(deflate level = 1 + 8 * (quality))`, where level 1 is for best speed and level 9 is for best compression. (default level is 9)
 - `writenodata` : Supported value is one of true/false. Note that, by default, a [nodata TAG](https://www.awaresystems.be/imaging/tiff/tifftags/gdal_nodata.md) is produced as part of the output GeoTIFF file as soon as a nodata is found in the GridCoverage2D to be written. Therefore, not specifying this parameter will result into writing nodata to preserve default behavior. Setting it to false will avoid writing that TAG.
 
 # Direct download
@@ -488,13 +488,13 @@ The following example shows a DSM layer being configured to specify EPSG:5778 as
 This section will only show up if:
 
 - The wps-download module has been deployed in GeoServer
-- The underlying data is single-band and datatype is at least 16 bit. (i.e.: no Byte datatype, no RGB images, \...)
+- The underlying data is single-band and datatype is at least 16 bit. (i.e.: no Byte datatype, no RGB images, ...)
 
 ### WPS Download - Vertical resampling
 
 Resampling the data to a different VerticalCRS as part of the Raster Download Process is possible by specifying the **targetVerticalCRS** parameter in the WPS Download request. For example:
 
-``` xml
+```xml
 <wps:Input>
   <ows:Identifier>targetVerticalCRS</ows:Identifier>
   <wps:Data>
@@ -523,7 +523,7 @@ Transformations between VerticalCRSs can be supported through Vertical Grid Offs
 
 Custom Coordinate Operations are defined in **`user_projections/epsg_operations.properties`** file within the data directory (create it if it doesn't exist).
 
-Each line in **`epsg_operations.properties`** will describe a coordinate operation consisting of a ``source CRS``, a ``target CRS``, and a math transform with its parameter values. Use the following syntax:
+Each line in **`epsg_operations.properties`** will describe a coordinate operation consisting of a `source CRS`, a `target CRS`, and a math transform with its parameter values. Use the following syntax:
 
 ```xml
 <source crs code>,<target crs code>=<WKT math transform>

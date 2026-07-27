@@ -18,7 +18,6 @@ import org.geoserver.catalog.LayerInfo;
 import org.junit.Test;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.launch.JobExecutionNotRunningException;
-import org.springframework.batch.core.launch.NoSuchJobExecutionException;
 
 /**
  * Tests the BK_PURGE_RESOURCES flag is respected and all current catalog artifacts are removed before restore the
@@ -67,9 +66,9 @@ public class PurgeRestoreTest extends BackupRestoreTestSupport {
     }
 
     private void waitRestoreFinish(RestoreExecutionAdapter restoreExecution)
-            throws InterruptedException, NoSuchJobExecutionException, JobExecutionNotRunningException {
+            throws InterruptedException, JobExecutionNotRunningException {
         int cnt = 0;
-        while (cnt < 100 && (restoreExecution.getStatus() != BatchStatus.COMPLETED || !restoreExecution.isRunning())) {
+        while (cnt < 100 && (restoreExecution.getStatus() != BatchStatus.COMPLETED || restoreExecution.isRunning())) {
             Thread.sleep(100);
             cnt++;
 

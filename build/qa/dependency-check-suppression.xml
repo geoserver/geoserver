@@ -121,6 +121,31 @@
         <packageUrl regex="true">^pkg:maven/org\.geowebcache/gwc-sqlite@.*$</packageUrl>
         <cpe>cpe:/a:sqlite:sqlite</cpe>
     </suppress>
+    <suppress>
+        <notes><![CDATA[file name: jep-4.2.0.jar. Not used in GeoServer, confused with JEP]]></notes>
+        <packageUrl regex="true">^pkg:maven/black\.ninia/jep@.*$</packageUrl>
+        <cpe>cpe:/a:python:black</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: hazelcast-spring-session-4.0.0.jar - Used but confused with Hazelcast 4.x]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.hazelcast\.spring/hazelcast-spring-session@.*$</packageUrl>
+        <cpe>cpe:/a:hazelcast:hazelcast</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[ file name: opentelemetry-semconv-1.29.0-alpha.jar -- confused with the Go implementation]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.opentelemetry\.semconv/opentelemetry-semconv@.*$</packageUrl>
+        <cpe>cpe:/a:opentelemetry:opentelemetry</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: opentelemetry-gcp-resources-1.37.0-alpha.jar -- confused with the Go implementation]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.opentelemetry\.contrib/opentelemetry-gcp-resources@.*$</packageUrl>
+        <cpe>cpe:/a:opentelemetry:opentelemetry</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: affine-0.9.2.jar -- recognizes a different java library with the same name, not used in GS]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.imagen/affine@.*$</packageUrl>
+        <cpe>cpe:/a:affine:affine</cpe>
+    </suppress>
     <!-- Ignoring CVEs already fixed, that get reported anyways due to SNAPSHOT dependencies processing -->
     <suppress>
         <notes><![CDATA[file name: print-lib-2.5-SNAPSHOT.jar vulnerabilities reported for 3.x, but 2.x is a different codebase]]></notes>
@@ -154,5 +179,10 @@
     <suppress>
         <cpe>cpe:2.3:a:geotools:geotools</cpe>
         <cve>CVE-2025-30220</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[OpenLayers.js bundles Prototype 1.4.0, not 1.7.3. CVE-2020-27511 affects stripTags/unescapeHTML introduced in 1.7.3; those functions are absent in this bundle.]]></notes>
+        <filePath regex="true">.*[/\\]OpenLayers\.js$</filePath>
+        <cve>CVE-2020-27511</cve>
     </suppress>
 </suppressions>

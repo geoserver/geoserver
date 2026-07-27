@@ -72,7 +72,7 @@ For this example, we are going to use the same public datasets from S3 Urls bein
 
 For location with relative paths a simple replacing query could be like this:
 
-``` sql
+```sql
 UPDATE schema.table SET location=CONCAT(
 'https://modis-vi-nasa.s3-us-west-2.amazonaws.com/MOD13A1.006/', location);
 ```
@@ -81,7 +81,7 @@ So we are basically prepending the S3 bucket URL to the location value. By this 
 
 For location with absolute path, a replacing query may be like this (for our example):
 
-``` sql
+```sql
 UPDATE schema.table SET location=REPLACE(location,'/var/data/imageMosaic/mosaic/',
 'https://modis-vi-nasa.s3-us-west-2.amazonaws.com/MOD13A1.006/');
 ```

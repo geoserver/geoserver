@@ -41,8 +41,8 @@ public class GSModalWindow extends Panel {
     private CloseButtonCallback closeButtonCallback = null;
     private WindowClosedCallback windowClosedCallback = null;
 
-    private int initialHeight = 400;
-    private int initialWidth = 600;
+    private int initialHeight = 450;
+    private int initialWidth = 650;
     private boolean unloadConfirmation = true;
 
     public GSModalWindow(String id) {

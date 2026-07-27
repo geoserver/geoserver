@@ -7,7 +7,7 @@ Polymorphism in this context refers to the ability of an attribute to have diffe
 You can use normal feature chaining to get an attribute to be encoded as a certain type. For example:
 
 ```xml
-<AttributeMapping>                                                                                                                                                                                                                                                                                                                                                                                                    
+<AttributeMapping>
     <targetAttribute>ex:someAttribute</targetAttribute>
     <sourceExpression>
         <OCQL>VALUE_ID</OCQL>
@@ -160,10 +160,8 @@ Recode(EXPRESSION, key1, value1, key2, value2,...)
 
 - **EXPRESSION**: column name to get values from, or another function
 
-- **key-n**:
-
-  - key expression to map to value-n
-      - if the evaluated value of EXPRESSION doesn't match any key, nothing would be encoded for the attribute.
+- **key-n**: key expression to map to value-n
+    - if the evaluated value of EXPRESSION doesn't match any key, nothing would be encoded for the attribute.
 
 - **value-n**: value expression which translates to a mappingName or targetElement
 
@@ -225,9 +223,7 @@ Special function written for referential polymorphism and feature chaining, not 
 toXlinkHref(XLINK_HREF_EXPRESSION)
 ```
 
-- **XLINK_HREF_EXPRESSION**:
-
-  - could be a function or a literal
+- **XLINK_HREF_EXPRESSION**: could be a function or a literal
       - has to be wrapped in single quotes if it's a literal
 
 !!! note

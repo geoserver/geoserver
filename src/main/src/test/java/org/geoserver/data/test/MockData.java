@@ -27,6 +27,7 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.data.CatalogWriter;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.data.util.CoverageUtils;
+import org.geoserver.test.IOTestUtils;
 import org.geoserver.util.IOUtils;
 import org.geotools.api.coverage.grid.GridGeometry;
 import org.geotools.api.parameter.ParameterValueGroup;
@@ -315,7 +316,7 @@ public class MockData implements TestData {
 
     public MockData() throws IOException {
         // setup the root
-        data = IOUtils.createRandomDirectory("./target", "mock", "data");
+        data = IOTestUtils.createRandomDirectory("./target", "mock");
         data.delete();
         data.mkdir();
 

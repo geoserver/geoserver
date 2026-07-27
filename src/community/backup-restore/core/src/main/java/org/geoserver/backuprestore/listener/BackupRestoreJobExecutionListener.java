@@ -4,7 +4,7 @@
  */
 package org.geoserver.backuprestore.listener;
 
-import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.job.JobExecution;
 
 /** Beans implementing this interface will be invoked as listeners of backup and restore jobs. */
 public interface BackupRestoreJobExecutionListener {

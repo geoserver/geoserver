@@ -4,11 +4,13 @@
 set -e
 
 function usage() {
-  echo "$0 [options] <tag> <branch>"
+  echo "$0 [options] <tag> <branch> <user> <email>"
   echo
-  echo " tag : Release tag (eg: 2.1.4, 2.2-beta1, ...)"
-  echo " branch: Release branch (eg, 2.1.x, 2.2.x)" 
-  echo 
+  echo " tag :    Release tag (eg: 2.1.4, 2.2-beta1, ...)"
+  echo " branch:  Release branch (eg, 2.1.x, 2.2.x)"
+  echo " user:    Git username (required for GeoServer 3.x)"
+  echo " email:   Git email (required for GeoServer 3.x)"
+  echo
   echo "Environment variables:"
   echo " MAVEN_SETTINGS : settings.xml override"
   echo " SKIP_DEPLOY : Skips deploy to maven repository"
@@ -23,6 +25,8 @@ fi
 
 tag=$1
 branch=$2
+git_user=$3
+git_email=$4
 
 # load properties + functions
 . "$( cd "$( dirname "$0" )" && pwd )"/properties
@@ -39,10 +43,15 @@ fi
 
 pushd .. > /dev/null
 
-# init_git $git_user $git_email
+# Determine major version to select branch-specific behaviour
+major_version=$(echo "$tag" | cut -d. -f1)
 
 # fetch single tag
 git fetch origin refs/tags/$tag:refs/tags/$tag --no-tags
+
+if [ "$major_version" -ge 3 ]; then
+  git fetch origin $tag.x:$tag.x
+fi
 
 # ensure tag already exists
 if [ `git tag --list $tag | wc -l` == 0 ]; then
@@ -50,31 +59,34 @@ if [ `git tag --list $tag | wc -l` == 0 ]; then
   exit 1
 fi
 
-# check to see if a release branch already exists
-if [ `git branch --list rel_$tag | wc -l` == 1 ]; then
-  echo "branch rel_$tag exists, deleting it"
-  git branch -D rel_$tag
+if [ "$major_version" -ge 3 ]; then
+  # GeoServer 3.x+ uses a temporary release branch $tag.x
+  if [ `git branch --list $tag.x | wc -l` == 1 ]; then
+    echo "branch $tag.x exists, checking out"
+    git checkout $tag.x
+  else
+    echo "release branch $tag.x not available, run build_release.sh first"
+    exit 1
+  fi
+
+  # ensure the tagged revision is actually on this branch (ancestry check)
+  if ! git merge-base --is-ancestor $tag HEAD; then
+     echo "Tag $tag is not an ancestor of branch $tag.x"
+     echo "(Perhaps $tag.x is from a prior failed attempt and can be removed)"
+     exit 1
+  fi
+else
+  # GeoServer 2.x uses tag directly
+  git checkout $tag
 fi
-
-# create release branch from tag
-git checkout -b rel_$tag $tag
-
-# ensure no changes on it (actually release folder is a change)
-# set +e
-# git status | grep "working directory clean"
-# if [ "$?" == "1" ]; then
-#   echo "branch rel_$tag dirty, exiting"
-#   exit 1
-# fi
-# set -e
 
 # deploy the release to maven repo
 pushd src > /dev/null
 if [ -z $SKIP_DEPLOY ]; then
-   mvn clean install -P allExtensions -DskipTests $MAVEN_FLAGS 
-   mvn deploy -P allExtensions -DskipTests $MAVEN_FLAGS 
+   mvn clean install -P allExtensions,pending -DskipTests $MAVEN_FLAGS 
+   mvn deploy -P allExtensions,pending -DskipTests $MAVEN_FLAGS 
 else
-   echo "Skipping mvn deploy -P allExtensions -DskipTests $MAVEN_FLAGS"
+   echo "Skipping mvn deploy -P allExtensions,pending -DskipTests $MAVEN_FLAGS"
 fi
 
 if [ -z $SKIP_COMMUNITY ]; then
@@ -112,4 +124,16 @@ fi
 
 popd > /dev/null
 
+# GeoServer 3.x+: revert release commit on branch, merge back to development branch
+if [ "$major_version" -ge 3 ]; then
+  init_git $git_user $git_email
+
+  git revert --no-edit $tag
+  git push origin $tag.x
+
+  git fetch origin $branch:$branch
+  git checkout $branch
+  git merge --no-ff $tag.x -m "Release $tag completed"
+  git push origin $branch
+fi
 

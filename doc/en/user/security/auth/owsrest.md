@@ -32,7 +32,7 @@ In this example the filter chain consists of three filters:
 
 The provider chain is made up of two providers:
 
-- **Root**---`Root account <../root.md>`_ has a special "super user" provider. As this account is rarely used, this provider is rarely invoked.
+- **Root**---[Root account](../root.md) has a special "super user" provider. As this account is rarely used, this provider is rarely invoked.
 - **Username/password**---Performs username/password authentication against a user database
 
 To illustrate how the elements of the various chains work, here are some example OWS requests.

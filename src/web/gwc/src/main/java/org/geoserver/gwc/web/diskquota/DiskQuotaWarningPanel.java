@@ -15,7 +15,7 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 /**
- * Warns the administrator that the
+ * Warns the administrator that the disk quota failed to load.
  *
  * @author Andrea Aime - GeoSolutions
  */

@@ -23,7 +23,7 @@ The methods in the Resource API use String parameter names consistently:
 
   In the case of the default FileSystemResourceStore, this is file path that is relative with respect to the data directory. To preserve generic behaviour compatible with any resource store, developers should not assume this to be the case.
 
-  Resource paths do not support the ``.`` and ``..`` relative directory names. Resource paths use forward slashes, similar to URL's and unix style file paths, and are OS-independent.
+  Resource paths do not support the `.` and `..` relative directory names. Resource paths use forward slashes, similar to URL's and unix style file paths, and are OS-independent.
 
 - `file path` parameter is an absolute path to a file in the file system.
 
@@ -67,7 +67,7 @@ Used to manage configuration storage (file system, test harness, or database blo
 
 InputStream used to access configuration information:
 
-``` java
+```java
 Properties properties = new Properties();
 try (InputStream in = resourceStore.get("module/configuration.properties").in() ){
   properties.load(in);
@@ -76,7 +76,7 @@ try (InputStream in = resourceStore.get("module/configuration.properties").in() 
 
 An OutputStream is provided for storage (a Resource will be created as needed):
 
-``` java
+```java
 Properties properties = new Properties();
 properties.put("hello","world");
 try (OutputStream out = resourceStore.get("module/configuration.properties").out() ){
@@ -86,7 +86,7 @@ try (OutputStream out = resourceStore.get("module/configuration.properties").out
 
 A Resource can also be extracted to a file if needed:
 
-``` java
+```java
 File file = resourceStore.get("module/logo.png");
 BufferedImage img = ImageIO.read( file );
 ```
@@ -99,7 +99,7 @@ Resource used for configuration storage. Described by `getType()` as a `Type.DIR
 
 Resource contents are streamed using `out()` and `in()` methods. The entire contents can be managed in one go using `setContents(bytes)` and `getContents()`.
 
-``` java
+```java
 try (OutputStream out = resource.out() ){
    properties.store(out)
 }
@@ -111,13 +111,13 @@ Resource creation is handled in a lazy fashion, use `out()` and the resource wil
 
 Directory resources have the ability to `list()` their contents:
 
-``` java
+```java
 for( Resource child : resource.list()) {
    ...    
 }
 ```
 
-The method `isInternal()` returns whether the resource is part of the resource store or rather a wrapped file obtained by `File.asResource`. If this method returns ``false`` then `path()` returns a file path rather than a resource path.
+The method `isInternal()` returns whether the resource is part of the resource store or rather a wrapped file obtained by `File.asResource`. If this method returns `false` then `path()` returns a file path rather than a resource path.
 
 The methods `file()` and `dir()` may be used to obtain a file system representation of the resource. Depending on the resource store implementation, this may be the underlying storage entity (in the case of the default FileSystemResourceStore), or merely a cached entity. Changes to these should not be assumed to be permanent. These methods should only be used for input when a third library requires a file and does not support passing on streams.
 
@@ -168,9 +168,9 @@ The `Resources` facade provides lots of common activities for working with Resou
 
 Most of these perform common activities or check on resource status `exists(resource)`, `hidden(resource)`.
 
-Resources methods provide the flexibility to work with with Resource while not getting caught out in the dfference between DIRECTORY and RESOURCE type.
+Resources methods provide the flexibility to work with with Resource while not getting caught out in the difference between DIRECTORY and RESOURCE type.
 
-``` java
+```java
 if( Resources.exists(resource)) {
     // may be a file or a directory
     File fileLocation = Resources.find(resource);
@@ -180,13 +180,13 @@ if( Resources.exists(resource)) {
 
 There are also methods to copy contents into a resource:
 
-``` java
+```java
 Resources.copy( file, targetDirectory);
 ```
 
 There are also method for working with directories recursively and filtering content:
 
-``` java
+```java
 for (Resource svg : Resources.list( resource, new ExtensionFilter("svg"), true )) {
    ...    
 }
@@ -204,14 +204,14 @@ Examples:
 
 - `Resources.fromURL( baseDirectory, "resource:images/image.png")` - resource path
 - `Resources.fromURL( baseDirectory, "file:images/image.png")` - resource path (deprecated)
-- `Resources.fromURL( null, "/src/gis/cadaster/district.geopgk")` - absolute file path (linux)
+- `Resources.fromURL( null, "/src/gis/cadaster/district.geopkg")` - absolute file path (linux)
 - `Resources.fromURL( baseDirectory, "D:\\gis\\cadaster\\district.geopkg")` - absolute file path (windows)
 - `Resources.fromURL( baseDirectory, "file:///D:/gis/cadaster/district.geopkg")` - absolute file url (windows)
 - `Resources.fromURL( baseDirectory, "ftp://veftp.gsfc.nasa.gov/bluemarble/")` - null (external reference)
 
 ## Files
 
-The `Files` facade provides methods for working with file objects, and one method of critical importace to the Resource API.
+The `Files` facade provides methods for working with file objects, and one method of critical importance to the Resource API.
 
 ### Files.asResource
 
@@ -225,7 +225,7 @@ The `Files.asResource(file)` method creates a `ResourceAdapter` wrapper around a
 The other key method is `Files.url( baseDirectory, url)` which is used to look up files based on a user provided URL (or path).
 
 - `Files.url( null, "resource:styles/logo.svg")` - internal url format restricted to data directory content
-- `Files.url( null, "/src/gis/cadaster/district.geopgk")` - absolute file path (linux)
+- `Files.url( null, "/src/gis/cadaster/district.geopkg")` - absolute file path (linux)
 - `Files.url( baseDirectory, "D:\\gis\\cadaster\\district.geopkg")` - absolute file path (windows)
 - `Files.url( baseDirectory, "file:///D:/gis/cadaster/district.geopkg")` - absolute file url (windows)
 - `Files.url( baseDirectory, "ftp://veftp.gsfc.nasa.gov/bluemarble/")` - null (external reference ignored as we cannot determine a file)
@@ -235,13 +235,13 @@ The other key method is `Files.url( baseDirectory, url)` which is used to look u
 
 `GeoServerDataDirectory` is a special `ResourceStore` allowing the use of catalog configuration objects to act as a reference point (rather than having to remember the structure of the data directory).
 
-``` java
+```java
 Resource icon = dataDirectory.get( workspaceInfo, "airports.svg");
 ```
 
 `GeoServerDataDirectory` has plenty of methods that still provide direct file access, internally however they are implemented using the Resource API.
 
-``` java
+```java
 public File findDataRoot() throws IOException {
     Resource directory = get("data");
     return Resources.directory(directory);
@@ -256,7 +256,7 @@ The use of `location` parameters here can reference a relative location in the d
 
 Each method here can be expressed using the utility classes:
 
-``` java
+```java
 // Using GeoServerResourceLoader to work with local file
 File configuration = loader.createFile(location);
 try (OutputStream out = new FileOutputStream(configuration)) {

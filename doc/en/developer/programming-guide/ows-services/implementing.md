@@ -124,7 +124,7 @@ The service is relatively simple. It provides a method sayHello(..) which takes 
 
 At this point the hello project should look like the following:
 
-``` sh
+```sh
 hello/
   + pom.xml
   + src/
@@ -138,11 +138,11 @@ hello/
 
 1.  Install the **`hello`** module:
 
-``` sh
+```sh
 [hello]% mvn install
 ```
 
-``` sh
+```sh
 [INFO] Scanning for projects...
 [INFO]                                                                         
 [INFO] ------------------------------------------------------------------------
@@ -232,8 +232,8 @@ hello/
          <version>1.0-SNAPSHOT</version>
         </dependency>
       ```
-      >
-      > After editing **`webapps/pom.xml`** we need run ``mvn eclipse:eclipse``, and then from ***Eclipse*** right click on web-app project and **Refresh** for the IDE to notice the change.
+
+      After editing **`webapps/pom.xml`** we need run `mvn eclipse:eclipse`, and then from ***Eclipse*** right click on web-app project and **Refresh** for the IDE to notice the change.
 
     - If and IDE like IntellJ, Eclipse M2 Maven plugin or NetBeans refresh the project so it picks up the changes to **`pom.xml`**
 
@@ -278,7 +278,7 @@ An alternative to plugging into an existing installation is to build a complete 
 
 4.  Install the **`web/app`** module
 
-``` sh
+```sh
 [web/app] mvn install
 ```
 
@@ -318,7 +318,7 @@ During development the most convenient way to work with the extension is to run 
 
 5.  From the root of the GeoServer source tree run the following maven command:
 
-``` sh
+```sh
 [src] mvn -P hello eclipse:eclipse
 ```
 

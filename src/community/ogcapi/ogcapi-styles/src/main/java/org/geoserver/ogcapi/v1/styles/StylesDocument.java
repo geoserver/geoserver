@@ -7,10 +7,12 @@ package org.geoserver.ogcapi.v1.styles;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.Iterator;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.StyleDocument;
+import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.platform.ServiceException;
 import org.geotools.api.filter.Filter;
 
@@ -27,8 +29,14 @@ public class StylesDocument extends AbstractDocument {
 
     @SuppressWarnings("PMD.CloseResource") // hopefully closed as it gets iterated
     public Iterator<StyleDocument> getStyles() {
-        // full scan (we might add paging/filtering later)
-        CloseableIterator<StyleInfo> styles = catalog.list(StyleInfo.class, Filter.INCLUDE);
+        // under a workspace-scoped virtual service, return only that workspace's styles
+        // plus global (workspace-less) ones; outside of a workspace scope, return everything
+        Filter filter = Filter.INCLUDE;
+        if (LocalWorkspace.get() != null) {
+            String wsName = LocalWorkspace.get().getName();
+            filter = Predicates.or(Predicates.equal("workspace.name", wsName), Predicates.isNull("workspace"));
+        }
+        CloseableIterator<StyleInfo> styles = catalog.list(StyleInfo.class, filter);
         return new Iterator<>() {
 
             StyleDocument next;

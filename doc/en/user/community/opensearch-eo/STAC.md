@@ -1,6 +1,6 @@
 # The STAC extension
 
-The OpenSeach for EO subsystem exposes also a [STAC](https://stacspec.org/) service, implemented as a OGC API Features conformant [STAC API](https://github.com/radiantearth/stac-api-spec).
+The OpenSearch for EO subsystem exposes also a [STAC](https://stacspec.org/) service, implemented as a OGC API Features conformant [STAC API](https://github.com/radiantearth/stac-api-spec).
 
 The landing page of the STAC API is linked from the GeoServer home page, and available at `$HOST:$PORT/geoserver/ogc/stac`. The API exposes the OpenSearch for EO contents, restructuring them as needed:
 
@@ -14,7 +14,7 @@ Given the differences in names and structures the STAC resources are created usi
 
 The default templates work against the [default PostGIS database structure](https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-core/src/test/resources/postgis.sql) and can be customized to include new properties to follow eventual database modifications.
 
-All built-in templates are copied over to the data directory for customization, and placed in the `$GEOSERER_DATA_DIR/templates/ogc/stac` folder:
+All built-in templates are copied over to the data directory for customization, and placed in the `$GEOSERVER_DATA_DIR/templates/ogc/stac` folder:
 
 - collection.ftl
 - collection_include.ftl
@@ -38,8 +38,8 @@ All built-in templates are copied over to the data directory for customization, 
 
 Specifically for the JSON output:
 
-- ``\$GEOSERVER_DATA_DIR/templates/ogc/stac/v1/collections.json`` is the [collections template](https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/v1/stac/collections.json)
-- ``\$GEOSERVER_DATA_DIR/templates/ogc/stac/v1/items.json`` is the [items template](https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/v1/stac/items.json)
+- `$GEOSERVER_DATA_DIR/templates/ogc/stac/v1/collections.json` is the [collections template](https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/v1/stac/collections.json)
+- `$GEOSERVER_DATA_DIR/templates/ogc/stac/v1/items.json` is the [items template](https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-stac/src/main/resources/org/geoserver/ogcapi/v1/stac/items.json)
 
 The JSON templates in the case of STAC also drive database querying, the exposed STAC properties are back-mapped into database properties by interpreting the template. It is advised to keep property mapping as simple as possible to allow usage of native SQL queries and indexes while accessing the database through the STAC API.
 
@@ -54,7 +54,7 @@ When dealing with JSON output for GET requests in the context of STAC service, t
 
 - If no `fields` query parameter is specified all the item's attribute are returned.
 - If a `fields` attribute is specified with no values, only the item's default values (the one necessary to have a valid STAC entity) are returned: `id`,`type`,`geometry`,`bbox`,`links`,`assets`,`properties.datetime`,`properties.created`.
-- If `fields` value is specified GeoServer will return always the default attributes, if the user doesn't target them as excluded. Eg. `assets` will always be present if not exluced explicitly (`fields=-assets,...`).
+- If `fields` value is specified GeoServer will return always the default attributes, if the user doesn't target them as excluded. Eg. `assets` will always be present if not excluded explicitly (`fields=-assets,...`).
 - If only include is specified, these attributes are added to the default set of attributes (set union operation).
 - If only exclude is specified, these attributes are subtracted from the union of the default set of attributes and the include attributes (set difference operation). This will result in an entity that is not a valid Item if any of the excluded attributes are in the default set of attributes, but no error message will be raised by GeoServer.
 - If a attribute is included, e.g. `properties`, but one or more of the nested attributes is excluded, e.g. `-properties.datetime`, then the excluded nested attributes will not appear in properties.
@@ -62,14 +62,14 @@ When dealing with JSON output for GET requests in the context of STAC service, t
 
 ## Datacube Extension Support
 
-Support for the [STAC Datacube Extension](https://github.com/stac-extensions/datacube) "cube_dimensions" elements is available in HTML and JSON templates via the ``eoSummaries`` function. ``eoSummaries`` supports presenting the following collection-wide summary statistics:
+Support for the [STAC Datacube Extension](https://github.com/stac-extensions/datacube) "cube_dimensions" elements is available in HTML and JSON templates via the `eoSummaries` function. `eoSummaries` supports presenting the following collection-wide summary statistics:
 
 - min - The minimum value of the field in the collection
 - max - The maximum value of the field in the collection
 - distinct - An array of distinct values of the field in the collection
 - bounds - Minimum and maximum dimension values of the spatial bounding box of the collection (either x or y, presented as a two value array or xmin, xmax, ymin, ymax presented as individual dimension values)
 
-``eoSummaries`` has three arguments:
+`eoSummaries` has three arguments:
 
 - aggregate - The type of summary statistic. One of "min", "max", "distinct", or "bounds".
 
@@ -77,11 +77,11 @@ Support for the [STAC Datacube Extension](https://github.com/stac-extensions/dat
 
 - property - The name of the property being summarized.
 
-  - Note that for the "bounds" aggregate, this value should either be "x","y","xmin","ymin","xmax", or "ymax".
+    - Note that for the "bounds" aggregate, this value should either be "x","y","xmin","ymin","xmax", or "ymax".
 
 **JSON Template Example**:
 
-``` none
+```none
 "extent": {
   "spatial": {
     "bbox": [
@@ -115,7 +115,7 @@ Support for the [STAC Datacube Extension](https://github.com/stac-extensions/dat
 
 **HTML/FTL Example**:
 
-``` none
+```none
 <li><b>Extents</b>:
      <ul>
      <li data-tid='gbounds'>Geographic (WGS84):
@@ -142,13 +142,13 @@ Layers are kept in the `layers` attribute of a collection, each one exposes the 
 
 - The layer `title` and `description` from the GeoServer own configuration
 
-- A list of `styles`, matching the styles associated to the layer. The first one is the default style. Each style contains the follwoing properties:
-  - `name`: the style name
-  - `title`: the style title
+- A list of `styles`, matching the styles associated to the layer. The first one is the default style. Each style contains the following properties:
+    - `name`: the style name
+    - `title`: the style title
 
 - A `services` object with attributes matching a lowercase service name, e.g., `wms`, `wcs`, `wmts`, each one being an object with the following two fields:
 
-  - `enabled`: true or false (might depend on the layer configuration too)
+    - `enabled`: true or false (might depend on the layer configuration too)
       - `formats`: the formats supported, for that layer, by the main service output (e.g., maps, coverages, tiles)
 
 This information could be used, for example, to implement the STAC [web-map-links](https://github.com/stac-extensions/web-map-links) extension.
@@ -213,7 +213,7 @@ Here is a Freemarker template snipped using the layer information:
 
 And here is a Features Templating JSON template exposing the same information, to use in the collection JSON output:
 
-``` json
+```json
 {
   "collections": [
     {

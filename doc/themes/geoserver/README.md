@@ -7,7 +7,7 @@ This directory contains the shared theme customizations for all GeoServer docume
 ```
 doc/themes/geoserver/
 ├── img/
-│   ├── geoserver-logo.png    # Site logo (used in header)
+│   ├── geoserver-logo.svg    # Site logo (used in header)
 │   └── geoserver.ico          # Favicon
 ├── partials/
 │   ├── header.html            # Custom header template
@@ -32,7 +32,7 @@ All three documentation types reference this shared theme in their `mkdocs.yml`:
 theme:
   name: material
   custom_dir: ../../themes/geoserver
-  logo: img/geoserver-logo.png
+  logo: img/geoserver-logo.svg
   favicon: img/geoserver.ico
 ```
 
@@ -85,11 +85,11 @@ To customize assets for **one documentation type only**:
 **Example:** To give docguide a custom logo:
 ```bash
 # Create doc-specific logo
-cp custom-logo.png doc/en/docguide/docs/img/geoserver-logo.png
+cp custom-logo.svg doc/en/docguide/docs/img/geoserver-logo.svg
 
 # Result:
-# - Docguide uses: doc/en/docguide/docs/img/geoserver-logo.png
-# - User/Developer use: doc/themes/geoserver/img/geoserver-logo.png
+# - Docguide uses: doc/en/docguide/docs/img/geoserver-logo.svg
+# - User/Developer use: doc/themes/geoserver/img/geoserver-logo.svg
 ```
 
 **No configuration changes needed** - MkDocs handles this automatically.
@@ -124,7 +124,7 @@ cp custom-logo.png doc/en/docguide/docs/img/geoserver-logo.png
 
 ### 3. Images (`img/`)
 
-**geoserver-logo.png:** Site logo displayed in the header (12,580 bytes)
+**geoserver-logo.svg:** Site logo displayed in the header
 
 **geoserver.ico:** Favicon displayed in browser tabs (15,086 bytes)
 

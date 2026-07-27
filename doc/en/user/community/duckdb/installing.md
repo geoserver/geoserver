@@ -7,7 +7,9 @@
 
 2. Visit the [download page](https://geoserver.org/download/), switch to the **Development** tab, and locate the nightly build matching your GeoServer version.
 
-3. Follow the **Community Modules** link and download the DuckDB module.
+3. Follow the **Community Modules** link and download the DuckDB module:
+
+   - |version| example: {nightly_community}`duckdb`
 
    The website lists active nightly builds to provide feedback to developers. You may also [browse the build server](https://build.geoserver.org/geoserver/) for earlier branches.
 

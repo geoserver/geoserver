@@ -49,7 +49,7 @@ public class DataAccessRuleEditPageTest extends LayerGroupBaseTest {
     //		assertNotNull(rule.getAccess().name());
     //		Rule fullRule = adminService.get(rule.getId());
     //		RuleLimits limits = fullRule.getRuleLimits();
-    //		assertEquals(CatalogMode.HIDE, limits.getCatalogMode());
+    //		assertEquals(CatalogMode.HIDE, limits.catalogMode());
     //		assertEquals(SpatialFilterType.CLIP, limits.getSpatialFilterType());
     //		assertNotNull(limits.getAllowedArea());
     //	}

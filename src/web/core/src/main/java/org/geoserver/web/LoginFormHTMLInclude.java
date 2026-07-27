@@ -40,9 +40,16 @@ public class LoginFormHTMLInclude extends Include {
 
     private PackageResourceReference resourceReference;
 
+    private String redirectUrl;
+
     public LoginFormHTMLInclude(String id, PackageResourceReference packageResourceReference) {
+        this(id, packageResourceReference, null);
+    }
+
+    public LoginFormHTMLInclude(String id, PackageResourceReference packageResourceReference, String redirectUrl) {
         super(id);
         this.resourceReference = packageResourceReference;
+        this.redirectUrl = redirectUrl;
     }
 
     @Override
@@ -70,6 +77,7 @@ public class LoginFormHTMLInclude extends Include {
                     autocompleteValue = DEFAULT_AUTOCOMPLETE_VALUE;
                 }
                 params.put("autocomplete", autocompleteValue);
+                params.put("redirectUrl", redirectUrl != null ? redirectUrl : "");
 
                 StringWriter writer = new StringWriter();
                 template.process(params, writer);

@@ -338,12 +338,12 @@ class DataAccessRuleEditPanel extends FormComponentPanel<MutableRule> {
     }
 
     private void onWorkspaceChangeEvent(WorkspaceChangeEvent event) {
-        pageModel.workSpaceNameChanged(event.getWorkspace(), event.getTarget()).ifPresent(this::send);
+        pageModel.workSpaceNameChanged(event.workspace(), event.target()).ifPresent(this::send);
     }
 
     private void onLayerChangeEvent(LayerChangeEvent event) {
-        updateCatalogModeVisibility(event.getTarget());
-        pageModel.layerNameChanged(event.getLayer(), event.getTarget()).ifPresent(this::send);
+        updateCatalogModeVisibility(event.target());
+        pageModel.layerNameChanged(event.layer(), event.target()).ifPresent(this::send);
     }
 
     private void updateCatalogModeVisibility(AjaxRequestTarget target) {
@@ -356,8 +356,8 @@ class DataAccessRuleEditPanel extends FormComponentPanel<MutableRule> {
     }
 
     private void onGrantTypeChanged(GrantTypeChangeEvent event) {
-        updateCatalogModeVisibility(event.getTarget());
-        updateRuleLimitsVisibility(event.getTarget());
+        updateCatalogModeVisibility(event.target());
+        updateRuleLimitsVisibility(event.target());
     }
 
     private void updateRuleLimitsVisibility(AjaxRequestTarget target) {

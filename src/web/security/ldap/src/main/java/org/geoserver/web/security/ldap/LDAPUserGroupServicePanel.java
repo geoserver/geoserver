@@ -10,11 +10,12 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
 import org.geoserver.security.ldap.LDAPUserGroupServiceConfig;
 import org.geoserver.security.web.usergroup.UserGroupServicePanel;
+import org.geoserver.web.data.store.PasswordTextFieldWriteOnlyModel;
 
 /** @author Niels Charlier */
 public class LDAPUserGroupServicePanel extends UserGroupServicePanel<LDAPUserGroupServiceConfig> {
@@ -31,15 +32,11 @@ public class LDAPUserGroupServicePanel extends UserGroupServicePanel<LDAPUserGro
         @Serial
         private static final long serialVersionUID = 6533128678666053350L;
 
-        public LDAPAuthenticationPanel(String id) {
+        public LDAPAuthenticationPanel(String id, IModel<LDAPUserGroupServiceConfig> configModel) {
             super(id);
             add(new TextField<>("user"));
 
-            PasswordTextField pwdField = new PasswordTextField("password");
-            // avoid reseting the password which results in an
-            // empty password on saving a modified configuration
-            pwdField.setResetPassword(false);
-            add(pwdField);
+            add(new PasswordTextFieldWriteOnlyModel("password", new PropertyModel<>(configModel, "password")));
         }
 
         public void resetModel() {
@@ -84,7 +81,7 @@ public class LDAPUserGroupServicePanel extends UserGroupServicePanel<LDAPUserGro
                 target.add(ldapAuthenticationPanel);
             }
         });
-        LDAPAuthenticationPanel authPanel = new LDAPAuthenticationPanel("authenticationPanel");
+        LDAPAuthenticationPanel authPanel = new LDAPAuthenticationPanel("authenticationPanel", model);
         authPanel.setVisible(model.getObject().isBindBeforeGroupSearch());
         authPanel.setOutputMarkupPlaceholderTag(true);
         add(authPanel);

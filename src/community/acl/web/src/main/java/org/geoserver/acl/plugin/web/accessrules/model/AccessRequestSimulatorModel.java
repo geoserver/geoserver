@@ -66,7 +66,7 @@ public class AccessRequestSimulatorModel extends AbstractRulesModel {
     public boolean runSimulation() {
         AccessInfo accessInfo = getAccessInfo();
         getAccessInfoModel().setObject(accessInfo);
-        Set<String> newMatchingRules = Set.copyOf(accessInfo.getMatchingRules());
+        Set<String> newMatchingRules = Set.copyOf(accessInfo.matchingRules());
         if (matchingRules.equals(newMatchingRules)) {
             return false;
         }

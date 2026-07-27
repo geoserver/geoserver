@@ -1,0 +1,28 @@
+/* OGC API specific look overrides on top of global GeoServer CSS */
+.btn-outline-primary {
+  color: var(--gs-primary);
+  border-color: var(--gs-primary);
+}
+
+.btn-outline-primary:hover {
+  color: rgb(var(--gs-white-rgb));
+  background-color: var(--gs-primary);
+}
+
+.card-header h2 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+header #fetch {
+  white-space: nowrap;
+}
+
+.bg-process-inputs {
+  background-color: var(--gs-success-bg-subtle);
+  color: var(--gs-success-text-emphasis);
+}
+
+.bg-primary {
+  background-color: var(--gs-primary) !important;
+}

@@ -4,7 +4,7 @@ Let's say we want to draw the `topp:states` layer so that the polygons are not f
 
 This is the destination:
 
-![](images/states.png)
+![](images/states.png)  
 *topp:states layer*
 
 Using alpha blending, this can be achieved by creating a mask around the state borders with a thick stroke, and then using a "destination-in" alpha compositing.
@@ -17,7 +17,7 @@ This is the source (mask):
 
 The SLD will contain three FeatureTypeStyles. The first one would be the standard rules (states colored by population) and the last one will contain the label rules. The second (middle) one is where the blending will occur:
 
-``` xml
+```xml
 ...
 <FeatureTypeStyle>
   <!-- Usual states rules, skipped for brevity -->
@@ -51,7 +51,7 @@ This other background layer is hardly visible, because it has been cut by the ma
 
 In order to achieve the desired result no matter how the client composes the request, the first FeatureTypeStyle that draws the polygons (the states themselves) needs to be set as a *compositing base*, ensuring the mask will only be applied to it.
 
-``` xml
+```xml
 <VendorOption name="composite-base">true</VendorOption>
 ```
 

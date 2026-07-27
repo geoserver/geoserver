@@ -4,7 +4,7 @@
   <name>Tiles</name>
   <title>Tile Services</title>
   <maintainer>https://geoserver.org/com</maintainer>
-  <abstrct>Pre-rendered georeferenced map tile sets generated from vctor data, raster data, and imagery.</abstrct>
+  <abstrct>Pre-rendered georeferenced map tile sets generated from vector data, raster data, and imagery.</abstrct>
   <accessConstraints>NONE</accessConstraints>
   <fees>NONE</fees>
   <versions>

@@ -10,12 +10,14 @@ import static org.geoserver.backuprestore.web.BackupRestoreWebUtils.humanReadabl
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
@@ -47,13 +49,9 @@ import org.geoserver.web.GeoServerUnlockablePage;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.Icon;
 import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.launch.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.launch.JobExecutionNotRunningException;
-import org.springframework.batch.core.launch.NoSuchJobException;
-import org.springframework.batch.core.launch.NoSuchJobExecutionException;
-import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
-import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.batch.core.launch.JobRestartException;
 
 /** @author Alessio Fabiani, GeoSolutions S.A.S. */
 public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoServerSecuredPage
@@ -187,6 +185,24 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
         details.setMarkupId("details");
         add(details);
 
+        // Live progress: while the job is still running, repaint the header (state / progress columns) and the error
+        // details every couple of seconds, then stop. This replaces the need to keep clicking the manual "refresh"
+        // link (which does a full page reload). The 2s cadence matches the data page and is light on the server.
+        if (bkp.isRunning()) {
+            final BackupRestoreExecutionsTable liveHeader = headerTable;
+            final TextArea<String> liveDetails = details;
+            add(new AbstractAjaxTimerBehavior(Duration.ofSeconds(2)) {
+                @Override
+                protected void onTimer(AjaxRequestTarget target) {
+                    target.add(liveHeader);
+                    target.add(liveDetails);
+                    if (!bkp.isRunning()) {
+                        stop(target);
+                    }
+                }
+            });
+        }
+
         String location = bkp.getArchiveFile().path();
         backupFile = new File(location);
         if (!backupFile.isAbsolute()) {
@@ -238,7 +254,7 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
                         backupFacade().stopExecution(bkp.getId());
 
                         setResponsePage(BackupRestoreDataPage.class);
-                    } catch (NoSuchJobExecutionException | JobExecutionNotRunningException e) {
+                    } catch (JobExecutionNotRunningException e) {
                         LOGGER.log(Level.WARNING, "", e);
                         getSession().error(e);
                         setResponsePage(BackupRestoreDataPage.class);
@@ -277,11 +293,7 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
                         }
 
                         setResponsePage(BackupRestorePage.class, pp);
-                    } catch (NoSuchJobExecutionException
-                            | JobInstanceAlreadyCompleteException
-                            | NoSuchJobException
-                            | JobRestartException
-                            | JobParametersInvalidException e) {
+                    } catch (JobRestartException e) {
                         LOGGER.log(Level.WARNING, "", e);
                         getSession().error(e);
                         setResponsePage(BackupRestoreDataPage.class);
@@ -320,7 +332,7 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
                         }
 
                         setResponsePage(BackupRestorePage.class, pp);
-                    } catch (NoSuchJobExecutionException | JobExecutionAlreadyRunningException e) {
+                    } catch (JobExecutionAlreadyRunningException e) {
                         error(e);
                         LOGGER.log(Level.WARNING, "", e);
                     }

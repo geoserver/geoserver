@@ -20,7 +20,6 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.GWC;
@@ -70,7 +69,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", NewCachedLayerPage.this);
                     TileLayer layer = itemModel.getObject();
-                    ResourceReference layerIcon = GWCIconFactory.getSpecificLayerIcon(layer);
+                    String layerIcon = GWCIconFactory.getSpecificLayerIcon(layer);
                     f.add(CatalogIconFactory.get().getIcon("layerIcon", layerIcon));
                     return f;
                 } else if (property == NAME) {
@@ -78,7 +77,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
                 } else if (property == ENABLED) {
                     TileLayer layerInfo = itemModel.getObject();
                     boolean enabled = layerInfo.isEnabled();
-                    ResourceReference icon;
+                    String icon;
                     if (enabled) {
                         icon = GWCIconFactory.getEnabledIcon();
                     } else {

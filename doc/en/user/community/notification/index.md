@@ -37,29 +37,31 @@ The usage of the extensions is based on two components that defines its behavior
 
 The configuration file will be parsed by XStream framework to instantiate the right classes. An example of notifier.xml have the follow content:
 
-> <notificationConfiguration>
->     <queueSize>1000</queueSize>
->       <notificator>
->         <messageFilter>type='Catalog'</messageFilter>
->         <queueSize>1000</queueSize>
->         <processorThreads>1</processorThreads>    
->         <genericProcessor>
->           <geonodeEncoder />
->           <fanoutSender>
->             <username>guest</username>
->             <password>guest</password>
->             <host>localhost</host>
->             <port>4432</port>
->             <virtualHost></virtualHost>
->             <exchangeName>testExchange</exchangeName>
->             <routingKey>testRouting</routingKey>
->           </fanoutSender>
->         </genericProcessor>
->       </notificator>
->       <notificator>
->       ...
->       </notificator>
->     </notificationConfiguration>
+```xml
+<notificationConfiguration>
+    <queueSize>1000</queueSize>
+      <notificator>
+        <messageFilter>type='Catalog'</messageFilter>
+        <queueSize>1000</queueSize>
+        <processorThreads>1</processorThreads>    
+        <genericProcessor>
+          <geonodeEncoder />
+          <fanoutSender>
+            <username>guest</username>
+            <password>guest</password>
+            <host>localhost</host>
+            <port>4432</port>
+            <virtualHost></virtualHost>
+            <exchangeName>testExchange</exchangeName>
+            <routingKey>testRouting</routingKey>
+          </fanoutSender>
+        </genericProcessor>
+      </notificator>
+      <notificator>
+      ...
+      </notificator>
+    </notificationConfiguration>
+```
 
 **notificationConfiguration** -> **queueSize** = the size of queue that store all the notification messages.
 

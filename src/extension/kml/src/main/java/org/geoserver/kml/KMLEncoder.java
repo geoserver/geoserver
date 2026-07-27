@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import org.geoserver.platform.ServiceException;
+import org.geotools.xml.XMLUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
@@ -78,7 +78,7 @@ public class KMLEncoder {
      */
     private static final class KMLDocumentHandler implements ContentHandler {
 
-        private static final SAXTransformerFactory FACTORY = (SAXTransformerFactory) TransformerFactory.newInstance();
+        private static final SAXTransformerFactory FACTORY = XMLUtils.newSaxTransformerFactory();
 
         private static final String ROOT_NAMESPACE = "http://www.opengis.net/kml/2.2";
 

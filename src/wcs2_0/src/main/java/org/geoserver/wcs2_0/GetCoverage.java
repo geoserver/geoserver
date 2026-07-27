@@ -1582,7 +1582,6 @@ public class GetCoverage {
                     WCS20Exception.WCS20ExceptionCode.InterpolationMethodNotSupported,
                     "");
         }
-        returnValue.get("Lat");
         return returnValue;
     }
 

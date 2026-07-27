@@ -40,15 +40,15 @@ public class AuthorizationRequestBuilderTest {
                 .workspace("topp")
                 .build();
 
-        assertEquals("testuser", request.getUser());
-        assertEquals(Set.of("ROLE_ONE", "ROLE_TWO"), request.getRoles());
-        assertEquals(getAuthentication().getName(), request.getUser());
-        assertEquals("WMS", request.getService());
-        assertEquals("GETMAP", request.getRequest());
-        assertEquals("topp", request.getWorkspace());
-        assertEquals("states", request.getLayer());
-        assertNull(request.getSourceAddress());
-        assertNull(request.getSubfield());
+        assertEquals("testuser", request.user());
+        assertEquals(Set.of("ROLE_ONE", "ROLE_TWO"), request.roles());
+        assertEquals(getAuthentication().getName(), request.user());
+        assertEquals("WMS", request.service());
+        assertEquals("GETMAP", request.request());
+        assertEquals("topp", request.workspace());
+        assertEquals("states", request.layer());
+        assertNull(request.sourceAddress());
+        assertNull(request.subfield());
     }
 
     @Test
@@ -58,13 +58,13 @@ public class AuthorizationRequestBuilderTest {
                 .request(getRequest())
                 .build();
 
-        assertEquals(Set.of("ROLE_ONE", "ROLE_TWO"), request.getRoles());
-        assertEquals(getAuthentication().getName(), request.getUser());
-        assertEquals("WMS", request.getService());
-        assertEquals("GETMAP", request.getRequest());
+        assertEquals(Set.of("ROLE_ONE", "ROLE_TWO"), request.roles());
+        assertEquals(getAuthentication().getName(), request.user());
+        assertEquals("WMS", request.service());
+        assertEquals("GETMAP", request.request());
         // no value provided should be set to default null
-        assertNull(request.getLayer());
-        assertNull(request.getWorkspace());
+        assertNull(request.layer());
+        assertNull(request.workspace());
     }
 
     private Request getRequest() {

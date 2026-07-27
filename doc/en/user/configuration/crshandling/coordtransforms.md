@@ -1,6 +1,6 @@
 # Coordinate Operations
 
-Coordinate operations are used to convert coordinates from a ``source CRS`` to a ``target CRS``.
+Coordinate operations are used to convert coordinates from a `source CRS` to a `target CRS`.
 
 If source and target CRSs are referred to a different datum, a datum transform has to be applied. Datum transforms are not exact, they are determined empirically. For the same pair of CRS, there can be many datum transforms and versions, each one with its own domain of validity and an associated transform error. Given a CRS pair, GeoServer will automatically pick the most accurate datum transform from the EPSG database, unless a custom operation is declared.
 
@@ -19,7 +19,7 @@ Read more about the [Reprojection console](../demos/index.md#demos_reprojectionc
 GeoServer supports NTv2 and NADCON grid shift transforms. Grid files are not shipped out with GeoServer. They need to be downloaded, usually from your National Mapping Agency website.
 
 !!! warning
-    Grid Shift files are only valid in the specific geographic domain for which they where made; trying to transform coordinates outside this domain will result in no trasformation at all. Make sure that the Grid Shift files are valid in the area you want to transform.
+    Grid Shift files are only valid in the specific geographic domain for which they where made; trying to transform coordinates outside this domain will result in no transformation at all. Make sure that the Grid Shift files are valid in the area you want to transform.
 
 1.  Search for the *Grid File Name(s)* int the tables below, which are extracted from EPSG version 11.0.31. If you need to use a Grid Shift transform not declared in EPSG, you will need to [Define a custom Coordinate Operation](#define-a-custom-coordinate-operation).
 2.  Get the Grid File(s) from your National Mapping Agency (NTv2) or the [US National Geodetic Survey](http://www.ngs.noaa.gov/TOOLS/Nadcon/Nadcon.shtml) (NADCON).
@@ -265,7 +265,7 @@ The list of Grid Shift transforms declared in EPSG version 11.0.31 is:
 
 Custom Coordinate Operations are defined in **`epsg_operations.properties`** file. This file has to be placed into the **`user_projections`** directory, inside your data directory (create it if it doesn't exist).
 
-Each line in **`epsg_operations.properties`** will describe a coordinate operation consisting of a ``source CRS``, a ``target CRS``, and a math transform with its parameter values. Use the following syntax:
+Each line in **`epsg_operations.properties`** will describe a coordinate operation consisting of a `source CRS`, a `target CRS`, and a math transform with its parameter values. Use the following syntax:
 
 ```xml
 <source crs code>,<target crs code>=<WKT math transform>

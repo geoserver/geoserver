@@ -6,7 +6,7 @@ GeoServer supports [GeoRSS](http://georss.org/) as an output format allowing you
 
 If you are using a web browser which can render RSS feeds simply visit the URL <http://localhost:8080/geoserver/wms/reflect?layers=states&format=rss> in your browser. This is assuming a local GeoServer instance is running with an out of the box configuration. You should see a result that looks more or less like this:
 
-![](browser.png)
+![](browser.png)  
 *topp:states rss feed*
 
 ## Templating
@@ -39,7 +39,7 @@ How to create a Google Maps mashup with a GeoRSS overlay produced by GeoServer.
     <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-    <title>Google Maps JavaScript API Example<    itle>
+    <title>Google Maps JavaScript API Example</title>
     <script src="http://maps.google.com/maps?file=api&amp;v=2.x&amp;key=<INSERT MAPS API KEY HERE>" type="text/javascript"></script>
 
     <script type="text/javascript">
@@ -72,7 +72,7 @@ How to create a Google Maps mashup with a GeoRSS overlay produced by GeoServer.
 
 How to create a Yahoo! Maps mashup with a GeoRSS overlay produced by GeoServer.
 
-1.  Obtain a <Yahoo Maps Application ID <http://search.yahooapis.com/webservices/register_application>`_ from Yahoo.
+1.  Obtain a [Yahoo Maps Application ID](http://search.yahooapis.com/webservices/register_application) from Yahoo.
 
 2.  Create an html file called `ymaps.html`:
 

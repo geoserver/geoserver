@@ -31,8 +31,11 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.wfs.kvp.QNameKvpParser;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.gml3.v3_2.GML;
+import org.geotools.util.factory.GeoTools;
+import org.geotools.util.factory.Hints;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xs.XS;
 import org.geotools.xsd.Parser;
 import org.w3c.dom.Document;
@@ -40,6 +43,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
 public class StoredQuery {
@@ -120,17 +124,20 @@ public class StoredQuery {
         // parse into a dom and check the typeNames.. since we don't have parameter values we can't
         // parse into a QueryType object
         // TODO: use sax
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
+        Hints hints = GeoTools.addDefaultHints(new Hints(Hints.ENTITY_RESOLVER, entityResolver));
+
+        DocumentBuilderFactory dbf = XMLUtils.newDocumentBuilderFactory(hints);
 
         // do a non namespace aware parse... this is because we are only parsing part of the
-        // document here (the query part), and it is unlikley that any namespace prefixes are
+        // document here (the query part), and it is unlikely that any namespace prefixes are
         // declared
-        // dbf.setNamespaceAware(true);
+        dbf.setNamespaceAware(false);
 
         DocumentBuilder db;
         try {
-            db = dbf.newDocumentBuilder();
-            db.setEntityResolver(catalog.getResourcePool().getEntityResolver());
+            db = XMLUtils.newDocumentBuilder(dbf, hints);
+            db.setEntityResolver(entityResolver);
         } catch (ParserConfigurationException e) {
             throw new IOException(e);
         }

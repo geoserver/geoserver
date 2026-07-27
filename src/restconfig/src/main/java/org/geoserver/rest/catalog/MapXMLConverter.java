@@ -13,17 +13,16 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.collections4.iterators.NodeListIterator;
 import org.geoserver.rest.converters.BaseMessageConverter;
+import org.geotools.xml.XMLUtils;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -56,7 +55,7 @@ public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
 
         Document dom;
         try {
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            DocumentBuilder builder = XMLUtils.newDocumentBuilder();
             builder.setEntityResolver(catalog.getResourcePool().getEntityResolver());
             dom = builder.parse(inputMessage.getBody());
         } catch (SAXException | IOException | ParserConfigurationException e) {
@@ -76,7 +75,7 @@ public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
 
         Element root;
         try {
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            DocumentBuilder builder = XMLUtils.newDocumentBuilder();
             Document doc = builder.newDocument();
             root = doc.createElement(getMapName(map));
             doc.appendChild(root);
@@ -86,8 +85,7 @@ public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
 
         insert(root, map);
         try {
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
+            Transformer transformer = XMLUtils.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             Result outputTarget = new StreamResult(outputMessage.getBody());
             transformer.transform(new DOMSource(root), outputTarget);

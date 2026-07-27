@@ -12,7 +12,7 @@ The following syntax defines access control rules for RESTful services (paramete
 
 The parameters are:
 
-- **uriPattern**---`ant pattern <rest.rst#security_rest_ant_patterns>`_ that matches a set of request URIs
+- **uriPattern**---[ant pattern](#security_rest_ant_patterns) that matches a set of request URIs
 - **method**---HTTP request method, one of `GET`, `POST`, `PUT`, `POST`, `DELETE`, or `HEAD`
 - **role**---Name of a predefined role. The wildcard '* is used to indicate the permission is applied to all users, including anonymous users.
 

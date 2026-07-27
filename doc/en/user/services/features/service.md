@@ -12,36 +12,36 @@ The service is self described using:
 
 - `html`: A collection of web pages, with links for navigation between content (and that can be indexed by search engines for discoverability).
 
-  ![](img/features.png)
+    ![](img/features.png)
 
-  *OGC API Features service*
+    *OGC API Features service*
 
 - `application/json`: A collection of **`json`** documents, with reference between each document for programmatic access by web developers.
 
-  ``` json
-  {
-    "title": "GeoServer Features service",
-    "description": "This service delivers vector data in raw form, including both geometries and attributes.",
-    "links": [
-      {
-        "href": "https://gs-main.geosolutionsgroup.com/geoserver/ogc/features/v1/?f=application%2Fjson",
-        "rel": "self",
-        "type": "application/json",
-        "title": "This document"
-      },
-      {
-        "href": "https://gs-main.geosolutionsgroup.com/geoserver/ogc/features/v1/?f=application%2Fx-yaml",
-        "rel": "alternate",
-        "type": "application/x-yaml",
-        "title": "This document as application/x-yaml"
-      },
-      {
-        "href": "https://gs-main.geosolutionsgroup.com/geoserver/ogc/features/v1/?f=text%2Fhtml",
-        "rel": "alternate",
-        "type": "text/html",
-        "title": "This document as text/html"
-      },
-  ```
+    ``` json
+    {
+      "title": "GeoServer Features service",
+      "description": "This service delivers vector data in raw form, including both geometries and attributes.",
+      "links": [
+        {
+          "href": "https://gs-main.geosolutionsgroup.com/geoserver/ogc/features/v1/?f=application%2Fjson",
+          "rel": "self",
+          "type": "application/json",
+          "title": "This document"
+        },
+        {
+          "href": "https://gs-main.geosolutionsgroup.com/geoserver/ogc/features/v1/?f=application%2Fx-yaml",
+          "rel": "alternate",
+          "type": "application/x-yaml",
+          "title": "This document as application/x-yaml"
+        },
+        {
+          "href": "https://gs-main.geosolutionsgroup.com/geoserver/ogc/features/v1/?f=text%2Fhtml",
+          "rel": "alternate",
+          "type": "text/html",
+          "title": "This document as text/html"
+        },
+    ```
 
 The service title and description are provided by the existing [Web Feature Service (WFS)](../wfs/index.md) settings.
 

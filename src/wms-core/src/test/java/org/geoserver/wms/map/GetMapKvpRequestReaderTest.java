@@ -12,6 +12,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -92,6 +93,7 @@ import org.geotools.api.filter.sort.SortOrder;
 import org.geotools.api.style.Style;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.DateRange;
+import org.geotools.util.NullEntityResolver;
 import org.geotools.util.logging.Logging;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
@@ -177,10 +179,11 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     public void testSldEntityResolver() throws Exception {
         WMS wms = new WMS(getGeoServer());
         // enable entities in external SLD files
-        // test no custom entity resolver will be used
+        // test NullEntityResolver resolver will be used
         System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
         GetMapKvpRequestReader reader = new GetMapKvpRequestReader(wms);
-        assertNull(reader.getEntityResolverProvider().getEntityResolver());
+        assertSame(
+                NullEntityResolver.INSTANCE, reader.getEntityResolverProvider().getEntityResolver());
 
         // disable entities
         // since XML entities are disabled for external SLD files

@@ -23,7 +23,6 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
-import org.apache.wicket.markup.html.image.ContextImage;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
@@ -245,8 +244,7 @@ public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
             vocabularyBorder.add(vocabulary);
 
             GeoServerAjaxFormLink removeKeyword = removeKeywordLink("removeKeyword", item);
-            ContextImage image = new ContextImage("image", "img/icons/silk/delete.png");
-            removeKeyword.add(image);
+            removeKeyword.add(new GsIcon("image", "gs-icon-delete"));
             item.add(removeKeyword);
         }
 

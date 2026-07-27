@@ -4,7 +4,7 @@ A checklist of things to manually test for every release.
 
 ## Artifact size
 
-The binary release of GeoServer should be somehere around 45 - 46 megabytes.
+The binary release of GeoServer should be somewhere around 45 - 46 megabytes.
 
 ## Demos
 
@@ -61,7 +61,7 @@ Go to the sample request page, <http://localhost:8080/geoserver/web/?wicket:book
 
 6.  Change the `KML Regionating Attribute` to "SAMP_POP" and change the `KML Regionating Strategy` to "external-sorting":
 
-        .. image:: states_kml_config.png
+    ![image](states_kml_config.png)
 
 7.  Submit and Apply changes
 

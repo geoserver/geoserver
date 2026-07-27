@@ -28,7 +28,6 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.util.FrequencyUtil;
@@ -304,7 +303,7 @@ public class BatchesPanel extends Panel {
 
                                 } else if (property == BatchesModel.ENABLED) {
                                     CatalogIconFactory icons = CatalogIconFactory.get();
-                                    ResourceReference icon =
+                                    String icon =
                                             itemModel.getObject().isEnabled()
                                                     ? icons.getEnabledIcon()
                                                     : icons.getDisabledIcon();

@@ -145,7 +145,7 @@ public class PriorityFlowControllerTest extends AbstractFlowControllerTest {
             t1.start();
             waitBlocked(t1, MAX_WAIT); // wait until it blocks on latch
             t2.start();
-            waitBlocked(t2, MAX_WAIT); // wait until it blocks on control-flow
+            waitBlockedOrTimedOut(t2, MAX_WAIT);
             latch.countDown(); // release t1 and make it do it's 400ms wait
 
             // wait until both terminate

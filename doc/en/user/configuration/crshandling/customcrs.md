@@ -67,7 +67,7 @@ This example shows how to add a custom projection in GeoServer.
 
 In some situations it is necessary to override an official EPSG code with a custom definition. A common case is the need to change the TOWGS84 parameters in order to get better reprojection accuracy in specific areas.
 
-The GeoServer referencing subsystem checks the existence of another property file, **`epsg_overrides.properties`**, whose format is the same as **`epsg.properties`**. Any definition contained in **`epsg_overrides.properties`** will **override** the EPSG code, while definitions stored in **`epsg.proeprties`** can only **add** to the database.
+The GeoServer referencing subsystem checks the existence of another property file, **`epsg_overrides.properties`**, whose format is the same as **`epsg.properties`**. Any definition contained in **`epsg_overrides.properties`** will **override** the EPSG code, while definitions stored in **`epsg.properties`** can only **add** to the database.
 
 Special care must be taken when overriding the Datum parameters, in particular the **TOWGS84** parameters. To make sure the override parameters are actually used the code of the Datum must be removed, otherwise the referencing subsystem will keep on reading the official database in search of the best Datum shift method (grid, 7 or 5 parameters transformation, plain affine transform).
 

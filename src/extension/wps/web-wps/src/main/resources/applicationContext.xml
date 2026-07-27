@@ -37,7 +37,7 @@
     <property name="descriptionKey" value="ProcessStatusPage.description" />
     <property name="componentClass" value="org.geoserver.wps.web.ProcessStatusPage" />
     <property name="category" ref="serverCategory" />
-    <property name="icon" value="../../web/img/icons/silk/cog.png" />
+    <property name="icon" value="gs-icon-cog" />
     <property name="order" value="30" />
   </bean>
 
@@ -46,7 +46,7 @@
     <property name="titleKey" value="wps.security.title" />
     <property name="descriptionKey" value="wps.security.description" />
     <property name="componentClass" value="org.geoserver.wps.web.WPSAccessRulePage" />
-    <property name="icon" value="server_key.png" />
+    <property name="icon" value="gs-icon-map" />
     <property name="category" ref="securityCategory" />
     <property name="order" value="400" />
   </bean>

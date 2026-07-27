@@ -6,7 +6,7 @@ When using Apache HTTPD as a proxy frontend for GeoServer, it is possible to sha
 
 This requires enabling Session for the GeoServer location in Apache HTTPD and adding a custom Request Header with the session content, so that the GeoServer security system can receive user credentials and use them to authenticate the user with its internal filters.
 
-To properly parse the received credentials we need to use the ``Credentials From Request Headers`` Authentication Filter.
+To properly parse the received credentials we need to use the `Credentials From Request Headers` Authentication Filter.
 
 Please note that the header containing the password is not sent back and forth to the user browser, but only from Apache HTTPD to GeoServer, so the password is not sent in clear through the public network.
 
@@ -34,7 +34,7 @@ This tutorial uses the [curl](http://curl.haxx.se/) utility to issue HTTP reques
 
 5.  Fill in the fields of the settings form as follows:
 
-    - Set `Name` to "apachessesion"
+    - Set `Name` to "apachesession"
     - Set `Username Header` to "X-Credentials"
     - Set `Regular Expression for Username` to "private-user=([\^&]*)"
     - Set `Password Header` to "X-Credentials"
@@ -48,7 +48,7 @@ This tutorial uses the [curl](http://curl.haxx.se/) utility to issue HTTP reques
 
 8.  Click on "default" in the chain grid.
 
-9.  Scroll down and remove all filters from the `Selected` list and add the `apachessesion` filter.
+9.  Scroll down and remove all filters from the `Selected` list and add the `apachesession` filter.
 
     ![](images/digest5.jpg)
 
@@ -64,9 +64,9 @@ This tutorial uses the [curl](http://curl.haxx.se/) utility to issue HTTP reques
     curl -v -H "X-Credentials: private-user=admin&private-pw=wrong" "http://localhost:8080/geoserver/wms?service=WMS&version=1.1.1&request=GetCapabilities"
     ```
 
-```html
 The result should be a 403 response signaling that access is denied. The output should look something like the following:
 
+```html
     * About to connect() to localhost port 8080 (#0)
     *   Trying ::1... connected
     > GET /geoserver/wfs?request=getcapabilities HTTP/1.1
@@ -99,7 +99,7 @@ The result should be a 403 response signaling that access is denied. The output 
 
 This can be done with an HTTPD configuration that looks like the following:
 
-``` apacheconf
+```apacheconf
 <Location  /geoserver>
    Session On
    SessionEnv On
@@ -110,7 +110,7 @@ This can be done with an HTTPD configuration that looks like the following:
 </Location>
 ```
 
-This configuration adds a new ``X-Credentials`` Request Header to each GeoServer request. The request header will contain the HTTPD Session information in a special format.
+This configuration adds a new `X-Credentials` Request Header to each GeoServer request. The request header will contain the HTTPD Session information in a special format.
 
 An example of the Session content is the following:
 

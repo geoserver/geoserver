@@ -30,7 +30,7 @@ Experienced providers: work on GeoServer when hired by customers but are not alw
 - `coding` work on java code, bug fix, signed code contribution agreement
 - `documentation` contributions to user guide or similar
 - `translation` helped out translation of application or user guide
-- `outreach` public presentations of geoserver at foss4g and regional events, public writing such as blog posts, podcast etc\...
+- `outreach` public presentations of geoserver at foss4g and regional events, public writing such as blog posts, podcast etc...
 - `training` link to your geoserver training page
 - `services` link to your geoserver consulting or services page
 - `product` link to a geoserver based product
@@ -68,7 +68,7 @@ To apply to be listed on the service-provider page:
 
     For step-by-step instructions on editing in directly in GitHub see documentation guide [quickfix](https://docs.geoserver.org/latest/en/docguide/quickfix.html) instructions.
 
-3.  You may also wish to vist osgeo.org and follow the instructions to [add a service provider page](https://www.osgeo.org/community/getting-started-osgeo/add-service-provider/) for your organization.
+3.  You may also wish to visit osgeo.org and follow the instructions to [add a service provider page](https://www.osgeo.org/community/getting-started-osgeo/add-service-provider/) for your organization.
 
 Experienced Providers:
 

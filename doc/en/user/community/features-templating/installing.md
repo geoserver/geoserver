@@ -9,7 +9,7 @@ render_macros: true
 
 2.  Visit the [website download](https://geoserver.org/download) page, change the **Development** tab, and locate the nightly release that corresponds to the GeoServer you are running.
 
-    Follow the **Community Modules** link and download ``features-templating`` zip archive.
+    Follow the **Community Modules** link and download `features-templating` zip archive.
 
     - {{ snapshot }} example: [features-templating](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-features-templating-plugin.zip)
 

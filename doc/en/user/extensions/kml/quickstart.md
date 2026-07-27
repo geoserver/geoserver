@@ -7,7 +7,7 @@
 
 Make sure the KML extension is installed (copy the KML plugin zip contents into `WEB-INF/lib`) before trying these steps.
 
-Once GeoServer is installed and running, open up a web browser and go to the web admin console ([Web administration interface](../../webadmin/index.md)). Navigate to the [Layer Preview](../../data/webadmin/layerpreview.md) by clicking on the Layer Preview link at the bottom of the left sidebar. You will be presented with a list of the currently configured layers in your GeoServer instance. Find the row that says `topp:states`. To the right of the layer click on the link that says **KML**.
+Once GeoServer is installed and running, open up a web browser and go to the web admin console ([Web administration interface](../../webadmin/index.md)). Navigate to the [Browse Layers](../../data/webadmin/browselayers.md) by clicking on the Browse Layers link at the bottom of the left sidebar. You will be presented with a list of the currently configured layers in your GeoServer instance. Find the row that says `topp:states`. To the right of the layer click on the link that says **KML**.
 
 ![](../../data/webadmin/img/preview_list.png)
 

@@ -44,7 +44,6 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.SchemaFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
@@ -63,6 +62,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.kml.regionate.CachedHierarchyRegionatingStrategy;
 import org.geoserver.ows.kvp.FormatOptionsKvpParser;
 import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.test.IOTestUtils;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSMapContent;
@@ -84,6 +84,10 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.util.NullEntityResolver;
+import org.geotools.util.factory.GeoTools;
+import org.geotools.util.factory.Hints;
+import org.geotools.xml.XMLUtils;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -485,7 +489,7 @@ public class KMLReflectorTest extends WMSTestSupport {
         assertEquals(KMZMapOutputFormat.MIME_TYPE, response.getContentType());
 
         // create the kmz
-        File tempDir = org.geoserver.util.IOUtils.createRandomDirectory("./target", "kmplacemark", "test");
+        File tempDir = IOTestUtils.createRandomDirectory("./target", "kmplacemark");
         tempDir.deleteOnExit();
 
         File zip = new File(tempDir, "kmz.zip");
@@ -875,8 +879,9 @@ public class KMLReflectorTest extends WMSTestSupport {
 
         // Validate against the KML 2.2 schema.
         Unmarshaller unmarshaller = JAXBContext.newInstance(Kml.class).createUnmarshaller();
-        unmarshaller.setSchema(
-                SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(new Source[] {
+        Hints hints = GeoTools.addDefaultHints(new Hints(Hints.ENTITY_RESOLVER, NullEntityResolver.INSTANCE));
+        unmarshaller.setSchema(XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI, hints)
+                .newSchema(new Source[] {
                     new StreamSource(
                             getClass().getResource("/org/geoserver/kml/xAL.xsd").toExternalForm()),
                     new StreamSource(getClass()

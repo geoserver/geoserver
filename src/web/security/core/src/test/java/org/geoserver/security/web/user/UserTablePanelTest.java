@@ -38,7 +38,7 @@ public class UserTablePanelTest extends GeoServerWicketTestSupport {
 
         // check rendering in users table
         tester.assertLabel(firstUserProperties + ":0:component:link:label", "user");
-        tester.assertComponent(firstUserProperties + ":1:component:img", org.geoserver.web.wicket.CachingImage.class);
+        tester.assertComponent(firstUserProperties + ":1:component", org.geoserver.web.wicket.GsIcon.class);
         tester.assertLabel(firstUserProperties + ":2:component", "");
         // no more columns
         tester.assertNotExists(firstUserProperties + ":3:component");
@@ -74,8 +74,8 @@ public class UserTablePanelTest extends GeoServerWicketTestSupport {
 
         // check rendering in users table
         tester.assertLabel(tableItemProperties + ":0:component:link:label", "user");
-        tester.assertComponent(tableItemProperties + ":1:component:img", org.geoserver.web.wicket.CachingImage.class);
-        tester.assertComponent(tableItemProperties + ":2:component:img", org.geoserver.web.wicket.CachingImage.class);
+        tester.assertComponent(tableItemProperties + ":1:component", org.geoserver.web.wicket.GsIcon.class);
+        tester.assertComponent(tableItemProperties + ":2:component", org.geoserver.web.wicket.GsIcon.class);
         tester.assertLabel(tableItemProperties + ":3:component", "Iam");
         tester.assertLabel(tableItemProperties + ":4:component", "Theuser");
         tester.assertLabel(tableItemProperties + ":5:component", "iamtheuser");

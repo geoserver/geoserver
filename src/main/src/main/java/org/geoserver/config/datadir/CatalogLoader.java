@@ -30,6 +30,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.ResolvingProxy;
+import org.geoserver.catalog.impl.ResourceInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerInfo;
@@ -414,9 +415,13 @@ class CatalogLoader {
         String parent = null;
         if (info instanceof LayerInfo layer) {
             parent = layer.getResource() != null ? layer.getResource().prefixedName() : null;
-        } else if (info instanceof ResourceInfo resource) {
-            StoreInfo store = resource.getStore();
-            parent = store != null ? store.getWorkspace().getName() + "/" + store.getName() : null;
+        } else if (info instanceof ResourceInfoImpl impl) {
+            StoreInfo store = impl.rawStore();
+            if (store != null && ResolvingProxy.getRef(store) == null) {
+                parent = store.getWorkspace().getName() + "/" + store.getName();
+            } else {
+                parent = "unresolved proxy";
+            }
         } else if (info instanceof StoreInfo store) {
             parent = store.getWorkspace() != null ? store.getWorkspace().getName() : null;
         } else if (info instanceof StyleInfo style) {

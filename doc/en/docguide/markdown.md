@@ -36,13 +36,13 @@ Use `**button**` to name user interface components for interaction (press for bu
 === "Markdown"
 
     ```markdown
-    Navigate to **Data --> Layers** page,
+    Navigate to **Data > Layers** page,
     and press **Add a new layer** to create a new layer.
     ```
 
 === "Preview"
 
-    Navigate to **Data --> Layers** page,
+    Navigate to **Data > Layers** page,
     and press **Add a new layer** to create a new layer.
 
 ### User input
@@ -60,7 +60,7 @@ Use `` `item` `` monospace for user supplied input, or item in a list or tree:
     Select `Basemap` layer.
 
 
-Use `` `text` `` monspace for user supplied text input:
+Use `` `text` `` monospace for user supplied text input:
 
 === "Markdown"
 
@@ -85,7 +85,7 @@ Use `++key++` for keyboard keys.
 
     Press ++control+f++ to find on page.
     
-Use definition list to document data entry. The field names use strong as they name a user interface element. Field values to input uses monspace as user input to type in.
+Use definition list to document data entry. The field names use strong as they name a user interface element. Field values to input uses monospace as user input to type in.
 
 === "Markdown"
 
@@ -98,7 +98,7 @@ Use definition list to document data entry. The field names use strong as they n
         **Password**
         :   `geoserver`
     
-        **Remeber me**
+        **Remember me**
         :   Unchecked
     
         Press **Login**.
@@ -114,7 +114,7 @@ Use definition list to document data entry. The field names use strong as they n
         **Password**
         :   `geoserver`
     
-        **Remeber me**
+        **Remember me**
         :   Unchecked
     
         Press **Login**.
@@ -126,12 +126,12 @@ Use `***command***` (combination of **bold** and *italics*) for proper names of 
 === "Markdown"
 
     ```markdown
-    Launch ***pgAdmin*** and connect to the databsae `tutorial`.
+    Launch ***pgAdmin*** and connect to the database `tutorial`.
     ```
 
 === "Preview"
 
-    Launch ***pgAdmin*** and connect to the databsae `tutorial`.
+    Launch ***pgAdmin*** and connect to the database `tutorial`.
 
 ### Files
 
@@ -153,8 +153,8 @@ Use `` **`file.txt`** `` (combine **bold** **monospace**) for files and path ref
 
 Material for markdown has extensive icon support, for most user interface elements we can directly make use of the appropriate icon in Markdown:
 
-- Use Material for mkdocs [Icons, Emojis](https://squidfunk.github.io/mkdocs-material/reference/icons-emojis/) page to serach included icons.
-- You can also refrence emojii by name
+- Use Material for MkDocs [Icons, Emojis](https://squidfunk.github.io/mkdocs-material/reference/icons-emojis/) page to search included icons.
+- You can also reference emoji by name
 - Add custom icons to **`overrides/.icons/silk`** .
 
 === "Markdown"
@@ -215,7 +215,7 @@ Be considerate of file size:
 * If taking a screenshot with HiDPI display, process by 50% to 72 DPI.
   
     ![](img/screen-snap-scale.png)  
-    *Screen Snap scale to 72 DPI*
+    *Screenshot scale to 72 DPI*
     
     !!! tip
         You may find it faster to adjust monitor resolution in order
@@ -246,13 +246,13 @@ Crop for form and data entry steps:
     
     ```markdown
     ![](img/screen-snap-form.png)  
-    *Form screen snap*
+    *Form screenshot*
     ```
 
 === "Preview"
 
     ![](img/screen-snap-form.png)  
-    *Form screen snap*
+    *Form screenshot*
 
 Scale for smaller elements like dialogs and menus:
 
@@ -260,13 +260,13 @@ Scale for smaller elements like dialogs and menus:
     
     ```markdown
     ![](img/screen-snap-dialog.png){: width=50%}  
-    *Dialog screen snap*
+    *Dialog screenshot*
     ```
 
 === "Preview"
 
     ![](img/screen-snap-dialog.png){: width=50%}  
-    *Dialog screen snap*
+    *Dialog screenshot*
 
 
 ### Lists
@@ -297,25 +297,67 @@ Numbered lists:
 
 === "Preview"
 
-    ```markdown
     1. First item
     2. Second item
     3. Third item
-    ```
 
-Nested bullets and outdenting
+Any additional content must be indented *four additional spaces*.
 
 === "Markdown"
     
     ```markdown
-    - Top level
-        - Nested level
+    1. First item
+    2. Second item
+        
+        Additional content.
+        
+    3. Third item
     ```
 
 === "Preview"
 
-    - Top level
-        - Nested level
+    1. First item
+    2. Second item
+        
+        Additional content.
+        
+    3. Third item
+
+Bullet items are defined by `-`, `+`, or `*`. Take care that any indented content is indented *four spaces*.
+
+=== "Markdown"
+    
+    ```markdown
+     -  item
+     -  item
+     
+         Additional text.
+     
+     -  item
+    ```
+
+=== "Preview"
+
+     -  item
+     -  item
+     
+         Additional text.
+     
+     -  item
+
+Nested bullets are additional content, and require the same indentation of *four spaces*.
+
+=== "Markdown"
+    
+    ```markdown
+     -  Top level
+         -  Nested level
+    ```
+
+=== "Preview"
+
+    -  Top level
+        -  Nested level
 
 To return to top level, use 0 indentation again. For example:
 
@@ -338,7 +380,7 @@ To return to top level, use 0 indentation again. For example:
 Documentation uses pipe-tables only "List-packed" tables
 as they are supported by both ***mkdocs*** and ***pandoc***.
 
-Tables are constructed with Leading / tailing `|`, and headers seperated by `---`.
+Tables are constructed with Leading / tailing `|`, and headers separated by `---`.
 
 === "Markdown"
     
@@ -356,7 +398,7 @@ Tables are constructed with Leading / tailing `|`, and headers seperated by `---
     | Square | Four sides of equal length, 90 degree angles |
     | Rectangle | Four sides, 90 degree angles |
 
-Column alignment using `:`
+Columns can be Left, Center or Right aligned using `:` in the `---` second row.
 
 === "Markdown"
     
@@ -449,7 +491,7 @@ For use of note-like callout inside a list item, use inline emphasis can be an a
             
     2. Remember use of ``ENTITY_RESOLUTION_UNRESTRICTED`` intended for troubleshooting only.
        
-        **:material-pencil-circle: Note:** Do not rely on this in production.
+        **:material-lightning-bolt-circle: Danger:** Do not rely on this in production.
 
     ```
     
@@ -465,7 +507,7 @@ For use of note-like callout inside a list item, use inline emphasis can be an a
             
     2. Remember use of ``ENTITY_RESOLUTION_UNRESTRICTED`` intended for troubleshooting only.
        
-        **:material-pencil-circle: Note:** Do not rely on this in production.
+        **:material-lightning-bolt-circle: Danger:** Do not rely on this in production.
 
 <a name="anchor"/>
 
@@ -606,11 +648,11 @@ Fenced block are used to represent code examples:
 === "Markdown"
     
     
-    `````md
+    ````md
     ```bash
     mvn clean install -DskipTests
     ```
-    `````
+    ````
 
 === "Preview"
 
@@ -629,20 +671,20 @@ Use snippet `--8<--` include content from another file:
 
 To include a number of lines into an `xml` code-block:
 
-* `xml` is sensitive to dashes, so `-8<-` is used here
+* `xml` is sensitive to dashes, so the single-dash variant `-8<-` is used instead
 
 === "Markdown"
     
     ````Markdown
     ```xml
-    ;--8<-- "build/qa/pmd-ruleset.xml:23:25"
+    ;-8<- "build/qa/pmd-ruleset.xml:23:25"
     ```
     ````
 
 === "Preview"
 
     ```xml
-    --8<-- "build/qa/pmd-ruleset.xml:23:25"
+    -8<- "build/qa/pmd-ruleset.xml:23:25"
     ```
 
 To include named section:
@@ -672,7 +714,3 @@ Example of comment markers from `ResourcesTest.java`:
     --8<-- "src/platform/src/test/java/org/geoserver/platform/resource/ResourcesTest.java:example"
     ```
 
-
-### Show Source
-
-All pages have a "Show Source" link in the right-hand table of contents.

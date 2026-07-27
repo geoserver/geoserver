@@ -7,8 +7,8 @@ package org.geoserver.backuprestore.listener;
 import java.util.List;
 import org.geoserver.backuprestore.listener.BackupRestoreJobExecutionListener.JobType;
 import org.geoserver.platform.GeoServerExtensions;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobExecutionListener;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.listener.JobExecutionListener;
 
 /** Job execution listener that will invoke listeners contributed by extensions. */
 public final class GenericListenersExecutor implements JobExecutionListener {

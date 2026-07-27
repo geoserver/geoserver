@@ -3,15 +3,17 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-GraticulePanel">
-        <div class="gs-unordered-list-class">
-          <div class="gs-list-item-class">
+        <div class="gs-form">
+          <div class="gs-form-group">
             <label>
               <wicket:message key="bounds">Bounds</wicket:message>
             </label>
-            <div wicket:id="bounds" class="selfclear"/>
-          </div>
-          <div class="gs-list-item-class">
-            <input wicket:id="generateBoundsFromCRS" type="submit" wicket:message="value:generateBoundsFromSRS"/>
+            <div>
+              <div wicket:id="bounds" class="selfclear"/>
+              <button wicket:id="generateBoundsFromCRS" type="submit">
+                <wicket:message key="generateBoundsFromSRS"/>
+              </button>
+            </div>
           </div>
           <div class="gs-list-item-class">
             <span id="steps" wicket:id="steps"/>

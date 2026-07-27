@@ -85,7 +85,7 @@ The REST API allows you to list, create, update, and delete **user/group service
 
 ## Create a User/Group Service
 
-To create an **XML-backed** user/group service you must provide a ``fileName`` and the usual password encoder/policy.
+To create an **XML-backed** user/group service you must provide a `fileName` and the usual password encoder/policy.
 
 *Request (XML)*
 

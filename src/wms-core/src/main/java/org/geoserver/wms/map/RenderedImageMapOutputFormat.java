@@ -493,14 +493,16 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         boolean saveMap = (request.getRawKvp() != null
                 && WMSServiceExceptionHandler.isPartialMapExceptionType(
                         request.getRawKvp().get("EXCEPTIONS")));
-        RenderingTimeoutEnforcer timeout = new RenderingTimeoutEnforcer(maxRenderingTime, renderer, graphic, saveMap) {
+        RenderingTimeoutEnforcer timeout =
+                new RenderingTimeoutEnforcer(
+                        maxRenderingTime, renderer, graphic, saveMap, DefaultWebMapService.getTimeoutPool()) {
 
-            /** Save the map before disposing of the graphics */
-            @Override
-            public void saveMap() {
-                this.map = optimizeAndBuildMap(palette, preparedImage, mapContent);
-            }
-        };
+                    /** Save the map before disposing of the graphics */
+                    @Override
+                    public void saveMap() {
+                        this.map = optimizeAndBuildMap(palette, preparedImage, mapContent);
+                    }
+                };
         timeout.start();
         try {
             // finally render the image;

@@ -41,10 +41,10 @@ The **raster** layer controls the display of raster data.
 1.  Navigate to the **Styles** page.
 2.  Click **Add a new style** and choose the following:
 
-    | Name:      | ``image_example`` |
+    | Name:      | `image_example` |
     |------------|-----------------------------|
-    | Workspace: | ``No workspace``  |
-    | Format:    | ``MBStyle``       |
+    | Workspace: | `No workspace`  |
+    | Format:    | `MBStyle`       |
 
 
 1.  Replace the initial MBStyle definition with:
@@ -79,10 +79,10 @@ The `usgs:dem` layer used for this exercise:
 1.  Return to the **Styles** page.
 2.  Click **Add a new style** and choose the following:
 
-    | Name:      | ``raster_example`` |
+    | Name:      | `raster_example` |
     |------------|------------------------------|
-    | Workspace: | ``No workspace``   |
-    | Format:    | ``MBStyle``        |
+    | Workspace: | `No workspace`   |
+    | Format:    | `MBStyle`        |
 
 
 1.  The rendering engine will select our single band of raster content, and do its best to map these values into a grayscale image. Replace the content of the style with:
@@ -117,4 +117,4 @@ The `usgs:dem` layer used for this exercise:
 2.  **Challenge:** Can you think of an example where this would be useful?
 
     !!! note
-        Discussion [provided](#mbstyle-raster-a4) at the end of the workbook.
+        Discussion [provided](done.md#mbstyle.raster.a4) at the end of the workbook.

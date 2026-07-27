@@ -150,7 +150,10 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
 
     @Override
     public int fullSize() {
-        Filter filter = Predicates.acceptAll();
+        Filter filter = getContextFilter();
+        if (filter == null) {
+            filter = Predicates.acceptAll();
+        }
         int count = getCatalog().count(LayerInfo.class, filter);
         return count;
     }

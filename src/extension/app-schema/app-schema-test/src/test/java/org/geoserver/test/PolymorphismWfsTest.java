@@ -12,6 +12,7 @@ import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.PropertyIsEqualTo;
@@ -23,6 +24,9 @@ import org.geotools.data.complex.filter.ComplexFilterSplitter;
 import org.geotools.data.jdbc.FilterToSQLException;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.util.NullEntityResolver;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -32,6 +36,16 @@ import org.w3c.dom.Document;
  * @author Rini Angreani, CSIRO Earth Science and Resource Engineering
  */
 public class PolymorphismWfsTest extends AbstractAppSchemaTestSupport {
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+    }
 
     @Override
     protected PolymorphismMockData createTestData() {

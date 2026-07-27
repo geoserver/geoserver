@@ -29,7 +29,7 @@ This example shows a polygon filled in blue.
 
 ### Code
 
-``` css
+```css
 * { 
   fill: #000080; 
 }
@@ -52,7 +52,7 @@ This example adds a 2 pixel white stroke to the [Simple polygon](#css_cookbook_p
 
 ### Code
 
-``` css
+```css
 * { 
   fill: #000080; 
   stroke: #FFFFFF;
@@ -74,7 +74,7 @@ This example builds on the [Simple polygon with stroke](#css_cookbook_polygons_s
 
 ### Code
 
-``` css
+```css
 * { 
   fill: #000080; 
   fill-opacity: 0.5;
@@ -97,7 +97,7 @@ This example fills the polygons with a tiled graphic.
 
 ### Code
 
-``` css
+```css
 * { 
   fill: url("colorblocks1.png");
   fill-mime: 'image/png';
@@ -122,7 +122,7 @@ This example fills the polygons with a hatching pattern.
 
 ### Code
 
-``` scss
+```scss
 * { 
   fill: symbol("shape://times");
   :fill {
@@ -149,7 +149,7 @@ This example shows a text label on the polygon. In the absence of any other cust
 
 ### Code
 
-``` css
+```css
 * { 
   fill: #40FF40;
   stroke: white;
@@ -173,7 +173,7 @@ This example alters the look of the [Polygon with default label](#css_cookbook_p
 
 ### Code
 
-``` css
+```css
 * { 
   fill: #40FF40;
   stroke: white;
@@ -199,7 +199,7 @@ This example improves the label style from the [Polygon with default label](#css
 
 ### Code
 
-``` css
+```css
 * { 
   fill: #40FF40;
   stroke: white;
@@ -236,7 +236,7 @@ This example styles the polygons differently based on the "pop" (Population) att
 
 ### Code
 
-``` css
+```css
 [parseLong(pop) < 200000] {
   fill: #66FF66;
 }
@@ -267,7 +267,7 @@ The three rules are designed as follows:
 
 The order of the rules does not matter in this case, since each shape is only rendered by a single rule.
 
-The first rule fills light green all polygons whose "pop" attribute is below 200,000, the second paints medium green all poygons whose "pop" attribute is between 200,000 and 500,000, while the third rule paints dark green the remaining polygons.
+The first rule fills light green all polygons whose "pop" attribute is below 200,000, the second paints medium green all polygons whose "pop" attribute is between 200,000 and 500,000, while the third rule paints dark green the remaining polygons.
 
 What's interesting in the filters is the use of the "parseLong" filter function: this function is necessary because the "pop" attribute is a string, leaving it as is we would have a string comparison, whilst the function turns it into a number, ensuring proper numeric comparisons instead.
 
@@ -289,7 +289,7 @@ This example alters the style of the polygon at different zoom levels.
 
 ### Code
 
-``` css
+```css
 * {
   fill: #0000CC;
   stroke: black;

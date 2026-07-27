@@ -18,8 +18,12 @@ import org.geoserver.threadlocals.ThreadLocalsTransfer;
  */
 class ThreadLocalTransferExecutor extends ThreadPoolExecutor {
 
-    public ThreadLocalTransferExecutor() {
-        super(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
+    public ThreadLocalTransferExecutor(String threadNamePrefix) {
+        super(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>(), r -> {
+            Thread t = new Thread(r, threadNamePrefix);
+            t.setDaemon(true);
+            return t;
+        });
     }
 
     @Override

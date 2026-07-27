@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -39,6 +38,7 @@ import org.geoserver.wfs.WFSInfo;
 import org.geotools.appschema.resolver.xml.AppSchemaXSDRegistry;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 import org.geotools.data.complex.DataAccessRegistry;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xml.resolver.SchemaCache;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -260,7 +260,7 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
      */
     private void prettyPrint(Document document, OutputStream output) {
         try {
-            Transformer tx = TransformerFactory.newInstance().newTransformer();
+            Transformer tx = XMLUtils.newTransformer();
             tx.setOutputProperty(OutputKeys.INDENT, "yes");
             tx.transform(new DOMSource(document), new StreamResult(output));
         } catch (Exception e) {

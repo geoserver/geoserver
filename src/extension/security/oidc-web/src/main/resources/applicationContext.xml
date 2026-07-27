@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ (c) 2018 Open Source Geospatial Foundation - all rights reserved
+  ~ This code is licensed under the GPL 2.0 license, available at the root
+  ~ application directory.
+  ~
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:sec="http://www.springframework.org/schema/security" xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+          http://www.springframework.org/schema/context
+          http://www.springframework.org/schema/context/spring-context-3.0.xsd
+          http://www.springframework.org/schema/security
+          http://www.springframework.org/schema/security/spring-security-3.0.4.xsd
+          http://www.springframework.org/schema/security/oauth2
+          http://www.springframework.org/schema/security/spring-security-oauth2-2.0.xsd">
+
+	<bean id="openIdConnectWebExtension"
+		class="org.geoserver.platform.ModuleStatusImpl">
+		<constructor-arg index="0" value="gs-sec-oidc-web" />
+		<constructor-arg index="1"
+			value="GeoServer Web UI Security OpenID Connect" />
+        <property name="category" value="COMMUNITY"/>
+	</bean>
+    
+	<!-- ui auth provider panel info -->
+	<bean id="openIdConnectAuthPanelInfo"
+		class="org.geoserver.web.security.oauth2.login.OAuth2LoginAuthProviderPanelInfo">
+		<property name="id" value="security.GeoServerOAuth2LoginAuthenticationProvider" />
+		<property name="shortTitleKey" value="OAuth2LoginAuthProviderPanel.short" />
+		<property name="titleKey" value="OAuth2LoginAuthProviderPanel.title" />
+		<property name="descriptionKey" value="OAuth2LoginAuthProviderPanel.description" />
+	</bean>
+	
+    <!-- 
+        Used for the "Resource Server" use case. Implementation is unfinished, because a different GS
+        extension supports this case already. Filter is not offered in UI. This code is never executed.
+
+        <bean id="oauth2ResourceServerAuthPanelInfo"
+           class="org.geoserver.web.security.oauth2.resourceserver.OAuth2ResourceServerAuthProviderPanelInfo">
+            <property name="id" value="security.GeoServerOAuth2ResourceServerAuthenticationProvider" />
+            <property name="shortTitleKey" value="OAuth2ResourceServerAuthProviderPanel.short" />
+            <property name="titleKey" value="OAuth2ResourceServerAuthProviderPanel.title" />
+            <property name="descriptionKey" value="OAuth2ResourceServerAuthProviderPanel.description" />
+        </bean>
+    -->
+    
+    <!--
+        Login buttons are registered dynamically per filter instance by the OAuth2LoginButtonManager
+        below. See its Javadoc and OAuth2LoginButtonEnablementEvent for the registration lifecycle.
+        Until 2026-05 four static openIdConnect*LoginButton beans lived here and were mutated in
+        place by the manager; that design collapsed multiple filter instances sharing the same
+        provider type into a single button pointing at "an arbitrary surviving one", which broke
+        deployments that configure several filters of the same provider type (e.g. one OIDC filter
+        per identity provider).
+    -->
+    <bean id="oauth2LoginButtonManager" class="org.geoserver.web.security.oauth2.login.OAuth2LoginButtonManager" lazy-init="false"/>
+
+</beans>

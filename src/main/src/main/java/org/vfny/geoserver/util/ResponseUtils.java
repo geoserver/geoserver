@@ -29,10 +29,15 @@ import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.KvpUtils;
+import org.geotools.util.factory.GeoTools;
+import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.XMLUtils;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -110,18 +115,52 @@ public final class ResponseUtils {
         return validate(xml, schemaURL, skipTargetNamespaceException, null);
     }
 
+    /**
+     * Validate xml using provided Schema.
+     *
+     * @param xml xml content
+     * @param schemaURL schema
+     * @param skipTargetNamespaceException
+     * @param entityResolver
+     * @return
+     */
     public static List<SAXException> validate(
             Source xml, URL schemaURL, boolean skipTargetNamespaceException, EntityResolver entityResolver) {
         try {
-            Schema schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-                    .newSchema(schemaURL);
-            Validator v = schema.newValidator();
+            Hints hints = GeoTools.getDefaultHints();
             if (entityResolver != null) {
-                v.setResourceResolver(new EntityResolverToLSResourceResolver(v.getResourceResolver(), entityResolver));
+                hints.put(Hints.ENTITY_RESOLVER, entityResolver);
+            } else {
+                entityResolver = GeoTools.getEntityResolver();
             }
+
+            SchemaFactory factory;
+            String access = XMLUtils.getAccess(entityResolver, "all");
+            factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI, hints);
+            try {
+                factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, access);
+            } catch (SAXNotRecognizedException | SAXNotSupportedException e) {
+                LOGGER.warning("Parser does not support ACCESS_EXTERNAL_DTD: " + e.getMessage());
+            }
+            try {
+                factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, access);
+            } catch (SAXNotRecognizedException | SAXNotSupportedException e) {
+                LOGGER.warning("Parser does not support ACCESS_EXTERNAL_DTD: " + e.getMessage());
+            }
+            // Resource resolver used to access schemaURL and validation
+            // Wrap entityResolver to provide resource access to local content
+            EntityResolverToLSResourceResolver resourceResolver =
+                    new EntityResolverToLSResourceResolver(null, entityResolver);
+            factory.setResourceResolver(resourceResolver);
+            Schema schema = factory.newSchema(schemaURL);
+
+            Validator validator = schema.newValidator();
+            validator.setResourceResolver(resourceResolver);
+
             Handler handler = new Handler(skipTargetNamespaceException, entityResolver);
-            v.setErrorHandler(handler);
-            v.validate(xml);
+            validator.setErrorHandler(handler);
+
+            validator.validate(xml);
             return handler.errors;
         } catch (SAXException | IOException e) {
             return exception(e);

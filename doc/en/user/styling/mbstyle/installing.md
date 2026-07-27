@@ -6,10 +6,10 @@ To install MBStyle extension:
 
 1.  Download:
 
-    - [\|release\|](##SUBST##|release|) `mbstyle`
-    - [\|version\|](##SUBST##|version|) `mbstyle`
+    - {{ release }} [geoserver-{{ release }}-mbstyle-plugin.zip](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-mbstyle-plugin.zip)
+    - {{ snapshot }} [geoserver-{{ snapshot }}-mbstyle-plugin.zip](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-mbstyle-plugin.zip)
 
-    Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example [\|release\|](##SUBST##|release|) above).
+    Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 
 2.  Extract the contents of the archive into the `WEB-INF/lib` directory in GeoServer. This extension includes two jars.
 

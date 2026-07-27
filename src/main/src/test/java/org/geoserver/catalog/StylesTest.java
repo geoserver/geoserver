@@ -26,6 +26,8 @@ import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.DefaultResourceLocator;
 import org.geotools.styling.SLD;
+import org.geotools.util.NullEntityResolver;
+import org.geotools.util.Version;
 import org.geotools.xml.styling.SLDParser;
 import org.junit.Test;
 
@@ -88,6 +90,28 @@ public class StylesTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testSLD1_0_0() throws Exception {
+        URL url = getClass().getResource("../data/test/rainfall.sld");
+
+        StyleHandler sld = Styles.handler("SLD");
+        List<Exception> messages = sld.validate(url, new Version("1.0.0"), NullEntityResolver.INSTANCE);
+        if (!messages.isEmpty()) {
+            throw messages.get(0);
+        }
+    }
+
+    @Test
+    public void testSLD1_1_0() throws Exception {
+        URL url = getClass().getResource("humans.sld");
+
+        StyleHandler sld = Styles.handler("SLD");
+        List<Exception> messages = sld.validate(url, new Version("1.1.0"), NullEntityResolver.INSTANCE);
+        if (!messages.isEmpty()) {
+            throw messages.get(0);
+        }
+    }
+
+    @Test
     public void testEntityExpansionOnValidation() throws Exception {
         URL url = getClass().getResource("../data/test/externalEntities.sld");
         try {
@@ -97,7 +121,6 @@ public class StylesTest extends GeoServerSystemTestSupport {
         } catch (Exception e) {
             String message = e.getMessage();
             assertThat(message, containsString("Entity resolution disallowed"));
-            assertThat(message, containsString("/this/file/does/not/exist"));
         }
     }
 

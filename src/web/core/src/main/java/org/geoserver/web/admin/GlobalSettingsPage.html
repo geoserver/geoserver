@@ -3,7 +3,9 @@
 <body>
 <wicket:extend>
 <form wicket:id="form">
-  <h3><span><wicket:message key="ogcServices">OGC Services</wicket:message></span></h3>
+  <div class="gs-content-header">
+    <h3 class="gs-content-header-title"><span><wicket:message key="ogcServices">OGC Services</wicket:message></span></h3>
+  </div>
   <fieldset>
     <legend><span><wicket:message key="serviceSettings">Services Settings</wicket:message></span></legend>
     <div class="gs-form">
@@ -30,11 +32,11 @@
     <div class="gs-form">
       <div class="gs-form-group">
         <label for="charset"><wicket:message key="charset">Character Set</wicket:message></label>
-        <select id="charset" class="field" wicket:id="charset" />
+        <select id="charset" class="w-fit" wicket:id="charset"/>
       </div>
       <div class="gs-form-group">
         <label for="numDecimals"><wicket:message key="numDecimals">Number of Decimals</wicket:message></label>
-        <input id="numDecimals" class="field" type="text" wicket:id="numDecimals" />
+        <input id="numDecimals" class="w-sm" type="text" wicket:id="numDecimals" />
       </div>
       <div class="choiceItem">
         <input id="verbose" type="checkbox" wicket:id="verbose" />
@@ -47,7 +49,7 @@
     <div class="gs-form">
       <div class="gs-form-group">
         <label for="charset"><wicket:message key="resourceErrorHandling">Resource Error Handling</wicket:message></label>
-        <select id="charset" class="field" wicket:id="resourceErrorHandling" />
+        <select id="charset" class="w-fit" wicket:id="resourceErrorHandling"/>
       </div>
       <div class="choiceItem">
         <input id="verboseExceptions" type="checkbox" wicket:id="verboseExceptions" />
@@ -55,13 +57,15 @@
       </div>
     </div>
   </fieldset>
-  <h3><span><wicket:message key="internalSettings">Internal Settings</wicket:message></span></h3>
+  <div class="gs-content-header">
+    <h3 class="gs-content-header-title"><span><wicket:message key="internalSettings">Internal Settings</wicket:message></span></h3>
+  </div>
   <fieldset>
     <legend><span><wicket:message key="loggingSettings">Logging Settings</wicket:message></span></legend>
     <div class="gs-form">
       <div class="gs-form-group">
         <label for="log4jConfigFile"><wicket:message key="log4jConfigFile">Logging Profile</wicket:message></label>
-        <select id="log4jConfigFile" class="field select" wicket:id="log4jConfigFile" />
+        <select id="log4jConfigFile" class="w-fit" wicket:id="log4jConfigFile" />
       </div>
       <div class="choiceItem">
         <input id="stdOutLogging" type="checkbox" wicket:id="stdOutLogging" />
@@ -71,14 +75,14 @@
         <input id="requestLogging" type="checkbox" wicket:id="requestLogging" />
         <label for="requestLogging"><wicket:message key="requestLogging">Enable Request Logging</wicket:message></label>
       </div>
-      <div class="gs-unordered-list-class" wicket:id="requestLoggingSub">
+      <div class="gs-form" wicket:id="requestLoggingSub">
         <div class="choiceItem">
           <input id="requestLoggingBodies" type="checkbox" wicket:id="requestLoggingBodies" />
           <label for="requestLoggingBodies"><wicket:message key="requestLoggingBodies">Log Request Bodies</wicket:message></label>
         </div>
         <div class="gs-form-group">
           <label for="xmlPostRequestLogBufferSize"><wicket:message key="xmlPostRequestLogBufferSize">Number of characters to log for incoming POST requests</wicket:message></label>
-          <input id="xmlPostRequestLogBufferSize" class="field" type="text" wicket:id="xmlPostRequestLogBufferSize" />
+          <input id="xmlPostRequestLogBufferSize" class="w-sm" type="text" wicket:id="xmlPostRequestLogBufferSize" />
         </div>
         <div class="choiceItem">
           <input id="requestLoggingHeaders" type="checkbox" wicket:id="requestLoggingHeaders" />
@@ -92,11 +96,11 @@
     <div class="gs-form">
       <div class="gs-form-group">
         <label for="featureTypeCacheSize"><wicket:message key="featureTypeCacheSize">Feature Type Cache Size</wicket:message></label>
-        <input id="featureTypeCacheSize" class="field" type="text" wicket:id="featureTypeCacheSize" />
+        <input id="featureTypeCacheSize" class="w-sm" type="text" wicket:id="featureTypeCacheSize" />
       </div>
       <div class="gs-form-group">
        <label><wicket:message key="lockProvider">lockProvider:</wicket:message></label>
-       <select class="select" id="lockProvider" wicket:id="lockProvider"></select>
+       <select id="lockProvider" class="w-fit" wicket:id="lockProvider"></select>
       </div>
     </div>
   </fieldset>
@@ -105,7 +109,7 @@
     <div class="gs-form">
       <div class="gs-form-group">
        <label><wicket:message key="webUIMode">WebUI Mode:</wicket:message></label>
-       <select class="select" id="webUIMode" wicket:id="webUIMode"></select>
+       <select class="w-fit" id="webUIMode" wicket:id="webUIMode"></select>
       </div>
     </div>
   </fieldset>
@@ -114,7 +118,7 @@
     <div class="gs-form">
       <div class="gs-form-group">
         <label><wicket:message key="loggedInUserDisplayMode">Logged-in User Display Mode:</wicket:message></label>
-        <select class="select" id="loggedInUserDisplayMode" wicket:id="loggedInUserDisplayMode"></select>
+        <select class="w-fit" id="loggedInUserDisplayMode" wicket:id="loggedInUserDisplayMode"></select>
       </div>
       <div class="choiceItem">
         <input id="showProfileColumnsInUserList" type="checkbox" wicket:id="showProfileColumnsInUserList" />
@@ -122,7 +126,7 @@
       </div>
       <div class="gs-form-group">
         <label><wicket:message key="emailDisplayMode">Email Display Mode:</wicket:message></label>
-        <select class="select" id="emailDisplayMode" wicket:id="emailDisplayMode" style="width: 141.111px"></select>
+        <select class="w-fit" id="emailDisplayMode" wicket:id="emailDisplayMode" style="width: 141.111px"></select>
       </div>
       <div class="choiceItem">
         <input id="revealEmailAtClick" type="checkbox" wicket:id="revealEmailAtClick" />
@@ -147,21 +151,24 @@
     <div class="gs-form">
       <div class="gs-form-group">
         <label><wicket:message key="defaultLocale">Default Language</wicket:message></label>
-        <select id="defaultLocale" wicket:id="defaultLocale" />
+        <select id="defaultLocale" class="w-fit" wicket:id="defaultLocale" />
       </div>
     </div>
   </fieldset>
-  <h3><span><wicket:message key="otherSettings">Other Settings</wicket:message></span></h3>
-  <div class="gs-form">
-    <div class="" wicket:id="extensions">
-      <fieldset wicket:id="content"></fieldset>
-    </div>
+  <div class="gs-content-header">
+    <h3 class="gs-content-header-title"><span><wicket:message key="otherSettings">Other Settings</wicket:message></span></h3>
   </div>
-  <div class="gs-form">
-    <div class="choiceItem">
-      <input id="trailingSlashMatch" type="checkbox" wicket:id="trailingSlashMatch" />
-      <label for="trailingSlashMatch"><wicket:message key="trailingSlashMatch">Match URLs with Trailing Slash (Requires restart)</wicket:message></label>
+  <fieldset>
+    <legend><span><wicket:message key="urlMapping">URL Mapping</wicket:message></span></legend>
+    <div class="gs-form">
+      <div class="choiceItem">
+        <input id="trailingSlashMatch" type="checkbox" wicket:id="trailingSlashMatch" />
+        <label for="trailingSlashMatch"><wicket:message key="trailingSlashMatch">Match URLs with Trailing Slash (Requires restart)</wicket:message></label>
+      </div>
     </div>
+  </fieldset>
+  <div wicket:id="extensions">
+    <div wicket:id="content"></div>
   </div>
   <div class="button-group toolbar-sticky selfclear">
     <button type="submit" class="form-button-save primary" wicket:id="submit"><wicket:message key="save">save</wicket:message></button>

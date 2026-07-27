@@ -70,7 +70,8 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
 
     @Override
     public int fullSize() {
-        return count(Predicates.acceptAll());
+        Filter filter = getContextFilter();
+        return count(filter != null ? filter : Predicates.acceptAll());
     }
 
     private int count(Filter filter) {

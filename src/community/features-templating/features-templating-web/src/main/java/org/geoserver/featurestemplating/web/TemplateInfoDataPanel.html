@@ -15,50 +15,43 @@
                 <wicket:message key="templateInfoData">Template Info</wicket:message>
               </span>
             </legend>
-            <div class="gs-unordered-list-class">
-              <div class="gs-list-item-class">
+            <div class="gs-form">
+              <div class="gs-form-group">
                 <label for="templateName">
                   <wicket:message key="templateName"/>
                 </label>
                 <input id="templateName" wicket:id="templateName" type="text"/>
               </div>
-              <div class="gs-list-item-class">
+              <div class="gs-form-group">
                 <label for="extension">
                   <wicket:message key="extension"/>
                 </label>
-                <select wicket:id="extension" id="extension"/>
+                <select wicket:id="extension" id="extension" class="w-md"/>
               </div>
-              <div class="gs-list-item-class">
+              <div class="gs-form-group">
                 <label for="workspace">
-                  <wicket:message key="workspace"/>
+                  <wicket:message key="workspace" class="w-md"/>
                 </label>
-                <select wicket:id="workspace" id="workspace"/>
+                <select wicket:id="workspace" id="workspace" class="w-md"/>
               </div>
-              <div class="gs-list-item-class">
+              <div class="gs-form-group">
                 <label for="featureTypeInfo">
                   <wicket:message key="featureTypeInfo"/>
                 </label>
-                <select wicket:id="featureTypeInfo" id="featureTypeInfo"/>
+                <select wicket:id="featureTypeInfo" id="featureTypeInfo" class="w-md"/>
               </div>
-              <div class="pt-4">
-                <fieldset class="mb-0">
-                  <legend>
-                    <span>
-                      <wicket:message key="templateContentSpan">Template Content</wicket:message>
-                    </span>
-                  </legend>
-                  <div class="gs-unordered-list-class">
-                    <div class="gs-list-item-class">
-                      <label for="filename">
-                        <wicket:message key="templateFile">Template file</wicket:message>
-                      </label>
-                      <input type="file" id="filename" wicket:id="filename"/>
-                      <a href="#" wicket:id="upload">
-                        <wicket:message key="upload">Upload</wicket:message>
-                      </a>
-                    </div>
+              <div class="gs-form">
+                <div class="gs-form-group">
+                  <label for="filename">
+                    <wicket:message key="templateFile">Template file</wicket:message>
+                  </label>
+                  <div class="gs-input-group">
+                    <input type="file" id="filename" wicket:id="filename"/>
+                    <a class="button" href="#" wicket:id="upload">
+                      <wicket:message key="upload">Upload</wicket:message>
+                    </a>
                   </div>
-                </fieldset>
+                </div>
               </div>
             </div>
           </fieldset>

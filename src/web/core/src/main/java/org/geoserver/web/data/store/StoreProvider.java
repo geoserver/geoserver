@@ -175,7 +175,10 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
 
     @Override
     public int fullSize() {
-        Filter filter = Predicates.acceptAll();
+        Filter filter = getContextFilter();
+        if (filter == null) {
+            filter = Predicates.acceptAll();
+        }
         filter = getWorkspaceFilter(filter);
         int count = getCatalog().count(StoreInfo.class, filter);
         return count;

@@ -4,7 +4,7 @@ GeoServer supports a `TIME` attribute in GetMap requests for layers that are pro
 
 For example, you might have a single dataset with weather observations collected over time and choose to plot a single day's worth of observations.
 
-The attribute to be used in `TIME` requests can be set up through the GeoServer web interface by navigating to **Layers -> [specific layer] -> Dimensions tab**.
+The attribute to be used in `TIME` requests can be set up through the GeoServer web interface by navigating to **Data > Layers > [specific layer] > Dimensions tab**.
 
 !!! note
     Read more about how to [use the web interface to configure an attribute for TIME requests](../../data/webadmin/layers.md#data_webadmin_layers_edit_dimensions).

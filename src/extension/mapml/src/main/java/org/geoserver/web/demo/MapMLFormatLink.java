@@ -7,7 +7,6 @@ package org.geoserver.web.demo;
 import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
 
 import java.util.Map;
-import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
@@ -15,6 +14,7 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.mapml.MapMLConstants;
 import org.geoserver.mapml.tcrs.TiledCRSConstants;
 import org.geoserver.mapml.tcrs.TiledCRSParams;
+import org.geoserver.web.PreviewLink;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geotools.api.referencing.FactoryException;
@@ -31,13 +31,10 @@ public class MapMLFormatLink extends CommonFormatLink {
     public static final String FORMAT_OPTION_DEFAULT = "false";
 
     @Override
-    public ExternalLink getFormatLink(PreviewLayer layer) {
-        String link = layer.getWmsLink(this::customizeRequest);
-
-        ExternalLink olLink = new ExternalLink(
-                this.getComponentId(), link, (new StringResourceModel(this.getTitleKey(), null, null)).getString());
-        olLink.setVisible(layer.hasServiceSupport("WMS"));
-        return olLink;
+    public PreviewLink getFormatLink(PreviewLayer layer) {
+        if (!layer.hasServiceSupport("WMS")) return null;
+        String label = new StringResourceModel(this.getTitleKey(), null, null).getString();
+        return new PreviewLink(label, layer.getWmsLink(this::customizeRequest), label);
     }
 
     /** Customize the request to use the MapML format and a native MapML CRS if possible */

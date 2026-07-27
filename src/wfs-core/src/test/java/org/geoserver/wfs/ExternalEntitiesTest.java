@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
-import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.test.DevModeEntityResolver;
 import org.geoserver.util.AllowListEntityResolver;
 import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wfs.kvp.Filter_1_1_0_KvpParser;
@@ -105,7 +105,7 @@ public class ExternalEntitiesTest extends WFSTestSupport {
             filters = (List) kvpParser.parse(LOCALHOST);
             assertTrue(filters.isEmpty());
         } finally {
-            EntityResolverProvider.setEntityResolver(GeoServerSystemTestSupport.RESOLVE_DISABLED_PROVIDER_DEVMODE);
+            EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
         }
     }
 }

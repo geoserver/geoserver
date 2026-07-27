@@ -18,8 +18,8 @@ import org.geoserver.security.config.UsernamePasswordAuthenticationFilterConfig;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy;
@@ -92,8 +92,10 @@ public class GeoServerUserNamePasswordAuthenticationFilter extends GeoServerComp
         filter.setAllowSessionCreation(false);
         // filter.setFilterProcessesUrl(URL_FOR_LOGIN);
 
-        SimpleUrlAuthenticationSuccessHandler successHandler = new SimpleUrlAuthenticationSuccessHandler();
+        SavedRequestAwareAuthenticationSuccessHandler successHandler =
+                new SavedRequestAwareAuthenticationSuccessHandler();
         successHandler.setDefaultTargetUrl(URL_LOGIN_SUCCCESS);
+        successHandler.setTargetUrlParameter("spring-security-redirect");
         filter.setAuthenticationSuccessHandler(successHandler);
 
         SimpleUrlAuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();

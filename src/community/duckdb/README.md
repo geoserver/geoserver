@@ -16,5 +16,7 @@ The main datastore parameters are:
 - `memory=true|false` (default `false`)
 - `database=/path/to/file.duckdb` (required when `memory=false`, forbidden when `memory=true`)
 - `read_only=true|false` (default `true`)
+- `memory_limit=1GB` (optional DuckDB memory limit for the store)
+- `threads=4` (optional DuckDB maximum number of execution threads for the store; must be greater than zero)
 
 By default the store runs in hardened read-only mode. Set `read_only=false` only when managed write operations are required.

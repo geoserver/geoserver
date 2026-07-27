@@ -69,6 +69,12 @@ public class GeoServerSecurityFilterChain implements Serializable {
     public static final String FILTER_SECURITY_INTERCEPTOR = "interceptor";
     public static final String FILTER_SECURITY_REST_INTERCEPTOR = "restInterceptor";
 
+    /**
+     * Name of the fail-closed filter injected into a chain that lost its last authentication filter because that filter
+     * could not be loaded (see {@code DisabledSecurityFilter}).
+     */
+    public static final String DISABLED_FILTER = "disabledFilter";
+
     // standard chain names as constant
     public static final String WEB_CHAIN_NAME = "web";
     public static final String WEB_LOGIN_CHAIN_NAME = "webLogin";

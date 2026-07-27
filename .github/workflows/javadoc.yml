@@ -1,8 +1,12 @@
-name: Docs javadocs GitHub CI
+name: Javadocs GitHub CI
 
 on:
   pull_request:
     paths-ignore:
+      - 'doc/**'
+      - 'mkdocs.yml'
+      - 'requirements.txt'
+      - '.github/workflows/docs.yml'
       - '**/src/main/resources/GeoServerApplication_*.properties'
       - '!**/src/main/resources/GeoServerApplication_fr.properties'
 
@@ -23,7 +27,7 @@ jobs:
             jdk: 17
             dist: 'temurin'
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Set up JDK 17
       uses: actions/setup-java@v5
       with:
@@ -32,9 +36,9 @@ jobs:
     - name: Set up Maven
       uses: stCarolas/setup-maven@v5
       with:
-        maven-version: 3.9.8
+        maven-version: 3.9.16
     - name: Maven repository caching
-      uses: actions/cache@v5
+      uses: actions/cache@v6
       with:
         path: ~/.m2/repository
         key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -51,4 +55,3 @@ jobs:
       if: always()
       run: |
         find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}
-

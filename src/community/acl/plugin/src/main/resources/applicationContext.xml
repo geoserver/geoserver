@@ -13,10 +13,10 @@
     directory.
   -->
 
-   <!-- load from AclPluginSpringConfiguration -->
-	<context:component-scan base-package="org.geoserver.acl.plugin.config.spring"/>
-
-	<bean id="AclPluginExtension"
+    <!-- load from AclPluginSpringConfiguration -->
+    <bean id="aclPluginSpringConfiguration" class="org.geoserver.acl.plugin.config.spring.AclPluginSpringConfiguration"/>
+    
+	<bean id="aclPluginExtension"
 		class="org.geoserver.platform.ModuleStatusImpl">
 		<property name="module" value="gs-acl-plugin" />
 		<property name="name" value="GeoServer ACL Extension" />

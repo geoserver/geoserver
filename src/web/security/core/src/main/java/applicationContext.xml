@@ -38,7 +38,7 @@
         <property name="titleKey" value="security.auth.title" />
         <property name="descriptionKey" value="security.auth.description" />
         <property name="componentClass" value="org.geoserver.security.web.auth.AuthenticationPage" />
-        <property name="icon" value="../img/icons/silk/shield.png" />
+        <property name="icon" value="gs-icon-shield" />
         <property name="category" ref="securityCategory" />
         <property name="order" value="100" />
 	</bean>
@@ -48,7 +48,7 @@
         <property name="titleKey" value="security.passwd.title" />
         <property name="descriptionKey" value="security.passwd.description" />
         <property name="componentClass" value="org.geoserver.security.web.passwd.PasswordPage" />
-        <property name="icon" value="../img/icons/silk/lock.png" />
+        <property name="icon" value="gs-icon-lock" />
         <property name="category" ref="securityCategory" />
         <property name="order" value="110" />
     </bean>
@@ -58,7 +58,7 @@
         <property name="titleKey" value="security.userGroupRole.title" />
         <property name="descriptionKey" value="security.userGroupRole.description" />
         <property name="componentClass" value="org.geoserver.security.web.UserGroupRoleServicesPage" />
-        <property name="icon" value="img/icons/silk/group.png" />
+        <property name="icon" value="gs-icon-group" />
         <property name="category" ref="securityCategory"/>
         <property name="order" value="120" />
         <property name="authorizer">
@@ -75,7 +75,7 @@
 		<property name="descriptionKey" value="security.data.description" />
 		<property name="componentClass"
 			value="org.geoserver.security.web.data.DataSecurityPage" />
-		<property name="icon" value="../img/icons/silk/database_key.png" />
+		<property name="icon" value="gs-icon-database-key" />
 		<property name="category" ref="securityCategory" />
 		<property name="order" value="200" />
 	</bean>
@@ -90,7 +90,7 @@
 		<property name="descriptionKey" value="security.service.description" />
 		<property name="componentClass"
 			value="org.geoserver.security.web.service.ServiceAccessRulePage" />
-		<property name="icon" value="../img/icons/silk/shape_square_key.png" />
+		<property name="icon" value="gs-icon-shape-square-key" />
 		<property name="category" ref="securityCategory" />
 		<property name="order" value="300" />
 	</bean>
@@ -101,7 +101,7 @@
         <property name="titleKey" value="security.urlcheck.title" />
         <property name="descriptionKey" value="security.urlcheck.description" />
         <property name="componentClass" value="org.geoserver.security.web.url.URLChecksPage" />
-        <property name="icon" value="../img/icons/silk/shield.png" />
+        <property name="icon" value="gs-icon-shield" />
         <property name="category" ref="securityCategory" />
         <property name="order" value="210" />
     </bean>
@@ -112,7 +112,7 @@
         <property name="titleKey" value="security.csp.title" />
         <property name="descriptionKey" value="security.csp.description" />
         <property name="componentClass" value="org.geoserver.security.web.csp.CSPConfigurationPage" />
-        <property name="icon" value="../img/icons/silk/shield.png" />
+        <property name="icon" value="gs-icon-shield" />
         <property name="category" ref="securityCategory" />
         <property name="order" value="220" />
     </bean>
@@ -123,7 +123,7 @@
         <property name="titleKey" value="security.cors.title"/>
         <property name="descriptionKey" value="security.cors.description"/>
         <property name="componentClass" value="org.geoserver.security.web.cors.CORSConfigurationPage"/>
-        <property name="icon" value="../img/icons/silk/shield.png"/>
+        <property name="icon" value="gs-icon-shield"/>
         <property name="category" ref="securityCategory"/>
         <property name="order" value="221"/>
     </bean>

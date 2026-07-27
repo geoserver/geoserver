@@ -16,7 +16,7 @@ This documentation is actively maintained and matches the capabilities in GeoSer
 
 When reading the above reference keep in mind the specification is written in an additive fashion, where new features are documented along with the version number range for which they are supported.
 
-As an example the basic functionality of <span class="title-ref">background-color</span> support is added in GeoTools <span class="title-ref">23.0</span>, as shown in the following table:
+As an example the basic functionality of `background-color` support is added in GeoTools `23.0`, as shown in the following table:
 
 | Support             | Mapbox     | GeoTools          | OpenLayers |
 |---------------------|------------|-------------------|------------|

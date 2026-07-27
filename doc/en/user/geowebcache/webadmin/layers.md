@@ -1,6 +1,6 @@
 # Tile Layers
 
-This page shows a listing of all of the layers known to the integrated GeoWebCache. It is similar to the [Layer Preview](../../data/webadmin/layerpreview.md) for GeoWebCache, with many of the same options.
+This page shows a listing of all of the layers known to the integrated GeoWebCache. It is similar to the [Browse Layers](../../data/webadmin/browselayers.md) for GeoWebCache, with many of the same options.
 
 ![](img/tilelayers.png)
 
@@ -28,7 +28,7 @@ Indicates whether tile caching is enabled for this layer. It is possible to have
 
 ### Preview
 
-Similar to [Layer Preview](../../data/webadmin/layerpreview.md), this will generate a simple OpenLayers application populated with tiles from one of the available gridset/image format combinations. Select the desired option from the menu to view in OpenLayers.
+Similar to [Browse Layers](../../data/webadmin/browselayers.md), this will generate a simple OpenLayers application populated with tiles from one of the available gridset/image format combinations. Select the desired option from the menu to view in OpenLayers.
 
 ### Seed/Truncate
 
@@ -96,7 +96,7 @@ The `stringParameterFilter` takes a collection of plain text strings. If the val
 
 ##### Regular Expression
 
-The ``regexParameterFilter`` takes a regular expression to match strings. This should be used with caution as it potentially allows an arbitrarily large number of caches to be created. Like the string filter, it can be normalized for case.
+The `regexParameterFilter` takes a regular expression to match strings. This should be used with caution as it potentially allows an arbitrarily large number of caches to be created. Like the string filter, it can be normalized for case.
 
 ##### List of Numbers
 

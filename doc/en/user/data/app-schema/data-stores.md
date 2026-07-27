@@ -275,7 +275,7 @@ This is known to work with PostGIS, Oracle, and JNDI data stores.
 
 The data store configuration for a MongoDB data base will look like this:
 
-``` xml
+```xml
 <sourceDataStores>
     <DataStore>
         <id>data_source</id>

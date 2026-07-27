@@ -69,7 +69,10 @@ public class WfsXmlReader extends XmlRequestReader {
         WFSURIHandler.addToParser(geoServer, parser);
         // set entity expansion limit
         parser.setEntityExpansionLimit(WFSXmlUtils.getEntityExpansionLimitConfiguration());
-
+        if (System.getProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "")
+                .equalsIgnoreCase("true")) {
+            parser.setAllowDTD(true);
+        }
         // parse
         Object parsed = null;
         try {

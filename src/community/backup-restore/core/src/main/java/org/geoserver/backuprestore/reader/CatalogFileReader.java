@@ -26,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -47,12 +48,12 @@ import org.geoserver.backuprestore.Backup;
 import org.geoserver.catalog.ValidationResult;
 import org.geoserver.config.util.XStreamPersister;
 import org.geotools.util.logging.Logging;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.item.NonTransientResourceException;
-import org.springframework.batch.item.UnexpectedInputException;
-import org.springframework.batch.item.xml.StaxEventItemReader;
-import org.springframework.batch.item.xml.stax.DefaultFragmentEventReader;
-import org.springframework.batch.item.xml.stax.FragmentEventReader;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.item.NonTransientResourceException;
+import org.springframework.batch.infrastructure.item.UnexpectedInputException;
+import org.springframework.batch.infrastructure.item.xml.StaxEventItemReader;
+import org.springframework.batch.infrastructure.item.xml.stax.DefaultFragmentEventReader;
+import org.springframework.batch.infrastructure.item.xml.stax.FragmentEventReader;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -103,7 +104,8 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
 
     /**
      * In strict mode the reader will throw an exception on
-     * {@link #open(org.springframework.batch.item.ExecutionContext)} if the input resource does not exist.
+     * {@link #open(org.springframework.batch.infrastructure.item.ExecutionContext)} if the input resource does not
+     * exist.
      *
      * @param strict false by default
      */
@@ -277,7 +279,23 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Result result = new StreamResult(os);
         t.transform(source, result);
-        return this.getXp().fromXML(new ByteArrayInputStream(os.toByteArray()));
+        String xml = stripDynamicProxyMarkers(os.toString(StandardCharsets.UTF_8));
+        return this.getXp().fromXML(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    /**
+     * Removes XStream {@code class="dynamic-proxy"} type markers stamped on catalog reference elements whose value was
+     * an unresolved {@link org.geoserver.catalog.impl.ResolvingProxy} at backup time - e.g. a layer whose
+     * {@code <defaultStyle>} points at a missing/dangling style is written to the archive as {@code <defaultStyle
+     * class="dynamic-proxy"><id>ws:style</id></defaultStyle>}. The marker records the proxy runtime type around the
+     * {@code <id>}/{@code <name>} body, but on read GeoServer's {@code ReferenceConverter} only accepts the declared
+     * reference type and would otherwise fail the whole restore step with "Explicit selected converter cannot handle
+     * type". Stripping the marker lets the field resolve to its declared type so the id/name reference is read back
+     * into a ResolvingProxy. Safe for catalog XML: the marker only ever wraps such references there, and the reference
+     * body it leaves behind is unchanged.
+     */
+    static String stripDynamicProxyMarkers(String xml) {
+        return xml.replace(" class=\"dynamic-proxy\"", "");
     }
 
     /*

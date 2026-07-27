@@ -20,7 +20,7 @@ The following are the directives available in JSON based templates.
 | filter the array, object, attribute | \$filter | specify it inside the first nested object in arrays (`{"$filter":"condition"}`) or as an attribute in objects (`"$filter":"condition"`) or in an attribute next to the attribute value separated by a `,` (`"attribute":"$filter{condition}, ${property}"`) |
 | defines options to customize the output outside of a feature scope | \$options | specify it at the top of the JSON template as a JSON object (GeoJSON options: `"$options":{"flat_output":true, "separator":"."}`; JSON-LD options: `"$options":{"@context": "the context json", "encode_as_string": true, "@type":"schema:SpecialAnnouncement", "collection_name":"customCollectionName"}`). |
 | allows including a template into another | \$include, \$includeFlat | specify the `$include` option as an attribute value (`"attribute":"$include{subProperty.json}"`) and the `$includeFlat` as an attribute name with the included template path as a value (`"$includeFlat":"included.json"`) |
-| allows a template to extend another template | \$merge | specify the `$merge` directive as an attribute name containing the path to the extended template (:code: ``"\$merged":"base_template.json"``). |
+| allows a template to extend another template | \$merge | specify the `$merge` directive as an attribute name containing the path to the extended template (`"$merged":"base_template.json"`). |
 | allows null values to be encoded. default is not encoded. | \${property}! or \$\${expression}! | ! at the end of a property interpolation or cql directive (`"attribute":"${property}!"` or `"attribute":"$${expression}!"`). |
 
 ### XML based templates
@@ -34,7 +34,7 @@ The following are the directives available in XML based templates.
 | setting the evaluation context for property interpolation and cql evaluation in child elements. | gft:source | specify it as an xml attribute (`<element gft:source:"property">`) |
 | filter the element to which is applied based on the defined condition | gft:filter | specify it as an XML attribute on the element to be filtered (`<element gft:filter:"condition">`) |
 | marks the beginning of an XML template. | gft:Template | It has to be the root element of an XML template (`<gft:Template> Template content</gft:Template>`) |
-| defines options to customize the output outside of a feature scope | gft:Options | specify it as an element at the beginning of the xml document after the `<gft:Template>` one (`<gft:Options></gft:Options>`). GML options: `<gtf:Namespaces>`,`<gtf:SchemaLocation>`. HTML options: `<script>`, :code: ``<script type="application/ld+json"/>``, `<style>`, :code: ``<link>``. |
+| defines options to customize the output outside of a feature scope | gft:Options | specify it as an element at the beginning of the xml document after the `<gft:Template>` one (`<gft:Options></gft:Options>`). GML options: `<gtf:Namespaces>`,`<gtf:SchemaLocation>`. HTML options: `<script>`, `<script type="application/ld+json"/>`, `<style>`, `<link>`. |
 | allows including a template into another | \$include, gft:includeFlat | specify the `$include` option as an element value (`<element>$include{included.xml}</element>`) and the `gft:includeFlat` as an element having the included template as text content (`<gft:includeFlat>included.xml</gft:includeFlat>`) |
 | allows null values to be encoded. default is not encoded. | \${property}! | specify it either as an element value (`<element>${property}!</element>`) or as an xml attribute value (`<element attribute:"${property}!"/>`) |
 
@@ -51,7 +51,7 @@ This introduction is meant to illustrate the different directives that can be us
 
 Assume that we want to change the default geojson output of the `topp:states` layer. A single feature in the default output is like the following:
 
-``` json
+```json
 {
  "type": "Feature",
   "id": "states.1",
@@ -66,7 +66,7 @@ Assume that we want to change the default geojson output of the `topp:states` la
   "WATER_KM": 1993.335,
   "PERSONS": 11430602,
   "FAMILIES": 2924880,
-  "HOUSHOLD": 4202240,
+  "HOUSEHOLD": 4202240,
   "MALE": 5552233,
   "FEMALE": 5878369,
   "WORKERS": 4199206,
@@ -86,7 +86,7 @@ Assume that we want to change the default geojson output of the `topp:states` la
 
 In particular we want to include in the final output only certain properties (e.g. the geometry, the state name, the code, values about population, male, female and workers). We want also to change some attribute names and to have them lower cased. Finally we want to have a string field having a wkt representation of the geometry. The desired output is like the following:
 
-``` json
+```json
 {
   "type":"Feature",
   "id":"states.1",
@@ -111,7 +111,7 @@ In particular we want to include in the final output only certain properties (e.
 
 A template like this will allows us to produce the above output:
 
-``` json
+```json
 {
 "type": "Feature",
 "id": "${@id}",
@@ -137,7 +137,7 @@ As it is possible to see the new output has the attribute names defined in the t
 
 The same template mechanism can be applied to a GML output format. This is an example GML template, again for the `topp:states` layer
 
-``` xml
+```xml
 <gft:Template>
  <gft:Options>
    <gft:Namespaces xmlns:topp="http://www.openplans.org/topp"/>
@@ -157,7 +157,7 @@ The same template mechanism can be applied to a GML output format. This is an ex
 
 And this is how a feature will appear:
 
-``` xml
+```xml
 <topp:states gml:id="states.10">
    <topp:name code="MO">Missouri</topp:name>
    <topp:region>W N Cen</topp:region>
@@ -189,7 +189,7 @@ Let's assume now that an AppSchema layer has been configured and customization o
 
 The default GeoJSON output format produces features like the following:
 
-``` json
+```json
 {
   "type":"Feature",
   "id":"MeteoStationsFeature.7",
@@ -274,7 +274,7 @@ The above JSON has a data structure where:
 
 Now let's assume that a different output needs to be produced where instead of having a generic array of observation nested into the root object, arrays are provided separately for each type of parameter e.g. Temperatures, Pressures and Winds_speed observations. In other words instead of having the Observation type defined inside a nested Parameter object that information should be provided directly in the attribute name. The desired output looks like the following:
 
-``` json
+```json
 {
  "type":"FeatureCollection",
  "features":[
@@ -335,7 +335,7 @@ Now let's assume that a different output needs to be produced where instead of h
 
 A template like this will allow to produce such an output:
 
-``` json
+```json
 {
      "$source":"st:MeteoStationsFeature",
      "Identifier":"${@id}",
@@ -381,17 +381,17 @@ A template like this will allow to produce such an output:
 In addition to the `${property}` and `$${cql}` directives seen before, there are two more:
 
 - In the example above the `xpath('xpath')` function is used to reference property. When dealing with Complex Features it must be used when referencing properties inside a `$filter` or a `$${cql}` directive.
-- `$source` which is meant to provide the context against which evaluated nested element properties and xpaths. In this case the `"$source":"st:meteoObservations/st:MeteoObservationsFeature"` provides the context for the nested attributes angainst which the directives will be evaluated. When defining a `$source` for a JSON array it should be provided in a JSONObject separated from the JSON Object mapping the nested feature attributes as in the example above. When defining the `$source` for a JSONObject it can be simply added as an object attribute (see below examples).
+- `$source` which is meant to provide the context against which evaluated nested element properties and xpaths. In this case the `"$source":"st:meteoObservations/st:MeteoObservationsFeature"` provides the context for the nested attributes against which the directives will be evaluated. When defining a `$source` for a JSON array it should be provided in a JSONObject separated from the JSON Object mapping the nested feature attributes as in the example above. When defining the `$source` for a JSONObject it can be simply added as an object attribute (see below examples).
 - When using `${property}` directive or an `xpath('xpath')` function it is possible to reference a property bounded to an upper `$source` using a `../` notation eg. `${../previousContextValue}`.
 - `$filter` provides the possibility to filter the value that will be included in the element to which is applied, in this case a json array. For instance the filter `$filter":"xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'wind speed'` in the `Winds_speed` array allows filtering the element that will be included in this array according to the `param_name value`.
 
-One note aboute the Source. It is strictly needed only when referencing a nested feature. This means that in the GeoJSON template example the `"$source":"st:MeteoStationsFeature"` could have been omitted. This not apply for nested elements definition where the `"$source":"st:meteoObservations/st:MeteoObservationsFeature"` is mandatory.
+One note about the Source. It is strictly needed only when referencing a nested feature. This means that in the GeoJSON template example the `"$source":"st:MeteoStationsFeature"` could have been omitted. This not apply for nested elements definition where the `"$source":"st:meteoObservations/st:MeteoObservationsFeature"` is mandatory.
 
 Follows a list of JSON template bits showing `filters` definition in context different from a JSON array, as well as `$source` definition for a JSONObject.
 
 - Object (encode the JSON object only if the st:value is greater than 75.3).
 
-``` json
+```json
 {
   "Observation":
         {
@@ -405,7 +405,7 @@ Follows a list of JSON template bits showing `filters` definition in context dif
 
 - Attribute (encode the Timestamp attribute only if the st:value is greater than 75.3).
 
-``` json
+```json
 {
 "Observation":
        {
@@ -418,7 +418,7 @@ Follows a list of JSON template bits showing `filters` definition in context dif
 
 - Static attribute (encode the Static_value attribute only if the st:value is greater than 75.3).
 
-``` json
+```json
 {
   "Observation":
       {
@@ -436,7 +436,7 @@ As it is possible to see from the previous example in the array and object cases
 
 `filter` and `source` are available as well in GML templates. Assuming that the desired output is the corresponding GML equivalent of the GeoJSON output above e.g.:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <wfs:FeatureCollection xmlns:st="http://www.stations.org/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml/3.2" numberMatched="3" numberReturned="0" timeStamp="2021-07-13T15:09:28.620Z">
   <wfs:member>
@@ -491,7 +491,7 @@ As it is possible to see from the previous example in the array and object cases
 
 The following GML template will produce the above output:
 
-``` xml
+```xml
 <gft:Template>
 <gft:Options>
   <gft:Namespaces xmlns:st="http://www.stations.org/1.0"/>
@@ -536,7 +536,7 @@ The `xpath('xpath')` function is meant to provide the possibility to reference a
 
 Check the following template from the GeoJSON Stations use case.
 
-``` json
+```json
 {
 "$source":"st:MeteoStationsFeature",
 "properties":{
@@ -570,7 +570,7 @@ The directives seen so far allow control of the output in the scope of a Feature
 
 In the context of a GeoJSON template two options are available: `flat_output` and `separator`. These options are meant to provide a GeoJSON output encoded following INSPIRE rule for [alternative feature GeoJSON encoding](https://github.com/INSPIRE-MIF/2017.2/blob/master/GeoJSON/ads/simple-addresses.md) ([see also](https://github.com/INSPIRE-MIF/2017.2/blob/master/GeoJSON/efs/simple-environmental-monitoring-facilities.md)). To use the functionality an `"$options"` JSON object can be added on top of a JSON template, like in the following example:
 
-``` json
+```json
 {
      "$options":{
        "flat_output":true,
@@ -633,7 +633,7 @@ A JSON-LD template can be defined as a GeoJSON template since it is a JSON based
 - `@type` providing a type term for the root JSON object in the final output (by default the value is `FeatureCollection`).
 - `collection_name` providing an alternative name for the features array in the final output (by default `features` is used). The option is useful in case the user wants to use a features attribute name equals to a specific term defined in a vocabulary.
 
-``` json
+```json
 {
  "$options":{
     "encode_as_string": true,
@@ -698,7 +698,7 @@ A JSON-LD template can be defined as a GeoJSON template since it is a JSON based
 
 The `@context` will show up at the beginning of the JSON-LD output:
 
-``` json
+```json
 {
   "@context":[
      "https://opengeospatial.github.io/ELFIE/contexts/elfie-2/elf-index.jsonld",
@@ -765,7 +765,7 @@ When dealing with a GetFeatureInfo request over a LayerGroup asking for a JSON-L
 
 GML output has two `options`: Namespaces and SchemaLocation, that define the namespaces and the SchemaLocation attribute that will be included in the FeatureCollection element in the resulting output. These options needs to be specified inside a `gft:Options` element at the beginning of the template right after the `gft:Template` element, e.g.
 
-``` xml
+```xml
 <gft:Template>
  <gft:Options>
    <gft:Namespaces xmlns:st="http://www.stations.org/1.0"/>
@@ -804,7 +804,7 @@ HTML templates can use several `options`:
 - `<script>` allows defining whatever javascript is needed, e.g. to create a tree view (as in the example below) or an openlayers map client.
 
 - code
-  ``<script type="application/ld+json"/>`` allows to inject the JSON-LD representation of the features being templated in the ``<head>``. In order to have the option working properly a JSON-LD template must be configured for the layer, or GeoServer will return an error message.
+  `<script type="application/ld+json"/>` allows to inject the JSON-LD representation of the features being templated in the `<head>`. In order to have the option working properly a JSON-LD template must be configured for the layer, or GeoServer will return an error message.
 
 - `<style>` allows defining css content.
 
@@ -977,7 +977,7 @@ Regarding the `$includeFlat` option is worth mentioning that in a JSON context:
 
 The following JSON snippet shows the four possible syntax options for template inclusion:
 
-``` json
+```json
 {
    "aProperty": "$include{subProperty.json}", 
    "$includeFlat": "propsInAnObject.json", 
@@ -1000,7 +1000,7 @@ In case an includeFlat directive is specified and it's attribute value is a prop
 
 including json:
 
-``` json
+```json
 {
    "property":"${property}", 
    "bProperty":"15",
@@ -1010,7 +1010,7 @@ including json:
 
 \${property} value:
 
-``` json
+```json
 {
    "aProperty": "10", 
    "bProperty": "20"
@@ -1019,7 +1019,7 @@ including json:
 
 result:
 
-``` json
+```json
 {
    "aProperty":"10", 
    "bProperty":"20",
@@ -1031,7 +1031,7 @@ The `${property}` directive evaluates to a JSON that will be merged with the inc
 
 In case an includeFlat directive is specified inside a JSON Array with a Feature property and the property evaluate to a JSON Array, the container array will be stripped and its values included directly inside the container Array:
 
-``` json
+```json
 [
    "value1",
    "value2",
@@ -1042,7 +1042,7 @@ In case an includeFlat directive is specified inside a JSON Array with a Feature
 
 \${property} value:
 
-``` json
+```json
 [
    "value4", 
    "value5"
@@ -1051,7 +1051,7 @@ In case an includeFlat directive is specified inside a JSON Array with a Feature
 
 result:
 
-``` json
+```json
 [
    "value1",
    "value2",
@@ -1076,7 +1076,7 @@ Templates inclusion, described above, allows importing a block into another temp
 
 For example, let's assume this is a base JSON template:
 
-``` json
+```json
 {
   "a": 10,
   "b": "${attribute1}",
@@ -1087,7 +1087,7 @@ For example, let's assume this is a base JSON template:
 
 and this is a template extending it:
 
-``` json
+```json
 {
   "$merge": "base.json",
   "a": {
@@ -1101,7 +1101,7 @@ and this is a template extending it:
 
 The template actually being processed would look as follows:
 
-``` json
+```json
 {
   "a": {
     "a1": 1,
@@ -1120,7 +1120,7 @@ The general rules for object merging are:
 - Nested objects available in both trees are drilled down, being recursively merged.
 - Arrays are replaced as-is, with no merging. The eventual top level `features` array is the only exception to this rule.
 - While order of the keys is not important in JSON, the merge is processed so that the base property names are included first in the merged result, and the new ones included in the override are added after them.
-- If in the overalay JSON template, are present attributes with a property interpolation directive or an expression that in turn returns a JSON, the JSON attribute tree will be merged too with the corresponding one in the base JSON tree.
+- If in the overlay JSON template, are present attributes with a property interpolation directive or an expression that in turn returns a JSON, the JSON attribute tree will be merged too with the corresponding one in the base JSON tree.
 
 The `$merge` directive can be used in any object, making it the root for the merge operation. This could be used as an alternative to inclusion when local customizations are needed.
 
@@ -1136,7 +1136,7 @@ Xpaths can be manipulated as well to be totally or partially replaced: `$${xpath
 
 Keys in JSON output can also be fully dependent on feature attributes, for example:
 
-``` json
+```json
 {
    "${attributeA}" : "${attributeB}",
    "$${strSubstring(attributeC, 0, 3)}": "$${att1 * att2}"
@@ -1153,7 +1153,7 @@ It is also possible to pick a JSON attribute and use the `jsonPointer` function 
 
 Here is an example of using JSON properties:
 
-``` json
+```json
 {
    "assets": "${assets}",
    "links": [
@@ -1180,7 +1180,7 @@ Along JSON properties, it's not rare to find support for array based attributes 
 
 The array properties can be used as-is, and they will be expanded into a JSON array. Let's assume the `keywords` database column contains a list of strings, then the following template:
 
-``` json
+```json
 {
    "keywords": "${keywords}"
 }
@@ -1188,7 +1188,7 @@ The array properties can be used as-is, and they will be expanded into a JSON ar
 
 May expand into:
 
-``` json
+```json
 {
    "keywords": ["features", "templating"]
 }
@@ -1196,7 +1196,7 @@ May expand into:
 
 It is also possible to use an array as the source of iteration, referencing the current array item using the `${.}` XPath. For example:
 
-``` json
+```json
 {
    "metadata": [
       {
@@ -1212,7 +1212,7 @@ It is also possible to use an array as the source of iteration, referencing the 
 
 The above may expand into:
 
-``` json
+```json
 {
    "metadata": [
       {
@@ -1229,7 +1229,7 @@ The above may expand into:
 
 In case a specific item of an array needs to be retrieved, the `item` function can be used, for example, the following template extracts the second item in an array (would fail if not present):
 
-``` json
+```json
 {
    "second": "$${item(keywords, 1)}"
 }
@@ -1245,7 +1245,7 @@ The features-templating plug-in provides the possibility to directly reference d
 
 The following is a GeoJSON template that directly reference table names and column name, instead of referencing the target Xpath in the AppSchema mappings.
 
-``` json
+```json
 {
   "$source":"meteo_stations",
   "Identifier":"${id}",
@@ -1303,11 +1303,11 @@ When a property interpolation targets an attribute with multiple cardinality in 
 
 - `aggregate`: takes as arguments an expression (a property name or a function) that returns a list of values and a literal with the aggregation type eg. `aggregate(my.property.name,'MIN')`. The supported aggregation type are the following:
 
-  - `MIN` will return the minimum value from a list of numeric values.
-  - `MAX` will return the max value from a list of numeric values.
-  - `AVG` will return the average value from a list of numeric values.
-  - `UNIQUE` will remove duplicates values from a list of values.
-  - `JOIN` will concatenate the list of values in a single string. It accepts a parameter to specify the separator that by default is blank space: `aggregate(my.property.name,'JOIN(,)')` .
+    - `MIN` will return the minimum value from a list of numeric values.
+    - `MAX` will return the max value from a list of numeric values.
+    - `AVG` will return the average value from a list of numeric values.
+    - `UNIQUE` will remove duplicates values from a list of values.
+    - `JOIN` will concatenate the list of values in a single string. It accepts a parameter to specify the separator that by default is blank space: `aggregate(my.property.name,'JOIN(,)')` .
 
 - `stream`: takes an undefined number of expressions as parameters and chain them so that each expression evaluate on top of the output of the previous expression: eg. `stream(aPropertyName,aFunction,anotherPropertyName)` while evaluate the `aFunction` on the output of `aPropertyName` evaluation and finally `anotherPropertyName` will evaluate on top of the result of `aFunction`.
 

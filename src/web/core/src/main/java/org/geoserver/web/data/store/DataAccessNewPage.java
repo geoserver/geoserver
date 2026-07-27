@@ -37,10 +37,17 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
      * @param dataStoreFactDisplayName the type of datastore to create, given by its factory display name
      */
     public DataAccessNewPage(final String dataStoreFactDisplayName) {
+        this(dataStoreFactDisplayName, null);
+    }
+
+    public DataAccessNewPage(final String dataStoreFactDisplayName, final String workspaceName) {
         super();
 
-        final WorkspaceInfo defaultWs = getCatalog().getDefaultWorkspace();
-        if (defaultWs == null) {
+        WorkspaceInfo ws = (workspaceName != null && !workspaceName.isEmpty())
+                ? getCatalog().getWorkspaceByName(workspaceName)
+                : null;
+        if (ws == null) ws = getCatalog().getDefaultWorkspace();
+        if (ws == null) {
             throw new IllegalStateException("No default Workspace configured");
         }
         final NamespaceInfo defaultNs = getCatalog().getDefaultNamespace();
@@ -49,7 +56,7 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
         }
 
         DataStoreInfo info = getCatalog().getFactory().createDataStore();
-        info.setWorkspace(defaultWs);
+        info.setWorkspace(ws);
         info.setEnabled(true);
         info.setType(dataStoreFactDisplayName);
 

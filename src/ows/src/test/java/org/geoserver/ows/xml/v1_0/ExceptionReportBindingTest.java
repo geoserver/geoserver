@@ -16,6 +16,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import net.opengis.ows10.ExceptionReportType;
 import net.opengis.ows10.ExceptionType;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.test.XMLTestSupport;
 import org.junit.Test;
@@ -30,9 +31,9 @@ public class ExceptionReportBindingTest extends XMLTestSupport {
     }
 
     Document dom(String xml) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
         factory.setNamespaceAware(true);
-        DocumentBuilder builder = factory.newDocumentBuilder();
+        DocumentBuilder builder = XMLUtils.newDocumentBuilder(factory);
         return builder.parse(new ByteArrayInputStream(xml.getBytes()));
     }
 

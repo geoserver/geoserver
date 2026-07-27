@@ -16,7 +16,7 @@ render_macros: true
 
 2.  Visit the [website download](https://geoserver.org/download) page, change the **Development** tab, and locate the nightly release that corresponds to the GeoServer you are running.
 
-    Follow the **Community Modules** link and download ``singlestore`` zip archive.
+    Follow the **Community Modules** link and download `singlestore` zip archive.
 
     - {{ snapshot }} example: [singlestore](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-singlestore-plugin.zip)
 
@@ -43,7 +43,7 @@ Once the extension is properly installed `SingleStore` will show up as an option
 | `host` | The SingleStore server host name or ip address. |
 |----|----|
 | `port` | The port on which the SingleStore server is accepting connections. |
-| `database` | The name of the database to connect to. Can also contain a suffix with a connection URL query, such as ``mydbname?useSSL=false`` |
+| `database` | The name of the database to connect to. Can also contain a suffix with a connection URL query, such as `mydbname?useSSL=false` |
 | `user` | The name of the user to connect to the SingleStore database as. |
 | `password` | The password to use when connecting to the database. Left blank for no password. |
 | `max connections` `min connections` `validate connections` | Connection pool configuration parameters. See the [Database Connection Pooling](../../data/database/connection-pooling.md) section for details. |

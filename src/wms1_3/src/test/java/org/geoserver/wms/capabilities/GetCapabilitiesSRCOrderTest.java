@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.StringWriter;
 import java.util.HashSet;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.geoserver.catalog.MetadataMap;
@@ -19,6 +18,7 @@ import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.xml.XMLUtils;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -49,8 +49,7 @@ public class GetCapabilitiesSRCOrderTest extends WMSTestSupport {
         DOMSource domSource = new DOMSource(dom);
         StringWriter writer = new StringWriter();
         StreamResult result = new StreamResult(writer);
-        TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer transformer = tf.newTransformer();
+        Transformer transformer = XMLUtils.newTransformer();
         transformer.transform(domSource, result);
 
         assertTrue(writer.toString().indexOf("22222") < writer.toString().indexOf("11111"));

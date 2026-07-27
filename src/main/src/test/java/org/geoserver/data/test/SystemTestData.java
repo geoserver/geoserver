@@ -50,6 +50,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.test.IOTestUtils;
 import org.geoserver.util.IOUtils;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -122,7 +123,7 @@ public class SystemTestData extends CiteTestData {
 
     public SystemTestData() throws IOException {
         // setup the root
-        data = IOUtils.createRandomDirectory("./target", "default", "data");
+        data = IOTestUtils.createRandomDirectory("./target", "default");
         data.delete();
         data.mkdir();
     }

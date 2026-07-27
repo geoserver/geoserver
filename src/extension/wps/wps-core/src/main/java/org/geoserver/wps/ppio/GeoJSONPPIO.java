@@ -63,7 +63,7 @@ public abstract class GeoJSONPPIO extends CDataPPIO {
             super(FeatureCollection.class);
         }
 
-        protected FeatureCollections(GeoServer gs) {
+        public FeatureCollections(GeoServer gs) {
             super(FeatureCollection.class, gs);
         }
 
@@ -96,7 +96,7 @@ public abstract class GeoJSONPPIO extends CDataPPIO {
             super(Geometry.class);
         }
 
-        protected Geometries(GeoServer gs) {
+        public Geometries(GeoServer gs) {
             super(Geometry.class, gs);
         }
 

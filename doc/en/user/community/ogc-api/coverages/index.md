@@ -31,7 +31,7 @@ Missing functionality at the time of writing, and known issues:
 
 2.  Visit the [website download](https://geoserver.org/download) page, change the **Development** tab, and locate the nightly release that corresponds to the GeoServer you are running.
 
-    Follow the **Community Modules** link and download ``ogcapi-coverages`` zip archive.
+    Follow the **Community Modules** link and download `ogcapi-coverages` zip archive.
 
     - {{ snapshot }} example: [ogcapi-coverages](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-ogcapi-coverages-plugin.zip)
 
@@ -46,6 +46,6 @@ Missing functionality at the time of writing, and known issues:
 
 5.  On restart the services are listed at <http://localhost:8080/geoserver>
 
-## Configuration of OGC API - Covearges module
+## Configuration of OGC API - Coverages module
 
 The module is based on the GeoServer WCS one, follows the same configuration and exposes the same coverages.

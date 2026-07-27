@@ -10,7 +10,7 @@ A reStructuredText document is written in plain text. Without the need for compl
 |------------|-----------------------------------|-------------|
 | Italics    | `*italics*` (single asterisk)     | *italics*   |
 | Bold       | `**bold**` (double asterisk)      | **bold**    |
-| Monospace  | ``monospace`` (double back quote) | `monospace` |
+| Monospace  | `monospace` (double back quote) | `monospace` |
 
 ## Lists
 
@@ -219,9 +219,9 @@ This will output: **Main Menu**.
 
 Direct a user through a menu with the following syntax:
 
-    **Start Menu --> Programs --> GeoServer**
+    **Start Menu > Programs > GeoServer**
 
-This will output **Start Menu --> Programs --> GeoServer**.
+This will output **Start Menu > Programs > GeoServer**.
 
 ## Show Source
 

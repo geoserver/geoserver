@@ -24,7 +24,20 @@ import org.junit.rules.ExternalResource;
  * Junit {@link Rule} used to provide a pre-configured {@link GeoServerClient} and to enable integration tests only if
  * the geoserver instance is {@link #isAlive() accessible}
  *
- * <p>The {@code geoserver_port} environment variable needs to be provided
+ * <p>This class can work in two modes:
+ *
+ * <ul>
+ *   <li>With a {@link GeoServerContainer} - automatically manages a containerized GeoServer instance
+ *   <li>Without a container - connects to an external GeoServer via environment variables/system properties
+ * </ul>
+ *
+ * <p>Environment/System properties (optional, for external GeoServer):
+ *
+ * <ul>
+ *   <li>{@code geoserver_api_url} - defaults to http://localhost:18080/geoserver/rest
+ *   <li>{@code geoserver_admin_user} - defaults to admin
+ *   <li>{@code geoserver_admin_password} - defaults to geoserver
+ * </ul>
  */
 @Slf4j
 public class IntegrationTestSupport extends ExternalResource {
@@ -38,8 +51,40 @@ public class IntegrationTestSupport extends ExternalResource {
 
     private Set<String> workspacesToCleanup = new HashSet<>();
 
+    private GeoServerContainer geoserverContainer;
+
+    /**
+     * Creates an IntegrationTestSupport without a managed container. Will connect to an external GeoServer instance.
+     */
+    public IntegrationTestSupport() {
+        this(null);
+    }
+
+    /**
+     * Creates an IntegrationTestSupport with a managed GeoServer container.
+     *
+     * @param geoserverContainer the container to use, or null to use external GeoServer
+     */
+    public IntegrationTestSupport(GeoServerContainer geoserverContainer) {
+        this.geoserverContainer = geoserverContainer;
+    }
+
     protected @Override void before() throws IOException {
-        final String apiUrl = resolve("geoserver_api_url", "http://localhost:18080/geoserver/rest");
+        String apiUrl;
+
+        if (geoserverContainer != null) {
+            // Use the container's URL and credentials
+            apiUrl = geoserverContainer.getApiUrl();
+            this.adminName = geoserverContainer.getAdminUser();
+            this.adminPassword = geoserverContainer.getAdminPassword();
+            log.debug("Using GeoServer container at {}", apiUrl);
+        } else {
+            // Use external GeoServer via environment/system properties
+            apiUrl = resolve("geoserver_api_url", "http://localhost:18080/geoserver/rest");
+            this.adminName = resolve("geoserver_admin_user", this.adminName);
+            this.adminPassword = resolve("geoserver_admin_password", this.adminPassword);
+            log.debug("Using external GeoServer at {}", apiUrl);
+        }
 
         if (isEmpty(apiUrl)) {
             log.warn("No geoserver_api_url System property provided, can't run geoserver integration tests.");
@@ -47,10 +92,7 @@ public class IntegrationTestSupport extends ExternalResource {
         }
         this.geoserverApiURL = new URL(apiUrl);
 
-        log.debug("Creating GeoSever API Client with baseURL {}", apiUrl);
-
-        this.adminName = resolve("geoserver_admin_user", this.adminName);
-        this.adminPassword = resolve("geoserver_admin_password", this.adminPassword);
+        log.debug("Creating GeoServer API Client with baseURL {}", apiUrl);
 
         this.client = new GeoServerClient(apiUrl).setBasicAuth(this.adminName, this.adminPassword);
         this.client.logToStdErr();

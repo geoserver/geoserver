@@ -11,40 +11,40 @@ While the ArcGIS® implementation of GeoServices supports multiple file formats,
 
 - Catalog: yes
 - Map:
-  - All layers and tables. Supported.
-  - Attachment. Not supported.
-  - Attachment info. Not supported.
-  - Dynamic Layer/Table. Not supported.
-  - Estimate export tile size. Not supported.
-  - Export map. Not supported.
-  - Export tiles. Not supported.
-  - Service extension. Not supported.
-  - Feature (dynamic layer). Not supported.
-  - Feature (layer). Not supported.
-  - Find. Not supported.
-  - Generate KML. Not supported.
-  - Generate renderer (Dynamic layer). Not supported.
-  - Generate renderer (Layer). Not supported.
-  - HTML Popup (Dynamic layer). Not supported.
-  - HTML Popup (Layer). Not supported.
-  - Identify. Not supported.
-  - Image. Not supported.
-  - KML Image. Not supported.
-  - Layer/Table. Supported.
-  - Legend. Supported.
-  - Map tile. Not supported.
-  - Map service input. Not supported.
-  - Map service job. Not supported.
-  - Map service result. Not supported.
-  - Non-geospatial filters. Not supported
-  - Requests to feature layers in non-native spatial reference systems. Not supported.
-  - Query (Dynamic layer.) Not supported.
-  - Query (Layer.) Supported.
-  - Query related records (Dynamic layer.) Not supported.
-  - Query related records (Layer.) Not supported.
-  - WMTS. Not supported. (GeoServer does support this, but via GeoWebCache integration rather than the GeoServices extension.)
-  - WMTS Capabilities. Not supported. (GeoServer does support this, but via GeoWebCache integration rather than the GeoServices extension.)
-  - WMTS Tile. Not supported. (GeoServer does support this, but via GeoWebCache integration rather than the GeoServices extension.)
+    - All layers and tables. Supported.
+    - Attachment. Not supported.
+    - Attachment info. Not supported.
+    - Dynamic Layer/Table. Not supported.
+    - Estimate export tile size. Not supported.
+    - Export map. Not supported.
+    - Export tiles. Not supported.
+    - Service extension. Not supported.
+    - Feature (dynamic layer). Not supported.
+    - Feature (layer). Not supported.
+    - Find. Not supported.
+    - Generate KML. Not supported.
+    - Generate renderer (Dynamic layer). Not supported.
+    - Generate renderer (Layer). Not supported.
+    - HTML Popup (Dynamic layer). Not supported.
+    - HTML Popup (Layer). Not supported.
+    - Identify. Not supported.
+    - Image. Not supported.
+    - KML Image. Not supported.
+    - Layer/Table. Supported.
+    - Legend. Supported.
+    - Map tile. Not supported.
+    - Map service input. Not supported.
+    - Map service job. Not supported.
+    - Map service result. Not supported.
+    - Non-geospatial filters. Not supported
+    - Requests to feature layers in non-native spatial reference systems. Not supported.
+    - Query (Dynamic layer.) Not supported.
+    - Query (Layer.) Supported.
+    - Query related records (Dynamic layer.) Not supported.
+    - Query related records (Layer.) Not supported.
+    - WMTS. Not supported. (GeoServer does support this, but via GeoWebCache integration rather than the GeoServices extension.)
+    - WMTS Capabilities. Not supported. (GeoServer does support this, but via GeoWebCache integration rather than the GeoServices extension.)
+    - WMTS Tile. Not supported. (GeoServer does support this, but via GeoWebCache integration rather than the GeoServices extension.)
 
 ## Technical Limitations
 

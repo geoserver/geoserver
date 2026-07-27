@@ -154,7 +154,7 @@ public class WMSStoreNewPageTest extends GeoServerWicketTestSupport {
 
         final Catalog catalog = getCatalog();
         WMSStoreInfo info = getCatalog().getFactory().createWebMapServer();
-        URL url = getClass().getResource("1.3.0Capabilities-xxe.xml");
+        URL url = getClass().getResource("1.1.1Capabilities-xxe.xml");
         info.setName("bar");
 
         tester.assertNoErrorMessage();

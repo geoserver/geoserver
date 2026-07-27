@@ -21,7 +21,6 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
-import org.apache.wicket.markup.html.image.ContextImage;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
@@ -38,6 +37,7 @@ import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.web.wicket.HelpLink;
 import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -224,8 +224,7 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
             }
         };
         f.add(link);
-        ContextImage image = new ContextImage("image", "img/icons/silk/delete.png");
-        link.add(image);
+        link.add(new GsIcon("image", "gs-icon-delete"));
         return f;
     }
 

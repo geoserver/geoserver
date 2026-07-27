@@ -64,6 +64,7 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.security.AbstractCatalogFilter;
+import org.geoserver.security.AdminRequest;
 import org.geoserver.security.CatalogFilterAccessManager;
 import org.geoserver.security.DisabledResourceFilter;
 import org.geoserver.security.ResourceAccessManager;
@@ -141,6 +142,81 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
                 sc.getFeatureTypes(), sc.list(FeatureTypeInfo.class, Predicates.acceptAll()), equalTo(featureTypes));
         assertThatBoth(sc.getCoverages(), sc.list(CoverageInfo.class, Predicates.acceptAll()), equalTo(coverages));
         assertThatBoth(sc.getWorkspaces(), sc.list(WorkspaceInfo.class, Predicates.acceptAll()), equalTo(workspaces));
+    }
+
+    /**
+     * Verifies that workspace security prefilters are not reused across normal and AdminRequest contexts. The same user
+     * should see a broader filter outside AdminRequest and a narrower admin-only filter while the admin request is
+     * active.
+     */
+    @Test
+    public void testWorkspaceSecurityFilterDependsOnAdminRequest() throws Exception {
+        ResourceAccessManager manager = buildManager("workspaceAdminCache.properties");
+        SecurityContextHolder.getContext().setAuthentication(rwUser);
+
+        // Build the normal request filter first and confirm it exposes all workspaces.
+        Filter normalFilter = manager.getSecurityFilter(rwUser, WorkspaceInfo.class);
+        List<WorkspaceInfo> normalVisible =
+                new ArrayList<>(Collections2.filter(workspaces, new PredicateFilter(normalFilter)));
+        assertThat(normalVisible, equalTo(workspaces));
+
+        // Switch into the admin request context and ask for the filter again.
+        AdminRequest.start(new Object());
+        try {
+            // The admin-request filter should now be narrower and expose only adminable workspaces.
+            Filter adminFilter = manager.getSecurityFilter(rwUser, WorkspaceInfo.class);
+            List<WorkspaceInfo> adminVisible =
+                    new ArrayList<>(Collections2.filter(workspaces, new PredicateFilter(adminFilter)));
+
+            assertNotSame(normalFilter, adminFilter);
+            assertThat(adminVisible, equalTo(Collections.singletonList(toppWs)));
+        } finally {
+            AdminRequest.finish();
+        }
+    }
+
+    /**
+     * Reproduces the workspace count mismatch by priming the workspace security filter outside AdminRequest, then
+     * entering AdminRequest and comparing the visible workspaces from list() with the catalog count for the same query.
+     */
+    @Test
+    public void testWorkspaceCountMatchesVisibleAdminWorkspaces() throws Exception {
+        // Wrap the catalog so count() uses the same filtered iterator path as list().
+        // This keeps the test focused on the security/caching mismatch instead of the mock
+        // catalog's own count implementation.
+        Catalog countingCatalog = new AbstractCatalogDecorator(catalog) {
+            @Override
+            public <T extends CatalogInfo> int count(Class<T> of, Filter filter) {
+                try (CloseableIterator<T> it = list(of, filter)) {
+                    int count = 0;
+                    while (it.hasNext()) {
+                        it.next();
+                        count++;
+                    }
+                    return count;
+                }
+            }
+        };
+        catalog = countingCatalog;
+        buildManager("workspaceAdminCache.properties");
+        SecurityContextHolder.getContext().setAuthentication(rwUser);
+
+        // Prime the workspace security filter outside AdminRequest so the cache holds the broad view.
+        assertEquals(workspaces.size(), sc.count(WorkspaceInfo.class, Predicates.acceptAll()));
+
+        // Enter AdminRequest and read back the workspaces that remain visible there.
+        AdminRequest.start(new Object());
+        try {
+            // The visible list should shrink to the single adminable workspace.
+            List<WorkspaceInfo> visibleWorkspaces =
+                    collectAndClose(sc.list(WorkspaceInfo.class, Predicates.acceptAll()));
+            assertThat(visibleWorkspaces, equalTo(Collections.singletonList(toppWs)));
+
+            // The catalog count must match the visible list, not the broader cached prefilter.
+            assertEquals(visibleWorkspaces.size(), sc.count(WorkspaceInfo.class, Predicates.acceptAll()));
+        } finally {
+            AdminRequest.finish();
+        }
     }
 
     @Test

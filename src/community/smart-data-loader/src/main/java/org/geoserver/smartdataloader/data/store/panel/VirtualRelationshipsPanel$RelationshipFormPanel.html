@@ -3,7 +3,7 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-VirtualRelationshipsPanel_RelationshipFormPanel">
-        <form wicket:id="form" class="virtual-relationship-modal-form">
+        <form wicket:id="form" class="virtual-relationship-modal-form gs-form">
           <h3 wicket:id="legend">Virtual relationship</h3>
           <div wicket:id="feedback"/>
           <div class="form-row">
@@ -16,65 +16,61 @@
             <label>
               <wicket:message key="VirtualRelationshipsPanel.cardinality">Cardinality</wicket:message>
             </label>
-            <select wicket:id="cardinality"/>
+            <select class="w-fit" wicket:id="cardinality"/>
           </div>
-          <div class="form-row form-grouped">
-            <div>
-              <label>
-                <wicket:message key="VirtualRelationshipsPanel.sourceSchema">Source schema</wicket:message>
-              </label>
-              <input type="text" wicket:id="sourceSchema"/>
-            </div>
-            <div>
-              <label>
-                <wicket:message key="VirtualRelationshipsPanel.sourceEntity">Source entity</wicket:message>
-              </label>
-              <input type="text" wicket:id="sourceEntity"/>
-            </div>
-            <div>
-              <label>
-                <wicket:message key="VirtualRelationshipsPanel.sourceKind">Source kind</wicket:message>
-              </label>
-              <select wicket:id="sourceKind"/>
-            </div>
-            <div>
-              <label>
-                <wicket:message key="VirtualRelationshipsPanel.sourceColumn">Source column</wicket:message>
-              </label>
-              <input type="text" wicket:id="sourceColumn"/>
-            </div>
+          <div>
+            <label>
+              <wicket:message key="VirtualRelationshipsPanel.sourceSchema">Source schema</wicket:message>
+            </label>
+            <input type="text" wicket:id="sourceSchema"/>
           </div>
-          <div class="form-row form-grouped">
-            <div>
-              <label>
-                <wicket:message key="VirtualRelationshipsPanel.targetSchema">Target schema</wicket:message>
-              </label>
-              <input type="text" wicket:id="targetSchema"/>
-            </div>
-            <div>
-              <label>
-                <wicket:message key="VirtualRelationshipsPanel.targetEntity">Target entity</wicket:message>
-              </label>
-              <input type="text" wicket:id="targetEntity"/>
-            </div>
-            <div>
-              <label>
-                <wicket:message key="VirtualRelationshipsPanel.targetKind">Target kind</wicket:message>
-              </label>
-              <select wicket:id="targetKind"/>
-            </div>
-            <div>
-              <label>
-                <wicket:message key="VirtualRelationshipsPanel.targetColumn">Target column</wicket:message>
-              </label>
-              <input type="text" wicket:id="targetColumn"/>
-            </div>
+          <div>
+            <label>
+              <wicket:message key="VirtualRelationshipsPanel.sourceEntity">Source entity</wicket:message>
+            </label>
+            <input type="text" wicket:id="sourceEntity"/>
+          </div>
+          <div>
+            <label>
+              <wicket:message key="VirtualRelationshipsPanel.sourceKind">Source kind</wicket:message>
+            </label>
+            <select class="w-fit" wicket:id="sourceKind"/>
+          </div>
+          <div>
+            <label>
+              <wicket:message key="VirtualRelationshipsPanel.sourceColumn">Source column</wicket:message>
+            </label>
+            <input type="text" wicket:id="sourceColumn"/>
+          </div>
+          <div>
+            <label>
+              <wicket:message key="VirtualRelationshipsPanel.targetSchema">Target schema</wicket:message>
+            </label>
+            <input type="text" wicket:id="targetSchema"/>
+          </div>
+          <div>
+            <label>
+              <wicket:message key="VirtualRelationshipsPanel.targetEntity">Target entity</wicket:message>
+            </label>
+            <input type="text" wicket:id="targetEntity"/>
+          </div>
+          <div>
+            <label>
+              <wicket:message key="VirtualRelationshipsPanel.targetKind">Target kind</wicket:message>
+            </label>
+            <select class="w-fit" wicket:id="targetKind"/>
+          </div>
+          <div>
+            <label>
+              <wicket:message key="VirtualRelationshipsPanel.targetColumn">Target column</wicket:message>
+            </label>
+            <input type="text" wicket:id="targetColumn"/>
           </div>
           <div class="form-actions">
-            <button type="submit" wicket:id="save">
+            <button class="outline-primary" type="submit" wicket:id="save">
               <wicket:message key="VirtualRelationshipsPanel.save">Save</wicket:message>
             </button>
-            <button type="button" wicket:id="cancel">
+            <button class="outline-danger" type="button" wicket:id="cancel">
               <wicket:message key="VirtualRelationshipsPanel.cancel">Cancel</wicket:message>
             </button>
           </div>

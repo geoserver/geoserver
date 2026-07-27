@@ -182,8 +182,6 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         confirmRemovalDialog.setInitialWidth(360);
         confirmRemovalDialog.setInitialHeight(180);
 
-        add(new Label("createTileLayerLabel", createTileLayerLabelModel));
-
         // Get the model and check if the Enabled parameter has been defined
         GeoServerTileLayerInfoModel model = ((GeoServerTileLayerInfoModel) tileLayerModel);
 
@@ -202,9 +200,6 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         if (undefined) {
             model.setEnabled(doCreateTileLayer);
         }
-        add(createLayer = new CheckBox("createTileLayer", new Model<>(doCreateTileLayer)));
-        createLayer.add(new AttributeModifier("title", new ResourceModel("createTileLayer.title")));
-
         container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
         add(container);
@@ -213,7 +208,11 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         configs.setOutputMarkupId(true);
         container.add(configs);
 
-        add(enabled = new CheckBox("enabled", new PropertyModel<>(getModel(), "enabled")));
+        configs.add(new Label("createTileLayerLabel", createTileLayerLabelModel));
+        configs.add(createLayer = new CheckBox("createTileLayer", new Model<>(doCreateTileLayer)));
+        createLayer.add(new AttributeModifier("title", new ResourceModel("createTileLayer.title")));
+
+        enabled = new CheckBox("enabled", new PropertyModel<>(getModel(), "enabled"));
         enabled.add(new AttributeModifier("title", new ResourceModel("enabled.title")));
         configs.add(enabled);
 

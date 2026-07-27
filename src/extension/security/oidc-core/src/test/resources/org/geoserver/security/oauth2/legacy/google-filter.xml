@@ -1,0 +1,8 @@
+<googleOauth2Authentication>
+  <id>legacy-google-0001</id>
+  <name>google</name>
+  <className>org.geoserver.security.oauth2.GoogleOAuthAuthenticationFilter</className>
+  <cliendId>geoserver.apps.googleusercontent.com</cliendId>
+  <clientSecret>s3cr3t</clientSecret>
+  <scopes>openid,email,profile</scopes>
+</googleOauth2Authentication>

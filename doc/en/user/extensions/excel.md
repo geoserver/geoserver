@@ -40,7 +40,7 @@ Excel 2007 GET:
 
 **Excel 97-2003 POST**:
 
-``` xml
+```xml
 <wfs:GetFeature service="WFS" version="1.1.0"
   outputFormat="excel"
   xmlns:topp="http://www.openplans.org/topp"

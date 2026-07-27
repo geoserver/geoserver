@@ -8,6 +8,7 @@ package org.geoserver.wms;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.platform.GeoServerExtensions;
@@ -79,7 +80,9 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
     public static Boolean TRANSPARENT = Boolean.TRUE;
 
     /** default for 'transparent' parameter. */
-    public static volatile ExecutorService RENDERING_POOL;
+    private static volatile ExecutorService RENDERING_POOL = null;
+
+    private static volatile ScheduledThreadPoolExecutor TIMEOUT_POOL;
 
     /** default for 'bbox' paramter */
     public static ReferencedEnvelope BBOX =
@@ -96,9 +99,6 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
 
     /** Max number of rule filters to be used against the data source */
     private static Integer MAX_FILTER_RULES = null;
-
-    /** Use a global rendering pool, or use a new pool each time */
-    private static Boolean USE_GLOBAL_RENDERING_POOL = null;
 
     private GetCapabilities getCapabilities;
 
@@ -171,14 +171,6 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
             // default to true, but allow switching off
             if (rules == null) MAX_FILTER_RULES = 20;
             else MAX_FILTER_RULES = Integer.valueOf(rules);
-        }
-
-        // control usage of the global rendering thread pool
-        if (USE_GLOBAL_RENDERING_POOL == null) {
-            String usePool = GeoServerExtensions.getProperty("USE_GLOBAL_RENDERING_POOL", context);
-            // default to true, but allow switching off
-            if (usePool == null) USE_GLOBAL_RENDERING_POOL = true;
-            else USE_GLOBAL_RENDERING_POOL = Boolean.valueOf(usePool);
         }
     }
 
@@ -321,15 +313,35 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
 
     /** Returns a app wide cached rendering pool that can be used for parallelized rendering */
     public static ExecutorService getRenderingPool() {
-        if (USE_GLOBAL_RENDERING_POOL && RENDERING_POOL == null) {
+        // lazy init to support test harness, creating and destroying the DefaultWebMapService bean multiple times
+        if (RENDERING_POOL == null) {
             synchronized (DefaultWebMapService.class) {
                 if (RENDERING_POOL == null) {
-                    RENDERING_POOL = new ThreadLocalTransferExecutor();
+                    RENDERING_POOL = new ThreadLocalTransferExecutor("wms-rendering");
                 }
             }
         }
 
         return RENDERING_POOL;
+    }
+
+    /** Returns a app wide cached scheduled pool that can be used to enforce rendering timeouts */
+    public static ScheduledThreadPoolExecutor getTimeoutPool() {
+        // lazy init to support test harness, creating and destroying the DefaultWebMapService bean multiple times
+        if (TIMEOUT_POOL == null) {
+            synchronized (DefaultWebMapService.class) {
+                if (TIMEOUT_POOL == null) {
+                    ScheduledThreadPoolExecutor temp = new ScheduledThreadPoolExecutor(1, r -> {
+                        Thread t = new Thread(r, "wms-rendering-timeout");
+                        t.setDaemon(true);
+                        return t;
+                    });
+                    temp.setRemoveOnCancelPolicy(true);
+                    TIMEOUT_POOL = temp;
+                }
+            }
+        }
+        return TIMEOUT_POOL;
     }
 
     @Override
@@ -338,6 +350,11 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
             RENDERING_POOL.shutdown();
             RENDERING_POOL.awaitTermination(10, TimeUnit.SECONDS);
             RENDERING_POOL = null;
+        }
+        if (TIMEOUT_POOL != null) {
+            TIMEOUT_POOL.shutdown();
+            TIMEOUT_POOL.awaitTermination(10, TimeUnit.SECONDS);
+            TIMEOUT_POOL = null;
         }
     }
 }

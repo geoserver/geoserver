@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 
@@ -218,7 +218,7 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
     }
 
     protected static String[] concat(String[] first, String... second) {
-        return (String[]) ArrayUtils.addAll(first, second);
+        return ArrayUtils.addAll(first, second);
     }
 
     protected static int[] concat(int[] first, int... second) {

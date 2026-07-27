@@ -28,8 +28,14 @@ public class CoverageStoreNewPage extends AbstractCoverageStorePage {
      * @param coverageFactoryName the {@link Format#getName() name} of the format to create a new raster coverage for
      */
     public CoverageStoreNewPage(final String coverageFactoryName) {
+        this(coverageFactoryName, null);
+    }
+
+    public CoverageStoreNewPage(final String coverageFactoryName, final String workspaceName) {
         Catalog catalog = getCatalog();
-        final WorkspaceInfo workspace = catalog.getDefaultWorkspace();
+        WorkspaceInfo workspace =
+                (workspaceName != null && !workspaceName.isEmpty()) ? catalog.getWorkspaceByName(workspaceName) : null;
+        if (workspace == null) workspace = catalog.getDefaultWorkspace();
         CoverageStoreInfo store = catalog.getFactory().createCoverageStore();
         store.setWorkspace(workspace);
         store.setType(coverageFactoryName);

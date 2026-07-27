@@ -22,8 +22,6 @@ public class DataStorePanelInfo extends ComponentInfo<StoreEditPanel> {
 
     String icon;
 
-    Class<?> iconBase;
-
     public String getIcon() {
         return icon;
     }
@@ -31,6 +29,8 @@ public class DataStorePanelInfo extends ComponentInfo<StoreEditPanel> {
     public void setIcon(String icon) {
         this.icon = icon;
     }
+
+    Class<?> iconBase;
 
     public Class<?> getIconBase() {
         return iconBase;

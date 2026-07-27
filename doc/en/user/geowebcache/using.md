@@ -26,7 +26,7 @@ In addition, when direct integration is enabled, the WMS capabilities document (
     For more information on WMS-C, please see the [WMS Tiling Client Recommendation](http://wiki.osgeo.org/wiki/WMS_Tiling_Client_Recommendation) from OSGeo.
 
 !!! note
-    GeoWebCache integration is not compatible with the OpenLayers-based [Layer Preview](../data/webadmin/layerpreview.md), as the preview does not usually align with the GeoWebCache layer gridset. This is because the OpenLayers application calculates the `tileorigin` based on the layer's bounding box, which is different from the gridset. It is, possible to create an OpenLayers application that caches tiles; just make sure that the `tileorigin` aligns with the gridset.
+    GeoWebCache integration is not compatible with the OpenLayers-based [Browse Layers](../data/webadmin/browselayers.md), as the preview does not usually align with the GeoWebCache layer gridset. This is because the OpenLayers application calculates the `tileorigin` based on the layer's bounding box, which is different from the gridset. It is, possible to create an OpenLayers application that caches tiles; just make sure that the `tileorigin` aligns with the gridset.
 
 ### Virtual services
 

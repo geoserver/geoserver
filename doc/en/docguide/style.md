@@ -28,11 +28,11 @@ Avoid the use of slang or other "colorful" language. The point of a technical do
 
 Bad
 
-> Next, fire up whatever tool you use to browse the web and point it in the direction of \...
+> Next, fire up whatever tool you use to browse the web and point it in the direction of ...
 
 Good
 
-> Next, start your web browser and navigate to \...
+> Next, start your web browser and navigate to ...
 
 ### Use direct commands
 
@@ -40,11 +40,11 @@ When providing step-by-step instructions, use direct commands or requests. Avoid
 
 Bad
 
-> Now let's add a shapefile by \...
+> Now let's add a shapefile by ...
 
 Good
 
-> Add a shapefile by \...
+> Add a shapefile by ...
 
 ## Naming conventions
 

@@ -56,7 +56,6 @@ public class FlushSafeFilterTest {
             ServletOutputStream os;
 
             @Override
-            @SuppressWarnings("PMD.CloseResource")
             public ServletOutputStream getOutputStream() {
                 if (os == null) {
                     final ServletOutputStream wrapped = super.getOutputStream();
@@ -100,7 +99,6 @@ public class FlushSafeFilterTest {
         };
         MockFilterChain chain = new MockFilterChain() {
             @Override
-            @SuppressWarnings("PMD.CloseResource")
             public void doFilter(ServletRequest request, ServletResponse response)
                     throws IOException, ServletException {
                 ServletOutputStream os = response.getOutputStream();

@@ -2,15 +2,19 @@
 <html xmlns:wicket="http://wicket.apache.org/">
   <body>
     <wicket:panel>
-      <div class="gs-panel-ImportTaskAdvancedPage_ReprojectionPanel">
-        <label for="from">
-          <wicket:message key="from">From</wicket:message>
-        </label>
-        <div name="from" wicket:id="from"/>
-        <label for="to">
-          <wicket:message key="to">To</wicket:message>
-        </label>
-        <div name="to" wicket:id="to"/>
+      <div class="gs-panel-ImportTaskAdvancedPage_ReprojectionPanel gs-form">
+        <div class="gs-form-group">
+          <label for="from">
+            <wicket:message key="from">From</wicket:message>
+          </label>
+          <div name="from" wicket:id="from"/>
+        </div>
+        <div class="gs-form-group">
+          <label for="to">
+            <wicket:message key="to">To</wicket:message>
+          </label>
+          <div name="to" wicket:id="to"/>
+        </div>
       </div>
     </wicket:panel>
   </body>

@@ -112,6 +112,8 @@
 
   <bean id="classpathDocPublisherMapping"
         class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <!-- see OWSHandlerMapping.DEFAULT_ORDER -->
+    <property name="order" value="-50"/>
     <property name="patternParser"><null/></property><!-- Spring 5.x backwards compatibility -->
     <property name="alwaysUseFullPath" value="true"/>
     <property name="mappings">

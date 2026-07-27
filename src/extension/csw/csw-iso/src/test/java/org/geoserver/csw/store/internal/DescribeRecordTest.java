@@ -7,11 +7,26 @@ package org.geoserver.csw.store.internal;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
+import org.geoserver.test.DevModeEntityResolver;
+import org.geoserver.util.EntityResolverProvider;
+import org.geotools.util.NullEntityResolver;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 /** @author Niels Charlier */
 public class DescribeRecordTest extends CSWInternalTestSupport {
+
+    @Before
+    public void setUp() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+    }
 
     @Test
     public void testBasicGetLocalSchemaRecord() throws Exception {

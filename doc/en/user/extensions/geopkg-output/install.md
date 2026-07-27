@@ -28,7 +28,7 @@ To verify that the extension was installed successfully:
 
 2.  Inside the resulting WFS 1.0.0 XML GetCapabilities document, find the `WFS_Capabilities/Capability/GetFeature/ResultFormat` section
 
-3.  Verify that ``geopkg``, ``geopackage``, and ``gpkg`` are listed as a supported format
+3.  Verify that `geopkg`, `geopackage`, and `gpkg` are listed as a supported format
 
     ``` XML
     <GetFeature>
@@ -47,4 +47,4 @@ To verify that the extension was installed successfully:
     ```
 
 !!! note
-    You can also verify installation by looking for `GeoPKG Output Extension` on the server's ``Module Status Page``.
+    You can also verify installation by looking for `GeoPKG Output Extension` on the server's `Module Status Page`.

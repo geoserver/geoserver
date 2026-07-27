@@ -14,7 +14,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.util.EntityResolverProvider;
+import org.geotools.util.NullEntityResolver;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.w3c.dom.Document;
 
 /** Test support for GML 3.1 and GML 3.2 Stations data use case */
@@ -35,6 +39,16 @@ public abstract class StationsAppSchemaTestSupport extends AbstractAppSchemaTest
     // xpath engines used to check WFS responses
     protected XpathEngine WFS11_XPATH_ENGINE;
     protected XpathEngine WFS20_XPATH_ENGINE;
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+    }
 
     @Before
     public void beforeTest() {

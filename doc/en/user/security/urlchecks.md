@@ -15,7 +15,7 @@ Please refer back to this page for any additional remote service access checks a
 
 ## Configuration of URL checks
 
-Navigate to **Data > URL Checks** page to manage and configure URL Checks.
+Navigate to **Security > URL Checks** page to manage and configure URL Checks.
 
 ![](images/urlchecks.png)
 

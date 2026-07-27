@@ -16,6 +16,8 @@
   <bean id="wmsServiceDescriptor" class="org.geoserver.wms.web.WMSServiceDescriptionProvider">
   </bean>
 
+  <bean id="wmsPreviewSectionProvider" class="org.geoserver.wms.web.WMSPreviewSectionProvider"/>
+
   <bean id="wmsServicePage" class="org.geoserver.web.services.ServiceMenuPageInfo">
     <property name="id" value="wms"/>
     <property name="titleKey" value="wms.title"/>
@@ -52,7 +54,7 @@
     <property name="order" value="950" />
     <property name="titleKey" value="HeadingConfigurationPanel.wms.title" />
     <property name="descriptionKey" value="HeadingConfigurationPanel.wms.description" />
-    <property name="componentClass" value="org.geoserver.web.publish.HeadingConfigurationPanel" />
+    <property name="componentClass" value="org.geoserver.web.publish.SubheadingConfigurationPanel" />
   </bean>
 
   <bean id="wmsLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
@@ -94,9 +96,10 @@
      <property name="descriptionKey" value="StylePage.description"/>
      <property name="componentClass" value="org.geoserver.wms.web.data.StylePage"/>
      <property name="category" ref="dataCategory"/>
-     <property name="icon" value="palette.png"/>
+     <property name="icon" value="gs-icon-palette"/>
      <property name="order" value="30"/>
      <property name="authorizer" ref="workspaceAdminAuthorizer"/>
+     <property name="contextParams" value="all" />
   </bean>  
 
   <!-- Sidebar "New" menu items of new styles -->
@@ -105,7 +108,7 @@
     <property name="titleKey" value="StylePage.addNew" />
     <property name="componentClass" value="org.geoserver.wms.web.data.StyleNewPage" />
     <property name="order" value="50" />
-    <property name="icon" value="../../img/icons/silk/add_style.png" />
+    <property name="contextParams" value="workspace" />
   </bean>
 
   <!-- Styles breadcrumb options for workspace -->
@@ -117,7 +120,7 @@
     <property name="category" ref="breadcrumbCatData" />
     <property name="order" value="40" />
     <property name="authorizer" ref="workspaceAdminAuthorizer"/>
-    <property name="icon" value="palette.png"/>
+    <property name="icon" value="gs-icon-palette"/>
   </bean>
 
   <!-- Styles breadcrumb options for layer -->
@@ -129,6 +132,6 @@
     <property name="category" ref="breadcrumbCatLayerData" />
     <property name="order" value="40" />
     <property name="authorizer" ref="workspaceAdminAuthorizer"/>
-    <property name="icon" value="palette.png"/>
+    <property name="icon" value="gs-icon-palette"/>
   </bean>
 </beans>

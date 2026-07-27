@@ -6,7 +6,7 @@ The **About Page** provides information about GeoServer along with useful docume
 
 *About GeoServer Page*
 
-When logged in build informaiton is listed here.
+When logged in build information is listed here.
 
 ![](images/about-build.png)
 

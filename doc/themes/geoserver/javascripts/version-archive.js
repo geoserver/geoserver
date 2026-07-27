@@ -8,16 +8,16 @@
  */
 (function () {
   var archiveVersions = [
-    { title: "2.28.x (Stable)",      url: "https://docs.geoserver.org/2.28.x/en/user/" },
-    { title: "2.27.x (Maintenance)", url: "https://docs.geoserver.org/2.27.x/en/user/" },
-    { title: "2.26.x",               url: "https://docs.geoserver.org/2.26.x/en/user/" },
-    { title: "2.25.x",               url: "https://docs.geoserver.org/2.25.x/en/user/" },
-    { title: "2.24.x",               url: "https://docs.geoserver.org/2.24.x/en/user/" },
-    { title: "2.23.x",               url: "https://docs.geoserver.org/2.23.x/en/user/" },
-    { title: "2.22.x",               url: "https://docs.geoserver.org/2.22.x/en/user/" },
-    { title: "2.21.x",               url: "https://docs.geoserver.org/2.21.x/en/user/" },
-    { title: "2.20.x",               url: "https://docs.geoserver.org/2.20.x/en/user/" },
-    { title: "2.19.x",               url: "https://docs.geoserver.org/2.19.x/en/user/" }
+    { title: "2.28.x (Stable)",      url: "https://docs-archive.geoserver.org/2.28.x/en/user/" },
+    { title: "2.27.x (Maintenance)", url: "https://docs-archive.geoserver.org/2.27.x/en/user/" },
+    { title: "2.26.x",               url: "https://docs-archive.geoserver.org/2.26.x/en/user/" },
+    { title: "2.25.x",               url: "https://docs-archive.geoserver.org/2.25.x/en/user/" },
+    { title: "2.24.x",               url: "https://docs-archive.geoserver.org/2.24.x/en/user/" },
+    { title: "2.23.x",               url: "https://docs-archive.geoserver.org/2.23.x/en/user/" },
+    { title: "2.22.x",               url: "https://docs-archive.geoserver.org/2.22.x/en/user/" },
+    { title: "2.21.x",               url: "https://docs-archive.geoserver.org/2.21.x/en/user/" },
+    { title: "2.20.x",               url: "https://docs-archive.geoserver.org/2.20.x/en/user/" },
+    { title: "2.19.x",               url: "https://docs-archive.geoserver.org/2.19.x/en/user/" }
   ];
 
   function augment(list) {

@@ -45,7 +45,6 @@ import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
-import org.geotools.util.PreventLocalEntityResolver;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.vfny.geoserver.wcs.WcsException;
@@ -589,7 +588,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         Document dom = postAsDOM("wcs", request);
         // print(dom);
         String error = xpath.evaluate("//ows:ExceptionText", dom);
-        assertTrue(error.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
+        assertTrue("DOCTYPE is disallowed", error.contains("DOCTYPE"));
 
         request =
                 """
@@ -611,7 +610,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         dom = postAsDOM("wcs", request);
         // print(dom);
         error = xpath.evaluate("//ows:ExceptionText", dom);
-        assertTrue(error.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
+        assertTrue("DOCTYPE is disallowed", error.contains("DOCTYPE"));
     }
 
     /**

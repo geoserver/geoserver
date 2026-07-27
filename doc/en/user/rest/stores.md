@@ -35,7 +35,7 @@
 
 *Response*
 
-``` xml
+```xml
 <dataStore>
   <name>roads</name>
   <type>Shapefile</type>
@@ -63,7 +63,7 @@
 !!! note
     The XML response only provides details about the store itself, so you can use HTML to see the contents of the store.
 
-``` console
+```console
 curl -v -u admin:geoserver -XGET 
   http://localhost:8080/geoserver/rest/workspaces/acme/datastores/roads.html
 ```
@@ -88,7 +88,7 @@ curl -v -u admin:geoserver -XGET
 
 *Response*
 
-``` xml
+```xml
 <featureType>
   <name>roads</name>
   <nativeName>roads</nativeName>
@@ -148,7 +148,7 @@ curl -v -u admin:geoserver -XGET
 
 Given the following content saved as **`nycDataStore.xml`**:
 
-``` xml
+```xml
 <dataStore> 
   <name>nyc</name>
   <connectionParameters>
@@ -185,7 +185,7 @@ Given the following content saved as **`nycDataStore.xml`**:
 
 *Response*
 
-``` xml
+```xml
 <dataStore>
   <name>nyc</name>
   <type>PostGIS</type>
@@ -238,7 +238,7 @@ Given the following content saved as **`nycDataStore.xml`**:
 
 Given the following content saved as **`annotations.xml`**:
 
-``` xml
+```xml
 <featureType>
   <name>annotations</name>
   <nativeName>annotations</nativeName>

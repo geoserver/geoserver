@@ -17,11 +17,10 @@ war: ## Build the geoserver.war file to use for testing and place it in ./geoser
 .PHONY: build-war
 build-war:
 	# a single mvn package -pl :gs-web-app -am should work but it seems it doesn't take into account test dependencies
-	# so it fails when the version number changes (e.g. 2.28-SNAPSHOT -> 3.0-SNAPSHOT)
-	@mvn clean install -f ../../src/pom.xml \
-	-DskipTests -Dspotless.apply.skip=true -Pogcapi-features -B -ntp -U -T2C
+	# so it fails when the version number changes (e.g. 3.0.0-SNAPSHOT -> 3.0.1-SNAPSHOT).
+	# As a workaround maven.test.skip=true is used to avoid compiling tests
 	@mvn package -f ../../src/pom.xml \
-	-DskipTests -Dspotless.apply.skip=true -Pogcapi-features -B -nsu -ntp -T2C -pl :gs-web-app -am
+	-Dmaven.test.skip=true -Dspotless.apply.skip=true -Pogcapi-features -B -nsu -ntp -T2C -pl :gs-web-app -am
 
 .PHONY: copy-war
 copy-war:

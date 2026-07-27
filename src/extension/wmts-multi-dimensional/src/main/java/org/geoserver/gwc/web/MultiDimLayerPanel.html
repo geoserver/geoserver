@@ -13,24 +13,28 @@
                     <wicket:message key="MultiDimLayerPanel.title">multidim</wicket:message>
                   </span>
                 </legend>
-                <div class="gs-unordered-list-class">
-                  <div class="gs-list-item-class" wicket:id="sidecarTypeContainer">
-                    <label for="sidecarStore">
-                      <wicket:message key="sidecarStore">sidecarStore</wicket:message>
-                    </label>
-                    <select id="sidecarStore" wicket:id="sidecarStore"/>
-                    <label for="sidecarType">
-                      <wicket:message key="sidecarType">sidecarType</wicket:message>
-                    </label>
-                    <select id="sidecarType" wicket:id="sidecarType"/>
+                <div class="gs-form">
+                  <div class="gs-form" wicket:id="sidecarTypeContainer">
+                    <div class="gs-form-group">
+                      <label for="sidecarStore">
+                        <wicket:message key="sidecarStore">sidecarStore</wicket:message>
+                      </label>
+                      <select id="sidecarStore" wicket:id="sidecarStore" class="w-fit"/>
+                    </div>
+                    <div class="gs-form-group">
+                      <label for="sidecarType">
+                        <wicket:message key="sidecarType">sidecarType</wicket:message>
+                      </label>
+                      <select id="sidecarType" wicket:id="sidecarType" class="w-fit"/>
+                    </div>
                   </div>
-                  <div class="gs-list-item-class">
+                  <div class="gs-form-group">
                     <label for="defaultExpandLimit">
                       <wicket:message key="defaultExpandLimit">defaultExpandLimit</wicket:message>
                     </label>
                     <input id="defaultExpandLimit" type="text" wicket:id="defaultExpandLimit"/>
                   </div>
-                  <div class="gs-list-item-class">
+                  <div class="gs-form-group">
                     <label for="maxExpandLimit">
                       <wicket:message key="maxExpandLimit">maxExpandLimit</wicket:message>
                     </label>

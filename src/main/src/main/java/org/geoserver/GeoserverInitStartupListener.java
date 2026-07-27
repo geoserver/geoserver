@@ -44,6 +44,7 @@ import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.logging.LoggingUtils.GeoToolsLoggingRedirection;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.data.DataAccessFinder;
 import org.geotools.api.data.DataStoreFinder;
 import org.geotools.api.referencing.AuthorityFactory;
@@ -54,6 +55,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.referencing.factory.AbstractAuthorityFactory;
 import org.geotools.referencing.factory.DeferredAuthorityFactory;
+import org.geotools.util.NullEntityResolver;
 import org.geotools.util.WeakCollectionCleaner;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
@@ -88,7 +90,14 @@ public class GeoserverInitStartupListener implements ServletContextListener {
 
         LOGGER = Logging.getLogger("org.geoserver.logging");
         LOGGER.config("Logging policy: " + policy);
-        GeoTools.init((Hints) null);
+
+        // GeoTools Library initialization
+        EntityResolverProvider resolverProvider = GeoServerExtensions.bean(EntityResolverProvider.class);
+        Hints hints = GeoTools.getDefaultHints();
+        hints.put(
+                Hints.ENTITY_RESOLVER,
+                resolverProvider != null ? resolverProvider.getEntityResolver() : NullEntityResolver.INSTANCE);
+        GeoTools.init(hints);
 
         initImageNDefaultInstance();
 
@@ -365,6 +374,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                                     String product = (String) products.next();
                                     try {
                                         opRegistry.unregisterFactory(mode, red.getName(), product, factory);
+                                        unregistered = true;
                                         LOGGER.fine("Unregistering ImageN factory " + factory.getClass());
                                     } catch (Throwable t) {
                                         // may fail due to the factory not being registered against

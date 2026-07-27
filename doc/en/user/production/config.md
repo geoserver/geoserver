@@ -68,9 +68,9 @@ The workspace and layer selectors might take a lot of time to fill up against la
 
 In some situations, that won't be enough and the page might get stuck anyways. The following properties can be used to tweak the behavior:
 
-- `GeoServerHomePage.selectionMode` : can be set to `text` to always use simple text fields, `dropdown` to always use dropdowns, or `auto` to use the default automatic behavior.
+- `GeoServerHomePage.selectionMode` : can be set to `text` to always use simple text fields, `dropdown` to always use the side panel selectors, or `auto` to use the default automatic behavior.
 - `GeoServerHomePage.selectionTimeout` : the time limit in milliseconds, defaults to `5000`.
-- `GeoServerHomePage.selectionMaxItems` : the maximum number of items to show in the dropdowns, defaults to `1000`.
+- `GeoServerHomePage.selectionMaxItems` : the maximum number of items to show in the selectors, defaults to `1000`.
 - `GeoServerHomePage.legacyHomepageSelector` : when set to `true`, the legacy workspace and layer selectors are used, defaults to `false`.
 
 When using `text` selection mode the page description is static, no longer offering of available workspace and layers.
@@ -93,7 +93,7 @@ GeoServer includes support for WFS-T (transactions) which lets users modify your
 
 If you don't want your database modified, you can turn off transactions in the [WFS settings](../services/wfs/webadmin.md). Set the **Service Level** to `Basic`. For extra security, we recommend any database access use datastore credentials providing read-only permissions. This will eliminate the possibility of a SQL injection (though GeoServer is generally not vulnerable to that sort of attack).
 
-If you would like some users to be able to modify data, set the service level **Service Level** to `Transactional` (or `Complete`) and use [Service Security](../security/service.md) to limit access to the ``WFS.Transaction`` operation.
+If you would like some users to be able to modify data, set the service level **Service Level** to `Transactional` (or `Complete`) and use [Service Security](../security/service.md) to limit access to the `WFS.Transaction` operation.
 
 If you would like some users to be able to modify some but not all of your data, set the **Service Level** to `Transactional` (or `Complete`), and use [Layer security](../security/layer.md) to limit write access to specific layers. Data security can be used to allow write access based on workspace, datastore, or layer security.
 
@@ -116,7 +116,7 @@ The GeoServer administration console provides a trusted GeoServer Administrator 
 In this workflow the Administration Console is used to adapt the application to the operational environment:
 
 - [Proxy Base URL](../configuration/globalsettings.md#proxy_base)
-- \... and many more [Global Settings](../configuration/globalsettings.md).
+- ... and many more [Global Settings](../configuration/globalsettings.md).
 
 Management of a web service using an administration console is a more common practice when running GeoServer as a windows web service.
 
@@ -127,7 +127,7 @@ In situations where GeoServer is operating in an environment provided by a Syste
 - `PROXY_BASE_URL`
 - `GEOSERVER_LOG_LOCATION`
 - `GEOSERVER_CONSOLE_DISABLED`
-- \... and many more [Application Properties](../configuration/properties/index.md)
+- ... and many more [Application Properties](../configuration/properties/index.md)
 
 This approach removes some functionality from the Administration Console and REST API.
 
@@ -158,8 +158,8 @@ Module status information is available describing the operational environment.
 
 2.  To show environment variables and Java system properties on the status page and REST API, start GeoServer with these environment variables set to `true`:
 
-    - ``GEOSERVER_MODULE_SYSTEM_ENVIRONMENT_STATUS_ENABLED``
-    - ``GEOSERVER_MODULE_SYSTEM_PROPERTY_STATUS_ENABLED``
+    - `GEOSERVER_MODULE_SYSTEM_ENVIRONMENT_STATUS_ENABLED`
+    - `GEOSERVER_MODULE_SYSTEM_PROPERTY_STATUS_ENABLED`
 
 3.  In a production system, these should be set to `false` (or leave them undefined).
 
@@ -185,7 +185,7 @@ A service strategy is the method in which output is served to the client. This i
 
 In Apache Tomcat you can provide system property by creating **`conf/Catalina/localhost/geoserver.xml`**:
 
-``` xml
+```xml
 <Context>
   <Parameter name="serviceStrategy"
              value="PARTIAL-BUFFER2" override="false"/>
@@ -194,7 +194,7 @@ In Apache Tomcat you can provide system property by creating **`conf/Catalina/lo
 
 You can configure the default service strategy by modifying the **`web.xml`** file of your GeoServer instance:
 
-``` xml
+```xml
 <context-param>
     <param-name>serviceStrategy</param-name>
     <param-value>PARTIAL-BUFFER2</param-value>
@@ -221,13 +221,13 @@ To disable the Auto Complete on Web Admin login form:
 - Set the Java system property `geoserver.login.autocomplete` to off by adding `-Dgeoserver.login.autocomplete=off` to your container's JVM options
 - If the browser has already cached the credentials, please consider clearing the cache or form data after setting the JVM option.
 
-### Disable anonymous access to the layer preview page
+### Disable anonymous access to the Browse Layers page
 
-In some circumstances, you might want to provide access to the layer preview page to authenticated users only. The solution is based on adding a new **filter chain** with a rule matching the path of the layer preview page to GeoServer's [Authentication chain](../security/auth/chain.md). Here are the steps to reproduce:
+In some circumstances, you might want to provide access to the Browse Layers page to authenticated users only. The solution is based on adding a new **filter chain** with a rule matching the path of the Browse Layers page to GeoServer's [Authentication chain](../security/auth/chain.md). Here are the steps to reproduce:
 
-- Under **Security** -> **Authentication** -> **Filter Chains**, add a new HTML chain
+- Under **Security > Authentication > Filter Chains**, add a new HTML chain
 - Set the new chain's name to `webLayerPreview` (or likewise)
-- As Ant pattern, enter the path of the layer preview page, which is **`/web/wicket/bookmarkable/org.geoserver.web.demo.MapPreviewPage`** (since it's an Ant pattern, the path could as well be written shorter with wildcards: **`/web/**/org.geoserver.web.demo.MapPreviewPage`**)
+- As Ant pattern, enter the path of the Browse Layers page, which is **`/web/wicket/bookmarkable/org.geoserver.web.demo.MapPreviewPage`** (since it's an Ant pattern, the path could as well be written shorter with wildcards: **`/web/**/org.geoserver.web.demo.MapPreviewPage`**)
 - Check option **Allow creation of an HTTP session for storing the authentication token**
 - Under **Chain filters**, add filters `rememberme` and `form` (in that order) to the **Selected** list on the right side
 - Close the dialog by clicking the **Close** button; the new HTML chain has been added to the list of chains as the last entry
@@ -235,15 +235,15 @@ In some circumstances, you might want to provide access to the layer preview pag
 - Use the **Position** arrows on the left side of the list to move the newly added chain upwards accordingly
 - Save the changes you've made by clicking the **Save** button at the bottom of the page
 
-With that in place, unauthenticated users now just get forwarded to the login page when they click the layer preview menu item link.
+With that in place, unauthenticated users now just get forwarded to the login page when they click the Browse Layers menu item link.
 
 The above procedure could as well be applied to other pages of the web administration interface that one needs to remove anonymous access for. For example:
 
-- **Demos** -> **Demo requests** (path: **`/web/wicket/bookmarkable/org.geoserver.web.demo.DemoRequestsPage`**)
-- **Demos** -> **WCS request builder** (path: **`/web/wicket/bookmarkable/org.geoserver.wcs.web.demo.WCSRequestBuilder`**)
+- **GeoServer > Demos > Demo requests** (path: **`/web/wicket/bookmarkable/org.geoserver.web.demo.DemoRequestsPage`**)
+- **GeoServer > Demos > WCS request builder** (path: **`/web/wicket/bookmarkable/org.geoserver.wcs.web.demo.WCSRequestBuilder`**)
 
 !!! warning
-    Although disabling anonymous access to the layer preview page **MAY** prevent some unauthenticated users from accessing data with some simple clicks, this is **NOT** a security feature. In particular, since other more sophisticated users, having the ability to build OGC requests, **MAY** still access critical data through GeoServer's services, this is **NOT** a replacement for a well-designed security concept based on data-level or service-level security.
+    Although disabling anonymous access to the Browse Layers page **MAY** prevent some unauthenticated users from accessing data with some simple clicks, this is **NOT** a security feature. In particular, since other more sophisticated users, having the ability to build OGC requests, **MAY** still access critical data through GeoServer's services, this is **NOT** a replacement for a well-designed security concept based on data-level or service-level security.
 
 ### X-Frame-Options Policy
 
@@ -336,29 +336,29 @@ If necessary, this functionality can be disabled by setting the `ENTITY_RESOLUTI
 
 GeoServer provides a number of facilities to control external entity resolution:
 
-- By default ``http`` and ``https`` entity resolution is restricted to the following default:
+- By default `http` and `https` entity resolution is restricted to the following default:
 
       www.w3.org|schemas.opengis.net|www.opengis.net|inspire.ec.europa.eu/schemas
 
   The default list includes the common w3c, ogc, and inspire schema locations required for OGC Web Service operation.
 
-  Access is provided to the proxy base url from global settings. Access to local ``file`` references is restricted.
+  Access is provided to the proxy base url from global settings. Access to local `file` references is restricted.
 
-- To allow additional external entity ``http`` and ``https`` locations use a comma or bar separated list:
+- To allow additional external entity `http` and `https` locations use a comma or bar separated list:
 
   ```
 -DENTITY_RESOLUTION_ALLOWLIST=server1|server2|server3/schemas
   ```
 
-  These locations are in addition to the default w3c, ogc, and inspire schema locations above. Access is provided to the proxy base url from global settings. Access to local ``file`` references remains restricted.
+  These locations are in addition to the default w3c, ogc, and inspire schema locations above. Access is provided to the proxy base url from global settings. Access to local `file` references remains restricted.
 
-- To allow all ``http`` and ``https`` entity resolution use ``*`` wildcard:
+- To allow all `http` and `https` entity resolution use `*` wildcard:
 
   ```
 -DENTITY_RESOLUTION_ALLOWLIST=*
   ```
 
-  Access to local ``file`` references remains restricted.
+  Access to local `file` references remains restricted.
 
 - To turn off all restrictions (allowing `http`, `https`, and `file` references) use the application property `-DENTITY_RESOLUTION_UNRESTRICTED=true`. Doing this is a **security risk**.
 
@@ -370,16 +370,16 @@ GeoServer defaults to using Spring Security's StrictHttpFirewall to help improve
 
 ### Static Web Files {: #production_config_static_files }
 
-GeoServer by default allows administrators to serve static files by simply placing them in the `www``` subdirectory of the GeoServer data directory. If this feature is not being used to serve HTML/JavaScript files or is not being used at all, the ````GEOSERVER_DISABLE_STATIC_WEB_FILES``\` property can be set to true to mitigate potential stored XSS issues with that directory.
+GeoServer by default allows administrators to serve static files by simply placing them in the `www` subdirectory of the GeoServer data directory. If this feature is not being used to serve HTML/JavaScript files or is not being used at all, the `GEOSERVER_DISABLE_STATIC_WEB_FILES` property can be set to true to mitigate potential stored XSS issues with that directory.
 
 See the [Serving Static Files](../tutorials/staticfiles.md) page for more details.
 
 ## Session Management
 
-GeoServer defaults to managing user sessions using cookies with the `HttpOnly` flag set to prevent attackers from using cross-site scripting (XSS) attacks to steal a user's session token. You can configure the session behavior by modifying the **\`web.xml\`** file of your GeoServer instance.
+GeoServer defaults to managing user sessions using cookies with the `HttpOnly` flag set to prevent attackers from using cross-site scripting (XSS) attacks to steal a user's session token. You can configure the session behavior by modifying the **`web.xml`** file of your GeoServer instance.
 
-It is strongly recommended that production environments also set the `Secure` flag on session cookies. This can be enabled by uncommenting the following in the **\`web.xml\`** file if the web interface is only being accessed through HTTPS but the flag may need to be set by a proxy server if the web interface needs to support both HTTP and HTTPS.
+It is strongly recommended that production environments also set the `Secure` flag on session cookies. This can be enabled by uncommenting the following in the **`web.xml`** file if the web interface is only being accessed through HTTPS but the flag may need to be set by a proxy server if the web interface needs to support both HTTP and HTTPS.
 
-``` xml
+```xml
 <secure>true</secure>
 ```

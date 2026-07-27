@@ -9,7 +9,7 @@ The WPS process takes in one parameter: `contents` which is an XML schema that r
 
 General outline of a `contents` scheme:
 
-``` xml
+```xml
 <geopackage name="mygeopackage" xmlns="http://www.opengis.net/gpkg">
     <features name="myfeaturelayer" identifier="L01">
         <description>describe the layer</description>
@@ -42,7 +42,7 @@ Each GeoPackage has a mandatory `name`, which will be the name of the file (with
 
 Outline of the features layer:
 
-``` xml
+```xml
 <features name="myfeaturelayer" identifier="L01">
     <description>..</description>
     <srs>..</srs>
@@ -75,7 +75,7 @@ Each features layer has the following properties:
 
 Outline of the tiles layer:
 
-``` xml
+```xml
 <tiles name="mytileslayer" identifier="L02">
     <description>...</description>
     <srs>..</srs>
@@ -130,7 +130,7 @@ Each tiles layer has the following properties:
 
 Gridset can take on two possible (mutually exclusive) forms:
 
-``` xml
+```xml
 <gridset>
     <name>mygridset</name>
 </gridset>
@@ -138,7 +138,7 @@ Gridset can take on two possible (mutually exclusive) forms:
 
 where the `name` of a known gridset is specified; or a custom gridset may be defined as follows:
 
-``` xml
+```xml
 <gridset>
     <grids>
         <grid>
@@ -169,7 +169,7 @@ Generalized tables are sidecar tables that typically contain less records than t
 
 Here is an example:
 
-``` xml
+```xml
 <features name="woodland" identifier="woodland">
   <description>woodland</description>
   <srs>EPSG:27700</srs>

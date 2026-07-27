@@ -45,9 +45,9 @@ This will run the container, with the data directory included with the container
 
 4.  In a web browser, navigate to `http://localhost:8080/geoserver`.
 
-    If you see the GeoServer Welcome page, then GeoServer is successfully installed.
+    When you see the GeoServer Welcome page, then GeoServer is successfully installed.
 
-    ![](images/success.png)
+    ![](images/welcome_page.png)
 
     *GeoServer Welcome Page*
 
@@ -58,7 +58,7 @@ This will run the container, with the data directory included with the container
 This will run the container with a local data directory. The data directory will be [mounted](https://docs.docker.com/storage/bind-mounts/) into the docker container.
 
 !!! note
-    Change ``/MY/DATADIRECTORY`` to your data directory. If this directory is empty it will be populated with the standard GeoServer Sample Data Directory.
+    Change `/MY/DATADIRECTORY` to your data directory. If this directory is empty it will be populated with the standard GeoServer Sample Data Directory.
 
 1.  Make sure you have [Docker](https://www.docker.com/) installed.
 
@@ -90,11 +90,11 @@ This will run the container with a local data directory. The data directory will
     ```
 {% endif %}
 
-4.  In a web browser, navigate to `http://localhost:8080/geoserver`.
+4.  In a web browser, navigate to <http://localhost:8080/geoserver>.
 
-    If you see the GeoServer Welcome page, then GeoServer is successfully installed.
+    When you see the GeoServer Welcome page displayed, then GeoServer is successfully installed.
 
-    ![](images/success.png)
+    ![](images/welcome_page.png)
 
     *GeoServer Welcome Page*
 
@@ -144,7 +144,7 @@ Here is a list of available extensions (taken from the [build server](https://bu
 | querylayer | rat | sldservice |
 | sqlserver | vectortiles | wcs2_0-eo |
 | web-resource | wmts-multi-dimensional | wps |
-| wps-cluster-hazelcas | wps-download | wps-jdbc |
+| wps-cluster-hazelcast | wps-download | wps-jdbc |
 | ysld |  |  |
 
 ## Testing GeoServer Community modules
@@ -191,10 +191,10 @@ For the current list see GeoServer [build server](https://build.geoserver.org/ge
 | netcdf-ghrsst | notification | ogcapi-coverages |
 | ogcapi-dggs | ogcapi-images | ogcapi-maps |
 | ogcapi-styles | ogcapi-tiled-features | ogcapi-tiles |
-| ogr-datastore | opensearch-eo | proxy-base-ext |
-| s3-geotiff | sec-keycloak | sec-oauth2-geonode |
-| sec-oauth2-github | sec-oauth2-google | sec-oauth2-openid |
-| smart-data-loader | solr | spatialjson |
-| stac-datastore | taskmanager-core | taskmanager-s3 |
-| vector-mosaic | vsi | webp |
-| wfs-freemarker | wps-longitudinal-profile |  |
+| ogr-datastore | opensearch-eo | png-wind |
+| proxy-base-ext | s3-geotiff | sec-keycloak |
+| sec-oauth2-geonode | sec-oauth2-github | sec-oauth2-google |
+| sec-oauth2-openid | smart-data-loader | solr |
+| spatialjson | stac-datastore | taskmanager-core |
+| taskmanager-s3 | vector-mosaic | vsi |
+| webp | wfs-freemarker | wps-longitudinal-profile |

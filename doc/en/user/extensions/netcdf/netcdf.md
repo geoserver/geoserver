@@ -2,7 +2,7 @@
 
 ## Adding a NetCDF data store
 
-To add a NetCDF data store the user must go to **Stores --> Add New Store --> NetCDF**.
+To add a NetCDF data store the user must go to **Data > Stores > Add New Store > NetCDF**.
 
 ![](netcdfcreate.png)
 
@@ -108,7 +108,9 @@ User defined NetCDF Coordinate Reference Systems with their custom EPSG need to 
 
 A sample entry in that property file could look like this:
 
-> 971835=PROJCS["albers_conical_equal_area", GEOGCS["unknown", DATUM["unknown", SPHEROID["unknown", 6378137.0, 298.2572221010042]], PRIMEM["Greenwich", 0.0], UNIT["degree", 0.017453292519943295], AXIS["Geodetic longitude", EAST], AXIS["Geodetic latitude", NORTH]], PROJECTION["Albers_Conic_Equal_Area"], PARAMETER["central_meridian", -126.0], PARAMETER["latitude_of_origin", 45.0], PARAMETER["standard_parallel_1", 50.0], PARAMETER["false_easting", 1000000.0], PARAMETER["false_northing", 0.0], PARAMETER["standard_parallel_2", 58.5], UNIT["m", 1.0], AXIS["Easting", EAST], AXIS["Northing", NORTH], AUTHORITY["EPSG","971835"]]
+```
+971835=PROJCS["albers_conical_equal_area", GEOGCS["unknown", DATUM["unknown", SPHEROID["unknown", 6378137.0, 298.2572221010042]], PRIMEM["Greenwich", 0.0], UNIT["degree", 0.017453292519943295], AXIS["Geodetic longitude", EAST], AXIS["Geodetic latitude", NORTH]], PROJECTION["Albers_Conic_Equal_Area"], PARAMETER["central_meridian", -126.0], PARAMETER["latitude_of_origin", 45.0], PARAMETER["standard_parallel_1", 50.0], PARAMETER["false_easting", 1000000.0], PARAMETER["false_northing", 0.0], PARAMETER["standard_parallel_2", 58.5], UNIT["m", 1.0], AXIS["Easting", EAST], AXIS["Northing", NORTH], AUTHORITY["EPSG","971835"]]
+```
 
 !!! note
     Note the "unknown" names for GEOGCS, DATUM and SPHEROID elements. This is how the underlying NetCDF machinery will name custom elements.
@@ -186,7 +188,7 @@ Note:
 
     UNIT["km", 1000.0], \
 
-Set **`-Dorg.geotools.coverage.io.netcdf.convertAxis.km`** to ``true`` to activate the automatic conversion or ``false`` to deactivate it.
+Set **`-Dorg.geotools.coverage.io.netcdf.convertAxis.km`** to `true` to activate the automatic conversion or `false` to deactivate it.
 
 !!! note
     that is a global JVM setting: Any dataset with coordinates in km being configured before swapping the conversion behavior will need to be reconfigured to set the new Geometries and CRS.
@@ -217,9 +219,9 @@ To permit access to NetCDF files in read-only directories, specify an alternate 
 
 All the sidecar hidden directories will end up being located at the top level of the NETCDF_DATA_DIR. In case you're managing a large number of NetCDF files, it's best to spread them out in subdirectories, so that the number of files in each directory is kept low. For that to happen, configure also the following:
 
-> -DNETCDF_DATA_DIR_TREE=true
+`-DNETCDF_DATA_DIR_TREE=true`
 
-Set up this way, the contents of the NetCDF data directory will mimick the absolute position of the NetCDF files, e.g.:
+Set up this way, the contents of the NetCDF data directory will mimic the absolute position of the NetCDF files, e.g.:
 
 - A source file is in `/opt/data/meteo/2024/01/02/file.nc`
 - The NETCDF_DATA_DIR points at `/opt/netcdf_dd/`
@@ -227,7 +229,7 @@ Set up this way, the contents of the NetCDF data directory will mimick the absol
 
 If the extra directory structure is not needed, then the `NETCDF_ROOT` property can be configured, to indicate where the tree of NetCDF files starts, e.g.:
 
-> -DNETCDF_ROOT=/opt/data
+`-DNETCDF_ROOT=/opt/data`
 
 In this case, the support files will be created in `/opt/netcdf_dd/meteo/2024/01/02/.file_<digest>`
 
@@ -235,7 +237,7 @@ In this case, the support files will be created in `/opt/netcdf_dd/meteo/2024/01
 
 The NetCDF format expresses units using a syntax that is not always understood by our unit parser, and often, uses unit names using unrecognized symbols or that simply unknown to it. The system already comes with some smarts, but in case a unit is not recognized, it's possible to act on the configuration and extend it.
 
-There are two property files that can be setup in order to modify unit magement, one is an alias file, the other is a replacement file:
+There are two property files that can be setup in order to modify unit management, one is an alias file, the other is a replacement file:
 
 - An "alias" is a different symbol/name for a base unit (e.g., instead of using "g" the NetCDF files might be using "grammes")
 - A (text) "replacement" is used when the unit is a derived one, needing a full expression, or the syntax of the unit is simply unrecognized
@@ -253,7 +255,6 @@ nanograms=ng
 degree=deg
 percentage=%
 celsius=°C
-````
 ```
 
 The replacement file is called `netcdf-unit-replacements.properties`, if not provided the following contents are assumed:
@@ -318,7 +319,7 @@ Users can further customize the behavior by specifying the maximum size of the b
 
 A mosaic of NetCDF files is a bit different than usual, because each NetCDF file can contain multiple coverages. As a result, the mosaic setup requires extra configuration files, an `indexer.xml` acting as the mosaic index, and a `_auxiliary.xml`, describing the NetCDF file contents.
 
-Setting up these files can be a cumbersome process, so a utility has been written, which automatically fills their contents based on a sample NetCDF file (under the assumeption that all NetCDF files in the mosaic share the same variables and dimensions).
+Setting up these files can be a cumbersome process, so a utility has been written, which automatically fills their contents based on a sample NetCDF file (under the assumption that all NetCDF files in the mosaic share the same variables and dimensions).
 
 Given a sample NetCDF file, you can get into the mosaic directory and run the **CreateIndexer** tool (for the NetCDF projection files, see above). On Windows:
 
@@ -334,7 +335,7 @@ On Linux:
 
 This will generate the files and it's going to be good enough if each NetCDF contains the same coverages. The `indexer.xml` file might look as follows:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?><Indexer>
   <domains>
     <domain name="time">
@@ -363,7 +364,7 @@ This will generate the files and it's going to be good enough if each NetCDF con
 
 While the `_auxiliary.xml` file might look like:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?><Indexer>
   <coverages>
     <coverage>

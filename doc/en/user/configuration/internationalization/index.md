@@ -41,7 +41,7 @@ The GetCapabilities document language can be selected using the `AcceptLanguages
 
   If any i18n content has been specified with a local variant and the request parameters specifies only the language code the content will be encoded in the response. Keep in mind that the inverse situation content is recorded using a language code will not be available for local variant requests.
 
-  Example: If the i18n content is specified with the local variant `fr-CA` and the requested only specifies a language code `` AcceptLanguages=fr` the local variant ``fr-CA`content will be used.  Example: If the i18n content is specified with the language code`fr`and the requested only specifies the local variant`AcceptLanguages=fr-CA` the language code `fr` content is unavailable.
+  Example: If the i18n content is specified with the local variant `fr-CA` and the requested only specifies a language code `AcceptLanguages=fr` the local variant `fr-CA` content will be used. Example: If the i18n content is specified with the language code `fr` and the requested only specifies the local variant `AcceptLanguages=fr-CA` the language code `fr` content is unavailable.
 
 - If a `*` is present among the parameter values, e.g. `AcceptLanguages=en fr *` or `AcceptLanguages=en,fr,*`, GeoServer will try to return the content in one of the specified language code.
 

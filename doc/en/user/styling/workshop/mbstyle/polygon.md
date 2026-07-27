@@ -31,12 +31,12 @@ Reference:
 This exercise makes use of the `ne:states_provinces_shp` layer.
 
 1.  Navigate to **Styles**.
-2.  Create a new style ``polygon_example``.
+2.  Create a new style `polygon_example`.
 
-    | Name:      | ``polygon_example`` |
+    | Name:      | `polygon_example` |
     |------------|-------------------------------|
-    | Workspace: | ``No workspace``    |
-    | Format:    | ``MBStyle``         |
+    | Workspace: | `No workspace`    |
+    | Format:    | `MBStyle`         |
 
 
     ![image](../style/img/polygon_02_create.png)
@@ -178,7 +178,7 @@ The **fill-pattern** property can be used to provide a pattern.
 
 The fill pattern is defined by repeating an image defined in a sprite-sheet.
 
-1.  Update ``polygon_example`` with the following sprite as a repeating fill pattern:
+1.  Update `polygon_example` with the following sprite as a repeating fill pattern:
 
     ```json hl_lines="4 11"
     {
@@ -636,8 +636,8 @@ A thematic map (rather than focusing on representing the shape of the world) use
 
 2.  For our `ne:states_provinces_shp` dataset, a **mapcolor9** attribute has been provided for this purpose. Theming by **mapcolor9** results in a map where neighbouring countries are visually distinct.
 
-    | > Qualitative 9-class Set3 |         |         |
-    |----------------------------|---------|---------|
+    | Qualitative 9-class Set3     |         |         |
+    |------------------------------|---------|---------|
     | #8dd3c7                    | #fb8072 | #b3de69 |
     | #ffffb3                    | #80b1d3 | #fccde5 |
     | #bebada                    | #fdb462 | #d9d9d9 |
@@ -889,7 +889,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
     ![image](../style/img/polygon_categorize.png)
 
     !!! note
-        Answer [provided](#mbstyle-polygon-a2) at the end of the workbook.
+        Answer [provided](done.md#mbstyle.polygon.a2) at the end of the workbook.
 
 ### Challenge Halo {: #mbstyle.polygon.q4 }
 
@@ -900,7 +900,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 2.  **Challenge:** Produce a map that uses a white halo around black text.
 
     !!! note
-        Answer [provided](#mbstyle-polygon-a4) at the end of the workbook.
+        Answer [provided](done.md#mbstyle.polygon.a4) at the end of the workbook.
 
 ### Challenge Theming using Multiple Attributes {: #mbstyle.polygon.q5 }
 
@@ -911,7 +911,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
     ![image](../style/img/polygon_multitheme.png)
 
     !!! note
-        Answer [provided](#mbstyle-polygon-a5) at the end of the workbook.
+        Answer [provided](done.md#mbstyle.polygon.a5) at the end of the workbook.
 
 ### Challenge Use of Z-Index {: #mbstyle.polygon.q6 }
 
@@ -922,4 +922,4 @@ In a classroom setting you are encouraged to team up into groups, with each grou
     ![image](../style/img/polygon_zorder.png)
 
     !!! note
-        Answer [provided](#mbstyle-polygon-a6) at the end of the workbook.
+        Answer [provided](done.md#mbstyle.polygon.a6) at the end of the workbook.

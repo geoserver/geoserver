@@ -18,8 +18,6 @@ import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.request.resource.ContextRelativeResourceReference;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerInfo;
@@ -32,7 +30,7 @@ import org.geoserver.web.data.importer.LayerResource.LayerStatus;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geoserver.web.wicket.Icon;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 
@@ -85,7 +83,7 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
                     return new Label(id, property.getModel(itemModel));
                 } else if (property == WMTSLayerProvider.STATUS) {
                     Fragment f = new Fragment(id, "labelIcon", WMTSLayerImporterPage.this);
-                    f.add(new Icon("icon", new IconModel(itemModel)));
+                    f.add(new GsIcon("icon", new IconModel(itemModel)));
                     f.add(new Label("label", new StatusModel(itemModel)));
                     return f;
                 } else if (property == WMTSLayerProvider.ACTION) {
@@ -290,7 +288,7 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
         }
     }
 
-    static final class IconModel implements IModel<ResourceReference> {
+    static final class IconModel implements IModel<String> {
 
         @Serial
         private static final long serialVersionUID = 5762710251083186192L;
@@ -302,16 +300,16 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
         }
 
         @Override
-        public ResourceReference getObject() {
+        public String getObject() {
             LayerResource resource = layerResource.getObject();
             if (resource.getStatus() == LayerStatus.ERROR) {
-                return new ContextRelativeResourceReference("img/icons/silk/error.png");
+                return "gs-icon-error";
             } else if (resource.getStatus() == LayerStatus.NEW) {
-                return new ContextRelativeResourceReference("img/icons/silk/add.png");
+                return "gs-icon-add";
             } else if (resource.getStatus() == LayerStatus.NEWLY_PUBLISHED) {
                 return CatalogIconFactory.ENABLED_ICON;
             } else if (resource.getStatus() == LayerStatus.UPDATED) {
-                return new ContextRelativeResourceReference("img/icons/silk/pencil.png");
+                return "gs-icon-pencil";
             } else if (resource.getStatus() == LayerStatus.PUBLISHED) {
                 return CatalogIconFactory.MAP_ICON;
             } else {
@@ -320,7 +318,7 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
         }
 
         @Override
-        public void setObject(ResourceReference object) {
+        public void setObject(String object) {
             throw new UnsupportedOperationException();
         }
     }

@@ -289,6 +289,7 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
         double positiveAltitude = 0;
         double negativeAltitude = 0;
         double previousAltitude = 0;
+        boolean hasPreviousAltitude = false;
         double totalDistance = 0;
         for (ProfileVertice v : result) {
             // check for cancellation
@@ -297,14 +298,17 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
             if (v.getDistancePrevious() != ProfileVertice.UNSET) totalDistance += v.getDistancePrevious();
             ProfileInfo currentInfo =
                     new ProfileInfo(totalDistance, coordinate.getX(), coordinate.getY(), v.getAltitude(), v.getSlope());
-            double profileAltitude = v.getAltitude() - previousAltitude;
-            if (profileAltitude >= 0) {
-                positiveAltitude += profileAltitude;
-            } else {
-                negativeAltitude += profileAltitude;
+            if (hasPreviousAltitude) {
+                double profileAltitude = v.getAltitude() - previousAltitude;
+                if (profileAltitude >= 0) {
+                    positiveAltitude += profileAltitude;
+                } else {
+                    negativeAltitude += profileAltitude;
+                }
             }
 
             previousAltitude = v.getAltitude();
+            hasPreviousAltitude = true;
 
             profileInfos.add(currentInfo);
         }

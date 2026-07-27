@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.security.ldap;
 
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.apache.wicket.Component;
@@ -95,7 +97,11 @@ public class LDAPRoleServicePanelTest extends LDAPWicketTestSupport {
         checkBaseConfig();
 
         tester.assertModelValue("form:panel:authenticationPanelContainer:authenticationPanel:user", AUTH_USER);
-        tester.assertModelValue("form:panel:authenticationPanelContainer:authenticationPanel:password", AUTH_PASSWORD);
+        Object passwordModelValue = tester.getComponentFromLastRenderedPage(
+                        "form:panel:authenticationPanelContainer:authenticationPanel:password")
+                .getDefaultModelObject();
+        assertNotNull(passwordModelValue);
+        assertNotEquals(AUTH_PASSWORD, passwordModelValue);
     }
 
     @Test

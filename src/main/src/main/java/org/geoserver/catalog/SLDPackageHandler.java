@@ -34,7 +34,7 @@ public class SLDPackageHandler extends StyleHandler {
 
     private SLDHandler sldHandler;
 
-    protected SLDPackageHandler(SLDHandler sldHandler) {
+    public SLDPackageHandler(SLDHandler sldHandler) {
         super("ZIP", FORMAT);
         this.sldHandler = sldHandler;
     }

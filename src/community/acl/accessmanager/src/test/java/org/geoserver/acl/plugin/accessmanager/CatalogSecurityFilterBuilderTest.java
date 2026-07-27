@@ -244,7 +244,7 @@ public class CatalogSecurityFilterBuilderTest {
     @Test
     public void resourceInfoFilterMultipleLayers() {
         AccessSummary accessSummary = of(workspace("cite", "layer1", "layer2"));
-        List<String> layers = List.copyOf(accessSummary.workspace("cite").getAllowed());
+        List<String> layers = List.copyOf(accessSummary.workspace("cite").allowed());
         Filter expected = and(equal("store.workspace.name", "cite"), in("name", layers));
         assertEquals(expected, buildSecurityFilter(accessSummary, ResourceInfo.class));
     }
@@ -257,10 +257,10 @@ public class CatalogSecurityFilterBuilderTest {
                 workspace("topp") //
                 );
 
-        List<String> citelayers = List.copyOf(accessSummary.workspace("cite").getAllowed());
+        List<String> citelayers = List.copyOf(accessSummary.workspace("cite").allowed());
         Filter citefilter = and(equal("store.workspace.name", "cite"), in("name", citelayers));
 
-        List<String> nelayers = List.copyOf(accessSummary.workspace("ne").getAllowed());
+        List<String> nelayers = List.copyOf(accessSummary.workspace("ne").allowed());
         Filter nefilter = and(equal("store.workspace.name", "ne"), in("name", nelayers));
 
         Filter toppfilter = equal("store.workspace.name", "topp");
@@ -279,7 +279,7 @@ public class CatalogSecurityFilterBuilderTest {
     @Test
     public void layerInfoFilter() {
         AccessSummary accessSummary = of(workspace("cite", "layer1", "layer2"));
-        List<String> layers = List.copyOf(accessSummary.workspace("cite").getAllowed());
+        List<String> layers = List.copyOf(accessSummary.workspace("cite").allowed());
         Filter expected = and(equal("resource.store.workspace.name", "cite"), in("name", layers));
         assertEquals(expected, buildSecurityFilter(accessSummary, LayerInfo.class));
     }
@@ -290,7 +290,7 @@ public class CatalogSecurityFilterBuilderTest {
         Set<String> hidden = Set.of("hidden1", "hidden2");
         AccessSummary accessSummary = of(workspace("cite", visible, hidden));
 
-        List<String> layers = List.copyOf(accessSummary.workspace("cite").getForbidden());
+        List<String> layers = List.copyOf(accessSummary.workspace("cite").forbidden());
         assertEquals(hidden, Set.copyOf(layers));
 
         // conflates to negating the hidden ones only
@@ -307,7 +307,7 @@ public class CatalogSecurityFilterBuilderTest {
         Set<String> hidden = Set.of("*");
         AccessSummary accessSummary = of(workspace("cite", visible, hidden));
 
-        List<String> visibleNames = List.copyOf(accessSummary.workspace("cite").getAllowed());
+        List<String> visibleNames = List.copyOf(accessSummary.workspace("cite").allowed());
         assertEquals(visible, Set.copyOf(visibleNames));
 
         // conflates to visibles only
@@ -322,7 +322,7 @@ public class CatalogSecurityFilterBuilderTest {
         Set<String> hidden = Set.of("hidden1", "hidden2");
         AccessSummary accessSummary = of(workspace("cite", visible, hidden));
 
-        List<String> visibleNames = List.copyOf(accessSummary.workspace("cite").getAllowed());
+        List<String> visibleNames = List.copyOf(accessSummary.workspace("cite").allowed());
         assertEquals(visible, Set.copyOf(visibleNames));
 
         // conflates to visibles only
@@ -381,10 +381,10 @@ public class CatalogSecurityFilterBuilderTest {
                 workspace("topp") //
                 );
 
-        List<String> citelayers = List.copyOf(accessSummary.workspace("cite").getAllowed());
+        List<String> citelayers = List.copyOf(accessSummary.workspace("cite").allowed());
         Filter citefilter = and(equal("resource.store.workspace.name", "cite"), in("name", citelayers));
 
-        List<String> nelayers = List.copyOf(accessSummary.workspace("ne").getAllowed());
+        List<String> nelayers = List.copyOf(accessSummary.workspace("ne").allowed());
         Filter nefilter = and(equal("resource.store.workspace.name", "ne"), in("name", nelayers));
 
         Filter toppfilter = equal("resource.store.workspace.name", "topp");
@@ -398,7 +398,7 @@ public class CatalogSecurityFilterBuilderTest {
     public void layerInfoFilterDenyAllButAWorkspace() {
         AccessSummary accessSummary = of(HIDE_ALL, workspace("ne", "neLayer1", "neLayer2"));
 
-        List<String> nelayers = List.copyOf(accessSummary.workspace("ne").getAllowed());
+        List<String> nelayers = List.copyOf(accessSummary.workspace("ne").allowed());
 
         Filter nefilter = and(equal("resource.store.workspace.name", "ne"), in("name", nelayers));
         Filter expected = nefilter;
@@ -425,7 +425,7 @@ public class CatalogSecurityFilterBuilderTest {
     @Test
     public void layerGroupInfoFilterNoWorkspaceMany() {
         AccessSummary accessSummary = of(workspace("", "lg1", "lg2"));
-        List<String> layers = List.copyOf(accessSummary.workspace("").getAllowed());
+        List<String> layers = List.copyOf(accessSummary.workspace("").allowed());
         Filter workspaceFilter = isNull("workspace.name");
         Filter nameFilter = in("name", layers);
         Filter expected = and(workspaceFilter, nameFilter);
@@ -436,7 +436,7 @@ public class CatalogSecurityFilterBuilderTest {
     public void publishedInfoInfoFilterOnlyRootLayerGroups() {
         AccessSummary accessSummary = of(workspace("", "lg1", "lg2"));
 
-        List<String> rootLgs = List.copyOf(accessSummary.workspace("").getAllowed());
+        List<String> rootLgs = List.copyOf(accessSummary.workspace("").allowed());
         Filter rootLgFilters = and(isNull("workspace.name"), in("name", rootLgs));
 
         Filter expected = and(isInstanceOf(LayerGroupInfo.class), rootLgFilters);
@@ -473,12 +473,12 @@ public class CatalogSecurityFilterBuilderTest {
     public void publishedInfoInfoFilterMixingRootLayerGroupsAndWorkspaceLayerNames() {
         AccessSummary accessSummary = of(workspace("", "lg1", "lg2"), workspace("ne", "world", "populated_places"));
 
-        List<String> nelayers = List.copyOf(accessSummary.workspace("ne").getAllowed());
+        List<String> nelayers = List.copyOf(accessSummary.workspace("ne").allowed());
 
         Filter layerInfoFilter = and(
                 isInstanceOf(LayerInfo.class), and(equal("resource.store.workspace.name", "ne"), in("name", nelayers)));
 
-        List<String> rootLgs = List.copyOf(accessSummary.workspace("").getAllowed());
+        List<String> rootLgs = List.copyOf(accessSummary.workspace("").allowed());
         Filter rootLgFilters = and(isNull("workspace.name"), in("name", rootLgs));
         Filter workspaceLgFilters = and(equal("workspace.name", "ne"), in("name", nelayers));
 

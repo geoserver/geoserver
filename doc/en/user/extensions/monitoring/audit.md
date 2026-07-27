@@ -16,7 +16,7 @@ The `audit.enable` is used to turn on the logger (it is off by default). The `au
 
 In clustered installations with a shared data directory the audit path will need to be different for each node. In this case it's possible to specify the audit path by using a JVM system variable, add the following to the JVM startup options and it will override whatever is specified in `monitor.properties`:
 
-> -DGEOSERVER_AUDIT_PATH=/path/to/the/logs/directory
+`-DGEOSERVER_AUDIT_PATH=/path/to/the/logs/directory`
 
 ## Log Files
 

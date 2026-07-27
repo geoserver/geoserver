@@ -6,7 +6,7 @@ It describes the core configuration data types that GeoServer uses to access and
 
 <div class="grid cards" markdown>
 
-- [Layer Preview](layerpreview.md)
+- [Browse Layers](browselayers.md)
 - [Workspaces](workspaces.md)
 - [Stores](stores.md)
 - [Layers](layers.md)

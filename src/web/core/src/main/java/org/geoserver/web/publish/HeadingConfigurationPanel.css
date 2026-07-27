@@ -2,13 +2,13 @@
  ----------------------------------------------------------
 
 
-This is the panel-specific .css file for the panel defined in class HTTPLayerConfig
+This is the panel-specific .css file for the panel defined in class HeadingConfigurationPanel
 
-The panel's html will be contained in a <div class='gs-panel-HTTPLayerConfig'>
+The panel's html will be contained in a <div class='gs-panel-HeadingConfigurationPanel'>
 
 Your css selectors should look like this to avoid modifying styles outside the panel:
 
-.gs-panel-HTTPLayerConfig ...specific css selector... {
+.gs-panel-HeadingConfigurationPanel ...specific css selector... {
       ... styling ...
 }
 

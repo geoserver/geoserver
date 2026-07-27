@@ -1,6 +1,7 @@
 <dataStore>
   <id>DataStoreInfoImpl-1c443fee:182c0f3f209:-7ffb</id>
   <name>NaturalEarth</name>
+  <description>Processed from quickstart GeoPackage to provide a small subset of example layers</description>
   <type>GeoPackage</type>
   <enabled>true</enabled>
   <workspace>
@@ -17,6 +18,6 @@
   </connectionParameters>
   <__default>false</__default>
   <dateCreated>2022-08-21 15:20:30.885 UTC</dateCreated>
-  <dateModified>2023-01-22 22:31:38.598 UTC</dateModified>
+  <dateModified>2026-04-08 21:56:33.985 UTC</dateModified>
   <disableOnConnFailure>false</disableOnConnFailure>
 </dataStore>

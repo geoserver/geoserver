@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
@@ -15,6 +15,9 @@
   <name>GeoWebCache Google Cloud Storage blob</name>
   <description>GeoWebCache Google Cloud Storage support plugin</description>
 
+  <properties>
+    <assembly.useDependencySets>true</assembly.useDependencySets>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.geowebcache</groupId>
@@ -82,7 +85,6 @@
     <dependency>
       <groupId>org.apache.wicket</groupId>
       <artifactId>wicket-tester</artifactId>
-      <version>10.7.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>

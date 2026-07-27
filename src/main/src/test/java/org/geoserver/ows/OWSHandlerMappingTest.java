@@ -4,6 +4,7 @@
  */
 package org.geoserver.ows;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -52,6 +53,11 @@ public class OWSHandlerMappingTest extends GeoServerSystemTestSupport {
         this.mapping.setUrlMap(Collections.singletonMap("/test", new Object()));
         this.mapping.setApplicationContext(applicationContext);
         this.mapping.initApplicationContext();
+    }
+
+    @Test
+    public void testDefaultOrder() {
+        assertEquals(OWSHandlerMapping.DEFAULT_ORDER, mapping.getOrder());
     }
 
     @Test

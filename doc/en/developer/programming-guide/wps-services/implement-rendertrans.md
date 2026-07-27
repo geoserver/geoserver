@@ -10,7 +10,7 @@ For more information about the function and use of rendering transformations wit
 
 To implement a rendering transformation it is useful to understand their lifecycle and operation within GeoServer. A rendering transformation is invoked in an SLD by providing a `<Transformation>` element inside a `<FeatureTypeStyle>`. This element specifies the name of the transformation process and the names and values of the process parameters. As an example, the following is a portion of an SLD which uses the `gs:Heatmap` transformation:
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Transformation>
     <ogc:Function name="gs:Heatmap">
@@ -63,11 +63,11 @@ The query is then performed against the source datastore, and the transformation
 
 ## Transformation process class
 
-Like other WPS processes, rendering transformations are implememented as Java classes. A process class implements the `GSProcess` marker interface, and is registered with GeoServer via an `applicationContext.xml` file. For further information about the basic steps for creating, building and deploying a GeoServer WPS process in Java refer to the [Implementing a WPS Process](implementing.md) section.
+Like other WPS processes, rendering transformations are implemented as Java classes. A process class implements the `GSProcess` marker interface, and is registered with GeoServer via an `applicationContext.xml` file. For further information about the basic steps for creating, building and deploying a GeoServer WPS process in Java refer to the [Implementing a WPS Process](implementing.md) section.
 
 WPS processes must provide metadata about themselves and their parameters. The easiest way to do this is to use the GeoTools annotation-based Process API, which uses Java annotations to specify metadata. For example, the code below shows the process metadata specified for the `gs:Heatmap` rendering transformation:
 
-``` java
+```java
 @DescribeProcess(title = "Heatmap", 
              description = "Computes a heatmap surface over a set of irregular data points as a GridCoverage.")
 public class HeatmapProcess implements GeoServerProcess {
@@ -81,11 +81,11 @@ Like all process classes, a rendering transformation class must declare an `exec
 
 The declaration of the `execute` method for the Heatmap transformation is:
 
-``` java
+```java
 @DescribeResult(name = "result", description = "The heat map surface as a raster")
 public GridCoverage2D execute(
 
-  // tranformation input data
+  // transformation input data
   @DescribeParameter(name = "data", description = "Features containing the data points") 
     SimpleFeatureCollection obsFeatures,
 
@@ -156,13 +156,13 @@ In addition, these methods can accept any number of the input parameters defined
 
 ### invertQuery method
 
-This method is called when the rendering tranformation applies to vector data (the data input is of type `SimpleFeatureCollection`).
+This method is called when the rendering transformation applies to vector data (the data input is of type `SimpleFeatureCollection`).
 
 The method returns a new `Query` value, which contains any required alterations of extent or query optimizations. This is used to query the source dataset.
 
 The Heatmap process implements the `invertQuery` method in order to enlarge the query extent by the ground size corresponding to the `radiusPixels` parameter. To allow converting the pixel size into a ground distance the input parameters providing the output map extents are also required. The signature of the implemented method is:
 
-``` java
+```java
 public Query invertQuery(
         @DescribeParameter(name = "radiusPixels", 
                        description = "Radius to use for the kernel", min = 0, max = 1) 
@@ -185,7 +185,7 @@ public Query invertQuery(
 
 ### invertGridGeometry method
 
-This method is called when the rendering tranformation applies to raster data (the data input is of type `GridCoverage2D`).
+This method is called when the rendering transformation applies to raster data (the data input is of type `GridCoverage2D`).
 
 The method returns a new `GridGeometry` value, which is used as the query extent against the source raster dataset.
 

@@ -30,6 +30,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.TransformerException;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.util.RequestUtils;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.style.ResourceLocator;
 import org.geotools.api.style.Style;
 import org.geotools.api.style.StyledLayerDescriptor;
@@ -170,6 +171,11 @@ public class SLDHandler extends StyleHandler {
                 input = reader;
             }
             SLDParser p = createSld10Parser(input, resourceLocator, entityResolver);
+            if (System.getProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "")
+                    .equalsIgnoreCase("true")) {
+                p.setSupportDTD(true);
+                p.setExpandEntityReferences(true);
+            }
             StyledLayerDescriptor sld = p.parseSLD();
             if (sld.getStyledLayers().length == 0) {
                 // most likely a style that is not a valid sld, try to actually parse out a
@@ -192,6 +198,10 @@ public class SLDHandler extends StyleHandler {
         Parser parser = createSld11Parser(input, resourceLocator, entityResolver);
         try (Reader reader = toReader(input)) {
             parser.setEntityResolver(entityResolver);
+            if (System.getProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "")
+                    .equalsIgnoreCase("true")) {
+                parser.setAllowDTD(true);
+            }
             return (StyledLayerDescriptor) parser.parse(reader);
         } catch (Exception e) {
             throw new IOException(e);

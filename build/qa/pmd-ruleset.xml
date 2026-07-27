@@ -17,7 +17,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-<ruleset xmlns="http://pmd.sourceforge.net/ruleset/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Default Maven PMD Plugin Ruleset" xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+<ruleset xmlns="http://pmd.sourceforge.net/ruleset/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Default Maven PMD Plugin Ruleset" xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.net/ruleset_2_0_0.xsd">
   <description>
 GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_rulesets.html
 </description>
@@ -94,12 +94,12 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
   <rule ref="category/java/errorprone.xml/UnconditionalIfStatement"/>
   <rule ref="category/java/errorprone.xml/UnnecessaryConversionTemporary"/>
   <rule ref="category/java/errorprone.xml/UnusedNullCheckInEquals"/>
-  <rule ref="category/java/errorprone.xml/UselessOperationOnImmutable"/>
+  <rule ref="category/java/errorprone.xml/UselessPureMethodCall"/>
   <rule ref="category/java/errorprone.xml/CloseResource">
     <properties>
         <!-- When calling the store to close, PMD wants the full prefix before the call to -->
         <!-- the method to match, so let's try to use common var names for store ...       -->
-        <property name="closeTargets" value="releaseConnection,store.releaseConnection,closeQuietly,closeConnection,closeSafe,store.closeSafe,dataStore.closeSafe,getDataStore().closeSafe,close,closeResultSet,closeStmt,closeFinally,JDBCUtils.close,closeFileSystem"/>
+        <property name="closeTargets" value="releaseConnection,store.releaseConnection,closeQuietly,closeConnection,closeSafe,store.closeSafe,dataStore.closeSafe,getDataStore().closeSafe,close,closeResultSet,closeStmt,closeFinally,JDBCUtils.close,closeFileSystem,shutdown,shutdownNow"/>
         <property name="allowedResourceTypes" value="java.io.ByteArrayOutputStream,java.io.ByteArrayInputStream,java.io.StringWriter,java.io.CharArrayWriter,java.util.stream.Stream,java.util.stream.IntStream,java.util.stream.LongStream,java.util.stream.DoubleStream,java.io.StringReader,org.apache.commons.vfs2.FileSystemManager" />
     </properties>
   </rule>
@@ -129,5 +129,229 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
     </properties>
   </rule>
   
+
+  <rule name="AvoidDocumentBuilderFactory"
+        language="java"
+        message="Do not use DocumentBuildeFactory instance directly; recommend XMLUtils.newDocumentBuilderFactory()"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Notice use of DocumentBuilderFactory.newInstance() which should be avoided in favor of
+      XMLUtils.DocumentBuilderFactory(Hints) to respect GeoTools init configuration.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+          <value>
+              <![CDATA[
+              //MethodCall[pmd-java:matchesSig("javax.xml.parsers.DocumentBuilderFactory#newInstance()")]
+              ]]>
+          </value>
+      </property>
+    </properties>
+  </rule>
+  <rule name="AvoidDocumentBuilder"
+        language="java"
+        message="Do not use DocumentBuilder directly; recommend XMLUtils.newDocumentBuilder()"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Notice use of DocumentBuilderFactory.newDocumentBuilder() which should be avoided in favor of
+      XMLUtils.newDocumentBuilder(Hints) to respect GeoTools init configuration.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+          <value>
+              <![CDATA[
+              //MethodCall[pmd-java:matchesSig("javax.xml.parsers.DocumentBuilderFactory#newDocumentBuilder()")]
+              ]]>
+          </value>
+      </property>
+    </properties>
+  </rule>
+  <rule name="AvoidTransformFactory"
+        language="java"
+        message="Do not use TransformerFactory directly; recommend XMLUtils.newInstance()"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Notice use of TransformerFactory.newInstance() which should be avoided in favor of
+      XMLUtils.newTransformerFactory(Hints) to respect GeoTools init configuration.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+          <value>
+              <![CDATA[
+              //MethodCall[pmd-java:matchesSig("javax.xml.transform.TransformerFactory#newInstance()")]
+              ]]>
+          </value>
+      </property>
+    </properties>
+  </rule>
+  <rule name="AvoidTransformer"
+        language="java"
+        message="Do not use TransformerFactory.newTransformer() directly; recommend XMLUtils.newTransformer()"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Notice use of TransformerFactory.newTransformer() which should be avoided in favor of
+      XMLUtils.newTransformer(Hints) to respect GeoTools init configuration.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+              //MethodCall[pmd-java:matchesSig("javax.xml.transform.TransformerFactory#newTransformer()")]
+              ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+  <rule name="AvoidTransformerSource"
+        language="java"
+        message="Do not use TransformerFactory.newTransformer(source) directly; recommend XMLUtils.newTransformer(source)"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Notice use of TransformerFactory.newTransformer(Source) which should be avoided in favor of
+      XMLUtils.newTransformer(Source,Hints) to respect GeoTools init configuration.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+              //MethodCall[pmd-java:matchesSig("javax.xml.transform.TransformerFactory#newTransformer(javax.xml.transform.Source)")]
+              ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+  <rule name="AvoidSAXParserFactory"
+        language="java"
+        message="Do not use ParserFactory.newInstance() directly; recommend XMLUtils.newSAXParserFactory()"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Notice use of SAXParserFactory.newInstance() which should be avoided in favor of
+      XMLUtils.newSAXParserFactory(Hints) to respect GeoTools init configuration.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+              //MethodCall[pmd-java:matchesSig("javax.xml.parsers.SAXParserFactory#newInstance()")]
+              ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+  <rule name="AvoidSaxParser"
+        language="java"
+        message="Do not use SAXParserFactory.newSAXParser() directly; recommend XMLUtils.newSAXParser()"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Notice use of SAXParserFactory.newSAXParser() which should be avoided in favor of
+      XMLUtils.newSAXParser(Hints) to respect GeoTools init configuration.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+              //MethodCall[pmd-java:matchesSig("javax.xml.parsers.SAXParserFactory#newInstance()")]
+              ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+
+  <rule name="AvoidXMLInputFactory"
+        language="java"
+        message="Do not use XMLInputFactory.newInstance() directly; recommend XMLUtils.newXMLInputFactory()"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Notice use of SAXParserFactory.newSAXParser() which should be avoided in favor of
+      XMLUtils.newSAXParser(Hints) to respect GeoTools init configuration.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+              //MethodCall[pmd-java:matchesSig("javax.xml.stream.XMLInputFactory#newInstance()")]
+              ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+
+  <rule name="AvoidSchemaFactory"
+        language="java"
+        message="Do not use SchemaFactory.newInstance(String) directly; recommend XMLUtils.newSchemaFactory(String)"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Notice use of SchemaFactory.newInstance() which should be avoided in favor of
+      XMLUtils.newInstance(Hints) to respect GeoTools init configuration.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+              //MethodCall[pmd-java:matchesSig("javax.xml.validation.SchemaFactory#newInstance(java.lang.String)")]
+              ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+
+  <rule name="AvoidHashSetInInfoImpl"
+        language="java"
+        message="Do not use HashSet in *InfoImpl config classes; use LinkedHashSet to preserve iteration order for deterministic XML serialization."
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Config model classes (*InfoImpl) should use LinkedHashSet instead of HashSet for Set fields.
+      HashSet has non-deterministic iteration order, which causes spurious diffs when XStreamPersister
+      re-serializes configuration files. LinkedHashSet preserves insertion order, ensuring stable output.
+      This rule only flags HashSet in field declarations (initializers and assignments); transient usages
+      in return statements or local variables are not flagged.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+              //FieldDeclaration
+                [ancestor::ClassDeclaration[ends-with(@SimpleName, 'InfoImpl')]]
+                //ConstructorCall[pmd-java:typeIsExactly("java.util.HashSet")]
+              ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+
+  <rule name="AvoidHashMapInInfoImpl"
+        language="java"
+        message="Do not use HashMap in *InfoImpl config classes; use LinkedHashMap to preserve iteration order for deterministic XML serialization."
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Config model classes (*InfoImpl) should use LinkedHashMap instead of HashMap for Map fields.
+      HashMap has non-deterministic iteration order, which causes spurious diffs when XStreamPersister
+      re-serializes configuration files. LinkedHashMap preserves insertion order, ensuring stable output.
+      This rule only flags HashMap in field declarations (initializers and assignments); transient usages
+      in return statements or local variables are not flagged.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+              //FieldDeclaration
+                [ancestor::ClassDeclaration[ends-with(@SimpleName, 'InfoImpl')]]
+                //ConstructorCall[pmd-java:typeIsExactly("java.util.HashMap")]
+              ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
 
 </ruleset>

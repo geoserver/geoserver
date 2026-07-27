@@ -1,0 +1,32 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "root": true,
+  "useGitignore": false,
+  "ignorePaths": [
+    "../../build/**",
+    "../../.venv/**",
+    "../../venv/**",
+    "../../.git/**",
+    "../../.mvn/**",
+    "../../node_modules/**",
+    "../../data/**",
+    "../../__pycache__/**",
+    "../../test_conversion/**",
+    "../../migration_reference/**"
+  ],
+  "files": [
+    "../../doc/**/*.md"
+  ],
+  "dictionaries": ["geoserver-terms"],
+  "dictionaryDefinitions": [
+    {
+      "name": "geoserver-terms",
+      "path": "../en/spelling/cspell-geoserver.txt",
+      "addWords": true
+    }
+  ],
+  "flagWords": [],
+  "allowCompoundWords": false,
+  "enableGlobDot": false
+}

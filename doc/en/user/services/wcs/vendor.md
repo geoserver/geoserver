@@ -43,13 +43,13 @@ Requests to the WCS GetCapabilities operation can be filtered to only return lay
 
 Sample code: :
 
-``
+```
 http://example.com/geoserver/wcs?
    service=wcs&
    version=1.0.0&
    request=GetCapabilities&
    namespace=topp
-``
+```
 
 Using an invalid namespace prefix will not cause any errors, but the document returned will not contain information on any layers.
 
@@ -59,7 +59,7 @@ The `cql_filter` parameter is similar to same named WMS parameter, and allows ex
 
 For example, assume a image mosaic has a tile index with a `cloudCover` percentage attribute, then it's possible to mosaic only granules with a cloud cover less than 10% using:
 
-> cql_filter=cloudCover < 10
+`cql_filter=cloudCover < 10`
 
 For full details see the [ECQL Reference](../../filter/ecql_reference.md) and [CQL and ECQL](../../tutorials/cql/cql_tutorial.md) tutorial.
 
@@ -81,10 +81,10 @@ The `clip` parameter can be used to clip WCS responses using a Polygon/Multipoly
 
 Here are two examples, the first one using WKT, the second using EWKT:
 
-``properties
+```properties
 clip=POLYGON((-14.50804652396198 55.579454354599356,34.53492222603802 55.579454354599356,34.53492222603802 32.400173313532584,-14.50804652396198 32.400173313532584,-14.50804652396198 55.579454354599356))
 clip=srid=900913;POLYGON ((-1615028.3514525702 7475148.401208023, 3844409.956787858 7475148.401208023, 3844409.956787858 3815954.983140064, -1615028.3514525702 3815954.983140064, -1615028.3514525702 7475148.401208023))
-``
+```
 
 When the WKT syntax is used, the default SRS matches the output coverage CRS (so it accounts for eventual reprojection in the request).
 

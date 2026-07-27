@@ -15,7 +15,7 @@ The following examples show how filter functions are used. The first shows enhan
 
 Let's assume we have a feature type whose geometry field, `geom`, can contain any kind of geometry. For a certain application we need to extract only the features whose geometry is a simple point or a multipoint. This can be done using a GeoServer-specific filter function named `geometryType`. Here is the WFS request including the filter function:
 
-``` xml
+```xml
 <wfs:GetFeature service="WFS" version="1.0.0"
   outputFormat="GML2"
   xmlns:wfs="http://www.opengis.net/wfs"
@@ -40,7 +40,7 @@ Let's assume we have a feature type whose geometry field, `geom`, can contain an
 
 WFS 2.0 does not depend on any one GML version and thus requires an explicit namespace and schemaLocation for GML. This POST example selects features using a spatial query. Note the complete declaration of namespace prefixes. In a GET request, namespaces can be placed on a Filter element.
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <wfs:GetFeature service="WFS" version="2.0.0"
     xmlns:wfs="http://www.opengis.net/wfs/2.0"
@@ -81,7 +81,7 @@ WFS 2.0 does not depend on any one GML version and thus requires an explicit nam
 
 We want to display elevation labels in a contour map. The elevations are stored as floating point values, so the raw numeric values may display with unwanted decimal places (such as "150.0" or "149.999999"). We want to ensure the numbers are rounded appropriately (i.e. to display "150"). To achieve this the `numberFormat` filter function can be used in the SLD label content expression:
 
-``` xml
+```xml
 ...
 <TextSymbolizer>
   <Label>

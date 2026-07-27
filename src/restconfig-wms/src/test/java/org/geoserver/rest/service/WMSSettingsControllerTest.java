@@ -16,13 +16,13 @@ import static org.junit.Assert.assertTrue;
 import java.io.StringWriter;
 import java.util.Locale;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.geoserver.config.GeoServer;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.geoserver.wms.WMSInfo;
 import org.geotools.util.GrowableInternationalString;
+import org.geotools.xml.XMLUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.kordamp.json.JSON;
@@ -125,8 +125,7 @@ public class WMSSettingsControllerTest extends CatalogRESTTestSupport {
         DOMSource domSource = new DOMSource(doc);
         StringWriter writer = new StringWriter();
         StreamResult result = new StreamResult(writer);
-        TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer transformer = tf.newTransformer();
+        Transformer transformer = XMLUtils.newTransformer();
         transformer.transform(domSource, result);
         return writer.toString();
     }

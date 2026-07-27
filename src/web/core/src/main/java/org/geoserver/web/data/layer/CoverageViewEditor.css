@@ -15,3 +15,56 @@ Your css selectors should look like this to avoid modifying styles outside the p
 
  ----------------------------------------------------------
 */
+.gs-panel-CoverageViewEditor .align-top {
+  vertical-align: top;
+}
+.gs-panel-CoverageViewEditor .band-selection-layout {
+  display: grid;
+  grid-template-columns: fit-content(100%) 7rem fit-content(100%);
+  grid-template-rows: auto auto auto;
+  column-gap: 1rem;
+  row-gap: 0.5rem;
+  align-items: start;
+}
+
+.gs-panel-CoverageViewEditor .band-selection-label {
+  display: flex;
+  align-items: flex-end;
+  min-height: 2.5rem;
+}
+
+.gs-panel-CoverageViewEditor .band-selection-layout select {
+  width: 15rem;
+  height: 12rem;
+  place-items: flex-start;
+}
+
+.gs-panel-CoverageViewEditor .add-band-button {
+  width: 7rem;
+}
+
+.gs-panel-CoverageViewEditor .band-selection-layout > button.add-band-button {
+  align-self: start;
+}
+
+.gs-panel-CoverageViewEditor .button-group {
+  width: 100%;
+}
+
+@media screen and (max-width: 1024px) {
+  .gs-panel-CoverageViewEditor .band-selection-layout select {
+    width: 12rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .gs-panel-CoverageViewEditor .band-selection-layout select {
+    width: 10rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .gs-panel-CoverageViewEditor .band-selection-layout select {
+    width: 100%;
+  }
+}

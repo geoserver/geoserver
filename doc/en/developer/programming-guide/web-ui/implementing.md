@@ -92,7 +92,7 @@ Before being able to proceed, GeoServer must be built on the local system. See t
 
 ## Create the i18n file
 
-With Wicket (and any web application framework), any string that appears in the web application should be interationalized. In GeoServer, this is performed by creating an internationalization (i18n) file named `GeoServerApplication.properties`.
+With Wicket (and any web application framework), any string that appears in the web application should be internationalized. In GeoServer, this is performed by creating an internationalization (i18n) file named `GeoServerApplication.properties`.
 
 1.  Create the directory `src/main/resources` under the root of the `hello_web` module:
 
@@ -160,7 +160,7 @@ At this point, the `hello_web` module should look like the following:
           </dependency>
         ```
     
-        You will need to run ``mvn eclipse:eclipse`` after editing **`web-app/pom.xml`** and then you can refresh the **`gs-web-app`** project in eclipse so it notices the new jar.
+        You will need to run `mvn eclipse:eclipse` after editing **`web-app/pom.xml`** and then you can refresh the **`gs-web-app`** project in eclipse so it notices the new jar.
 
 3.  Start or restart GeoServer
 

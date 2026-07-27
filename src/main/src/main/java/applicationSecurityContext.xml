@@ -130,9 +130,15 @@
   <bean id="logoutFilterProvider" class="org.geoserver.security.filter.GeoServerLogoutProvider"/>  
   <bean id="securityInterceptorFilterProvider" class="org.geoserver.security.filter.GeoServerSecurityInterceptorProvider"/>  
   <bean id="credentialsFromRequestHeaderSecurityProvider" class="org.geoserver.security.filter.GeoServerCredentialsFromRequestHeaderProvider"/>
-  
-  
-  
+
+  <!-- Generic fail-closed filter injected into a chain that lost its last authentication filter because that
+       filter could not be loaded (e.g. created by a community plugin that is no longer installed). The generic
+       tolerance lives here in core; precise recognition of specific legacy plugins (OIDC/Keycloak/Google/GitHub/
+       GeoNode) is contributed by the OIDC community module's LegacySecurityProvider when installed. -->
+  <bean id="disabledFilter" class="org.geoserver.security.filter.DisabledSecurityFilter"/>
+
+
+
   <bean id="urlMasterPasswordProvider" 
     class="org.geoserver.security.password.URLMasterPasswordProvider$SecurityProvider"/>
   

@@ -4,7 +4,7 @@ When performing queries, using CQL filters, against layers that support a templa
 
 Consider the following GML output example:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:st="http://www.stations.org/1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" numberOfFeature="0" timeStamp="2021-07-16T08:38:50.735Z">
   <gml:featureMember>
@@ -92,7 +92,7 @@ The following are valid CQL_FILTERS
 
 Given this underlying GML template:
 
-``` xml
+```xml
 <gft:Template>
 <gft:Options>
   <gft:Namespaces xmlns:st="http://www.stations.org/1.0"/>
@@ -135,10 +135,10 @@ Backwards mapping capability is available for all the output formats. Consider t
 The following are example of valid CQL filters:
 
 - gsml:GeologicUnit.description = 'some string value'
-- name in ("MERCIA MUDSTONE", "UKNOWN")
+- name in ("MERCIA MUDSTONE", "UNKNOWN")
 - gsml:positionalAccuracy.valueArray1 = "100"
 
-``` json
+```json
 {
   "@context": {
       "gsp": "http://www.opengis.net/ont/geosparql#",
@@ -255,7 +255,7 @@ The following are example of valid CQL filters:
 The following are example of valid CQL filters:
 
 - gsml:GeologicUnit.description = 'some string value'
-- name in ("MERCIA MUDSTONE", "UKNOWN")
+- name in ("MERCIA MUDSTONE", "UNKNOWN")
 - gsml:positionalAccuracy.valueArray1 = "100"
 
 As the last example shows, to refer to elements in arrays listing simple attributes, the index of the attribute is needed, starting from 1, in the form `{attributeName}{index}`, as in `features.gsml:positionalAccuracy.valueArray1.`

@@ -15,3 +15,18 @@ Your css selectors should look like this to avoid modifying styles outside the p
 
  ----------------------------------------------------------
 */
+
+.gs-panel-FileInput .gs-panel-GeoServerDialog_ContentsPage form {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.gs-panel-FileInput .gs-panel-GeoServerDialog_ContentsPage .button-group {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    margin-top: auto;
+    padding-top: 0.5rem;
+    background-color: var(--gs-body-bg);
+}

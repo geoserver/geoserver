@@ -10,7 +10,7 @@ This page describes the use of "Feature Chaining" to compose complex features fr
 - Encoding the same referenced property object as links when it appears in multiple containing features
 - Eliminating the need for large denormalized data store views of top level features and their related features. Denormalized views would still be needed for special cases, such as many-to-many relationships, but won't be as large.
 
-For non-application schema configurations, please refer to [app-schema.data-access-integration](#app-schema-data-access-integration).
+For non-application schema configurations, please refer to [Data Access Integration](data-access-integration.md).
 
 ## Mapping steps
 
@@ -235,7 +235,7 @@ When nesting another complex type, you need to specify in your source expression
 
 - **linkElement**:
 
-  - the nested element name, which is normally the targetElement or mappingName of the corresponding type.
+    - the nested element name, which is normally the targetElement or mappingName of the corresponding type.
       - on some cases, it has to be an OCQL function (see [app-schema.polymorphism](polymorphism.md))
 
 - **linkField**: the indexed XPath attribute on the nested element that OCQL corresponds to
@@ -262,10 +262,10 @@ In Geologic Unit mapping file:
 
 #### Geologic Unit property file:
 
-| **id**   | **ABBREVIATAION:String** | **NAME:String**        | **TEXTDESCRIPTION:String**                                 |
+| **id**   | **ABBREVIATION:String** | **NAME:String**        | **TEXTDESCRIPTION:String**                                 |
 |----------|--------------------------|------------------------|------------------------------------------------------------|
-| gu.25699 | `-Py`<br>:               | Yaugher Volcanic Group | Olivine basalt, tuff, microgabbro, minor sedimentary rocks |
-| gu.25678 | `-Py`<br>:               | Yaugher Volcanic Group | Olivine basalt, tuff, microgabbro, minor sedimentary rocks |
+| gu.25699 | `-Py`             | Yaugher Volcanic Group | Olivine basalt, tuff, microgabbro, minor sedimentary rocks |
+| gu.25678 | `-Py`              | Yaugher Volcanic Group | Olivine basalt, tuff, microgabbro, minor sedimentary rocks |
 
 #### Composition Part property file:
 
@@ -324,6 +324,7 @@ For this example, we are nesting gsml:GeologicUnit in gsml:MappedFeature as gsml
 
 - Set up nesting on the container feature type mapping as usual:
 
+```xml
       <AttributeMapping>
         <targetAttribute>gsml:specification</targetAttribute>
         <sourceExpression>
@@ -332,9 +333,11 @@ For this example, we are nesting gsml:GeologicUnit in gsml:MappedFeature as gsml
           <linkField>gml:name[2]</linkField>
         </sourceExpression>
       </AttributeMapping>
+```
 
 - Set up xlink:href as client property on the other mapping file:
 
+```xml
       <AttributeMapping>
         <targetAttribute>gsml:occurrence</targetAttribute>      
         <sourceExpression>
@@ -348,6 +351,7 @@ For this example, we are nesting gsml:GeologicUnit in gsml:MappedFeature as gsml
            <value>strConcat('urn:cgi:feature:MappedFeature:', ID)</value>
         </ClientProperty>       
       </AttributeMapping>
+```
 
 As we are getting the client property value from a nested feature, we have to set it as if we are chaining the feature; but we also add the client property containing *xlink:href* in the attribute mapping. The code will detect the *xlink:href* setting, and will not proceed to build the nested feature's attributes, and we will end up with empty attributes with *xlink:href* client properties.
 
@@ -360,4 +364,4 @@ This would be the encoded result for gsml:GeologicUnit:
 ```
 
 !!! note
-    * Don't forget to add *XLink* in your mapping file namespaces section, or you could end up with a StackOverflowException as the *xlink:href* client property won't be recognized and the mappings would chain endlessly. * [app-schema.resolve](#app-schema-resolve) may be used to force app-schema to do full feature chaining up to a certain level, even if an xlink reference is specified.
+    * Don't forget to add *XLink* in your mapping file namespaces section, or you could end up with a StackOverflowException as the *xlink:href* client property won't be recognized and the mappings would chain endlessly. * [Resolve](wfs-2.0-support.md#resolving) may be used to force app-schema to do full feature chaining up to a certain level, even if an xlink reference is specified.

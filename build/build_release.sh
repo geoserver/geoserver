@@ -13,10 +13,10 @@ function usage() {
   echo
   echo "Options:"
   echo " -h          : Print usage"
-  echo " -b <branch> : Branch to release from (eg: trunk, 2.14.x, ...)"
+  echo " -b <branch> : Branch to release from (eg: main, 2.28.x, ...)"
   echo " -r <rev>    : Revision to release (eg: 12345)"
-  echo " -g <ver>    : GeoTools version/revision (eg: 20.4, master:12345)"
-  echo " -w <ver>    : GeoWebCache version/revision (eg: 1.14.4, 1.14.x:abcd)"
+  echo " -g <ver>    : GeoTools version/revision (eg: 20.4, main:12345)"
+  echo " -w <ver>    : GeoWebCache version/revision (eg: 2.0.0, 1.28.x:abcd)"
   echo
   echo "Environment variables:"
   echo " SKIP_BUILD : Skips main release build"
@@ -82,13 +82,14 @@ if [ `is_primary_branch_num $tag` == "1" ]; then
   echo "$tag is a not a valid release tag, can't be same as primary branch name"
   exit 1
 fi
+
 #checkout branch locally if it doesn't exist
 if ! git show-ref refs/heads/$branch; then 
   echo "checkout branch #branch locally"
   git fetch origin $branch:$branch
 fi
 
-# ensure there is a jira release
+# ensure there is a JIRA release
 jira_id=`get_jira_id $tag`
 if [ -z $jira_id ]; then
   echo "Could not locate release $tag in JIRA"
@@ -129,10 +130,27 @@ git reset --hard HEAD
 git checkout $branch
 git pull origin $branch
 
-# check to see if a release branch already exists
-if [ `git branch --list rel_$tag | wc -l` == 1 ]; then
-  echo "branch rel_$tag exists, deleting it"
-  git branch -D rel_$tag
+# check to see if a release branch already exists locally
+if [ `git branch --list $tag.x | wc -l` == 1 ]; then
+  echo "branch $tag.x exists locally, deleting it"
+  git branch -D $tag.x
+fi
+
+# delete remote release branch if it exists (restart safety)
+# guard: only delete if the branch is still a fresh release branch (≤2 commits ahead
+# of $branch), not a grown stable patch branch with accumulated emergency releases
+if git ls-remote --exit-code --heads origin $tag.x > /dev/null 2>&1; then
+  git fetch origin $tag.x:$tag.x --no-tags
+  ahead=$(git rev-list --count origin/$branch..origin/$tag.x 2>/dev/null || echo 0)
+  if [ "$ahead" -le 2 ]; then
+    echo "branch $tag.x exists on origin (fresh, $ahead commits ahead), deleting it"
+    git push origin --delete $tag.x
+    git branch -D $tag.x 2>/dev/null || true
+  else
+    echo "branch $tag.x exists on origin with $ahead commits ahead of $branch — looks like a stable patch branch, not deleting"
+    echo "If you really want to restart, delete branch $tag.x manually first"
+    exit 1
+  fi
 fi
 
 # checkout the branch to release from
@@ -144,13 +162,14 @@ if [ $rev != "HEAD" ]; then
   git log | grep $rev
   if [ $? != 0 ]; then
      echo "Revision $rev not a revision on branch $branch"
+     echo "(Perhaps $branch is from a prior failed attempt and can be removed)"
      exit -1
   fi
   set -e
 fi
 
 # create a release branch
-git checkout -b rel_$tag $rev
+git checkout -b $tag.x $rev
 
 # setup geotools dependency
 if [ -z $SKIP_GT ]; then
@@ -271,10 +290,13 @@ popd > /dev/null
 
 pushd src > /dev/null
 
+# Determine major version to select branch-specific behaviour
+major_version=$(echo "$tag" | cut -d. -f1)
+
 # build the release
 if [ -z $SKIP_BUILD ]; then
   echo "building release"
-  mvn clean install $MAVEN_FLAGS -DskipTests -P release
+  mvn clean install $MAVEN_FLAGS -DskipTests -P release,pending
   
   # build the javadocs
   mvn javadoc:aggregate $MAVEN_FLAGS
@@ -283,17 +305,26 @@ if [ -z $SKIP_BUILD ]; then
   # Build the docs
   ##################
 
-  pushd ../doc/en > /dev/null
-  
-  # obtains release from pom.xml
-  ant build
+  if [ "$major_version" -ge 3 ]; then
+    # GeoServer 3.x+ uses MkDocs
+    pushd .. > /dev/null
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install -r requirements.txt
 
-  mvn clean compile $MAVEN_FLAGS
-  mvn package $MAVEN_FLAGS
-  
-  popd > /dev/null
+    pushd doc/en > /dev/null
+    mvn -nsu -fae package $MAVEN_FLAGS
+    popd > /dev/null
+    popd > /dev/null
+  else
+    # GeoServer 2.x uses Sphinx (Maven-based doc build)
+    pushd ../doc/en > /dev/null
+    mvn clean compile $MAVEN_FLAGS
+    mvn package $MAVEN_FLAGS
+    popd > /dev/null
+  fi
 else
-   echo "Skipping mvn clean install $MAVEN_FLAGS -DskipTests -P release"
+   echo "Skipping mvn clean install $MAVEN_FLAGS -DskipTests -P release,pending"
 fi
 
 if [ -z $SKIP_COMMUNITY ]; then
@@ -306,8 +337,9 @@ else
    echo "Skipping mvn clean install $MAVEN_FLAGS -P communityRelease -DskipTests"
 fi
 
-echo "Assemble artifacts"
+echo "Assemble artifacts (core and extensions and pending)"
 mvn assembly:single $MAVEN_FLAGS -N
+mvn install -Prelease,pending,assembly -nsu -fae -DskipTests
 
 artifacts=`pwd`/target/release
 echo "artifacts = $artifacts"
@@ -323,31 +355,43 @@ popd > /dev/null
 
 pushd $artifacts > /dev/null
 
+# bundle up HTML documentation output
 htmldoc=geoserver-$tag-htmldoc.zip
 
-if [ -e ../../../doc/en/target/$htmldoc ]; then
-  echo "Using $htmldoc assembly"
-  # use assembly
-  cp ../../../doc/en/target/$htmldoc $htmldoc
+if [ "$major_version" -ge 3 ]; then
+  # MkDocs assembly uses gs-docs- prefix
+  docs_htmldoc=gs-docs-$tag-htmldoc.zip
+  if [ -e ../../../doc/en/target/$docs_htmldoc ]; then
+    echo "Using $docs_htmldoc assembly"
+    cp ../../../doc/en/target/$docs_htmldoc $htmldoc
+  else
+    echo "Missing documentation assembly ../../../doc/en/target/$docs_htmldoc"
+    exit 1
+  fi
 else
-  echo "Creating $htmldoc"
-  # setup doc artifacts
-  if [ -e user ]; then
+  # Sphinx docs - check for assembly or build manually
+  if [ -e ../../../doc/en/target/$htmldoc ]; then
+    echo "Using $htmldoc assembly"
+    cp ../../../doc/en/target/$htmldoc $htmldoc
+  else
+    echo "Creating $htmldoc"
+    if [ -e user ]; then
+      unlink user
+    fi
+    if [ -e developer ]; then
+      unlink developer
+    fi
+    ln -sf ../../../doc/en/target/user/html user
+    ln -sf ../../../doc/en/target/developer/html developer
+    ln -sf ../../../doc/en/release/README.txt readme
+    if [ -e $htmldoc ]; then
+      rm -f $htmldoc
+    fi
+    zip -q -r $htmldoc user developer readme
     unlink user
-  fi
-  if [ -e developer ]; then
     unlink developer
+    unlink readme
   fi
-  ln -sf ../../../doc/en/target/user/html user
-  ln -sf ../../../doc/en/target/developer/html developer
-  ln -sf ../../../doc/en/release/README.txt readme
-  if [ -e $htmldoc ]; then
-    rm -f $htmldoc 
-  fi
-  zip -q -r $htmldoc user developer readme
-  unlink user
-  unlink developer
-  unlink readme
 fi
 
 popd > /dev/null
@@ -362,6 +406,7 @@ done
 echo "generated artifacts:"
 ls -lha $dist
 
+echo "Publishing $tag (on release branch $tag.x)"
 # git commit changes on the release branch
 pushd .. > /dev/null
 
@@ -371,7 +416,10 @@ git add doc
 git add src
 git commit -m "updating version numbers and release notes for $tag" .
 
-# tag release branch
+# publish release branch
+git push origin $tag.x
+
+# tag on release branch
 if [ -z $SKIP_TAG ]; then
     # fetch single tag, don't fail if its not there
     git fetch origin refs/tags/$tag:refs/tags/$tag --no-tags || true

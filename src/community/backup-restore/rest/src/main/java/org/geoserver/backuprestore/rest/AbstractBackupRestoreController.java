@@ -15,10 +15,10 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.mapper.ClassAliasingMapper;
 import com.thoughtworks.xstream.mapper.Mapper;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.backuprestore.AbstractExecutionAdapter;
@@ -39,13 +37,14 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
+import org.geoserver.rest.SuffixStripFilter;
 import org.geotools.api.filter.Filter;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.logging.Logging;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobParameter;
-import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.job.parameters.JobParameter;
+import org.springframework.batch.core.step.StepExecution;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -91,6 +90,21 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
             executionId = executionId.substring(0, executionId.length() - 5);
         }
         return executionId;
+    }
+
+    /**
+     * Whether the request is asking for the binary archive (the documented {@code .../{id}.zip} download) rather than a
+     * JSON/XML status representation. The {@code .zip} suffix may arrive on the path variable, or be consumed by the
+     * REST content-negotiation layer ({@link SuffixStripFilter}, which records it under
+     * {@link SuffixStripFilter#EXTENSION_ATTRIBUTE}) before the controller runs - in which case
+     * {@code id.endsWith(".zip")} is already false. Check every signal so the download works regardless of how the
+     * suffix is handled. (Relying on {@code endsWith(".zip")} alone returned the execution adapter instead, which a
+     * downstream message converter then failed to serialize with an HTTP 500.)
+     */
+    protected boolean isArchiveDownload(String id, String format, HttpServletRequest request) {
+        return (id != null && id.endsWith(".zip"))
+                || "zip".equalsIgnoreCase(format)
+                || (request != null && "zip".equals(request.getAttribute(SuffixStripFilter.EXTENSION_ATTRIBUTE)));
     }
 
     /** */
@@ -171,25 +185,13 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
         ClassAliasingMapper optionsMapper = new ClassAliasingMapper(xStream.getMapper());
         optionsMapper.addClassAlias("option", String.class);
         xStream.registerLocalConverter(
-                AbstractExecutionAdapter.class, "options", new CollectionConverter(optionsMapper) {
-
-                    @Override
-                    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
-                        return Collection.class.isAssignableFrom(type);
-                    }
-                });
+                AbstractExecutionAdapter.class, "options", new OptionsCollectionConverter(optionsMapper));
 
         ClassAliasingMapper warningsMapper = new ClassAliasingMapper(xStream.getMapper());
         warningsMapper.addClassAlias(Level.WARNING.getName(), RuntimeException.class);
         warningsMapper.addClassAlias(Level.WARNING.getName(), CatalogException.class);
         xStream.registerLocalConverter(
-                AbstractExecutionAdapter.class, "warningsList", new CollectionConverter(warningsMapper) {
-
-                    @Override
-                    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
-                        return Collection.class.isAssignableFrom(type);
-                    }
-                });
+                AbstractExecutionAdapter.class, "warningsList", new WarningsConverter(warningsMapper));
 
         Class<? extends Resource> resourceAdaptorType =
                 Files.asResource(new File("/")).getClass();
@@ -204,6 +206,10 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
         xStream.omitField(JobExecution.class, "jobId");
         xStream.omitField(JobExecution.class, "jobParameters");
         xStream.omitField(JobExecution.class, "executionContext");
+        // The job-level failure exceptions are a List<Throwable>; reflectively serializing a Throwable
+        // fails under JPMS on JDK 17+ ("java.base does not open java.lang"). The failure detail is already
+        // emitted per step (as text) by the stepExecutions converter, so omit the raw list here.
+        xStream.omitField(JobExecution.class, "failureExceptions");
 
         xStream.registerLocalConverter(
                 AbstractExecutionAdapter.class,
@@ -228,107 +234,7 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
         ClassAliasingMapper stepExecutionsMapper = new ClassAliasingMapper(xStream.getMapper());
         stepExecutionsMapper.addClassAlias("step", StepExecution.class);
         xStream.registerLocalConverter(
-                JobExecution.class, "stepExecutions", new CollectionConverter(stepExecutionsMapper) {
-
-                    @Override
-                    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
-                        return CopyOnWriteArraySet.class.isAssignableFrom(type);
-                    }
-
-                    @Override
-                    public void marshal(Object obj, HierarchicalStreamWriter writer, MarshallingContext ctx) {
-                        CopyOnWriteArraySet execs = (CopyOnWriteArraySet) obj;
-                        Iterator iterator = execs.iterator();
-
-                        while (iterator.hasNext()) {
-                            StepExecution exec = (StepExecution) iterator.next();
-
-                            // Step Node - START
-                            writer.startNode("step");
-
-                            writer.startNode("name");
-                            writer.setValue(exec.getStepName());
-                            writer.endNode();
-
-                            writer.startNode("status");
-                            writer.setValue(exec.getStatus().name());
-                            writer.endNode();
-
-                            writer.startNode("exitStatus");
-                            writer.startNode("exitCode");
-                            writer.setValue(exec.getExitStatus().getExitCode());
-                            writer.endNode();
-                            writer.startNode("exitDescription");
-                            writer.setValue(exec.getExitStatus().getExitDescription());
-                            writer.endNode();
-                            writer.endNode();
-
-                            if (exec.getStartTime() != null) {
-                                writer.startNode("startTime");
-                                writer.setValue(DateFormat.getInstance().format(exec.getStartTime()));
-                                writer.endNode();
-                            }
-
-                            if (exec.getEndTime() != null) {
-                                writer.startNode("endTime");
-                                writer.setValue(DateFormat.getInstance().format(exec.getEndTime()));
-                                writer.endNode();
-                            }
-
-                            if (exec.getLastUpdated() != null) {
-                                writer.startNode("lastUpdated");
-                                writer.setValue(DateFormat.getInstance().format(exec.getLastUpdated()));
-                                writer.endNode();
-                            }
-
-                            writer.startNode("parameters");
-                            for (Entry param :
-                                    exec.getJobParameters().getParameters().entrySet()) {
-                                writer.startNode((String) param.getKey());
-                                writer.setValue(((JobParameter) param.getValue())
-                                        .getValue()
-                                        .toString());
-                                writer.endNode();
-                            }
-                            writer.endNode();
-
-                            writer.startNode("readCount");
-                            writer.setValue(String.valueOf(exec.getReadCount()));
-                            writer.endNode();
-
-                            writer.startNode("writeCount");
-                            writer.setValue(String.valueOf(exec.getWriteCount()));
-                            writer.endNode();
-
-                            writer.startNode("failureExceptions");
-                            for (Throwable ex : exec.getFailureExceptions()) {
-                                writer.startNode(Level.SEVERE.getName());
-
-                                StringBuilder buf = new StringBuilder();
-                                while (ex != null) {
-                                    if (buf.length() > 0) {
-                                        buf.append('\n');
-                                    }
-                                    if (ex.getMessage() != null) {
-                                        buf.append(ex.getMessage());
-
-                                        StringWriter errors = new StringWriter();
-                                        ex.printStackTrace(new PrintWriter(errors));
-                                        buf.append('\n').append(errors.toString());
-                                    }
-                                    ex = ex.getCause();
-                                }
-
-                                writer.setValue(buf.toString());
-                                writer.endNode();
-                            }
-                            writer.endNode();
-
-                            // Step Node - END
-                            writer.endNode();
-                        }
-                    }
-                });
+                JobExecution.class, "stepExecutions", new StepExecutionsConverter(stepExecutionsMapper));
     }
 
     /** @author Alessio Fabiani, GeoSolutions S.A.S. */
@@ -410,6 +316,173 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
             }
 
             return filter;
+        }
+    }
+
+    /**
+     * Serializes the {@code options}/{@code warningsList}/{@code stepExecutions} collections of an execution. These
+     * were previously inline anonymous {@link CollectionConverter}s in {@link #intializeXStreamContext(XStream)};
+     * extracting them keeps that method readable and groups the wire-format quirks with their documentation.
+     */
+    public static class OptionsCollectionConverter extends CollectionConverter {
+
+        public OptionsCollectionConverter(Mapper mapper) {
+            super(mapper);
+        }
+
+        @Override
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+            // Spring Batch 6 backs these fields with a synchronized List (was a CopyOnWriteArraySet); accept any
+            // Collection so XStream keeps routing the field here ("Explicit selected converter cannot handle item").
+            return Collection.class.isAssignableFrom(type);
+        }
+    }
+
+    /** Renders the {@code warningsList} (a list of {@link Throwable}s) as plain text rather than reflecting on it. */
+    public static class WarningsConverter extends CollectionConverter {
+
+        public WarningsConverter(Mapper mapper) {
+            super(mapper);
+        }
+
+        @Override
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+            return Collection.class.isAssignableFrom(type);
+        }
+
+        @Override
+        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+            // Render each warning as text. Warnings are Throwables, and reflectively serializing a
+            // Throwable fails under JPMS on JDK 17+ ("java.base does not open java.lang"); writing the
+            // message chain instead avoids that and is more readable.
+            for (Object item : (Collection<?>) source) {
+                writer.startNode(Level.WARNING.getName());
+                if (item instanceof Throwable) {
+                    StringBuilder buf = new StringBuilder();
+                    for (Throwable t = (Throwable) item; t != null; t = t.getCause()) {
+                        if (buf.length() > 0) {
+                            buf.append('\n');
+                        }
+                        buf.append(t.getMessage() != null ? t.getMessage() : t.toString());
+                    }
+                    writer.setValue(buf.toString());
+                } else {
+                    writer.setValue(String.valueOf(item));
+                }
+                writer.endNode();
+            }
+        }
+    }
+
+    /**
+     * Serializes the {@link JobExecution#getStepExecutions() step executions} to the REST wire format (one
+     * {@code <step>} per execution). Spring Batch 6 changed the collection type (CopyOnWriteArraySet -&gt; synchronized
+     * List) and the date types (Date -&gt; LocalDateTime), and reflectively serializing the per-step failure
+     * {@link Throwable}s fails under JPMS on JDK 17+; this converter writes plain values throughout to avoid all of
+     * that.
+     */
+    public static class StepExecutionsConverter extends CollectionConverter {
+
+        public StepExecutionsConverter(Mapper mapper) {
+            super(mapper);
+        }
+
+        @Override
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+            return Collection.class.isAssignableFrom(type);
+        }
+
+        @Override
+        public void marshal(Object obj, HierarchicalStreamWriter writer, MarshallingContext ctx) {
+            Collection<?> execs = (Collection<?>) obj;
+            Iterator<?> iterator = execs.iterator();
+
+            while (iterator.hasNext()) {
+                StepExecution exec = (StepExecution) iterator.next();
+
+                // Step Node - START
+                writer.startNode("step");
+
+                writer.startNode("name");
+                writer.setValue(exec.getStepName());
+                writer.endNode();
+
+                writer.startNode("status");
+                writer.setValue(exec.getStatus().name());
+                writer.endNode();
+
+                writer.startNode("exitStatus");
+                writer.startNode("exitCode");
+                writer.setValue(exec.getExitStatus().getExitCode());
+                writer.endNode();
+                writer.startNode("exitDescription");
+                writer.setValue(exec.getExitStatus().getExitDescription());
+                writer.endNode();
+                writer.endNode();
+
+                if (exec.getStartTime() != null) {
+                    writer.startNode("startTime");
+                    // Spring Batch 6 returns java.time.LocalDateTime here (was java.util.Date);
+                    // its ISO-8601 toString() serializes cleanly (DateFormat cannot format it).
+                    writer.setValue(String.valueOf(exec.getStartTime()));
+                    writer.endNode();
+                }
+
+                if (exec.getEndTime() != null) {
+                    writer.startNode("endTime");
+                    writer.setValue(String.valueOf(exec.getEndTime()));
+                    writer.endNode();
+                }
+
+                if (exec.getLastUpdated() != null) {
+                    writer.startNode("lastUpdated");
+                    writer.setValue(String.valueOf(exec.getLastUpdated()));
+                    writer.endNode();
+                }
+
+                writer.startNode("parameters");
+                for (JobParameter<?> param : exec.getJobParameters()) {
+                    writer.startNode(param.name());
+                    writer.setValue(String.valueOf(param.value()));
+                    writer.endNode();
+                }
+                writer.endNode();
+
+                writer.startNode("readCount");
+                writer.setValue(String.valueOf(exec.getReadCount()));
+                writer.endNode();
+
+                writer.startNode("writeCount");
+                writer.setValue(String.valueOf(exec.getWriteCount()));
+                writer.endNode();
+
+                writer.startNode("failureExceptions");
+                for (Throwable ex : exec.getFailureExceptions()) {
+                    writer.startNode(Level.SEVERE.getName());
+
+                    StringBuilder buf = new StringBuilder();
+                    while (ex != null) {
+                        if (buf.length() > 0) {
+                            buf.append('\n');
+                        }
+                        if (ex.getMessage() != null) {
+                            buf.append(ex.getMessage());
+
+                            StringWriter errors = new StringWriter();
+                            ex.printStackTrace(new PrintWriter(errors));
+                            buf.append('\n').append(errors.toString());
+                        }
+                        ex = ex.getCause();
+                    }
+
+                    writer.setValue(buf.toString());
+                    writer.endNode();
+                }
+                writer.endNode();
+
+                // Step Node - END
+                writer.endNode();
+            }
         }
     }
 

@@ -45,11 +45,11 @@ In order to change any server settings or configure data, a user must first be a
 
     *Additional options when logged in*
 
-## Layer Preview
+## Browse Layers
 
-The [Layer Preview](../../data/webadmin/layerpreview.md) page allows you to quickly view the output of published layers.
+The [Browse Layers](../../data/webadmin/browselayers.md) page allows you to quickly view the output of published layers.
 
-1.  Click the **Layer Preview** link on the menu to go to this page.
+1.  Click the **Browse Layers** link on the menu to go to this page.
 
     ![](../../data/webadmin/img/preview_list.png)
 
@@ -74,4 +74,4 @@ The [Layer Preview](../../data/webadmin/layerpreview.md) page allows you to quic
         Sorting and searching apply to all data configuration pages.
 
 !!! note
-    For more information, please see the [Layer Preview](../../data/webadmin/layerpreview.md) section.
+    For more information, please see the [Browse Layers](../../data/webadmin/browselayers.md) section.

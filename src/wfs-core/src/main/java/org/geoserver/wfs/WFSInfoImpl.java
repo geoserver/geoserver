@@ -6,8 +6,8 @@
 package org.geoserver.wfs;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -16,7 +16,7 @@ import org.geoserver.config.impl.ServiceInfoImpl;
 
 public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
 
-    protected Map<Version, GMLInfo> gml = new HashMap<>();
+    protected Map<Version, GMLInfo> gml = new LinkedHashMap<>();
     protected ServiceLevel serviceLevel = ServiceLevel.COMPLETE;
     protected int maxFeatures = Integer.MAX_VALUE;
     protected boolean featureBounding = true;
@@ -29,7 +29,7 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     protected Boolean allowGlobalQueries = true;
     protected Boolean simpleConversionEnabled = false;
     protected boolean getFeatureOutputTypeCheckingEnabled = false;
-    protected Set<String> getFeatureOutputTypes = new HashSet<>();
+    protected Set<String> getFeatureOutputTypes = new LinkedHashSet<>();
 
     protected String csvDateFormat;
 

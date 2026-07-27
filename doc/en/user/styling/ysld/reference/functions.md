@@ -52,7 +52,7 @@ rules:
 
 This would create a situation where the `attribute` value, if less than `value1` will be given the result of `category0`; if between `value1` and `value2`, will be given the result of `category1`; if between `value2` and `value3`, will be given the result of `category2`, etc. Values must be in ascending order.
 
-The `belongsTo` argument is optional, and can be either `succeeding` or `preceding`. It defines which interval to use when the lookup value equals the `attribute` value. If the `attribute` value is equal to `value1` and `suceeding` is used, then the result will be `category1`. If `preceding` is used then the result will be `category0`. The default is `succeeding`.
+The `belongsTo` argument is optional, and can be either `succeeding` or `preceding`. It defines which interval to use when the lookup value equals the `attribute` value. If the `attribute` value is equal to `value1` and `succeeding` is used, then the result will be `category1`. If `preceding` is used then the result will be `category0`. The default is `succeeding`.
 
 This is equivalent to creating the following multiple rules:
 
@@ -80,7 +80,7 @@ This would create a situation where the `attribute` value, if equal to `value1` 
 
 The `mode` argument is optional, and can be either `linear`, `cosine`, or `cubic`. It defines the interpolation algorithm to use, and defaults to `linear`.
 
-The `method` argument is optional, and can be either `numeric` or `color`. It determines whether `entry1`, `entry2`, \... are numbers or colors, and defaults to `numeric`.
+The `method` argument is optional, and can be either `numeric` or `color`. It determines whether `entry1`, `entry2`, ... are numbers or colors, and defaults to `numeric`.
 
 There is no equivalent to this function in vector styling. The closest to this in raster styling is the color ramp.
 

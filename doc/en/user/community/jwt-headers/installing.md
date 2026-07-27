@@ -11,7 +11,7 @@ To install the JWT Headers module:
 
 2.  Visit the [website download](https://geoserver.org/download) page, change the **Development** tab, and locate the nightly release that corresponds to the GeoServer you are running.
 
-    Follow the **Community Modules** link and download ``jwt-headers`` zip archive.
+    Follow the **Community Modules** link and download `jwt-headers` zip archive.
 
     - {{ snapshot }} example: [jwt-headers](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-jwt-headers-plugin.zip)
 
@@ -45,7 +45,7 @@ Community module is are not yet ready for distribution with GeoServer release.
 
 For developers;
 
-``` bash
+```bash
 cd src
 mvn install -Pjwt-headers -DskipTests
 ```

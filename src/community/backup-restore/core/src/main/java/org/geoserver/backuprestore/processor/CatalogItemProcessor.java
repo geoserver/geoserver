@@ -4,7 +4,7 @@
  */
 package org.geoserver.backuprestore.processor;
 
-import java.util.Arrays;
+import java.lang.reflect.Proxy;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.backuprestore.Backup;
@@ -27,10 +27,11 @@ import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
+import org.geoserver.catalog.impl.ResolvingProxy;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.util.logging.Logging;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.item.ItemProcessor;
 
 /**
  * Concrete Spring Batch {@link ItemProcessor}.
@@ -81,6 +82,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 .formatted(item, getCurrentJobExecution().getProgress()));
 
         if (item instanceof WorkspaceInfo info) return process(info);
+        if (item instanceof NamespaceInfo info) return process(info);
         if (item instanceof CoverageStoreInfo info) return process(info);
         if (item instanceof DataStoreInfo info) return process(info);
         if (item instanceof ResourceInfo info) return process(info);
@@ -207,7 +209,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 return null;
             }
 
-            if (!filterIsValid()) {
+            if (!filterIsValid() && style.getId() != null) {
                 Catalog catalog = getCatalog();
                 result = catalog.validate(style, isNew());
                 if (!result.isValid()) {
@@ -225,7 +227,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         return getClazz().cast(style);
     }
 
-    private T process(LayerGroupInfo lg) {
+    private T process(LayerGroupInfo lg) throws Exception {
         ValidationResult result = null;
         try {
             WorkspaceInfo ws = resolveWorkspace(lg);
@@ -234,7 +236,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 return null;
             }
 
-            if (!filterIsValid()) {
+            if (!filterIsValid() && lg.getId() != null) {
                 Catalog catalog = getCatalog();
                 result = catalog.validate(lg, isNew());
                 if (!result.isValid()) {
@@ -245,10 +247,14 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 }
             }
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error occurred while trying to process a Resource!", e);
-            if (getCurrentJobExecution() != null) {
-                getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
-            }
+            LOGGER.warning("Could not validate the layer group "
+                    + lg
+                    + " due to the following issue: "
+                    + e.getLocalizedMessage());
+            // consistent with process(StyleInfo)/process(LayerInfo): drop the item, and abort (or warn in best-effort)
+            // instead of keeping a layer group that failed validation
+            logValidationExceptions(result, e);
+            return null;
         }
         return getClazz().cast(lg);
     }
@@ -257,9 +263,15 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         ValidationResult result = null;
         try {
             ResourceInfo layerResouce = layer.getResource();
-            if (layerResouce == null) {
+            if (layerResouce == null || isUnresolvedProxy(layerResouce)) {
                 return null;
             }
+
+            // Drop dangling style references: a default/extra style that could not be resolved during
+            // deserialization is left as an unresolved ResolvingProxy. Persisting it emits class="dynamic-proxy"
+            // into layer.xml, which is unparseable on the next reload and loses the layer entirely. A layer with no
+            // explicit default style is still valid and recoverable.
+            sanitizeDanglingStyles(layer);
 
             WorkspaceInfo ws = resolveWorkspace(layer);
 
@@ -267,7 +279,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 return null;
             }
 
-            if (!filterIsValid()) {
+            if (!filterIsValid() && layer.getId() != null) {
                 Catalog catalog = getCatalog();
                 result = catalog.validate(layer, isNew());
                 if (!result.isValid()) {
@@ -286,6 +298,29 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
             return null;
         }
         return getClazz().cast(layer);
+    }
+
+    /**
+     * Drops style references on the layer that could not be resolved during deserialization (left as unresolved
+     * {@link ResolvingProxy} instances), so they are not persisted as {@code class="dynamic-proxy"} into layer.xml.
+     */
+    private void sanitizeDanglingStyles(LayerInfo layer) {
+        if (isUnresolvedProxy(layer.getDefaultStyle())) {
+            LOGGER.log(
+                    Level.WARNING,
+                    "Layer ''{0}'' has an unresolvable default style reference; dropping it to keep the restored "
+                            + "configuration valid.",
+                    layer.getName());
+            layer.setDefaultStyle(null);
+        }
+        layer.getStyles().removeIf(CatalogItemProcessor::isUnresolvedProxy);
+    }
+
+    /** Whether the given catalog reference is an unresolved {@link ResolvingProxy} (a dangling reference). */
+    private static boolean isUnresolvedProxy(Object ref) {
+        return ref != null
+                && Proxy.isProxyClass(ref.getClass())
+                && Proxy.getInvocationHandler(ref) instanceof ResolvingProxy;
     }
 
     private T process(ResourceInfo resource) {
@@ -322,11 +357,9 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
             return null;
         }
 
-        /*
-         * if (!filterIsValid() && resource == null && !validateResource((ResourceInfo) resource,
-         * isNew())) { LOGGER.warning("Skipped invalid resource: " + resource);
-         * logValidationExceptions(resource, null); return null; }
-         */
+        // Resource (feature type / coverage) validity is checked by the pre-flight ValidateRestoreTasklet against the
+        // fully-assembled catalog; per-item validation here is intentionally skipped — running it mid-restore caused
+        // false failures (the referenced store may not be added yet) and false duplicate-name drops on a merge.
         return getClazz().cast(resource);
     }
 
@@ -379,6 +412,18 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         return getClazz().cast(item);
     }
 
+    private T process(NamespaceInfo ns) {
+        // A namespace is paired with its workspace (they share prefix/name); cascade the workspace filter so
+        // a filtered subset carries only the namespaces of the workspaces it actually includes, instead of
+        // every namespace in the catalog.
+        WorkspaceInfo ws = resolveWorkspace(ns);
+        if (filteredResource(getClazz().cast(ns), ws, true, NamespaceInfo.class)) {
+            LOGGER.log(Level.FINE, "Namespace filtered out: {0}", ns);
+            return null;
+        }
+        return getClazz().cast(ns);
+    }
+
     /**
      * Being sure the associated {@link NamespaceInfo} exists and is available on the GeoServer Catalog.
      *
@@ -393,10 +438,12 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
 
         ValidationResult result = null;
         try {
-            result = this.getCatalog().validate(resource, isNew);
-            if (!result.isValid()) {
-                LOGGER.log(Level.SEVERE, "Workspace is not valid: {0}", resource);
-                logValidationResult(result, resource);
+            if (resource.getId() != null) {
+                result = this.getCatalog().validate(resource, isNew);
+                if (!result.isValid()) {
+                    LOGGER.log(Level.SEVERE, "Workspace is not valid: {0}", resource);
+                    logValidationResult(result, resource);
+                }
             }
         } catch (Exception e) {
             LOGGER.warning("Could not validate the resource "
@@ -420,6 +467,12 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
      * @return boolean indicating whether the resource is valid or not.
      */
     private boolean validateDataStore(DataStoreInfo resource, boolean isNew) throws Exception {
+        if (resource.getWorkspace() == null) {
+            // A store whose workspace reference could not be resolved (e.g. a partial / cross-catalog archive that
+            // carries a store for a workspace not present in the target) is invalid here: skip it rather than failing
+            // the whole step with an NPE on the missing workspace.
+            return false;
+        }
         final WorkspaceInfo ws =
                 this.getCatalog().getWorkspaceByName(resource.getWorkspace().getName());
         if (ws == null) {
@@ -428,10 +481,12 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
 
         ValidationResult result = null;
         try {
-            result = this.getCatalog().validate(resource, isNew);
-            if (!result.isValid()) {
-                LOGGER.log(Level.SEVERE, "Store is not valid: {0}", resource);
-                logValidationResult(result, resource);
+            if (resource.getId() != null) {
+                result = this.getCatalog().validate(resource, isNew);
+                if (!result.isValid()) {
+                    LOGGER.log(Level.SEVERE, "Store is not valid: {0}", resource);
+                    logValidationResult(result, resource);
+                }
             }
         } catch (Exception e) {
             LOGGER.warning("Could not validate the resource "
@@ -448,6 +503,12 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
     }
 
     private boolean validateHttpStore(HTTPStoreInfo resource, boolean isNew) throws Exception {
+        if (resource.getWorkspace() == null) {
+            // A store whose workspace reference could not be resolved (e.g. a partial / cross-catalog archive that
+            // carries a store for a workspace not present in the target) is invalid here: skip it rather than failing
+            // the whole step with an NPE on the missing workspace.
+            return false;
+        }
         final WorkspaceInfo ws =
                 this.getCatalog().getWorkspaceByName(resource.getWorkspace().getName());
         if (ws == null) {
@@ -456,10 +517,12 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
 
         ValidationResult result = null;
         try {
-            result = this.getCatalog().validate(resource, isNew);
-            if (!result.isValid()) {
-                LOGGER.log(Level.SEVERE, "Store is not valid: {0}", resource);
-                logValidationResult(result, resource);
+            if (resource.getId() != null) {
+                result = this.getCatalog().validate(resource, isNew);
+                if (!result.isValid()) {
+                    LOGGER.log(Level.SEVERE, "Store is not valid: {0}", resource);
+                    logValidationResult(result, resource);
+                }
             }
         } catch (Exception e) {
             LOGGER.warning("Could not validate the resource "
@@ -482,6 +545,12 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
      * @return boolean indicating whether the resource is valid or not.
      */
     private boolean validateCoverageStore(CoverageStoreInfo resource, boolean isNew) throws Exception {
+        if (resource.getWorkspace() == null) {
+            // A store whose workspace reference could not be resolved (e.g. a partial / cross-catalog archive that
+            // carries a store for a workspace not present in the target) is invalid here: skip it rather than failing
+            // the whole step with an NPE on the missing workspace.
+            return false;
+        }
         final WorkspaceInfo ws =
                 this.getCatalog().getWorkspaceByName(resource.getWorkspace().getName());
         if (ws == null) {
@@ -490,10 +559,12 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
 
         ValidationResult result = null;
         try {
-            result = this.getCatalog().validate(resource, isNew);
-            if (!result.isValid()) {
-                LOGGER.log(Level.SEVERE, "Store is not valid: {0}", resource);
-                logValidationResult(result, resource);
+            if (resource.getId() != null) {
+                result = this.getCatalog().validate(resource, isNew);
+                if (!result.isValid()) {
+                    LOGGER.log(Level.SEVERE, "Store is not valid: {0}", resource);
+                    logValidationResult(result, resource);
+                }
             }
         } catch (Exception e) {
             LOGGER.warning("Could not validate the resource "
@@ -506,61 +577,6 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         resource.setWorkspace(ws);
 
         return true;
-    }
-
-    /**
-     * Being sure the associated {@link StoreInfo} exists and is available on the GeoServer Catalog.
-     *
-     * @param {@link ResourceInfo} resource
-     * @return boolean indicating whether the resource is valid or not.
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private boolean validateResource(ResourceInfo resource, boolean isNew) {
-        try {
-            final StoreInfo store = resource.getStore();
-            final NamespaceInfo namespace = resource.getNamespace();
-
-            if (store == null) {
-                return logValidationExceptions((T) resource, null);
-            }
-
-            final Class storeClazz = (store instanceof DataStoreInfo ? DataStoreInfo.class : CoverageStoreInfo.class);
-            final StoreInfo ds = this.getCatalog().getStoreByName(store.getName(), storeClazz);
-
-            if (ds != null) {
-                resource.setStore(ds);
-            } else {
-                return logValidationExceptions((T) resource, null);
-            }
-
-            ResourceInfo existing = getCatalog().getResourceByStore(store, resource.getName(), ResourceInfo.class);
-            if (existing != null && !existing.getId().equals(resource.getId())) {
-                final String msg = "Resource named '"
-                        + resource.getName()
-                        + "' already exists in store: '"
-                        + store.getName()
-                        + "'";
-                return logValidationExceptions((T) resource, new RuntimeException(msg));
-            }
-
-            existing = getCatalog().getResourceByName(namespace, resource.getName(), ResourceInfo.class);
-            if (existing != null && !existing.getId().equals(resource.getId())) {
-                final String msg = "Resource named '"
-                        + resource.getName()
-                        + "' already exists in namespace: '"
-                        + namespace.getPrefix()
-                        + "'";
-                return logValidationExceptions((T) resource, new RuntimeException(msg));
-            }
-
-            return true;
-        } catch (Exception e) {
-            LOGGER.warning("Could not validate the resource "
-                    + resource
-                    + " due to the following issue: "
-                    + e.getLocalizedMessage());
-            return logValidationExceptions((T) resource, e);
-        }
     }
 
     private WorkspaceInfo resolveWorkspace(CatalogInfo item) {
@@ -580,6 +596,9 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
             ws = info1.getWorkspace();
         } else if (item instanceof StyleInfo info) {
             ws = info.getWorkspace();
+        } else if (item instanceof NamespaceInfo nsInfo) {
+            // a namespace shares its prefix with the owning workspace's name
+            ws = getCatalog().getWorkspaceByName(nsInfo.getPrefix());
         } else {
             throw new IllegalArgumentException("Don't know how to extract workspace from " + item);
         }

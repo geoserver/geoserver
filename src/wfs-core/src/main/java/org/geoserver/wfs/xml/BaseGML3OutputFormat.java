@@ -32,7 +32,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -60,6 +59,7 @@ import org.geotools.api.feature.type.Name;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.gml3.GMLConfiguration;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Encoder;
 import org.w3c.dom.Document;
@@ -75,12 +75,11 @@ public abstract class BaseGML3OutputFormat extends WFSGetFeatureOutputFormat imp
     protected static DOMSource xslt;
 
     static {
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory docFactory = XMLUtils.newDocumentBuilderFactory();
         docFactory.setNamespaceAware(true);
         Document xsdDocument = null;
         try {
-            xsdDocument = docFactory
-                    .newDocumentBuilder()
+            xsdDocument = XMLUtils.newDocumentBuilder(docFactory)
                     .parse(BaseGML3OutputFormat.class.getResourceAsStream("/ChangeNumberOfFeature.xslt"));
             xslt = new DOMSource(xsdDocument);
         } catch (Exception e) {
@@ -346,8 +345,7 @@ public abstract class BaseGML3OutputFormat extends WFSGetFeatureOutputFormat imp
     }
 
     public void transform(InputStream in, DOMSource xslt, OutputStream out) throws TransformerException {
-        TransformerFactory factory = TransformerFactory.newInstance();
-        Transformer transformer = (xslt == null ? factory.newTransformer() : factory.newTransformer(xslt));
+        Transformer transformer = (xslt == null ? XMLUtils.newTransformer() : XMLUtils.newTransformer(xslt));
         transformer.setErrorListener(new TransformerErrorListener());
         transformer.transform(new StreamSource(in), new StreamResult(out));
     }

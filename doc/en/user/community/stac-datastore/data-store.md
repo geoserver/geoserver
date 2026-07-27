@@ -74,7 +74,7 @@ QueryCacheMaxFeatures=1000
 
 The indexer must instead be provided in XML format, to configure multiple coverage and their attributes:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Indexer>
   <domains>

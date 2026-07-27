@@ -21,7 +21,7 @@ import org.geoserver.config.GeoServerLoader;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.test.DevModeEntityResolver;
 import org.geoserver.test.ows.KvpRequestReaderTestSupport;
 import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wms.GetMapRequest;
@@ -31,7 +31,6 @@ import org.geoserver.wms.WMSInfoImpl;
 import org.geotools.api.filter.PropertyIsEqualTo;
 import org.geotools.api.style.Style;
 import org.junit.Test;
-import org.xml.sax.SAXException;
 
 public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
     GetMapXmlReader reader;
@@ -139,14 +138,16 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
         // this request forces an IOException
         try (BufferedReader input = getResourceInputStream("WMSPostServiceException.xml")) {
             System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
+            // This depends on EntityResolverProvider configuring GeoTools with
+            // NullEntityResolver, providing a very relaxed set of parsing restrictions
             request = (GetMapRequest) reader.read(request, input, new HashMap<>());
             fail("ServiceException with IOException Expected");
         } catch (ServiceException e) {
-            assertTrue(e.getMessage().contains("xml request is most probably not compliant to GetMap element"));
-            assertTrue(e.getCause() instanceof SAXException);
+
+            assertTrue("DOCTYPE is disallowed", e.getMessage().contains("DOCTYPE"));
         } finally {
             System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
-            EntityResolverProvider.setEntityResolver(GeoServerSystemTestSupport.RESOLVE_DISABLED_PROVIDER_DEVMODE);
+            EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
         }
     }
 

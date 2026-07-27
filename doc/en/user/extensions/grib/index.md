@@ -7,7 +7,7 @@ render_macros: true
 
 ## Installing
 
-1.  Login, and navigate to **About & Status > About GeoServer** and check **Build Information** to determine the exact version of GeoServer you are running.
+1.  Login, and navigate to **GeoServer > About** and check **Build Information** to determine the exact version of GeoServer you are running.
 
 2.  Visit the [website download](https://geoserver.org/download) page, change the **Archive** tab, and locate your release.
 
@@ -24,7 +24,7 @@ render_macros: true
 
 ## Adding a GRIB data store
 
-To add a GRIB data store the user must go to **Stores --> Add New Store --> GRIB**.
+To add a GRIB data store the user must go to **Data > Stores > Add New Store > GRIB**.
 
 ![](gribcreate.png)
 

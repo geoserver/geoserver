@@ -43,5 +43,5 @@ This section describes most of the extensions available for GeoServer. Other dat
 - [Raster Attribute Table support](rat/index.md)
 - [Installing the ArcGrid extension](arcgrid/index.md)
 - [Installing the Image extension](image/index.md)
-
+- [OAuth2 OpenID Connect](oidc/index.md)
 </div>

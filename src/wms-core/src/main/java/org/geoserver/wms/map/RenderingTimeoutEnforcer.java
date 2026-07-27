@@ -6,8 +6,9 @@
 package org.geoserver.wms.map;
 
 import java.awt.Graphics;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import org.geoserver.wms.WebMap;
 import org.geotools.renderer.GTRenderer;
 
@@ -20,23 +21,31 @@ import org.geotools.renderer.GTRenderer;
  */
 public class RenderingTimeoutEnforcer {
 
+    ScheduledThreadPoolExecutor executor;
     long timeout;
     GTRenderer renderer;
     Graphics graphics;
-    Timer timer;
+    ScheduledFuture<?> timeoutFuture;
     boolean timedOut = false;
     boolean saveMap;
     WebMap map = null;
 
-    public RenderingTimeoutEnforcer(long timeout, GTRenderer renderer, Graphics graphics) {
-        this(timeout, renderer, graphics, false);
+    public RenderingTimeoutEnforcer(
+            long timeout, GTRenderer renderer, Graphics graphics, ScheduledThreadPoolExecutor executor) {
+        this(timeout, renderer, graphics, false, executor);
     }
 
-    public RenderingTimeoutEnforcer(long timeout, GTRenderer renderer, Graphics graphics, boolean saveMap) {
+    public RenderingTimeoutEnforcer(
+            long timeout,
+            GTRenderer renderer,
+            Graphics graphics,
+            boolean saveMap,
+            ScheduledThreadPoolExecutor executor) {
         this.timeout = timeout;
         this.renderer = renderer;
         this.graphics = graphics;
         this.saveMap = saveMap;
+        this.executor = executor;
     }
 
     public void saveMap() {}
@@ -47,22 +56,21 @@ public class RenderingTimeoutEnforcer {
 
     /** Starts checking the rendering timeout (if timeout is positive, does nothing otherwise) */
     public void start() {
-        if (timer != null) throw new IllegalStateException("The timeout enforcer has already been started");
+        if (timeoutFuture != null) {
+            throw new IllegalStateException("The timeout enforcer has already been started");
+        }
 
         if (timeout > 0) {
             timedOut = false;
-            timer = new Timer();
-            timer.schedule(new StopRenderingTask(), timeout);
+            timeoutFuture = executor.schedule(this::stopRendering, timeout, TimeUnit.MILLISECONDS);
         }
     }
 
     /** Stops the timeout check */
     public void stop() {
-        if (timer != null) {
-            timer.cancel();
-            timer.purge();
-            // timer.getTheHellOutOfDodge();
-            timer = null;
+        if (timeoutFuture != null) {
+            timeoutFuture.cancel(false);
+            timeoutFuture = null;
         }
     }
 
@@ -71,21 +79,14 @@ public class RenderingTimeoutEnforcer {
         return timedOut;
     }
 
-    class StopRenderingTask extends TimerTask {
+    private void stopRendering() {
+        timedOut = true;
 
-        @Override
-        public void run() {
-            // mark as timed out
-            timedOut = true;
-            if (saveMap) {
-                saveMap();
-            }
-            // ask gently...
-            renderer.stopRendering();
-            // ... but also be rude for extra measure (coverage rendering is
-            // an atomic call to the graphics, it cannot be stopped
-            // by the above)
-            graphics.dispose();
+        if (saveMap) {
+            saveMap();
         }
+
+        renderer.stopRendering();
+        graphics.dispose();
     }
 }

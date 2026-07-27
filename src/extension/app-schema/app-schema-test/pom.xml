@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.geoserver.extension</groupId>
     <artifactId>gs-app-schema</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
@@ -26,7 +26,7 @@
     <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-app-schema-core</artifactId>
-      <version>${gs.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>

@@ -8,6 +8,7 @@ package org.geoserver.test;
 
 import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
 
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.geometry.MismatchedDimensionException;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.NoSuchAuthorityCodeException;
@@ -17,6 +18,9 @@ import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.gml.producer.CoordinateFormatter;
 import org.geotools.referencing.CRS;
+import org.geotools.util.NullEntityResolver;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -40,6 +44,16 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
     private final String EPSG_4326 = "EPSG:4326";
 
     private final String EPSG_4283 = "urn:x-ogc:def:crs:EPSG:4283";
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+    }
 
     @Override
     protected BBoxMockData createTestData() {

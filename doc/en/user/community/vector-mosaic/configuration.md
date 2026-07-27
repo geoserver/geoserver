@@ -1,6 +1,6 @@
 # Vector Mosaic Datastore configuration
 
-When the extension has been installed, ``Vector Mosaic Data Store`` will be an option in the ``Vector Data Sources`` list when creating a new data store.
+When the extension has been installed, `Vector Mosaic Data Store` will be an option in the `Vector Data Sources` list when creating a new data store.
 
 ![](images/vector-mosaic-vector-create.png)
 
@@ -42,7 +42,7 @@ Typical uses include:
 
 In the same way as ImageMosaic, the commonParameters PropertyCollectors property accepts multiple collector definitions, separated by commas.
 
-Compared to ImageMosaic, which stores specific collector definitions in dedicated sidecar configuration files, VectorMosaic ProeprtyCollectors configuration embeds the specific collector definition inline within square brackets.
+Compared to ImageMosaic, which stores specific collector definitions in dedicated sidecar configuration files, VectorMosaic PropertyCollectors configuration embeds the specific collector definition inline within square brackets.
 
 ImageMosaic example: the `indexer.properties` contains a line:
 
@@ -62,7 +62,7 @@ VectorMosaic: the commonParameters contains the specific collector configuration
 PropertyCollectors=TimestampFileNameExtractorSPI[regex=(\\d{4})/(\\d{2})/(\\d{2}),format=yyyyMMdd,fullPath=true](time)
 ```
 
-See ImageMosaic's [Propertycollectors](../../data/raster/imagemosaic/configuration.md#property-collectors) for further details on the available property collectors.
+See ImageMosaic's [Propertycollectors](../../data/raster/imagemosaic/configuration.md#imagemosaic_property_collectors) for further details on the available property collectors.
 
 ### Example usage: DGGS GeoParquet Ingestion
 

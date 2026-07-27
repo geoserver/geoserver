@@ -44,20 +44,20 @@ public class MutableAdminRule implements Serializable, Cloneable {
     }
 
     public MutableAdminRule from(AdminRule rule) {
-        setId(rule.getId());
-        setPriority(rule.getPriority());
+        setId(rule.id());
+        setPriority(rule.priority());
 
-        setUserName(rule.getIdentifier().getUsername());
-        setRoleName(rule.getIdentifier().getRolename());
+        setUserName(rule.identifier().username());
+        setRoleName(rule.identifier().rolename());
 
-        setExtId(rule.getExtId());
-        setName(rule.getName());
-        setDescription(rule.getDescription());
+        setExtId(rule.extId());
+        setName(rule.name());
+        setDescription(rule.description());
 
-        setAddressRange(rule.getIdentifier().getAddressRange());
+        setAddressRange(rule.identifier().addressRange());
 
-        setWorkspace(rule.getIdentifier().getWorkspace());
-        setAccess(rule.getAccess());
+        setWorkspace(rule.identifier().workspace());
+        setAccess(rule.access());
         return this;
     }
 

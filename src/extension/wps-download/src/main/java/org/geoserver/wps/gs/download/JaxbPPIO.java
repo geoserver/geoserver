@@ -15,6 +15,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.sax.SAXSource;
 import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wps.ppio.ComplexPPIO;
+import org.geotools.xml.XMLUtils;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -50,9 +51,9 @@ public class JaxbPPIO extends ComplexPPIO {
             return unmarshaller.unmarshal(input);
         } else {
             // setup the entity resolver
-            final SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+            final SAXParserFactory saxParserFactory = XMLUtils.newSAXParserFactory();
             saxParserFactory.setNamespaceAware(true);
-            final XMLReader reader = saxParserFactory.newSAXParser().getXMLReader();
+            final XMLReader reader = XMLUtils.newSAXParser(saxParserFactory).getXMLReader();
             reader.setEntityResolver(resolver);
             final SAXSource saxSource = new SAXSource(reader, new InputSource(input));
 

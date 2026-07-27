@@ -43,7 +43,7 @@ public class ProxyBaseURLIntegrationTest extends GeoServerSystemTestSupport {
         wms.setOnlineResource(geoserverSite);
         getGeoServer().save(wms);
 
-        Document dom = getAsDOM("wms?request=GetCapabilities&version=1.1.1");
+        Document dom = getAsDOM("wms?request=GetCapabilities&version=1.1.1", true);
         // print(dom);
 
         String serviceOnlineRes = "/WMT_MS_Capabilities/Service/OnlineResource/@xlink:href";

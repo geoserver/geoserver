@@ -5,7 +5,7 @@ render_macros: true
 
 # OGC API - 3D GeoVolumes
 
-An [OGC API - 3D GeoVolumes](https://ogcapi.ogc.org/geovolumes/) service publishing 3D conents data using an OpenAPI web service.
+An [OGC API - 3D GeoVolumes](https://ogcapi.ogc.org/geovolumes/) service publishing 3D contents data using an OpenAPI web service.
 
 ## 3D GeoVolumes Implementation status
 
@@ -27,13 +27,13 @@ The 3D GeoVolumes implementation is based on August 2024 draft of the specificat
 The service is based on a set of static configuration files that can be found either in:
 
 - The `geovolumes` directory found inside a GeoServer data directory
-- An external directory, specified by the `GEOVOLUMES_LOCATION` property (either enviromnet variable, system property, or servlet context property in `web.xml`).
+- An external directory, specified by the `GEOVOLUMES_LOCATION` property (either environment variable, system property, or servlet context property in `web.xml`).
 
 The directory needs to contain a single file, a `collections.json` that represents a simplified version of what GeoServer will return on the collections resource.
 
 Here is an example with a single collection defined:
 
-``` json
+```json
 {
     "collections": [
       {
@@ -88,9 +88,9 @@ The contents of the `collections.json` file will be exposed both in `collections
 
 Here is an example of collection HTML rendering and its associated Cesium view:
 
-> ![](img/collection.png)
->
-> ![](img/newYork.png)
+![](img/collection.png)
+
+![](img/newYork.png)
 
 !!! note
     The Cesium viewer needs a Cesium access token to use the terrain layer. By default it's missing, which may result rendering "flying buildings" in mountain areas. See templates customization below on how to add your token.
@@ -113,7 +113,7 @@ To override an OGC API 3D Feature template:
 
 In particular, overriding the Cesium template allows to specify a custom access token, which will then enable the 3D terrain support. For example:
 
-``` html
+```html
 <html lang="en">
  <head>
      <meta charset="utf-8">

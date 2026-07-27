@@ -70,9 +70,9 @@ In order to test the authentication settings configured in the previous section 
     curl -v -u admin:geoserver -G "http://localhost:8080/geoserve/wfs?request=getcapabilities"
     ```
 
-```html
 The result should be a 401 response signaling that authentication is required. The output should look something like the following:
 
+```html
     * About to connect() to localhost port 8080 (#0)
     *   Trying 127.0.0.1... connected
     * Connected to localhost (127.0.0.1) port 8080 (#0)

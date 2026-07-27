@@ -9,17 +9,17 @@ GeoServer can leverage the [ImageI/O-Ext](https://github.com/geosolutions-it/ima
 
 The following image formats can be read by GeoServer using GDAL:
 
-- [DTED](https://www.gdal.org/frmt_dted.md): Military Elevation Data (**`.dt0`**, **`.dt1`**, **`.dt2`**)
-- [EHdr](https://gdal.org/drivers/raster/ehdr.md): ESRI **`.hdr`** Labelled:
-- [ENVI](https://gdal.org/drivers/raster/envi.md): ENVI **`.hdr`** Labelled Raster
-- [HFA](https://www.gdal.org/frmt_hfa.md): Erdas Imagine (**`.img`**)
-- [JP2MrSID](https://www.gdal.org/frmt_jp2mrsid.md): JPEG2000 (**`.jp2`**, **`.j2k`**)
-- [MrSID](https://www.gdal.org/frmt_mrsid.md): Multi-resolution Seamless Image Database
-- [NITF](https://www.gdal.org/frmt_nitf.md): National Imagery Transmission Format
-- [ECW](https://www.gdal.org/frmt_ecw.md): ERDAS Compressed Wavelets (**`.ecw)`**:
-- [JP2ECW](https://www.gdal.org/frmt_jp2ecw.md): JPEG2000 (**`.jp2`**, **`.j2k`**)
-- [AIG](https://gdal.org/drivers/raster/aig.md): Arc/Info Binary Grid
-- [JP2KAK](https://www.gdal.org/frmt_jp2kak.md): JPEG2000 (**`.jp2`**, **`.j2k`**)
+- [DTED](https://www.gdal.org/frmt_dted.html): Military Elevation Data (**`.dt0`**, **`.dt1`**, **`.dt2`**)
+- [EHdr](https://gdal.org/drivers/raster/ehdr.html): ESRI **`.hdr`** Labelled:
+- [ENVI](https://gdal.org/drivers/raster/envi.html): ENVI **`.hdr`** Labelled Raster
+- [HFA](https://www.gdal.org/frmt_hfa.html): Erdas Imagine (**`.img`**)
+- [JP2MrSID](https://www.gdal.org/frmt_jp2mrsid.html): JPEG2000 (**`.jp2`**, **`.j2k`**)
+- [MrSID](https://www.gdal.org/frmt_mrsid.html): Multi-resolution Seamless Image Database
+- [NITF](https://www.gdal.org/frmt_nitf.html): National Imagery Transmission Format
+- [ECW](https://www.gdal.org/frmt_ecw.html): ERDAS Compressed Wavelets (**`.ecw)`**:
+- [JP2ECW](https://www.gdal.org/frmt_jp2ecw.html): JPEG2000 (**`.jp2`**, **`.j2k`**)
+- [AIG](https://gdal.org/drivers/raster/aig.html): Arc/Info Binary Grid
+- [JP2KAK](https://www.gdal.org/frmt_jp2kak.html): JPEG2000 (**`.jp2`**, **`.j2k`**)
 
 ## Installing GDAL extension
 
@@ -53,7 +53,7 @@ The imageio-ext plugin is tested with the GDAL 3.2 SWIG bindings, included in th
 
 We recommend matching the version **`gdal`** jar to the version of gdal available in your environment:
 
-``` console
+```console
 gdalinfo --version
 ```
 
@@ -70,7 +70,7 @@ For Windows, [gisinternals.com](http://www.gisinternals.com/release.php) provide
 
 Unpack the **`zip`** file in a suitable location, and then set the following variables before starting up GeoServer:
 
-``` bat
+```bat
 set PATH=%PATH%;C:\<unzipped_package>\bin;C:\<unzipped_package>\bin\gdal\java
 set GDAL_DRIVER_PATH=C:\<unzipped_package>\bin\gdal\plugins
 set GDAL_DATA=C:\<unzipped_package>\bin\gdal-data
@@ -95,7 +95,7 @@ WARNING: Native library load failed.java.lang.UnsatisfiedLinkError: no gdaljni i
 
 Taking a look at the `jsl74.ini` configuration file available inside the GeoServer installation , there is this useful entry:
 
-``` ini
+```ini
 ;The java command line
 ;The entry method below using a parameter list still works but the command line variant is more convenient.
 ;Everything separated by whitespace on a java command line is broken down into a parameter here. 
@@ -221,7 +221,7 @@ The next image depicts 2 layer previews for the same layer: the left one has no 
 
 As noted above, the footprint file should be placed in the same directory as the raster file. However in some cases this may not be possible. For example, the folder containing the raster data may be read only.
 
-As an alternative, footprint files can be located in a common directory, the **footprints data directory**. The subdirectories and file names under that directory must match the original raster path and file names. The footprints data directory is specified as a Java System Property or an Environment Variable, by setting the ``FOOTPRINTS_DATA_DIR`` property/variable to the directory to be used as base folder.
+As an alternative, footprint files can be located in a common directory, the **footprints data directory**. The subdirectories and file names under that directory must match the original raster path and file names. The footprints data directory is specified as a Java System Property or an Environment Variable, by setting the `FOOTPRINTS_DATA_DIR` property/variable to the directory to be used as base folder.
 
 #### Example
 

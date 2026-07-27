@@ -61,7 +61,7 @@ We will also assume that:
 
 1.  Navigate to the GeoServer home page and log out of the admin account.
 
-#\. Login as the user "GISUSER" with the password "secret".
+2.  Login as the user "GISUSER" with the password "secret".
 
 ![](images/ad3.jpg)
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.1.1 (8761) - http://www.bohemiancoding.com/sketch -->
+    <title>workspace</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="93.6974159%" y1="100%" x2="0%" y2="0%" id="linearGradient-1">
+            <stop stop-color="#FDF4D4" offset="0%"></stop>
+            <stop stop-color="#F4D443" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="0%" y1="-18.4291295%" x2="88.5608856%" y2="77.4563162%" id="linearGradient-2">
+            <stop stop-color="#FDF4D4" offset="0%"></stop>
+            <stop stop-color="#F4D443" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="workspace" sketch:type="MSArtboardGroup">
+            <g id="workspace_icon" sketch:type="MSLayerGroup" transform="translate(1.000000, 2.000000)">
+                <path d="M0,0 L0,11 L13,11 L13,0.864257812 L7.62060547,0.864257812 L4.78505535,0 L0,0 Z" id="Path-86" stroke="#FEFCF3" fill="url(#linearGradient-1)" sketch:type="MSShapeGroup"></path>
+                <path d="M0,4.24640376 L0,12 L13,12 L13,3 L7.23632812,3 L4.95361328,4.24640376 L0,4.24640376 Z" id="Path" stroke-opacity="0.9" stroke="#FFFFFE" fill="url(#linearGradient-2)" sketch:type="MSShapeGroup"></path>
+                <path d="M0,0 L0,11 L13,11 L13,0.924804688 L7.55078125,0.924804688 L4.78505535,0 L0,0 Z" id="Path-copy-2" stroke="#D99848" sketch:type="MSShapeGroup"></path>
+            </g>
+        </g>
+    </g>
+</svg>

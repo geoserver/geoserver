@@ -9,7 +9,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.geoserver</groupId>
   <artifactId>geoserver</artifactId>
-  <version>3.0-SNAPSHOT</version>
+  <version>3.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>GeoServer</name>
   <inceptionYear>2006</inceptionYear>
@@ -94,20 +94,22 @@
     <!-- ================================ -->
     <!-- Project version management       -->
     <!-- ================================ -->
-    <gs.version>3.0-SNAPSHOT</gs.version>
-    <gt.version>35-SNAPSHOT</gt.version>
-    <gwc.version>2.0-SNAPSHOT</gwc.version>
-    <spring.version>7.0.6</spring.version>
-    <spring.security.version>7.0.4</spring.security.version>
+    <gt.version>36-SNAPSHOT</gt.version>
+    <gwc.version>2.1-SNAPSHOT</gwc.version>
+    <spring.version>7.0.8</spring.version>
+    <spring.security.version>7.1.0</spring.security.version>
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
-    <spring.ldap.version>4.0.1</spring.ldap.version>
-    <spring-integration.version>7.0.4</spring-integration.version>
-    <wicket.version>10.7.0</wicket.version>
-
+    <spring.ldap.version>4.1.0</spring.ldap.version>
+    <spring-integration.version>7.1.0</spring-integration.version>
+    <wicket.version>10.9.1</wicket.version>
+    <!-- WicketStuff provides additional components and extensions for the Wicket framework,
+    such as select2 integration, which is used in GeoServer's admin interface.
+    This version should match the Wicket version, but may differ in patch versions. -->
+    <wicketstuff.version>10.9.2</wicketstuff.version>
     <!-- ================================ -->
     <!-- Dependency version management    -->
     <!-- ================================ -->
-    <ant.version>1.10.11</ant.version>
+    <ant.version>1.10.17</ant.version>
     <apacheds.version>2.0.0.AM27</apacheds.version>
     <compress-lzf.version>1.0.3</compress-lzf.version>
     <eclipse.emf.version>2.15.0</eclipse.emf.version>
@@ -115,26 +117,29 @@
     <gf.version>3.8.2</gf.version>
     <hazelcast.version>5.3.8</hazelcast.version>
     <cors.version>3.1</cors.version>
-    <hibernate-version>7.1.4.Final</hibernate-version>
+    <hibernate-version>7.4.5.Final</hibernate-version>
     <httpcore.version>4.4.16</httpcore.version>
     <httpclient.version>5.4.4</httpclient.version>
     <jacoco.version>0.8.14</jacoco.version>
     <jasypt.version>1.9.3</jasypt.version>
     <javac.version>9+181-r4173-1</javac.version>
     <javaapiforkml.version>3.0.11</javaapiforkml.version>
-    <jetty.version>12.1.8</jetty.version>
+    <jetty.version>12.1.11</jetty.version>
     <jmh.version>1.37</jmh.version>
     <joda-time.version>2.8.1</joda-time.version>
     <marlin.version>0.9.4.8</marlin.version>
     <mf.version>2.5-SNAPSHOT</mf.version>
     <mockito.version>5.23.0</mockito.version>
+    <!-- nimbus-jose-jwt is a transitive of spring-security-oauth2-jose; managed here so direct
+         consumers (sec-oidc) inherit the same version Spring Security expects (do not pin it lower). -->
+    <nimbus-jose-jwt.version>10.9.1</nimbus-jose-jwt.version>
     <opengeo-geodb.version>0.9</opengeo-geodb.version>
-    <pmd.version>7.14.0</pmd.version>
+    <pmd.version>7.23.0</pmd.version>
     <poi.version>5.4.0</poi.version>
     <postgis.jdbc.version>1.3.3</postgis.jdbc.version>
     <servlet-api.version>6.1.0</servlet-api.version>
     <xalan.version>2.7.3</xalan.version>
-    <protobuf.version>4.33.2</protobuf.version>
+    <protobuf.version>4.35.1</protobuf.version>
 
     <!-- ================================ -->
     <!-- Maven plugin configuration      -->
@@ -244,7 +249,7 @@
       <dependency>
         <groupId>org.testcontainers</groupId>
         <artifactId>testcontainers-bom</artifactId>
-        <version>2.0.4</version>
+        <version>2.0.5</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -252,156 +257,156 @@
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-platform</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-platform</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
         <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-ows</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-ows</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
         <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-main</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-main</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
         <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-theme</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wcs</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver.extension</groupId>
         <artifactId>gs-wcs1_0</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver.extension</groupId>
         <artifactId>gs-wcs1_1</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wcs2_0</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wcs2_0</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
         <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wfs-core</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wfs-core</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
         <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wfs1_x</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wfs2_x</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wfs2_x</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
         <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wms-core</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wms1_1</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wms1_3</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wms-gml</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wms-core</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
         <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wms1_1</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
         <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wms1_3</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
         <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-gwc</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-gwc-rest</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-rest</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver.web</groupId>
         <artifactId>gs-web-core</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver.extension</groupId>
         <artifactId>gs-kml</artifactId>
-        <version>${gs.version}</version>
+        <version>${project.version}</version>
       </dependency>
 
       <dependency>
@@ -540,7 +545,7 @@
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.13.2</version>
+        <version>2.14.0</version>
       </dependency>
       <dependency>
         <groupId>com.googlecode.genericdao</groupId>
@@ -612,7 +617,7 @@
       <dependency>
         <groupId>org.codehaus.jettison</groupId>
         <artifactId>jettison</artifactId>
-        <version>1.5.4</version>
+        <version>1.5.6</version>
       </dependency>
       <dependency>
         <groupId>lucene</groupId>
@@ -627,12 +632,12 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
-        <version>2.0.0-M4</version>
+        <version>2.0.0-M5</version>
       </dependency>
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.18.0</version>
+        <version>1.22.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents.client5</groupId>
@@ -647,7 +652,7 @@
       <dependency>
         <groupId>commons-validator</groupId>
         <artifactId>commons-validator</artifactId>
-        <version>1.1.4</version>
+        <version>1.10.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -657,14 +662,14 @@
       <dependency>
         <groupId>com.jayway.jsonpath</groupId>
         <artifactId>json-path</artifactId>
-        <version>2.9.0</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <!-- this version should match with that used in com.jayway.jsonpath:json-path;
         which provides runtime scope; however gs-auth has a compile time dependency-->
         <groupId>net.minidev</groupId>
         <artifactId>json-smart</artifactId>
-        <version>2.5.2</version>
+        <version>2.6.0</version>
         <scope>compile</scope>
       </dependency>
       <dependency>
@@ -675,7 +680,7 @@
       <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
-        <version>5.13.4</version>
+        <version>5.14.4</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -705,6 +710,11 @@
         <version>${spring.security.oauth2.version}</version>
       </dependency>
       <dependency>
+        <groupId>com.nimbusds</groupId>
+        <artifactId>nimbus-jose-jwt</artifactId>
+        <version>${nimbus-jose-jwt.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.jasypt</groupId>
         <artifactId>jasypt</artifactId>
         <version>${jasypt.version}</version>
@@ -717,7 +727,7 @@
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcprov-lts8on</artifactId>
-        <version>2.73.10</version>
+        <version>2.73.11</version>
       </dependency>
       <!-- wicket framework -->
       <dependency>
@@ -753,9 +763,13 @@
       <dependency>
         <groupId>org.wicketstuff</groupId>
         <artifactId>wicketstuff-select2</artifactId>
-        <version>${wicket.version}</version>
+        <version>${wicketstuff.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>org.apache.tika</groupId>
+        <artifactId>tika-core</artifactId>
+        <version>3.3.1</version>
+      </dependency>
       <dependency>
         <groupId>org.mapfish.print</groupId>
         <artifactId>print-lib</artifactId>
@@ -802,16 +816,10 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- commons-lang 2 is still used in GeoServer modules -->
-      <dependency>
-        <groupId>commons-lang</groupId>
-        <artifactId>commons-lang</artifactId>
-        <version>2.6</version>
-      </dependency>
       <dependency>
         <groupId>com.fasterxml.woodstox</groupId>
         <artifactId>woodstox-core</artifactId>
-        <version>6.4.0</version>
+        <version>7.2.1</version>
       </dependency>
       <!-- jakarta mail and activation interfaces -->
       <dependency>
@@ -847,7 +855,7 @@
       <dependency>
         <groupId>org.restlet</groupId>
         <artifactId>org.restlet.ext.fileupload</artifactId>
-        <version>1.0.8</version>
+        <version>2.5.2</version>
       </dependency>
       <dependency>
         <groupId>org.restlet</groupId>
@@ -1004,7 +1012,7 @@
       <dependency>
         <groupId>com.github.oshi</groupId>
         <artifactId>oshi-core</artifactId>
-        <version>6.8.2</version>
+        <version>7.3.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.server</groupId>
@@ -1462,66 +1470,6 @@
             <descriptor>release/javadoc.xml</descriptor>
             <descriptor>release/bin.xml</descriptor>
             <descriptor>release/data.xml</descriptor>
-            <!-- extensions -->
-            <descriptor>release/ext-app-schema.xml</descriptor>
-            <descriptor>release/ext-authkey.xml</descriptor>
-            <descriptor>release/ext-cas.xml</descriptor>
-            <descriptor>release/ext-charts.xml</descriptor>
-            <descriptor>release/ext-control-flow.xml</descriptor>
-            <descriptor>release/ext-css.xml</descriptor>
-            <descriptor>release/ext-csw-iso.xml</descriptor>
-            <descriptor>release/ext-csw.xml</descriptor>
-            <descriptor>release/ext-db2.xml</descriptor>
-            <descriptor>release/ext-dxf.xml</descriptor>
-            <descriptor>release/ext-excel.xml</descriptor>
-            <descriptor>release/ext-feature-pregeneralized.xml</descriptor>
-            <descriptor>release/ext-gdal.xml</descriptor>
-            <!-- descriptor>release/ext-geofence-server-h2.xml</descriptor>
-            <descriptor>release/ext-geofence-server-postgres.xml</descriptor>
-            <descriptor>release/ext-geofence-wps.xml</descriptor>
-            <descriptor>release/ext-geofence.xml</descriptor -->
-            <descriptor>release/ext-geopkg-output.xml</descriptor>
-            <descriptor>release/ext-grib.xml</descriptor>
-            <descriptor>release/ext-gwc-s3.xml</descriptor>
-            <descriptor>release/ext-iau.xml</descriptor>
-            <descriptor>release/ext-importer.xml</descriptor>
-            <descriptor>release/ext-inspire.xml</descriptor>
-            <descriptor>release/ext-jp2k.xml</descriptor>
-            <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
-            <descriptor>release/ext-kml.xml</descriptor>
-            <descriptor>release/ext-mapml.xml</descriptor>
-            <descriptor>release/ext-mbstyle.xml</descriptor>
-            <descriptor>release/ext-metadata.xml</descriptor>
-            <descriptor>release/ext-mongodb.xml</descriptor>
-            <descriptor>release/ext-monitor.xml</descriptor>
-            <descriptor>release/ext-mysql.xml</descriptor>
-            <descriptor>release/ext-netcdf-out.xml</descriptor>
-            <descriptor>release/ext-netcdf.xml</descriptor>
-            <descriptor>release/ext-ogr-wfs.xml</descriptor>
-            <descriptor>release/ext-ogr-wps.xml</descriptor>
-            <descriptor>release/ext-oracle.xml</descriptor>
-            <descriptor>release/ext-params-extractor.xml</descriptor>
-            <descriptor>release/ext-printing.xml</descriptor>
-            <descriptor>release/ext-pyramid.xml</descriptor>
-            <descriptor>release/ext-querylayer.xml</descriptor>
-            <descriptor>release/ext-sldservice.xml</descriptor>
-            <descriptor>release/ext-sqlserver.xml</descriptor>
-            <descriptor>release/ext-vectortiles.xml</descriptor>
-            <descriptor>release/ext-wcs1_0.xml</descriptor>
-            <descriptor>release/ext-wcs1_1.xml</descriptor>
-            <descriptor>release/ext-wcs2_0-eo.xml</descriptor>
-            <descriptor>release/ext-web-resource.xml</descriptor>
-            <descriptor>release/ext-wmts-multi-dimensional.xml</descriptor>
-            <descriptor>release/ext-wps-download.xml</descriptor>
-            <descriptor>release/ext-wps-excel.xml</descriptor>
-            <descriptor>release/ext-wps-hazelcast.xml</descriptor>
-            <descriptor>release/ext-wps-jdbc.xml</descriptor>
-            <descriptor>release/ext-wps.xml</descriptor>
-            <descriptor>release/ext-ysld.xml</descriptor>
-            <descriptor>release/ext-rat.xml</descriptor>
-            <descriptor>release/ext-ogcapi-features.xml</descriptor>
-            <descriptor>release/ext-arcgrid.xml</descriptor>
-            <descriptor>release/ext-image.xml</descriptor>
           </descriptors>
           <outputDirectory>${project.build.directory}/release</outputDirectory>
         </configuration>

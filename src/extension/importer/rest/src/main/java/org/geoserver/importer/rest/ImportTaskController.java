@@ -78,7 +78,7 @@ public class ImportTaskController extends ImportBaseController {
     static final Logger LOGGER = Logging.getLogger(ImportTaskController.class);
 
     @Autowired
-    protected ImportTaskController(Importer importer) {
+    public ImportTaskController(Importer importer) {
         super(importer);
     }
 

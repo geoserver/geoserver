@@ -22,7 +22,7 @@ By default GeoServer includes an example data directory allowing you to try out 
     | Linux    | **`/usr/share/geoserver/data_dir`**          |
     | Windows  | **`C:\Program Files\GeoServer\data_dir`** |
 
-    > The windows **`Program Files`** location above is not ideal due to restrictions placed on this location.
+    The windows **`Program Files`** location above is not ideal due to restrictions placed on this location.
 
 - Web archive: If GeoServer is running as a **web archive** inside of your application server, the data directory is by default located at **`<web application root>/data`**`.
 
@@ -38,13 +38,13 @@ By default GeoServer includes an example data directory allowing you to try out 
     |---------------------|----------------------------------|
     | Windows (Installer) | **`%ProgramData%\GeoServer`** |
 
-- Docker: The Docker image maintains a data directory in ``/opt/geoserver_data``.
+- Docker: The Docker image maintains a data directory in `/opt/geoserver_data`.
 
   This location should be mapped to an absolute path in your host as described in [Using your own Data Directory](../installation/docker.md#installation_docker_data).
 
 ## External data directory location
 
-To make [upgrading](../installation/upgrade.md) easier, **Web Archive** users should switch to an *external* data directory (outside the application).
+To make [upgrading](../../installation/upgrade3.md) easier, **Web Archive** users should switch to an *external* data directory (outside the application).
 
 | Platform | Example location                                          |
 |----------|-----------------------------------------------------------|
@@ -64,8 +64,8 @@ To create a new data directory:
 
   Navigate to the [GeoServer Download page](https://geoserver.org/download), select a version of GeoServer, and download the provided data directory zip.
 
-  - For GeoServer {{ release }} Nightly: [data](https://sourceforge.net/projects/geoserver/files/GeoServer/data)
-  - For GeoServer {{ version }}: [data](https://build.geoserver.org/geoserver/main/release/data)
+    - For GeoServer {{ release }} Nightly: [data](https://sourceforge.net/projects/geoserver/files/GeoServer/data)
+    - For GeoServer {{ version }}: [data](https://build.geoserver.org/geoserver/main/release/data)
 
 - You may also use a new empty folder as the data directory location.
 

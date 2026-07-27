@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/acl/layers")
 public class DataAccessController extends AbstractAclController<DataAccessRule, DataAccessRuleDAO> {
 
-    DataAccessController() {
+    public DataAccessController() {
         super(DataAccessRuleDAO.get());
     }
 

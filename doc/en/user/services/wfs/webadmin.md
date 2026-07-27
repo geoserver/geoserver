@@ -152,11 +152,11 @@ By default, the WFS XML reader sets Entity Expansion limit to `100`, but it can 
 
 For example, using the command line the limit can be adjusted using a parameter:
 
-> -Dorg.geoserver.wfs.xml.entityExpansionLimit=50
+`-Dorg.geoserver.wfs.xml.entityExpansionLimit=50`
 
 Or in Tomcat properties file (`{TOMCAT_HOME}/conf/catalina.properties`) adding the line:
 
-> org.geoserver.wfs.xml.entityExpansionLimit=50
+`org.geoserver.wfs.xml.entityExpansionLimit=50`
 
 ## Conformance
 

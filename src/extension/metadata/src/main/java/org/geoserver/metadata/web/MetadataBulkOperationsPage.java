@@ -62,7 +62,7 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
 
         GeoServerDialog dialog;
         add(dialog = new GeoServerDialog("dialog"));
-        dialog.setInitialHeight(100);
+        dialog.setInitialHeight(150);
         ((GSModalWindow) dialog.get("dialog")).showUnloadConfirmation(false);
 
         add(progressPanel = new ProgressPanel("progress"));

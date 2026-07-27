@@ -16,7 +16,7 @@ import org.geoserver.web.wicket.EmailLabel;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geoserver.web.wicket.Icon;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 
 @SuppressWarnings("serial")
@@ -44,11 +44,11 @@ public class UserTablePanel extends GeoServerTablePanel<GeoServerUser> {
             return editUserLink(id, itemModel, property);
         } else if (property == UserListProvider.ENABLED) {
             if ((Boolean) property.getModel(itemModel).getObject())
-                return new Icon(id, CatalogIconFactory.ENABLED_ICON);
+                return new GsIcon(id, CatalogIconFactory.ENABLED_ICON);
             else return new Label(id, "");
         } else if (property == UserListProvider.HASATTRIBUTES) {
             if ((Boolean) property.getModel(itemModel).getObject())
-                return new Icon(id, CatalogIconFactory.ENABLED_ICON);
+                return new GsIcon(id, CatalogIconFactory.ENABLED_ICON);
             else return new Label(id, "");
         } else if (property == UserListProvider.FIRST_NAME) {
             return new Label(id, property.getModel(itemModel));

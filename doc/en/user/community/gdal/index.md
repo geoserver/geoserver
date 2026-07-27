@@ -121,7 +121,7 @@ If gdal_translate is not available in the default path, the GDAL_DATA environmen
 
 The default configuration is equivalent to the following xml file:
 
-``` xml
+```xml
 <ToolConfiguration>
   <executable>gdal_translate</executable>
   <environment>
@@ -185,15 +185,15 @@ The file showcases all possible usage of the configuration elements:
 
 - `Format` defines a single format, which is defined by the following tags:
 
-  - `toolFormat`: the name of the format to be passed to gdal_translate with the -of option (case insensitive).
-  - `geoserverFormat`: is the name of the output format as advertised by GeoServer
-  - `fileExtension`: is the extension of the file generated after the translation, if any (can be omitted)
-  - `option`: can be used to add one or more options to the gdal_translate command line. As you can see by the JPEG2000 example, each item must be contained in its own `option` tag. You can get a full list of options by running `gdal_translate --help` or by visiting the [GDAL website](http://www.gdal.org)). Also, consider that each format supports specific creation options, listed in the description page for each format (for example, here is the [JPEG2000 one](http://www.gdal.org/frmt_jpeg2000.md)).
-  - `singleFile`: if true the output of the conversion is supposed to be a single file that can be streamed directly back without the need to wrap it into a zip file
-  - `mimeType`: the mime type of the file returned when using `singleFile`. If not specified `application/octet-stream` will be used as a default.
-  - `formatAdapters`: transformations on the coverage that might need to be applied in order to successfully encode the output. The transformations are applied only if their input conditions are met.
+    - `toolFormat`: the name of the format to be passed to gdal_translate with the -of option (case insensitive).
+    - `geoserverFormat`: is the name of the output format as advertised by GeoServer
+    - `fileExtension`: is the extension of the file generated after the translation, if any (can be omitted)
+    - `option`: can be used to add one or more options to the gdal_translate command line. As you can see by the JPEG2000 example, each item must be contained in its own `option` tag. You can get a full list of options by running `gdal_translate --help` or by visiting the [GDAL website](http://www.gdal.org)). Also, consider that each format supports specific creation options, listed in the description page for each format (for example, here is the [JPEG2000 one](http://www.gdal.org/frmt_jpeg2000.md)).
+    - `singleFile`: if true the output of the conversion is supposed to be a single file that can be streamed directly back without the need to wrap it into a zip file
+    - `mimeType`: the mime type of the file returned when using `singleFile`. If not specified `application/octet-stream` will be used as a default.
+    - `formatAdapters`: transformations on the coverage that might need to be applied in order to successfully encode the output. The transformations are applied only if their input conditions are met.
 
 The available format adapters are:
 
 - `GrayAlphaToRGBA`: expands a gray image with alpha channel to RGBA (mandatory for geospatial PDF for example)
-- `PallettedToRGB`: expands a paletted image RGB(A) (mandatory for geospatial PDF for example)
+- `PalettedToRGB`: expands a paletted image RGB(A) (mandatory for geospatial PDF for example)

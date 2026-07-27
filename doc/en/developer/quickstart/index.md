@@ -11,4 +11,4 @@ A step by step guide describing how to quickly get up and running with a GeoServ
 
 </div>
 
-If your IDE is not listed, consider [adding](../docguide/contributing.md) a new quickstart page for it.
+If your IDE is not listed, consider [adding](../../docguide/contributing.md) a new quickstart page for it.

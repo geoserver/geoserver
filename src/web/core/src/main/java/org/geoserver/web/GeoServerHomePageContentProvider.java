@@ -6,20 +6,28 @@
 package org.geoserver.web;
 
 import org.apache.wicket.Component;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.platform.GeoServerExtensions;
 
 /**
- * {@link GeoServerHomePage} extension point allowing to contribute a Wicket component to the central body of the home
- * page.
+ * {@link GeoServerHomePage} extension point allowing to contribute a Wicket component to the home page.
  *
  * <p>Instances of this type are to be looked up by the {@code GeoServerHomePage} by means of the
  * {@link GeoServerExtensions} mechanism and appended to the home page's central body in no predefined order.
  *
  * @author Gabriel Roldan
- * @see CapabilitiesHomePageLinkProvider
  */
 public interface GeoServerHomePageContentProvider {
 
+    /**
+     * Allow content provider to check context.
+     *
+     * @return {@code true} if content should be added to home page context.
+     */
+    default boolean checkContext(boolean isAdmin, WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
+        return isAdmin && workspaceInfo == null && layerInfo == null;
+    }
     /**
      * Returns a component to be added to the home page central body.
      *
@@ -32,4 +40,9 @@ public interface GeoServerHomePageContentProvider {
      *     is provided.
      */
     public Component getPageBodyComponent(final String id);
+
+    /** Order of the home page content. */
+    default int getOrder() {
+        return 500;
+    }
 }

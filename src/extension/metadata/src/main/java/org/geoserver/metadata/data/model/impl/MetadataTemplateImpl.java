@@ -8,7 +8,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -71,7 +71,7 @@ public class MetadataTemplateImpl implements Serializable, MetadataTemplate {
     @Override
     public Set<String> getLinkedLayers() {
         if (linkedLayers == null) {
-            linkedLayers = new HashSet<>();
+            linkedLayers = new LinkedHashSet<>();
         }
         return linkedLayers;
     }
@@ -96,7 +96,7 @@ public class MetadataTemplateImpl implements Serializable, MetadataTemplate {
         clone.setId(getId());
         clone.setName(getName());
         clone.setDescription(getDescription());
-        clone.linkedLayers = new HashSet<>(getLinkedLayers());
+        clone.linkedLayers = new LinkedHashSet<>(getLinkedLayers());
         clone.metadata = new HashMap<>();
         for (Entry<String, Serializable> entry : getMetadata().entrySet()) {
             clone.metadata.put(entry.getKey(), ComplexMetadataMapImpl.dimCopy(entry.getValue()));

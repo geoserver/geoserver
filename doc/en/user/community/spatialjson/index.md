@@ -1,6 +1,6 @@
 # SpatialJSON WFS Output Format Extension
 
-This module adds the SpatialJSON WFS output format. The SpatialJSON format is a more compact and memory-friendly variant of GeoServer's GeoJSON format. It aims to save space by applying several optimizations to traditional GeoJSON format for simple feature results. Most of these optimizations work by removing redundand information from the JSON-encoded features.
+This module adds the SpatialJSON WFS output format. The SpatialJSON format is a more compact and memory-friendly variant of GeoServer's GeoJSON format. It aims to save space by applying several optimizations to traditional GeoJSON format for simple feature results. Most of these optimizations work by removing redundant information from the JSON-encoded features.
 
 A service exception is thrown if the result contains complex features as the SpatialJSON format does not handle those.
 

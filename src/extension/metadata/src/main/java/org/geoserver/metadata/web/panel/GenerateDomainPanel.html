@@ -6,26 +6,36 @@
       <div class="gs-panel-GenerateDomainPanel">
         <div class="gs-unordered-list-class">
           <div class="gs-list-item-class">
-            <legend>
-              <wicket:message key="GenerateDomainPanel.header"></wicket:message>
-            </legend>
             <fieldset>
-              <label for="method">
-                <wicket:message key="method"></wicket:message>
-              </label>
-              <select id="method" wicket:id="method"></select>
-              <label for="tableName">
-                <wicket:message key="tableName"></wicket:message>
-              </label>
-              <select id="tableName" wicket:id="tableName"></select>
-              <label for="valueAttributeName">
-                <wicket:message key="valueAttributeName"></wicket:message>
-              </label>
-              <select id="valueAttributeName" wicket:id="valueAttributeName"></select>
-              <label for="defAttributeName">
-                <wicket:message key="defAttributeName"></wicket:message>
-              </label>
-              <select id="defAttributeName" wicket:id="defAttributeName"></select>
+              <legend>
+                <wicket:message key="GenerateDomainPanel.header"></wicket:message>
+              </legend>
+              <div class="gs-form">
+                <div class="gs-form-group">
+                  <label for="method">
+                    <wicket:message key="method"></wicket:message>
+                  </label>
+                  <select id="method" wicket:id="method" class="w-fit"></select>
+                </div>
+                <div class="gs-form-group">
+                  <label for="tableName">
+                    <wicket:message key="tableName"></wicket:message>
+                  </label>
+                  <select id="tableName" wicket:id="tableName" class="w-fit"></select>
+                </div>
+                <div class="gs-form-group">
+                  <label for="valueAttributeName">
+                    <wicket:message key="valueAttributeName"></wicket:message>
+                  </label>
+                  <select id="valueAttributeName" wicket:id="valueAttributeName" class="w-fit"></select>
+                </div>
+                <div class="gs-form-group">
+                  <label for="defAttributeName">
+                    <wicket:message key="defAttributeName"></wicket:message>
+                  </label>
+                  <select id="defAttributeName" wicket:id="defAttributeName" class="w-fit"></select>
+                </div>
+              </div>
             </fieldset>
           </div>
           <div class="gs-list-item-class">

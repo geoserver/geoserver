@@ -10,11 +10,11 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.api.data.Query;
+import org.geotools.xml.XMLUtils;
 import org.junit.Before;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -39,7 +39,7 @@ public class AtomGeoRSSTransformerTest extends WMSTestSupport {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         tx.transform(map, output);
 
-        DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        DocumentBuilder docBuilder = XMLUtils.newDocumentBuilder();
         Document document = docBuilder.parse(new ByteArrayInputStream(output.toByteArray()));
 
         Element element = document.getDocumentElement();
@@ -91,7 +91,7 @@ public class AtomGeoRSSTransformerTest extends WMSTestSupport {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         tx.transform(map, output);
 
-        DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        DocumentBuilder docBuilder = XMLUtils.newDocumentBuilder();
         Document document = docBuilder.parse(new ByteArrayInputStream(output.toByteArray()));
 
         Element element = document.getDocumentElement();

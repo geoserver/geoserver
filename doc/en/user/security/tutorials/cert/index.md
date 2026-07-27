@@ -24,10 +24,10 @@ Users authenticated via a X.509 certificate must be configured in GeoServer. For
 
 3.  Scroll down to the `User Group Services` panel and click the `Add new` link.
 
-4.  Create a new user/group service named ``cert-ugs`` and fill out the settings form as follows:
+4.  Create a new user/group service named `cert-ugs` and fill out the settings form as follows:
 
-    - Set **Password encryption** to ``Empty`` since users will not authenticate via password.
-    - Set **Password policy** to ``default``.
+    - Set **Password encryption** to `Empty` since users will not authenticate via password.
+    - Set **Password policy** to `default`.
 
     ![](images/cert2.jpg)
 
@@ -41,7 +41,7 @@ Users authenticated via a X.509 certificate must be configured in GeoServer. For
 
     ![](images/cert4.jpg)
 
-8.  Add a new user named ``rod`` the and assign the `ADMIN` role.
+8.  Add a new user named `rod` the and assign the `ADMIN` role.
 
     ![](images/cert5.jpg)
 
@@ -58,7 +58,7 @@ Users authenticated via a X.509 certificate must be configured in GeoServer. For
 12. Click the **X.509** link and fill out form as follows:
 
     - Set **Name** to "cert"
-    - Set **Role source** to ``User group service`` and set the associated drop-down to ``cert-ugs``
+    - Set **Role source** to `User group service` and set the associated drop-down to `cert-ugs`
 
     ![](images/cert8.jpg)
 
@@ -124,7 +124,7 @@ Download and unpack the [sample certificate files](sample_certs.zip). This archi
 
 3.  On the **Your Certificates** panel click the **Import** button and select the **`rod.p12`** file.
 
-4.  When prompted enter in the password ``password``.
+4.  When prompted enter in the password `password`.
 
     ![](images/cert11.jpg)
 

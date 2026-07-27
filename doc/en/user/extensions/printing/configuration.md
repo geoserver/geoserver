@@ -15,7 +15,7 @@ The server side uses a [YAML](http://www.yaml.org/) configuration file that defi
 
 Here is the general structure:
 
-``` yaml
+```yaml
 dpis:
   - 254
   - 190
@@ -26,7 +26,7 @@ dpis:
 ?integerSvg: false # the library in MapServer <= 5.6 does not support floating point values in the SVG coordinate space, set this to true if using a WMS that does not support floating point values in SVG coordinates
 
 ?ignoreCapabilities: false # assume client is correct and do not load capabilities.  This is not recommended to be used unless you it fails when false (false is default)
-?disableLayersMerging: false # WMS layers with mergable parameters will be merged by default. Set this to true to disable attempts to merge.
+?disableLayersMerging: false # WMS layers with mergeable parameters will be merged by default. Set this to true to disable attempts to merge.
 ?maxPrintTimeBeforeWarningInSeconds: 30 # if print jobs take longer than this then a warning in the logs will be written along with the spec.
 ?printTimeoutMinutes: 5 # The maximum time to allow a print job to take before cancelling the print job.  The default is 5 (minutes)
 ?formats:
@@ -48,7 +48,7 @@ hosts:
 ?    - map.example.com
 ?  https2http: True # For above hosts on request on https we build a request on http
 
-?headers: ['Cookie', 'Referer'] # The header that will be copyed to the tiles http requests
+?headers: ['Cookie', 'Referer'] # The header that will be copied to the tiles http requests
 
 ?keys:
 ?  - !key
@@ -107,13 +107,13 @@ Optional parts are shown with a question mark in the left margin. The question m
 
 Note: Sets of values like DPI can be entered in one of two forms:
 
-``` yaml
+```yaml
 dpi: [1,2,3,...]
 ```
 
 or
 
-``` yaml
+```yaml
 dpis:
   - 254
   - 190
@@ -164,15 +164,15 @@ If you want to let the user rotate the map (for a given layout), you have to set
 
 ### Output filename
 
-If the 'outputFilename' parameter is defined in the main body then that name will be used by the MapPrintServlet when sending the pdf to the client. It will be the name of the file that the client downloads. If the 'outputFilename' parameter is defined in a layout then that value will override the default name. In both cases the ``.pdf`` suffic is optional; if not present the server will append ``.pdf`` to the name.
+If the 'outputFilename' parameter is defined in the main body then that name will be used by the MapPrintServlet when sending the pdf to the client. It will be the name of the file that the client downloads. If the 'outputFilename' parameter is defined in a layout then that value will override the default name. In both cases the `.pdf` suffix is optional; if not present the server will append `.pdf` to the name.
 
-In all cases the ``json`` request can override the filename defined in the configuration file by posting a 'outputFilename' attribute in the posted JSON. If the outputFilename has \${date}, \${time} or \${dateTime} in it, it will be replaced with the current date using the related DateFormat.get*Instance().format() method. If a pattern is provided it will be passed to SimpleDataFormat for processing. A few examples follow:
+In all cases the `json` request can override the filename defined in the configuration file by posting a 'outputFilename' attribute in the posted JSON. If the outputFilename has ${date}, ${time} or ${dateTime} in it, it will be replaced with the current date using the related DateFormat.get*Instance().format() method. If a pattern is provided it will be passed to SimpleDataFormat for processing. A few examples follow:
 
-- outputFilename: "host-\${yyyyMMdd}.pdf" \# results in host-20111213.pdf
-- outputFilename: "host-\${date}" \# results in host-Dec_13_2011.pdf (actual output depends on local of server)
-- outputFilename: "host-\${dateTime}" \# results in host-Dec_13_2011_1:10:50_PM.pdf (actual output depends on local of server)
-- outputFilename: "host-\${time}.pdf" \# results in host-1:11:14_PM.pdf (actual output depends on local of server)
-- outputFilename: "host-\${yyMMdd-hhmmss}"# results in host-111213-011154.pdf (actual output depends on local of server)
+- outputFilename: "host-${yyyyMMdd}.pdf" \# results in host-20111213.pdf
+- outputFilename: "host-${date}" \# results in host-Dec_13_2011.pdf (actual output depends on local of server)
+- outputFilename: "host-${dateTime}" \# results in host-Dec_13_2011_1:10:50_PM.pdf (actual output depends on local of server)
+- outputFilename: "host-${time}.pdf" \# results in host-1:11:14_PM.pdf (actual output depends on local of server)
+- outputFilename: "host-${yyMMdd-hhmmss}"# results in host-111213-011154.pdf (actual output depends on local of server)
 
 "disableScaleLocking" allows you to bypass the choosing of scale from the available factors, and simply use the suggested value produced inside MapBlock.java.
 
@@ -190,7 +190,7 @@ Non-null values are:
 
 Both Keys and Security are options for accessing protected services. Keys are currently for Google maps premium accounts and Security is for other types and is more general Currently only BasicAuth is supported but other strategies can easily be added
 
-``` yaml
+```yaml
 security:
     - !basicAuth
         matcher: !dnsMatch
@@ -229,7 +229,7 @@ In addition a domain hostmatcher can be used to select a key based on the domain
 
 Finally google maps (for example) requires a client id as well that is associated with the private key. There for in the case of google premium services a legal key would be:
 
-``` yaml
+```yaml
 keys:
   - !key
     key: yxcvyxvcyxvyx
@@ -242,7 +242,7 @@ Thanks to the hosts and domain matcher it is possible to have a key for google m
 
 The "fonts" section is optional. It contains the path of the fonts you want to use. The entries can point to files (TTF, OTF, TTC, AFM, PFM) or directories. Don't point to directories containing too many files since it will slow down the start time. By default, PDF gives you access to the following fonts (Cp1252 encoding only):
 
-- Courrier (-Bold, -Oblique, -BoldOblique)
+- Courier (-Bold, -Oblique, -BoldOblique)
 - Helvetica (-Bold, -Oblique, -BoldOblique)
 - Times (-Roman, -Bold, -Oblique, -BoldOblique)
 - Symbol
@@ -258,7 +258,7 @@ There are 3 ways to whitelist a host.
 
 ### Allowing every local services:
 
-``` yaml
+```yaml
 - !localMatch
   dummy: true
 ```
@@ -267,14 +267,14 @@ The "dummy" parameter is ignored, but mandatory to avoid a limitation in the YAM
 
 ### Allowing by DNS name:
 
-``` yaml
+```yaml
 - !dnsMatch
   host: labs.metacarta.com
 ```
 
 ### Allowing by IP address:
 
-``` yaml
+```yaml
 - !ipMatch
   ip: www.camptocamp.org
     ?   mask: 255.255.255.255
@@ -293,7 +293,7 @@ Allow to add some metadata to the generated PDF. They are visible in acroread in
 
 The structure is like that:
 
-``` yaml
+```yaml
 metaData:
     ?     title: ''
     ?     author: ''
@@ -309,7 +309,7 @@ All fields are optional and can use global variables, as defined in the [Block d
 
 The structure is like that:
 
-``` yaml
+```yaml
 pageSize: A4
     ?     landscape: false
     ?     marginLeft: 40
@@ -357,9 +357,9 @@ The complete list can be found in <http://api.itextpdf.com/itext/com/itextpdf/te
 
 New flag params to skip rendering of particular pages have been implemented:
 
-- ``includeTitlePage``
-- ``includeLastPage``
-- ``includeExtraPage``
+- `includeTitlePage`
+- `includeLastPage`
+- `includeExtraPage`
 
 They are all defaulted to true.
 
@@ -367,32 +367,32 @@ They are all defaulted to true.
 
 Additional Pages are supported in many different places. They can be rendered due to legends overflowing on multiple pages, or by the dynamic images functionality.
 
-Where additional pages can be generated, the generating block will be spread among all the created pages (for example, the legend block will put legends on different pages, if configured to do so). If you want to put additional blocks on additional page, you can specify the ``renderOnExtraPage`` flag on the desired blocks. Only first level blocks are considered.
+Where additional pages can be generated, the generating block will be spread among all the created pages (for example, the legend block will put legends on different pages, if configured to do so). If you want to put additional blocks on additional page, you can specify the `renderOnExtraPage` flag on the desired blocks. Only first level blocks are considered.
 
-In addition to that, an explicit ``extraPage`` block can be used in **`config.yaml`** to add a custom page between other pages. The ``renderOn`` property specify the exact position for rendering (``beforeMainPage``, ``beforeLastPage`` or ``afterLastPage``).
+In addition to that, an explicit `extraPage` block can be used in **`config.yaml`** to add a custom page between other pages. The `renderOn` property specify the exact position for rendering (`beforeMainPage`, `beforeLastPage` or `afterLastPage`).
 
 ## Block definition
 
 The next sub-sections document the possible types of blocks.
 
-In general, text values or URLs can contain values taken from the **spec** structure coming with the client's request. A syntax similar to shell is used: ``\${variableName}``. If the current page is a **titlePage**, only the root values are taken. If it's a **mainPage**, the service will first look in the current **page** section then in the root values. Here is how to use this functionality:
+In general, text values or URLs can contain values taken from the **spec** structure coming with the client's request. A syntax similar to shell is used: `${variableName}`. If the current page is a **titlePage**, only the root values are taken. If it's a **mainPage**, the service will first look in the current **page** section then in the root values. Here is how to use this functionality:
 
     text: 'The value of mapTitle is: ${mapTitle}'
 
 Some virtual variables can be used:
 
-- \${pageNum}: The current page number.
-- \${pageTot}: The total number of pages. Can be used only in text blocks.
-- \${now}: The current date and time as defined by the machine's locale.
-- \${now FORMAT}: The current date and time as defined by the FORMAT string. The syntax is here: <http://java.sun.com/j2se/1.5.0/docs/api/java/text/SimpleDateFormat.html>.
-- \${configDir}: The absolute path to the directory of the configuration file.
-- \${format PRINTF VAR}: Format the value of VAR using the provided [PRINTF format](http://java.sun.com/j2se/1.5.0/docs/api/java/util/Formatter.md#syntax) (for example: %,d).
+- ${pageNum}: The current page number.
+- ${pageTot}: The total number of pages. Can be used only in text blocks.
+- ${now}: The current date and time as defined by the machine's locale.
+- ${now FORMAT}: The current date and time as defined by the FORMAT string. The syntax is here: <http://java.sun.com/j2se/1.5.0/docs/api/java/text/SimpleDateFormat.html>.
+- ${configDir}: The absolute path to the directory of the configuration file.
+- ${format PRINTF VAR}: Format the value of VAR using the provided [PRINTF format](http://java.sun.com/j2se/1.5.0/docs/api/java/util/Formatter.md#syntax) (for example: %,d).
 
 All the blocks can have a condition attribute that takes a spec attribute name. If the attribute name exists and is not equal to "false" or "0", the block is drawn. Otherwise, it is ignored. An exclamation mark may precede the condition to invert it, exclamation mark is part of yaml syntax, than the expression should be in quotes.
 
 Example: show text block only if in the spec the attribute name "showText" is given, is not equal to "false" and not equal to "0":
 
-``` yaml
+```yaml
 - !text
   text: 'mytext'
   condition: showText
@@ -400,7 +400,7 @@ Example: show text block only if in the spec the attribute name "showText" is gi
 
 ## Text block
 
-``` yaml
+```yaml
 - !text
   ?         font: Helvetica
   ?         fontSize: 12
@@ -427,11 +427,11 @@ The "font" must refer to a standard PDF font or a [declared font](#fonts-definit
 
 ### HTML In Text Blocks
 
-The new configuration property ``asHTML`` (to be used in **`config.yaml`** text blocks) allows to automatically render the included text as HTML (when true), instead of simple text. HTML tags are interpreted and styled.
+The new configuration property `asHTML` (to be used in **`config.yaml`** text blocks) allows to automatically render the included text as HTML (when true), instead of simple text. HTML tags are interpreted and styled.
 
 ## Image block
 
-``` yaml
+```yaml
 - !image
   maxWidth: 200
   maxHeight: 100
@@ -443,7 +443,7 @@ The new configuration property ``asHTML`` (to be used in **`config.yaml`** text 
 
 Supported formats are PNG, GIF, Jpeg, Jpeg2000, BMP, WMF (vector), SVG and TIFF.
 
-The original aspect ratio will be respected. The url can contain "\${}" variables.
+The original aspect ratio will be respected. The url can contain "${}" variables.
 
 ### Simple colored box icons
 
@@ -457,7 +457,7 @@ We added support for Base64 encoded images uris to PDFUtils so that embedded ima
 
 Example url:
 
-``` yaml
+```yaml
 url: data:image/png;base64,<encoded image>
 ```
 
@@ -465,7 +465,7 @@ url: data:image/png;base64,<encoded image>
 
 This enhancement allow you add SVG content inside the specification of the print. You need to add a name into the image to manage:
 
-``` yaml
+```yaml
 - !columns
     width: 580
     height: 271
@@ -481,7 +481,7 @@ This enhancement allow you add SVG content inside the specification of the print
 
 Spec:
 
-``` yaml
+```yaml
 {
 ...
 chart1:{
@@ -495,7 +495,7 @@ then, the content its rendered inside the print page with the layout configurati
 
 ## Columns block
 
-``` yaml
+```yaml
 - !columns
   ?         config: {TABLE_CONFIG}
   ?         widths: [25,25,25,25]
@@ -518,7 +518,7 @@ Each item will be in its own column.
 
 If the **absoluteX**, **absoluteY** and **width** are given, the columns block will be floating on top of the page at the specified position.
 
-The **widths** attribute can be used to change the width of the columns (by default, they have the same width). It must contain one integer for each column. The width of a given column is ``tableWidth*columnWeight/sum(columnWeight)``.
+The **widths** attribute can be used to change the width of the columns (by default, they have the same width). It must contain one integer for each column. The width of a given column is `tableWidth*columnWeight/sum(columnWeight)`.
 
 Every block type is allowed except for **map** if the column has an absolute position.
 
@@ -528,7 +528,7 @@ Look at <http://trac.mapfish.org/trac/mapfish/wiki/PrintModuleServer#Tableconfig
 
 Allowed only within a **mainPage**.
 
-``` yaml
+```yaml
 - !map
   width: 0
   height: 0
@@ -560,7 +560,7 @@ Display a scalebar.
 
 Allowed only within a **mainPage**.
 
-``` yaml
+```yaml
 - !scalebar
   maxSize: 150
   ?         type: line
@@ -586,14 +586,14 @@ Allowed only within a **mainPage**.
   ?         preferredIntervalFractions: 0.0
 ```
 
-The scalebar, will adapt its width up to ``maxSize`` (includes the labels) in order to have a multiple of 1, 2 or 5 values at each graduation. For example:
+The scalebar, will adapt its width up to `maxSize` (includes the labels) in order to have a multiple of 1, 2 or 5 values at each graduation. For example:
 
-- 0, 1, 2, \...
-- 0, 2, 4, \...
-- 0, 5, 10, \...
-- 0, 10, 20, \...
+- 0, 1, 2, ...
+- 0, 2, 4, ...
+- 0, 5, 10, ...
+- 0, 10, 20, ...
 
-The ``barSize`` is the thickness of the bar or the height of the tick marks on the line. The ``lineWith`` is for the thickness of the lines (or bar border).
+The `barSize` is the thickness of the bar or the height of the tick marks on the line. The `lineWith` is for the thickness of the lines (or bar border).
 
 Units can be any of:
 
@@ -603,7 +603,7 @@ Units can be any of:
 
 If the value is too big or too small, the module will switch to one of the unit in parenthesis (the same unit is used for every intervals). If this behaviour is not desired, the lockUnits parameter will force the declared unit (or map unit if no unit is declared) to be used for the scalebar.
 
-The number of ``intervals`` can be set to anything >=2. Labels are drawn only at main intervals. If there is no space to display a label at a certain interval, this label won't be displayed. If ``subIntervals`` are enabled, their number will depend on the length of an interval.
+The number of `intervals` can be set to anything >=2. Labels are drawn only at main intervals. If there is no space to display a label at a certain interval, this label won't be displayed. If `subIntervals` are enabled, their number will depend on the length of an interval.
 
 The type can be:
 
@@ -615,23 +615,24 @@ The type can be:
 
 The bar and/or text orientation can be set to "up", "down", "left" or "right".
 
-The ``align`` attribute is for placing the whole scalebar withing the surrounding column or page. The ``vertAlign`` attribute is used only when placed in a column.
+The `align` attribute is for placing the whole scalebar withing the surrounding column or page. The `vertAlign` attribute is used only when placed in a column.
 
 Labels are always centered on the graduation, at a distance specified by labelDistance.
 
 ### Custom intervals in ScalebarBlock
 
-With this improvement we added two new configuration parameters to ``!scalebar`` blocks that allow to customize the scalebar preferred bar lengths.
+With this improvement we added two new configuration parameters to `!scalebar` blocks that allow to customize the scalebar preferred bar lengths.
 
-Now this set can be customized using the ``preferredIntervals`` property. This property is an array with the new (integer) allowed lengths. By default these were chosen in the ``1``,`2`,`5`,`10` set.
+Now this set can be customized using the `preferredIntervals` property. This property is an array with the new (integer) allowed lengths. By default these were chosen in the `1`,`2`,`5`,`10` set.
 
-Another property, ``preferredIntervalFractions``, can be specified to also use fractional intervals. By default only ``0.0`` is used, and thus only integer lengths are allowed.
+Another property, `preferredIntervalFractions`, can be specified to also use fractional intervals. By default only `0.0` is used, and thus only integer lengths are allowed.
 
 Example:
 
-    .. code-block::  yaml
-
-> preferredIntervals: [1,3,5,10] preferredIntervalFractions: [0.2,0.5]
+```yaml
+preferredIntervals: [1,3,5,10]
+preferredIntervalFractions: [0.2,0.5]
+```
 
 ## Attributes block
 
@@ -639,7 +640,7 @@ Allows to display a table of the displayed feature's attributes.
 
 Allowed only within a *mainPage*.
 
-``` yaml
+```yaml
 - !attributes
   source: results
   ?         tableConfig: {TABLE_CONFIG}
@@ -653,11 +654,11 @@ Allowed only within a *mainPage*.
 
 Look [here](#table-configuration) for how to specify the *tableConfig* field.
 
-The *columnWeigth* (MF_V1.2 only) allows to define a weight for the column width. If you specify it for one column, you have to specify it for all of them. The width of a given column is tableWidth*columnWeight/sum(columnWeight).
+The *columnWeight* (MF_V1.2 only) allows to define a weight for the column width. If you specify it for one column, you have to specify it for all of them. The width of a given column is tableWidth*columnWeight/sum(columnWeight).
 
 The **source** value defines the name of the entry in the root of the client's **spec**. For example, it would look like that:
 
-``` yaml
+```yaml
 {
   ...
   pages: [
@@ -682,7 +683,7 @@ The spec part is filled automatically by the 2 MapFish widgets when their [grids
 
 Here is a crazy example of columnDef that will show the name of the icon and it's bitmap side-by-side inside a single column:
 
-``` yaml
+```yaml
 columnDefs:
   icon:
     header: !text
@@ -707,19 +708,19 @@ The print widgets are able to fill the spec for you based on a dictionary of **E
 
 Attribute blocks now support grouping, by a specific attribute. Rows should be sorted by that attribute for grouping to work (no automatic sort is accomplished by the printing library).
 
-To identify the grouping attribute, use the ``groupBy`` property.
+To identify the grouping attribute, use the `groupBy` property.
 
-Each group can be prefixed by a title, using the ``groupTitle`` property. You can specify any block in the ``groupTitle`` property, to render any kind of content as a title.
+Each group can be prefixed by a title, using the `groupTitle` property. You can specify any block in the `groupTitle` property, to render any kind of content as a title.
 
-You can also skip table header using the ``includeHeader`` flag (true by default).
+You can also skip table header using the `includeHeader` flag (true by default).
 
-Finally you can force a page break before any new group, using the ``groupOnNewPage`` flag.
+Finally you can force a page break before any new group, using the `groupOnNewPage` flag.
 
 ## Legends block
 
 Display each layers along with its classes (icons and labels).
 
-``` yaml
+```yaml
 - !legends
   ?         backgroundColor: #FFFFFF
   ?         borders: false
@@ -752,7 +753,7 @@ Display each layers along with its classes (icons and labels).
   ?         fitHeight: 0
 ```
 
-**borders** is mainly for debugging purpouses and shows all borders in the legend tables. This can be either 'true' or 'false'.
+**borders** is mainly for debugging purposes and shows all borders in the legend tables. This can be either 'true' or 'false'.
 
 **horizontalAlignment** can be left, right or center (default) and aligns all items left, right or in the center.
 
@@ -768,7 +769,7 @@ if **maxWidth** is set the whole legend gets a maximum width, just like other bl
 
 if **maxHeight** is set the whole legend gets a maximum height. This forces more than one column to appear if the legend is higher than the specified value. This can be used to enable the multi-column layout. 0 makes the maxHeight= max value, i.e. the equivalent of infinity.
 
-if **defaultScale** is non null it means that the legend image will be scaled so it doesn't take the full space. This can be overriden for individual classes in the spec JSON sent to the print module by adding an attribute called 'scale' and giving it a number. In conjunction with iconMaxWidth/Height this can be used to control average and also maximum width/height. If **defaultScale** equals 1, one pixel is scaled to one point (1/72 inch) in generated PDF. By default, as GeoServer legends are generated with \~90 dpi resolution (exactly 25.4/0.28), setting **defaultScale** value to 0.7937 (72*0.28/25.4) produces legend icons of same size as corresponding map icons. As the [LEGEND_OPTIONS/dpi GeoServer parameter](https://docs.geoserver.org/stable/en/user/services/wms/get_legend_graphic/index.md#controlling-legend-appearance-with-legend-options) is not handled by MapFish, the resolution will necessary be \~91 dpi, which may cause visual quality difference with the map.
+if **defaultScale** is non null it means that the legend image will be scaled so it doesn't take the full space. This can be overridden for individual classes in the spec JSON sent to the print module by adding an attribute called 'scale' and giving it a number. In conjunction with iconMaxWidth/Height this can be used to control average and also maximum width/height. If **defaultScale** equals 1, one pixel is scaled to one point (1/72 inch) in generated PDF. By default, as GeoServer legends are generated with \~90 dpi resolution (exactly 25.4/0.28), setting **defaultScale** value to 0.7937 (72*0.28/25.4) produces legend icons of same size as corresponding map icons. As the [LEGEND_OPTIONS/dpi GeoServer parameter](https://docs.geoserver.org/stable/en/user/services/wms/get_legend_graphic/index.md#controlling-legend-appearance-with-legend-options) is not handled by MapFish, the resolution will necessary be \~91 dpi, which may cause visual quality difference with the map.
 
 For this to work, you need to set the **layerTree** config option on MF print widgets, more precisely the legends should be present in the print.pdf JSON request.
 
@@ -803,13 +804,13 @@ The properties are:
 - `fitWidth`: width of the rectangle for fitting (defaults to 0, meaning no fit)
 - `fitHeight`: height of the rectangle for fitting (defaults to 0, meaning no fit)
 
-Both properties or only one of them can be specified. When only one property is set, the other dimension is calculated to mantain the original aspect ratio for the legend.
+Both properties or only one of them can be specified. When only one property is set, the other dimension is calculated to maintain the original aspect ratio for the legend.
 
 ### Multipage legends
 
-By default a LegendsBlock must be contained in a single page. To allow it to span on several pages the ``overflow`` option can be used, setting it to true.
+By default a LegendsBlock must be contained in a single page. To allow it to span on several pages the `overflow` option can be used, setting it to true.
 
-When this option is used you also need to define ``maxColumns``, to fix the max number of columns on each page and ``maxHeight``, to fix the maximum height of each column.
+When this option is used you also need to define `maxColumns`, to fix the max number of columns on each page and `maxHeight`, to fix the maximum height of each column.
 
 The LegendsBlock will be rendered on as many pages as needed to get all the items rendered with the given constraints.
 
@@ -826,19 +827,19 @@ To get this behaviour is necessary to:
 
 ### Reorder legends block in columns
 
-When the option ``reorderColumns`` inside legends block it set to ``true`` and more than one column is necessary for the legends block, a new algorithm computes the best distribution of the legend items inside the columns. Currently a first fit with items sorted in height descending order is used. This is not sub-optimal, but it's fast.
+When the option `reorderColumns` inside legends block it set to `true` and more than one column is necessary for the legends block, a new algorithm computes the best distribution of the legend items inside the columns. Currently a first fit with items sorted in height descending order is used. This is not sub-optimal, but it's fast.
 
-When a legend item is rendered to another column, by default name and legend icon could finish on different columns. To fix it, please enable the ``dontBreakItems`` option.
+When a legend item is rendered to another column, by default name and legend icon could finish on different columns. To fix it, please enable the `dontBreakItems` option.
 
 ### Don't break legend items
 
-Set the flag ``dontBreakItems`` to ``true`` on legends block if you want to render legend and names as one table to forbid the break between different columns
+Set the flag `dontBreakItems` to `true` on legends block if you want to render legend and names as one table to forbid the break between different columns
 
 ## Table configuration
 
 The [columns block](#columns-block) and the [attributes block](#attributes-block) can take a table configuration object like that:
 
-``` yaml
+```yaml
 config:
   ?     borderWidth: 0
   ?     borderWidthLeft: 0
@@ -856,7 +857,7 @@ config:
 
 A cell configuration looks like that:
 
-``` yaml
+```yaml
 ?     row: {...}
 ?     col: {...}
 ?     borderWidth: 0
@@ -895,7 +896,7 @@ For example, if you want to draw an attribute block like that:
 
 You define that:
 
-``` yaml
+```yaml
 - !attributes
   tableConfig:
     borderWidth: 1
@@ -918,11 +919,11 @@ You define that:
 
 ## Dynamic images page
 
-New layout to let you print a different number of pages dinamically.
+New layout to let you print a different number of pages dynamically.
 
 You need to put it in **`config.yaml`**:
 
-``` yaml
+```yaml
 dynamicImagesPage:
       rotation: true
       pageSize: 595 842
@@ -932,7 +933,7 @@ dynamicImagesPage:
 
 and when you called to the print servlet, you'll need to add this property to the spec:
 
-``` yaml
+```yaml
 imagesPages:[
      {firstPageConfiguration},
      {secondPageConfiguration}
@@ -947,11 +948,11 @@ Also, you cant select the pages placement inside the document with the property 
 - `beforeLastPage`: It's rendered just before last page (between main page and last page layouts)
 - `beforeMainPage`: It's rendered before main page (between first page and main page)
 
-The first use of this layout it's add a dynamic number of pages with differents images with svg content generated dynamicaly (using also the images content enhancement). This is an example of use with two dynammic images by page:
+The first use of this layout it's add a dynamic number of pages with different images with svg content generated dynamically (using also the images content enhancement). This is an example of use with two dynamic images by page:
 
 Example **`config.yaml`**:
 
-``` yaml
+```yaml
 ...
  dynamicImagesPage:
    rotation: true
@@ -1004,7 +1005,7 @@ Example **`config.yaml`**:
 
 spec:
 
-``` yaml
+```yaml
 {
 ...
 imagePages:[

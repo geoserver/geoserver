@@ -10,6 +10,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -45,6 +46,7 @@ import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.springframework.batch.core.BatchStatus;
+import org.springframework.batch.core.configuration.JobRegistry;
 
 /** @author Alessio Fabiani, GeoSolutions */
 @RunWith(Enclosed.class)
@@ -187,6 +189,12 @@ public class BackupTest extends BackupRestoreTestSupport {
         public void testRunSpringBatchFilteredRestoreJob() throws Exception {
             Hints hints = new Hints(new HashMap<>(2));
             hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
+            // Merge-semantics test: it restores into the pre-populated test catalog and asserts the FULL
+            // merged content (9 datastores, 35 styles). BK_PURGE_RESOURCES now defaults to true (a restore is
+            // destructive by design), which would build the restore catalog from the archive alone and drop the
+            // pre-existing resources. Pin it to false so this test keeps exercising the merge path it was written
+            // for; the destructive default is covered by PurgeRestoreTest and BackupOptionDefaultsTest.
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PURGE_RESOURCES, "*"), "false"));
 
             Filter filter = ECQL.toFilter("name = 'topp'");
             RestoreExecutionAdapter restoreExecution =
@@ -287,6 +295,81 @@ public class BackupTest extends BackupRestoreTestSupport {
 
                 assertEquals(BatchStatus.STOPPED, backupExecution.getStatus());
             }
+        }
+
+        /** Job control on an unknown execution id is a safe no-op (Option A; NoSuchJobExecutionException retired). */
+        @Test
+        public void testJobControlUnknownExecution() throws Exception {
+            backupFacade.stopExecution(-1L);
+            backupFacade.abandonExecution(-1L);
+            assertNull(backupFacade.restartExecution(-1L));
+        }
+
+        /**
+         * The backup/restore jobs must be auto-registered in the {@link JobRegistry}: with the deprecated
+         * {@code JobRegistrySmartInitializingSingleton} removed, registration now relies on Spring Batch 6's
+         * {@code MapJobRegistry} auto-registration (via {@code TolerantMapJobRegistry}).
+         */
+        @Test
+        public void testJobsAreRegistered() {
+            JobRegistry registry = GeoServerExtensions.bean(JobRegistry.class);
+            assertNotNull(registry);
+            assertTrue(registry.getJobNames().contains(Backup.BACKUP_JOB_NAME));
+            assertTrue(registry.getJobNames().contains(Backup.RESTORE_JOB_NAME));
+        }
+
+        @Test
+        public void testAbandonSpringBatchBackupJob() throws Exception {
+            BackupExecutionAdapter exec = stoppedBackup();
+            if (exec.getStatus() == BatchStatus.STOPPED) {
+                // exercises the migrated JobOperator.abandon(JobExecution)
+                backupFacade.abandonExecution(exec.getId());
+
+                int cnt = 0;
+                while (cnt < 100 && exec.getStatus() != BatchStatus.ABANDONED) {
+                    Thread.sleep(100);
+                    cnt++;
+                    if (exec.getStatus() == BatchStatus.FAILED) {
+                        break;
+                    }
+                }
+                assertEquals(BatchStatus.ABANDONED, exec.getStatus());
+            }
+        }
+
+        /**
+         * Drives a fresh best-effort backup to STARTED then STOPPED (mirrors {@link #testStopSpringBatchBackupJob()}),
+         * returning the stopped — or already-terminal — execution so abandon can run from a known state.
+         */
+        private BackupExecutionAdapter stoppedBackup() throws Exception {
+            Hints hints = new Hints(new HashMap<>(2));
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
+            BackupExecutionAdapter exec = backupFacade.runBackupAsync(
+                    Files.asResource(File.createTempFile("testJobControl", ".zip")), true, null, null, null, hints);
+
+            int cnt = 0;
+            while (cnt < 100 && exec.getStatus() != BatchStatus.STARTED) {
+                Thread.sleep(10);
+                cnt++;
+                if (exec.getStatus() == BatchStatus.COMPLETED
+                        || exec.getStatus() == BatchStatus.FAILED
+                        || exec.getStatus() == BatchStatus.ABANDONED) {
+                    return exec;
+                }
+            }
+            if (exec.getStatus() != BatchStatus.STARTED) {
+                return exec;
+            }
+            backupFacade.stopExecution(exec.getId());
+            cnt = 0;
+            while (cnt < 100 && exec.getStatus() != BatchStatus.STOPPED) {
+                Thread.sleep(100);
+                cnt++;
+                if (exec.getStatus() == BatchStatus.FAILED || exec.getStatus() == BatchStatus.ABANDONED) {
+                    break;
+                }
+            }
+            return exec;
         }
 
         @Test
@@ -402,6 +485,12 @@ public class BackupTest extends BackupRestoreTestSupport {
             hints.add(new Hints(
                     new Hints.OptionKey(Backup.PARAM_PASSWORD_TOKENS, "*"), "${sf:sf.passwd.encryptedValue}=foo"));
 
+            // Merge-semantics test: it removes only the "sf" datastore, then restores and asserts the FULL merged
+            // catalog (9 datastores) — i.e. the surviving resources plus the restored "sf". BK_PURGE_RESOURCES now
+            // defaults to true (destructive restore from the archive alone); pin it to false so the merge path this
+            // test was written for is preserved. Destructive default coverage lives in PurgeRestoreTest.
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PURGE_RESOURCES, "*"), "false"));
+
             removeSfDatastore();
 
             RestoreExecutionAdapter restoreExecution =
@@ -505,6 +594,11 @@ public class BackupTest extends BackupRestoreTestSupport {
         public void testRunSpringBatchRestoreJob() throws Exception {
             Hints hints = new Hints(new HashMap<>(2));
             hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
+            // Merge-semantics test: it restores into the pre-populated test catalog and asserts the FULL merged
+            // content (9 datastores, 50 feature types, 35 styles, ...). BK_PURGE_RESOURCES now defaults to true (a
+            // restore is destructive by design), which would build the restore catalog from the archive alone. Pin
+            // it to false so this test keeps exercising the merge path; PurgeRestoreTest covers the destructive one.
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PURGE_RESOURCES, "*"), "false"));
 
             RestoreExecutionAdapter restoreExecution =
                     backupFacade.runRestoreAsync(file("geoserver-full-backup.zip"), null, null, null, hints);

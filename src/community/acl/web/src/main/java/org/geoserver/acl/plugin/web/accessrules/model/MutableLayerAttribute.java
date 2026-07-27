@@ -33,7 +33,7 @@ public class MutableLayerAttribute implements Serializable {
     }
 
     MutableLayerAttribute(LayerAttribute latt) {
-        this(latt.getName(), latt.getDataType(), latt.getAccess());
+        this(latt.name(), latt.dataType(), latt.access());
     }
 
     MutableLayerAttribute(AttributeTypeInfo ftatt) {

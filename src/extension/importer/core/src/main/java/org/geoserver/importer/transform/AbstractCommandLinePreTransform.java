@@ -8,6 +8,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -172,13 +174,9 @@ public abstract class AbstractCommandLinePreTransform extends AbstractCommandLin
     protected File getOutputDirectory(ImportData data) throws IOException {
         File input = getInputFile(data);
         File parent = input.getParentFile();
-        File tempFile = File.createTempFile("tmp", null, parent);
-        tempFile.delete();
-        if (!tempFile.mkdir()) {
-            throw new IOException("Could not create work directory " + tempFile.getAbsolutePath());
-        }
+        Path tmpPath = Files.createTempDirectory(parent.toPath(), "tmp");
 
-        return tempFile;
+        return tmpPath.toFile();
     }
 
     /** Implementors must provide the executable to be run */

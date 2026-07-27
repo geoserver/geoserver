@@ -10,8 +10,8 @@ This tutorial walks through the steps of publishing a layer group combining seve
 First let's gather the data that we'll be publishing.
 
 1.  Complete the previous tutorials:
-    - [Publishing a GeoPackage](../geopkg-quickstart/index.md) defining the ``tutorial:countries`` layer
-    - [Publishing a GeoTIFF](../image-quickstart/index.md) defining the ``tutorial:shaded`` layer
+    - [Publishing a GeoPackage](../geopkg-quickstart/index.md) defining the `tutorial:countries` layer
+    - [Publishing a GeoTIFF](../image-quickstart/index.md) defining the `tutorial:shaded` layer
 
 ## Create a layer group
 
@@ -37,10 +37,10 @@ First let's gather the data that we'll be publishing.
 
 5.  Locate **Basic Resource Info** and define the layer:
 
-    | Name | ``basemap`` |
+    | Name | `basemap` |
     |----|----|
-    | Title | ``Basemap`` |
-    | Abstract | ``Plain basemap suitable as a backdrop for geospatial data.`` |
+    | Title | `Basemap` |
+    | Abstract | `Plain basemap suitable as a backdrop for geospatial data.` |
     | Workspace | `tutorial` |
 
 
@@ -80,10 +80,10 @@ First let's gather the data that we'll be publishing.
 
 In order to verify that the `tutorial:basemap` layer is published correctly, we can preview the layer.
 
-1.  Navigate to the **Data > Layer Preview** page and find the `tutorial:basemap` layer.
+1.  Navigate to the **GeoServer > Browse Layers** page and find the `tutorial:basemap` layer.
 
     !!! note
-        Use the **Search** field with ``tutorial`` as shown to limit the number of layers to page through.
+        Use the **Search** field with `tutorial` as shown to limit the number of layers to page through.
 
 2.  Click the **OpenLayers** link in the **Common Formats** column.
 

@@ -20,7 +20,7 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class ClassificationStatsPPIO extends XMLPPIO {
 
-    protected ClassificationStatsPPIO() {
+    public ClassificationStatsPPIO() {
         super(ClassificationStats.class, ClassificationStats.class, new QName("Results"));
     }
 

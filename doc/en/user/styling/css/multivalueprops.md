@@ -4,7 +4,7 @@ When rendering maps, it is sometimes useful to draw the same feature multiple ti
 
 In GeoServer's `css` module, all properties may have multiple values. There is a distinction between complex properties, and multi-valued properties. Complex properties are separated by spaces, while multi-valued properties are separated by commas. So, this style fills a polygon once:
 
-``` css
+```css
 * {
     fill: url("path/to/img.png") red;
 }
@@ -12,7 +12,7 @@ In GeoServer's `css` module, all properties may have multiple values. There is a
 
 Using `red` as a fallback color if the image cannot be loaded. If you wanted to draw red on top of the image, you would have to style like so:
 
-``` css
+```css
 * {
     fill: url("path/to/img.png"), red;
     /* set a transparency for the second fill,
@@ -23,7 +23,7 @@ Using `red` as a fallback color if the image cannot be loaded. If you wanted to 
 
 For each type of symbolizer (`fill`, `mark`, `stroke`, and `label`) the number of values determines the number of times the feature will be drawn. For example, you could create a bulls-eye effect by drawing multiple circles on top of each other with decreasing sizes:
 
-``` css
+```css
 * {
     mark: symbol(circle), symbol(circle), symbol(circle), symbol(circle);
     mark-size: 40px, 30px, 20px, 10px;
@@ -32,7 +32,7 @@ For each type of symbolizer (`fill`, `mark`, `stroke`, and `label`) the number o
 
 If you do not provide the same number of values for an auxiliary property, the list will be repeated as many times as needed to finish. So:
 
-``` css
+```css
 * {
     mark: symbol(circle), symbol(circle), symbol(circle), symbol(circle);
     mark-size: 40px, 30px, 20px, 10px;
@@ -46,7 +46,7 @@ makes all those circles 12% opaque. (Note that they are all drawn on top of each
 
 For purposes of inheritance/cascading, property lists are treated as indivisible units. For example:
 
-``` css
+```css
 * {
     stroke: red, green, blue;
     stroke-width: 10px, 6px, 2px;

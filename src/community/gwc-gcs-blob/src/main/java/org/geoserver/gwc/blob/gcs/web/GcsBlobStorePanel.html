@@ -4,59 +4,65 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-GcsBlobStorePanel">
-        <fieldset>
-          <div class="gs-unordered-list-class">
-            <div class="gs-list-item-class">
-              <legend>
-                <span>
-                  <wicket:message key="storage"></wicket:message>
-                </span>
-              </legend>
-              <label for="bucket">
-                <wicket:message key="bucket"></wicket:message>
-              </label>
-              <input id="bucket" wicket:id="bucket" type="text" />
-              <label for="prefix">
-                <wicket:message key="prefix"></wicket:message>
-              </label>
-              <input id="prefix" wicket:id="prefix" type="text" />
-            </div>
-            <div class="gs-list-item-class">
-              <legend>
-                <span>
-                  <wicket:message key="authentication"></wicket:message>
-                </span>
-              </legend>
-              <label for="useDefaultCredentialsChain">
-                <wicket:message key="useDefaultCredentialsChain"></wicket:message>
-              </label>
-              <input id="useDefaultCredentialsChain" wicket:id="useDefaultCredentialsChain" type="checkbox" />
-              <label for="apiKey">
-                <wicket:message key="apiKey"></wicket:message>
-              </label>
-              <input id="apiKey" wicket:id="apiKey" type="password" />
-            </div>
-            <div class="gs-list-item-class">
-              <legend>
-                <span>
-                  <wicket:message key="advanced"></wicket:message>
-                </span>
-              </legend>
-              <label for="projectId">
-                <wicket:message key="projectId"></wicket:message>
-              </label>
-              <input id="projectId" wicket:id="projectId" type="text" />
-              <label for="quotaProjectId">
-                <wicket:message key="quotaProjectId"></wicket:message>
-              </label>
-              <input id="quotaProjectId" wicket:id="quotaProjectId" type="text" />
-              <label for="endpointUrl">
-                <wicket:message key="endpointUrl"></wicket:message>
-              </label>
-              <input id="endpointUrl" wicket:id="endpointUrl" type="text" />
-            </div>
+        <div class="gs-form">
+          <legend>
+            <span>
+              <wicket:message key="storage"></wicket:message>
+            </span>
+          </legend>
+          <div class="gs-form-group">
+            <label for="bucket">
+              <wicket:message key="bucket"></wicket:message>
+            </label>
+            <input id="bucket" wicket:id="bucket" type="text" />
           </div>
-        </fieldset>
+          <div class="gs-form-group">
+            <label for="prefix">
+              <wicket:message key="prefix"></wicket:message>
+            </label>
+            <input id="prefix" wicket:id="prefix" type="text" />
+          </div>
+          <legend>
+            <span>
+              <wicket:message key="authentication"></wicket:message>
+            </span>
+          </legend>
+          <div class="choiceItem">
+            <input id="useDefaultCredentialsChain" wicket:id="useDefaultCredentialsChain" type="checkbox" />
+            <label for="useDefaultCredentialsChain">
+              <wicket:message key="useDefaultCredentialsChain"></wicket:message>
+            </label>
+          </div>
+          <div class="gs-form-group">
+            <label for="apiKey">
+              <wicket:message key="apiKey"></wicket:message>
+            </label>
+            <input id="apiKey" wicket:id="apiKey" type="password" />
+          </div>
+          <legend>
+            <span>
+              <wicket:message key="advanced"></wicket:message>
+            </span>
+          </legend>
+          <div class="gs-form-group">
+            <label for="projectId">
+              <wicket:message key="projectId"></wicket:message>
+            </label>
+            <input id="projectId" wicket:id="projectId" type="text" />
+          </div>
+          <div class="gs-form-group">
+            <label for="quotaProjectId">
+              <wicket:message key="quotaProjectId"></wicket:message>
+            </label>
+            <input id="quotaProjectId" wicket:id="quotaProjectId" type="text" />
+          </div>
+          <div class="gs-form-group">
+            <label for="endpointUrl">
+              <wicket:message key="endpointUrl"></wicket:message>
+            </label>
+            <input id="endpointUrl" wicket:id="endpointUrl" type="text" />
+          </div>
+        </div>
       </div>
     </wicket:panel>
   </body>

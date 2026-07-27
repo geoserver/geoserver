@@ -4,7 +4,11 @@ render_macros: true
 
 # WPS Download
 
-WPS Download plugin provides some useful features for easily downloading: * Raster or Vector layer as zip files * Large maps as images * Time based animation The module also provides facilities to control the output file size.
+WPS Download plugin provides some useful features for easily downloading: 
+
+* Raster or Vector layer as zip files 
+* Large maps as images 
+* Time based animation The module also provides facilities to control the output file size.
 
 ## Installing the WPS Download extension
 
@@ -48,7 +52,7 @@ Where the available limits are:
 - Raster size limits : maximum pixel size of the Raster to read (in square pixels, width by height)
 - Write limits : maximum raw raster size in bytes (a limit of how much disk space a raster can take). For a given raster, its raw size in bytes is calculated by multiplying pixel number (raster_width x raster_height) with the accumulated sum of each band's pixel sample_type size in bytes, for all bands
 - Hard output limit : maximum file size to download (will be checked while writing the output, post compression)
-- ZIP compresion level : compression level for the output zip file
+- ZIP compression level : compression level for the output zip file
 - Maximum frames in animation : maximum number of frames allowed (if no limit, the maximum execution time limits will still apply and stop the process in case there are too many)
 
 The configuration is stored in a **download.properties** file found in the root of the GeoServer data directory.

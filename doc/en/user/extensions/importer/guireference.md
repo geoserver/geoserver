@@ -111,7 +111,7 @@ When ready to perform the import, click **Import**.
 
 Each selected layer will be added to the GeoServer catalog inside a new or existing store, and published as a layer.
 
-After the import is complete the status area will refresh showing if the import was successful for each layer. If successful, a dialog box for previewing the layer will be displayed, with options for **Layer Preview** (OpenLayers), **Google Earth**, and **GeoExplorer**.
+After the import is complete the status area will refresh showing if the import was successful for each layer. If successful, a dialog box for previewing the layer will be displayed, with options for **Browse Layers** (OpenLayers), **Google Earth**, and **GeoExplorer**.
 
 ![](images/layerlist_success.png)
 

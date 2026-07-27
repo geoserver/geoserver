@@ -13,7 +13,7 @@ For example, a dataset has the following schema:
 
 This schema would be mapped to the following XML schema, available via a `DescribeFeatureType` request for the `topp:myDataset` type:
 
-``` xml
+```xml
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
  xmlns:gml="http://www.opengis.net/gml"
  xmlns:topp="http://www.openplans.org/topp" 
@@ -51,7 +51,7 @@ The GeoServer WFS supports a limited amount of schema output customization. A cu
 
 For example, it may be useful to limit the exposed attributes in the example dataset described above. Start by retrieving the default output as a benchmark of the complete schema. With the feature type schema listed above, the `GetFeature` request would be as follows:
 
-``` xml
+```xml
 <topp:myDataset gml:id="myDataset.1">
  <topp:intProperty>1</topp:intProperty>
   <topp:stringProperty>one</topp:stringProperty>
@@ -97,7 +97,7 @@ The modified schema will only be available to GeoServer when the configuration i
 
 A subsequent `DescribeFeatureType` request for `topp:myDataset` confirms the `floatProperty` element is absent:
 
-``` xml
+```xml
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
  xmlns:gml="http://www.opengis.net/gml"
  xmlns:topp="http://www.openplans.org/topp" 
@@ -126,7 +126,7 @@ A subsequent `DescribeFeatureType` request for `topp:myDataset` confirms the `fl
 
 A `GetFeature` request will now return features that don't include the `floatProperty` attribute:
 
-``` xml
+```xml
 <topp:myDataset gml:id="myDataset.1">
   <topp:intProperty>1</topp:intProperty>
   <topp:stringProperty>one</topp:stringProperty>
@@ -144,12 +144,12 @@ Schema customization may be used to perform some **type changing**, although thi
 
 The most common change type requirement is for geometry attributes. In many cases the underlying data set does not have the necessary metadata to report the specific geometry type of a geometry attribute. The automatic schema mapping would result in an element definition similar to the following:
 
-``` xml
+```xml
 <xsd:element maxOccurs="1" minOccurs="0" name="geometry" nillable="true" type="gml:GeometryPropertyType"/>
 ```
 
 However if the specific type of the geometry is known, the element definition above could be altered. For point geometry, the element definition could be altered to :
 
-``` xml
+```xml
 <xsd:element maxOccurs="1" minOccurs="0" name="geometry" nillable="true" type="gml:PointPropertyType"/>
 ```

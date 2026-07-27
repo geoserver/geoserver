@@ -18,7 +18,7 @@ By default, GeoServer supports two types of role services:
 
 To assign the system role `ROLE_ADMINISTRATOR` to a user or to a group, a new role with a different name must be created and mapped to the `ROLE_ADMINISTRATOR` role. The same holds true for the system role `ROLE_GROUP_ADMIN`. The mapping is stored in the service's `config.xml` file.
 
-``` xml
+```xml
 <roleService>
   <id>471ed59f:13915c479bc:-7ffc</id>
   <name>default</name>
@@ -44,7 +44,7 @@ The service is configured to map the local role `ADMIN` to the system role `ROLE
 
 The following provides an illustration of the `roles.xml` that ships with the default GeoServer configuration:
 
-``` xml
+```xml
 <roleRegistry version="1.0" xmlns="http://www.geoserver.org/security/roles">
   <roleList>
     <role id="ADMIN"/>
@@ -69,7 +69,7 @@ The J2EE role service parses roles from the `WEB-INF/web.xml` file. As a consequ
 
 ### `<security-role>`
 
-``` xml
+```xml
 <security-role>
    <role-name>role1</role-name>
 </security-role>
@@ -89,7 +89,7 @@ Roles retrieved:
 
 ### `<security-constraint>`
 
-``` xml
+```xml
 <security-constraint>
    <web-resource-collection>
        <web-resource-name>Protected Area</web-resource-name>
@@ -113,7 +113,7 @@ Roles retrieved:
 
 ### `<security-role-ref>`
 
-``` xml
+```xml
 <security-role-ref>
     <role-name>MGR</role-name>
     <!-- role name used in code -->
@@ -186,7 +186,7 @@ Groups extraction can be done anonymously or using a given username/password if 
 
 An example of configuration file (config.xml) for this type of role service is the following:
 
-``` xml
+```xml
 <org.geoserver.security.ldap.LDAPRoleServiceConfig>
   <id>-36dfbd50:1424687f3e0:-8000</id>
   <name>ldapacme</name>
@@ -235,7 +235,7 @@ From the above we could have the following REST API to talk to
 
 Returns the full list of roles (no paging required, we assume it's small). Example response:
 
-``` json
+```json
 {"groups":["r1","r2","r3"]}
 ```
 
@@ -243,7 +243,7 @@ Returns the full list of roles (no paging required, we assume it's small). Examp
 
 Returns the role of the administrator (yes, just one, it's strange...):
 
-``` json
+```json
 {"adminRole":["root"]}
 ```
 
@@ -251,7 +251,7 @@ Returns the role of the administrator (yes, just one, it's strange...):
 
 Returns the list of roles for a particular user. Example response:
 
-``` json
+```json
 {"users": [{"user":"u1", "groups":["r1","r2"]}]}
 ```
 

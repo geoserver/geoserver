@@ -12,13 +12,13 @@ Review of raster symbology:
 
 - When queried with a "sample" location:
 
-  - A grid coverage can determine the appropriate array location and retrieve a value. Different techniques may be used interpolate an appropriate value from several measurements (higher quality) or directly return the "nearest neighbor" (faster).
-  - A vector coverages would use a point-in-polygon check and return an appropriate attribute value.
-  - A scientific model can calculate a value for each sample location
+    - A grid coverage can determine the appropriate array location and retrieve a value. Different techniques may be used interpolate an appropriate value from several measurements (higher quality) or directly return the "nearest neighbor" (faster).
+    - A vector coverages would use a point-in-polygon check and return an appropriate attribute value.
+    - A scientific model can calculate a value for each sample location
 
 - Many raster formats organize information into bands of content. Values recorded in these bands and may be mapped into colors for display (a process similar to theming an attribute for vector data).
 
-  For imagery the raster data is already formed into red, green and blue bands for display.
+    For imagery the raster data is already formed into red, green and blue bands for display.
 
 - As raster data has no inherent shape, the format is responsible for describing the orientation and location of the grid used to record measurements.
 
@@ -39,10 +39,10 @@ The **raster** symbolizer controls the display of raster data. By default, the r
 1.  Navigate to the **Styles** page.
 2.  Click **Add a new style** and choose the following:
 
-    | Name:      | ``image_example`` |
+    | Name:      | `image_example` |
     |------------|-----------------------------|
-    | Workspace: | ``No workspace``  |
-    | Format:    | ``YSLD``          |
+    | Workspace: | `No workspace`  |
+    | Format:    | `YSLD`          |
 
 
 1.  Choose **raster** from the `Generate a default style` dropdown and click **generate**.
@@ -83,10 +83,10 @@ The `usgs:dem` layer used for this exercise:
 1.  Return to the **Styles** page.
 2.  Click **Add a new style** and choose the following:
 
-    | Name:      | ``raster_example`` |
+    | Name:      | `raster_example` |
     |------------|------------------------------|
-    | Workspace: | ``No workspace``   |
-    | Format:    | ``YSLD``           |
+    | Workspace: | `No workspace`   |
+    | Format:    | `YSLD`           |
 
 
 1.  Choose **raster** from the `Generate a default style` dropdown and click **generate**.
@@ -129,7 +129,7 @@ For qualitative data (such as land use) or simply to use color, we need a differ
 !!! note
     We can use a color map to artificially color a single band raster introducing smooth graduations for elevation or temperature models or clear differentiation for qualitative data.
 
-1.  Apply the following YAML to our ``usgs:DEM`` layer:
+1.  Apply the following YAML to our `usgs:DEM` layer:
 
     ```yaml hl_lines="4 5 6 7 8 9 10"
     symbolizers:
@@ -267,7 +267,7 @@ This exploration focuses on accurately communicating differences in value, rathe
 1.  A special effect that is effective with grayscale information is automatic contrast adjustment.
 2.  Make use of a simple contrast enhancement with `usgs:dem`:
 
-``` yaml
+```yaml
 symbolizers:
 - raster:
     opacity: 1.0
@@ -280,20 +280,20 @@ symbolizers:
     ![image](../style/img/raster_contrast_1.png)
 
     !!! note
-        Discussion [provided](#ysld-raster-a1) at the end of the workbook.
+        Discussion [provided](done.md#ysld.raster.a1) at the end of the workbook.
 
 ## Challenge Intervals {: #ysld.raster.q2 }
 
 1.  The color-map **type** property dictates how the values are used to generate a resulting color.
 
-    - ``ramp`` is used for quantitative data, providing a smooth interpolation between the provided color values.
-    - ``intervals`` provides categorization for quantitative data, assigning each range of values a solid color.
-    - ``values`` is used for qualitative data, each value is required to have a **color-map** entry or it will not be displayed.
+    - `ramp` is used for quantitative data, providing a smooth interpolation between the provided color values.
+    - `intervals` provides categorization for quantitative data, assigning each range of values a solid color.
+    - `values` is used for qualitative data, each value is required to have a **color-map** entry or it will not be displayed.
 
 2.  **Challenge:** Update your DEM example to use **intervals** for presentation. What are the advantages of using this approach for elevation data?
 
     !!! note
-        Answer [provided](#ysld-raster-a2) at the end of the workbook.
+        Answer [provided](done.md#ysld.raster.a2) at the end of the workbook.
 
 ## Explore Image Processing
 
@@ -304,9 +304,9 @@ Additional properties are available to provide slight image processing during vi
 
 Image processing can be used to enhance the output to highlight small details or to balance images from different sensors allowing them to be compared.
 
-1.  The **contrast-enhancement** property is used to turn on a range of post processing effects. Settings are provided for ``normalize`` or ``histogram`` or ``none``;
+1.  The **contrast-enhancement** property is used to turn on a range of post processing effects. Settings are provided for `normalize` or `histogram` or `none`;
 
-``` yaml
+```yaml
 symbolizers:
 - raster:
     opacity: 1.0
@@ -320,7 +320,7 @@ symbolizers:
 
 2.  The **raster-gamma** property is used adjust the brightness of **contrast-enhancement** output. Values less than 1 are used to brighten the image while values greater than 1 darken the image.
 
-``` yaml
+```yaml
 symbolizers:
 - raster:
     opacity: 1.0
@@ -339,7 +339,7 @@ symbolizers:
 2.  **Challenge:** Use what you have learned to present the `usgs:dem` clearly.
 
     !!! note
-        Answer [provided](#ysld-raster-a3) at the end of the workbook.
+        Answer [provided](done.md#ysld.raster.a3) at the end of the workbook.
 
 ## Challenge Raster Opacity {: #ysld.raster.q4 }
 
@@ -348,4 +348,4 @@ symbolizers:
 2.  **Challenge:** Can you think of an example where this would be useful?
 
     !!! note
-        Discussion [provided](#ysld-raster-a4) at the end of the workbook.
+        Discussion [provided](done.md#ysld.raster.a4) at the end of the workbook.

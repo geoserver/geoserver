@@ -10,7 +10,7 @@ The default geometry can be defined by setting a geometry index on the desired g
 
 As an example of the obtained output we will use the Stations use case. In the MongoDB collection we have the following document among the others being served:
 
-``` json
+```json
 {
   "_id": {
  "$oid": "58e5889ce4b02461ad5af080"
@@ -55,7 +55,7 @@ As an example of the obtained output we will use the Stations use case. In the M
 
 The GeoJSON output for that specific document will be the following feature:
 
-``` json
+```json
 {
  "type": "Feature",
  "id": "58e5889ce4b02461ad5af080",
@@ -115,7 +115,7 @@ Behind the scenes the module builds a complex feature schema on the fly automati
 
 To clarify this lets assume that we want to filter the stations features on a measurements value greater than 100. According to the above GeoJSON feature representation the whole filter will look like: `measurements.MeasurementsFeature.values.ValuesFeature.value > 100`.
 
-The property path needs to specify for each nested complex attribute the property name and the feature name. The former coincides with the original attribute name in the document, while the latter with that attribute name with the first letter upper cased and the ``Feature`` suffix.
+The property path needs to specify for each nested complex attribute the property name and the feature name. The former coincides with the original attribute name in the document, while the latter with that attribute name with the first letter upper cased and the `Feature` suffix.
 
 To avoid users needing to deal with this complexity, simplified property access support has been implemented. This allows referencing a property with a path that matches the GeoJSON output format or the document structure.
 

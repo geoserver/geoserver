@@ -39,7 +39,7 @@ public class CachingExtendedCapabilitiesProviderTest extends GeoServerSystemTest
     public void testCapabilitiesContributedInternalDTD() throws Exception {
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(false);
 
-        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1&tiled=true"), false);
+        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1&tiled=true"), true);
         DocumentType doctype = dom.getDoctype();
         assertNotNull(doctype);
 
@@ -96,12 +96,12 @@ public class CachingExtendedCapabilitiesProviderTest extends GeoServerSystemTest
         String tileSetPath = "/WMT_MS_Capabilities/Capability/VendorSpecificCapabilities/TileSet";
 
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(false);
-        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1&tiled=true"), false);
+        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1&tiled=true"), true);
 
         assertXpathNotExists(tileSetPath, dom);
 
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
-        dom = dom(get("wms?request=getCapabilities&version=1.1.1&tiled=true"), false);
+        dom = dom(get("wms?request=getCapabilities&version=1.1.1&tiled=true"), true);
 
         assertXpathExists(tileSetPath, dom);
 

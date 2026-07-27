@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -37,20 +36,22 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.request.resource.DynamicImageResource;
-import org.apache.wicket.request.resource.IResource;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.apache.wicket.request.resource.ResourceReference;
-import org.apache.wicket.request.resource.caching.IStaticCacheableResource;
 import org.apache.wicket.util.string.StringValue;
+import org.geoserver.catalog.LayerGroupHelper;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
-import org.geoserver.web.wicket.CachingImage;
+import org.geoserver.web.PreviewLink;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wms.GetMapOutputFormat;
@@ -65,20 +66,41 @@ public class MapPreviewPage extends GeoServerBasePage {
     private static final PackageResourceReference JS_FILE =
             new PackageResourceReference(MapPreviewPage.class, "MapPreviewPage.js");
 
+    private String targetWorkspaceStr = null;
+    private String targetLayerStr = null;
+    private String targetGroupStr = null;
+
     PreviewLayerProvider provider = new PreviewLayerProvider() {
         @Override
-        protected Filter getFilter() {
-
-            Filter baseFilter = super.getFilter();
-            StringValue wsParam = getPageParameters().get("workspace");
-            if (wsParam.isNull() || wsParam.isEmpty()) {
-                return baseFilter;
+        protected Filter getContextFilter() {
+            String targetPublishedStr = targetGroupStr != null ? targetGroupStr : targetLayerStr;
+            if (targetPublishedStr != null) {
+                String targetLayer;
+                if (targetWorkspaceStr != null) {
+                    targetLayer = targetWorkspaceStr + ":" + targetPublishedStr;
+                } else {
+                    targetLayer = targetPublishedStr;
+                }
+                LayerGroupInfo gi = getCatalog().getLayerGroupByName(targetLayer);
+                if (gi != null) {
+                    LayerGroupHelper helper = new LayerGroupHelper(gi);
+                    List<String> ids = new ArrayList<>();
+                    for (PublishedInfo li : helper.allPublished()) {
+                        ids.add(li.getId());
+                    }
+                    return ids.isEmpty() ? Filter.EXCLUDE : Predicates.in("id", ids);
+                }
+                LayerInfo li = getCatalog().getLayerByName(targetLayer);
+                if (li != null) {
+                    return Predicates.equal("id", li.getId());
+                }
+                return Filter.EXCLUDE;
+            } else if (targetWorkspaceStr != null) {
+                Filter layerWsFilter = Predicates.equal("resource.store.workspace.name", targetWorkspaceStr);
+                Filter groupWsFilter = Predicates.equal("workspace.name", targetWorkspaceStr);
+                return Predicates.or(layerWsFilter, groupWsFilter);
             }
-            String targetWs = wsParam.toString();
-            Filter layerWsFilter = Predicates.equal("resource.store.workspace.name", targetWs);
-            Filter groupWsFilter = Predicates.equal("workspace.name", targetWs);
-            Filter workspaceFilter = Predicates.or(layerWsFilter, groupWsFilter);
-            return Predicates.and(baseFilter, workspaceFilter);
+            return null;
         }
     };
 
@@ -87,11 +109,23 @@ public class MapPreviewPage extends GeoServerBasePage {
     private transient List<String> availableWMSFormats;
     // private transient List<String> availableWFSFormats;
 
-    public MapPreviewPage() {
+    public MapPreviewPage(PageParameters parameters) {
         // output formats for the drop downs
         final List<String> wmsOutputFormats = getAvailableWMSFormats();
         final List<String> wfsOutputFormats = getAvailableWFSFormats();
 
+        StringValue wsParam = parameters.get("workspace");
+        StringValue layerParam = parameters.get("layer");
+        StringValue groupParam = parameters.get("group");
+        if (!wsParam.isEmpty()) {
+            this.targetWorkspaceStr = wsParam.toString();
+        }
+        if (!layerParam.isEmpty()) {
+            this.targetLayerStr = layerParam.toString();
+        }
+        if (!groupParam.isEmpty()) {
+            this.targetGroupStr = groupParam.toString();
+        }
         // build the table
         table = new GeoServerTablePanel<>("table", provider) {
 
@@ -106,7 +140,7 @@ public class MapPreviewPage extends GeoServerBasePage {
                 boolean wfsVisible = layer.hasServiceSupport("WFS");
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", MapPreviewPage.this);
-                    f.add(new CachingImage("layerIcon", layer.getIcon()));
+                    f.add(new GsIcon("layerIcon", layer.getIcon()));
                     return f;
                 } else if (property == NAME) {
                     return new Label(id, property.getModel(itemModel));
@@ -118,6 +152,7 @@ public class MapPreviewPage extends GeoServerBasePage {
                         @Override
                         public void populateItem(ListItem<ExternalLink> item) {
                             final ExternalLink link = item.getModelObject();
+                            item.setVisible(link != null && link.isVisible());
                             item.add(link);
                         }
                     };
@@ -139,6 +174,10 @@ public class MapPreviewPage extends GeoServerBasePage {
         add(new HiddenField<>("maxFeatures", Model.of(maxFeatures)).setOutputMarkupId(true));
     }
 
+    public MapPreviewPage() {
+        this(new PageParameters());
+    }
+
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
@@ -150,7 +189,11 @@ public class MapPreviewPage extends GeoServerBasePage {
         List<CommonFormatLink> formats = getGeoServerApplication().getBeansOfType(CommonFormatLink.class);
         Collections.sort(formats);
         for (CommonFormatLink link : formats) {
-            links.add(link.getFormatLink(layer));
+            PreviewLink previewLink = link.getFormatLink(layer);
+            if (previewLink == null) continue;
+            ExternalLink externalLink = new ExternalLink("theLink", previewLink.href(), previewLink.label());
+            if (previewLink.title() != null) externalLink.add(AttributeModifier.append("title", previewLink.title()));
+            links.add(externalLink);
         }
         return links;
     }
@@ -271,7 +314,7 @@ public class MapPreviewPage extends GeoServerBasePage {
     }
 
     /**
-     * Translate format (if translation available).
+     * Translate format (if translation available). [
      *
      * @param prefix protocol
      * @param format output format
@@ -304,35 +347,6 @@ public class MapPreviewPage extends GeoServerBasePage {
             String t1 = translateFormat(prefix, f1);
             String t2 = translateFormat(prefix, f2);
             return t1.compareTo(t2);
-        }
-    }
-
-    private static class DelayedImageResource extends DynamicImageResource {
-        private final IModel<PreviewLayer> itemModel;
-
-        public DelayedImageResource(IModel<PreviewLayer> itemModel) {
-            super("image/png");
-            this.itemModel = itemModel;
-        }
-
-        @Override
-        protected byte[] getImageData(Attributes attributes) {
-            PreviewLayer layer = itemModel.getObject();
-            try {
-                ResourceReference imageReference = layer.getIcon();
-                IResource image = imageReference.getResource();
-
-                if (image instanceof IStaticCacheableResource) {
-                    IStaticCacheableResource staticImage = (IStaticCacheableResource) image;
-
-                    return IOUtils.toByteArray(staticImage.getResourceStream().getInputStream());
-                } else {
-                    throw new RuntimeException("Image "
-                            + imageReference.getClass().getSimpleName() + " is not a static cacheable resource");
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 }

@@ -1,6 +1,21 @@
 # Container Considerations
 
-Java web containers such as [Tomcat](http://tomcat.apache.org) or [Jetty](https://www.eclipse.org/jetty/) ship with configurations that allow for fast startup, but don't always deliver the best performance.
+Java web containers such as [Tomcat](http://tomcat.apache.org) or [Jetty](https://www.eclipse.org/jetty/) ship with default configurations that emphasis fast startup, but don't always deliver the best sustained performance for GeoServer.
+
+| JavaEE          | JakartaEE       | Tomcat        | Jetty      | GeoServer      | Java     |
+| --------------- | --------------- | --------------| ---------- | -------------- | -------- |
+|                 | Servlet API 6.1 | Tomcat 11.0.x | Jetty 12.1 | GeoServer 3.0  | 21,17    |
+|                 | Servlet API 6.0 | Tomcat 10.1.x | Jetty 12.0 | not supported  |          |
+|                 | Servlet API 5.0 | Tomcat 10.0.x | Jetty 11.0 | not supported  |          |
+| Servlet API 4   |                 | Tomcat 9.x    |            | GeoServer 2.28 | 21,17    |
+| Servlet API 4   |                 | Tomcat 9.x    |            | GeoServer 2.27 | 21,17,11 |
+| Servlet API 3.1 |                 |               | Jetty 9.4  | GeoServer 2.28 | 21,17    |
+| Servlet API 3.1 |                 |               | Jetty 9.4  | GeoServer 2.27 | 21,17,11 |
+
+Reference:
+
+* [Web archive installation](../installation/war.md)
+* [Downloads](https://geoserver.org/download/) (Archive tab lists Java compatibility)
 
 ## Optimize your JVM
 
@@ -64,10 +79,10 @@ GeoServer provides a built-in configuration interface to enable CORS. This is th
 ![](images/cors.png)
 
 1.  Log in to the GeoServer Web Admin interface as an administrator.
-2.  Navigate to **Settings --> Global**.
+2.  Navigate to **Server > Global Settings**.
 3.  Locate the **CORS Settings** section.
 
-![](images/cors_settings.png)
+    ![](images/cors_settings.png)
 
 4.  Check the **Enabled** box.
 5.  Configure the following options as needed:
@@ -88,7 +103,7 @@ While the UI method above is recommended, administrators using Tomcat may still 
 1.  Uncomment the following `<filter>` in **`webapps/geoserver/WEB-INF/web.xml`**:
 
     ```xml
-    --8<-- "src/web/app/src/main/webapp/WEB-INF/web.xml"
+    --8<-- "src/web/app/src/main/webapp/WEB-INF/web.xml:141:159"
     ```
 
     Note that in some cases you may have to replace the asterisk (*) param-value for cors.allowed.methods with an explicit list: Content-Type,X-Requested-With,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Authorization
@@ -96,7 +111,7 @@ While the UI method above is recommended, administrators using Tomcat may still 
 2.  Uncomment the following `<filter-mapping>`:
 
     ```xml
-    --8<-- "src/web/app/src/main/webapp/WEB-INF/web.xml"
+    --8<-- "src/web/app/src/main/webapp/WEB-INF/web.xml:171:177"
     ```
 
 3.  Restart

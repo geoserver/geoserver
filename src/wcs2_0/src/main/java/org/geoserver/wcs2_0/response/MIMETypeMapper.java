@@ -52,7 +52,7 @@ public class MIMETypeMapper implements ApplicationContextAware {
     private List<CoverageMimeTypeMapper> mappers;
 
     /** Constructor. */
-    private MIMETypeMapper(CoverageResponseDelegateFinder finder, Catalog catalog) {
+    public MIMETypeMapper(CoverageResponseDelegateFinder finder, Catalog catalog) {
         // collect all of the output mime types
         for (String of : finder.getOutputFormats()) {
             CoverageResponseDelegate delegate = finder.encoderFor(of);

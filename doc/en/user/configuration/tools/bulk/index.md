@@ -8,7 +8,7 @@ The **Catalog Bulk Load Tool** is used to duplicate GeoServer configuration (wor
 
 ## Duplicating Configuration
 
-1.  Navigate to **Tools --> Catalog Bulk Load Tool**
+1.  Navigate to **Utilities > Tools > Catalog Bulk Load Tool**
 2.  Select the item to copy:
     - **Workspace and Namespace**
     - **Store**

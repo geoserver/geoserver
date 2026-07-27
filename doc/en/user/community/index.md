@@ -64,7 +64,6 @@ Community modules are provided "as is" alongside the [nightly builds](https://bu
 - [Notification community module Plugin Documentation](notification/index.md)
 - [OGC API modules](ogc-api/index.md)
 - [OGR datastore](ogr-store/index.md)
-- [OAuth2 OpenID Connect](oidc/index.md)
 - [PMTiles DataStore](pmtiles-store/index.md)
 - [PNG-WIND output](png-wind/index.md)
 - [Proxy Base Extension](proxy-base-ext/index.md)

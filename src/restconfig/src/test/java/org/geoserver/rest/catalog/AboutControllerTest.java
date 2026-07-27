@@ -14,12 +14,12 @@ import java.util.logging.Level;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.xml.XMLUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.kordamp.json.JSONArray;
@@ -36,7 +36,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
     @Test
     public void testEmptyListHTMLTemplate() throws Exception {
         try {
-            getAsDOM(BASEPATH + "/about/version?manifest=NOTEXISTS.*");
+            getAsDOM(BASEPATH + "/about/version?manifest=NOTEXISTS.*", false);
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "", e);
             Assert.fail(e.getLocalizedMessage());
@@ -94,11 +94,12 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
     public void testGetStatusAsHTML() throws Exception {
         // add an escape char to the environment
         System.setProperty("badString", "\u0007\u0008\u001b[46m");
+
         // make the request, parsing the result into a Dom object
-        Document dom = getAsDOM(BASEPATH + "/about/status");
+        Document dom = getAsDOM(BASEPATH + "/about/status", true);
         checkHTMLModel(dom);
 
-        Document dom2 = getAsDOM(BASEPATH + "/about/status.html");
+        Document dom2 = getAsDOM(BASEPATH + "/about/status.html", true);
         checkHTMLModel(dom2);
     }
 
@@ -165,7 +166,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
         try {
             domSrc = new DOMSource(domDoc);
 
-            txformer = TransformerFactory.newInstance().newTransformer();
+            txformer = XMLUtils.newTransformer();
             txformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
             txformer.setOutputProperty(OutputKeys.METHOD, "xml");
             txformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");

@@ -10,7 +10,7 @@ This module support well defined dimensions like elevation and time, but also cu
 
 The default behavior of WMTS is to list in the capabilities document all the values available in a certain dimension, something like this:
 
-``` xml
+```xml
 <Dimension>
   <ows:Identifier>elevation</ows:Identifier>
   <Default>0.0</Default>
@@ -43,7 +43,7 @@ This module will instead take into account the presentation mode selected by the
 
 With the presentation mode select to `Continuous interval` or `Resolution and interval` we will instead see something like this:
 
-``` xml
+```xml
 <Dimension>
   <ows:Identifier>elevation</ows:Identifier>
   <Default>0.0</Default>
@@ -95,13 +95,13 @@ The `DimensionIdentifier` parameter can be used to restrict the domain values of
 
 A simple `DescribeDomains` request will look like this:
 
-``` guess
+```guess
 http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=DescribeDomains&Version=1.0.0&Layer=some_layer&TileMatrixSet=EPSG:4326
 ```
 
 and the result will be similar to this:
 
-``` xml
+```xml
 <Domains xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
   <SpaceDomain>
     <BoundingBox CRS="EPSG:4326" 
@@ -127,7 +127,7 @@ and the result will be similar to this:
 
 Note that if an end attribute has been defined in the layer dimension configuration page, the result will show ranges in place of single values. The result in this case will look like the following:
 
-``` xml
+```xml
 <Domains xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
   <SpaceDomain>
     <BoundingBox CRS="EPSG:4326" 
@@ -155,13 +155,13 @@ From the information above we can see that we have three dimensions `time`, `ele
 
 Now let's see how elevations relate to time dimension by asking which elevations under 500.0 meters are available at time 2016-02-23T03:00:00.000Z:
 
-``` guess
+```guess
 http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=DescribeDomains&Version=1.0.0&Layer=some_layer&TileMatrixSet=EPSG:4326&elevation=0/500&time=2016-02-23T03:00:00.000Z
 ```
 
 the result will be similar to this:
 
-``` xml
+```xml
 <Domains xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
   <SpaceDomain>
     <BoundingBox CRS="EPSG:4326" 
@@ -189,13 +189,13 @@ So for time 2016-02-23T03:00:00.000Z there is only values measured at 200.0 mete
 
 In case only the space domain is of interest, the following request will do:
 
-``` guess
+```guess
 http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=DescribeDomains&Version=1.0.0&Layer=some_layer&TileMatrixSet=EPSG:4326&elevation=0/500&time=2016-02-23T03:00:00.000Z&domains=bbox
 ```
 
 and the result will be similar to this:
 
-``` xml
+```xml
 <Domains xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
   <SpaceDomain>
     <BoundingBox CRS="EPSG:4326" 
@@ -224,11 +224,11 @@ This operation is useful to page through the values of a given domain, in case t
 
 For example, let's say a "elevation" domain has values 1,2,3 and 5, and that we are paging through it by pages of 2 elements. The client will start without providing a "fromValue", and will then continue using the last value of the previous page as a reference:
 
-``` guess
+```guess
 http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer=sampleLayer&domain=elevation&limit=2
 ```
 
-``` xml
+```xml
 <DomainValues xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
   <ows:Identifier>elevation</ows:Identifier>
   <Limit>2</Limit>
@@ -238,11 +238,11 @@ http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&Version
 </DomainValues>
 ```
 
-``` guess
+```guess
 http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer=sampleLayer&domain=elevation&limit=2&fromValue=2
 ```
 
-``` xml
+```xml
 <DomainValues xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
   <ows:Identifier>elevation</ows:Identifier>
   <Limit>2</Limit>
@@ -253,11 +253,11 @@ http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&Version
 </DomainValues>
 ```
 
-``` guess
+```guess
 http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer=sampleLayer&domain=elevation&limit=2&fromValue=5
 ```
 
-``` xml
+```xml
 <DomainValues xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
   <ows:Identifier>elevation</ows:Identifier>
   <Limit>2</Limit>
@@ -270,11 +270,11 @@ http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&Version
 
 For elevations it might not be uncommon to iterate backwards, from the top-most elevation down to the lowest value. The interaction between client and server might then look as follows:
 
-``` guess
+```guess
 http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer=sampleLayer&domain=elevation&limit=2&sort=desc
 ```
 
-``` xml
+```xml
 <DomainValues xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
   <ows:Identifier>elevation</ows:Identifier>
   <Limit>2</Limit>
@@ -284,11 +284,11 @@ http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&Version
 </DomainValues>
 ```
 
-``` guess
+```guess
 http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer=sampleLayer&domain=elevation&limit=2&fromValue=3&sort=desc
 ```
 
-``` xml
+```xml
 <DomainValues xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
   <ows:Identifier>elevation</ows:Identifier>
   <Limit>2</Limit>
@@ -299,11 +299,11 @@ http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&Version
 </DomainValues>
 ```
 
-``` guess
+```guess
 http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer=sampleLayer&domain=elevation&limit=2&fromValue=1&sort=desc
 ```
 
-``` xml
+```xml
 <DomainValues xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
   <ows:Identifier>elevation</ows:Identifier>
   <Limit>2</Limit>
@@ -318,13 +318,13 @@ Assume now that along with the values 1,2,3,5 we have end attribute values respe
 
 The following request:
 
-``` guess
+```guess
 http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer=sampleLayer&domain=elevation&limit=2&fromValue=3.5&fromEnd=true
 ```
 
 will return
 
-``` xml
+```xml
 <DomainValues xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
   <ows:Identifier>elevation</ows:Identifier>
   <Limit>2</Limit>
@@ -361,13 +361,13 @@ The parameters common to the `DescribeDomains` operation work as already describ
 
 The following example request the histogram for time dimension with a resolution of 8 hours restricting elevations between 500.0 and 1000.0 meters:
 
-``` guess
+```guess
 http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=GetHistogram&Version=1.0.0&Layer=some_layer&TileMatrixSet=EPSG:4326&histogram=time&resolution=PT8H&elevation=500.0/1000.0
 ```
 
 and the result will be similar to this:
 
-``` xml
+```xml
 <Histogram xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
   <ows:Identifier>time</ows:Identifier>
   <Domain>2016-02-23T00:00:00.000Z/2016-02-25T00:00:00.000Z/PT8H</Domain>
@@ -379,7 +379,7 @@ Looking at the result we can conclude that measurements between 500.0 and 1000.0
 
 The bucket matching is setup so that each one contains its first value, but not its last value (which is contained in the next bucket instead). This is important to understand the results. Say we have a dataset with regular elevations, from 0 to 100 with a step of 10, and the request calls for elevations between 0 and 20. Then the results will look something like follows:
 
-``` xml
+```xml
 <Histogram xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
   <ows:Identifier>elevation</ows:Identifier>
   <Domain>0/30/10</Domain>
@@ -389,7 +389,7 @@ The bucket matching is setup so that each one contains its first value, but not 
 
 That is, there values catch the intervals [0,10[, [10, 20[, and [20, 30[ (to have a bucket for the images/features having elevation exactly matching 20). This will happen only if an extreme value if found, the same request filtering on elevations between 0 and 15 will return this instead:
 
-``` xml
+```xml
 <Histogram xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
   <ows:Identifier>elevation</ows:Identifier>
   <Domain>0/20/10</Domain>
@@ -420,13 +420,13 @@ The parameters common to the `DescribeDomains` operation work as already describ
 
 Using the same restrictions parameters we used for the second request used as an example for the `DescribeDomains` operation a `GetFeature` request will look like this:
 
-``` guess
+```guess
 http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=GetFeature&Version=1.0.0&Layer=some_layer&TileMatrixSet=EPSG:4326&elevation=0/500&time=2016-02-23T03:00:00.000Z
 ```
 
 and the result will be similar to this:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?><wmts:FeatureCollection xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" xmlns:wmts="http://www.opengis.net/wmts/1.0">
   <wmts:feature gml:id="FID.1681">
     <wmts:footprint>

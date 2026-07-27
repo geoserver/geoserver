@@ -1,6 +1,6 @@
 # Graticule Extension
 
-This module allows GeoServer to add graticules or grids to a WMS (or to allow them to be downloaded as WFS). The extension includes a vector process that can transform the grid lines to label points based on a bounding box, to allow adding labels in WMS images (this reqiures the WPS module to be present).
+This module allows GeoServer to add graticules or grids to a WMS (or to allow them to be downloaded as WFS). The extension includes a vector process that can transform the grid lines to label points based on a bounding box, to allow adding labels in WMS images (this requires the WPS module to be present).
 
 ## Installing the graticule extension
 
@@ -39,7 +39,7 @@ Let's assume one has a graticule with 5 levels of lines at different resolutions
 
 The following style would be used, using a single Rule, by leveraging the `Categorize` function along with the `wms_scale_denominator` environment variable ([Variable substitution in SLD](../../styling/sld/extensions/substitution.md)):
 
-``` xml
+```xml
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <StyledLayerDescriptor version="1.0.0"
                        xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd"
@@ -85,7 +85,7 @@ The following style would be used, using a single Rule, by leveraging the `Categ
 
 If some important lines are meant to be displayed with solid line rather than dashed, it's possible to use a function to keep the style compact, rather than duplicating the whole rule. The following example makes the equator and the prime meridian solid lines, while keeping the rest dashed:
 
-``` xml
+```xml
 <LineSymbolizer>
   <Stroke>
     <CssParameter name="stroke">#666666</CssParameter>
@@ -119,7 +119,7 @@ The process itself takes the following parameters:
 
 Leveraging this process, the labels can be generated using the following style:
 
-``` xml
+```xml
 <FeatureTypeStyle>
   <Name>label</Name>
   <Transformation>

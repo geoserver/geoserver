@@ -31,17 +31,17 @@ As soon as your Geotiffs gets beyond some tens of megabytes you'll want to add t
 
 Inner tiling sets up the image layout so that it's organized in tiles instead of simple stripes (rows). This allows much quicker access to a certain area of the geotiff, and the GeoServer readers will leverage this by accessing only the tiles needed to render the current display area. The following sample command instructs [gdal_translate](http://www.gdal.org/gdal_translate.md) to create a tiled [geotiff](http://www.gdal.org/frmt_gtiff.md).
 
-``` xml
+```xml
 gdal_translate -of GTiff -projwin -180 90 -50 -10 -co "TILED=YES" bigDataSet.ecw myTiff.tiff
 ```
 
 An overview is a downsampled version of the same image, that is, a zoomed out version, which is usually much smaller. When GeoServer needs to render the Geotiff, it'll look for the most appropriate overview as a starting point, thus reading and converting way less data. Overviews can be added using [gdaladdo](http://www.gdal.org/gdaladdo.md), or the OverviewsEmbedded command included in Geotools. Here is a sample of using gdaladdo to add overviews that are downsampled 2, 4, 8 and 16 times compared to the original:
 
-``` xml
+```xml
 gdaladdo -r average mytiff.tif 2 4 8 16
 ```
 
-As a final note, Geotiff supports various kinds of compression both lossles as well as lossy. JPEG compression can produce artifacts but it usually produce very good results on RGB or RGBA images if coupled with inner masks. Deflate compression is to be preferred with elevation or similar data when a lossless compressions is needed. Generally speaking, if I/O is the bottleneck, compression can help a lot as it reduces the cost of I/O although at the expenses of some CPU cycles.
+As a final note, Geotiff supports various kinds of compression both lossless as well as lossy. JPEG compression can produce artifacts but it usually produce very good results on RGB or RGBA images if coupled with inner masks. Deflate compression is to be preferred with elevation or similar data when a lossless compressions is needed. Generally speaking, if I/O is the bottleneck, compression can help a lot as it reduces the cost of I/O although at the expenses of some CPU cycles.
 
 ### Handling huge data sets
 
@@ -51,20 +51,20 @@ So, what you need is a way to have tiling on intermediate levels as well. This i
 
 This plugin assumes you have create various seamless image mosaics, each for a different resolution level of the original image. In the mosaic, tiles are actual files (for more info about mosaics, see the [ImageMosaic](../data/raster/imagemosaic/index.md)). The whole pyramid structures looks like the following:
 
-``` xml
+```xml
 rootDirectory
     +- pyramid.properties
     +- 0
        +- mosaic metadata files
        +- mosaic_file_0.tiff
        +- ...
-       +- mosiac_file_n.tiff
+       +- mosaic_file_n.tiff
     +- ...
     +- 32
        +- mosaic metadata files
        +- mosaic_file_0.tiff
        +- ...
-       +- mosiac_file_n.tiff
+       +- mosaic_file_n.tiff
 ```
 
 Creating a pyramid by hand can theoretically be done with gdal, but in practice it's a daunting task that would require some scripting, since gdal provides no "tiler" command to extract regular tiles out of an image, nor one to create a downsampled set of tiles. As an alternative, you can use the geotools PyramidBuilder tool (documentation on how to use this is pending, contact the developers if you need to use it).

@@ -12,7 +12,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.test.GeoServerMockTestSupport;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geoserver.util.IOUtils;
+import org.geoserver.test.IOTestUtils;
 
 /**
  * Test setup uses for GeoServer mock tests.
@@ -35,7 +35,7 @@ public class MockTestData extends CiteTestData {
 
     public MockTestData() throws IOException {
         // setup the root
-        data = IOUtils.createRandomDirectory("./target", "mock", "data");
+        data = IOTestUtils.createRandomDirectory("./target", "mock");
         data.delete();
         data.mkdir();
 

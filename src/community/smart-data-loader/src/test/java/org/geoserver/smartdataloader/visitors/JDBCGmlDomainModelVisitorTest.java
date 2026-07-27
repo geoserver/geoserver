@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.InputStream;
 import java.sql.DatabaseMetaData;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -16,6 +15,7 @@ import org.geoserver.smartdataloader.domain.DomainModelConfig;
 import org.geoserver.smartdataloader.domain.entities.DomainModel;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadata;
 import org.geoserver.smartdataloader.visitors.gml.GmlSchemaVisitor;
+import org.geotools.xml.XMLUtils;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -49,8 +49,7 @@ public abstract class JDBCGmlDomainModelVisitorTest extends AbstractJDBCSmartDat
 
         try (InputStream is =
                 JDBCGmlDomainModelVisitorTest.class.getResourceAsStream(entityPrefix + "meteo-observations-gml.xsd")) {
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            DocumentBuilder dBuilder = XMLUtils.newDocumentBuilder();
             Document control = dBuilder.parse(is);
             XMLUnit.setIgnoreWhitespace(true);
             XMLUnit.setIgnoreComments(true);
@@ -75,8 +74,7 @@ public abstract class JDBCGmlDomainModelVisitorTest extends AbstractJDBCSmartDat
 
         try (InputStream is =
                 JDBCGmlDomainModelVisitorTest.class.getResourceAsStream(entityPrefix + "meteo-stations-gml.xsd")) {
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            DocumentBuilder dBuilder = XMLUtils.newDocumentBuilder();
             Document control = dBuilder.parse(is);
             XMLUnit.setIgnoreWhitespace(true);
             XMLUnit.setIgnoreComments(true);
@@ -100,8 +98,7 @@ public abstract class JDBCGmlDomainModelVisitorTest extends AbstractJDBCSmartDat
 
         try (InputStream is =
                 JDBCGmlDomainModelVisitorTest.class.getResourceAsStream(entityPrefix + "meteo-parameters-gml.xsd")) {
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            DocumentBuilder dBuilder = XMLUtils.newDocumentBuilder();
             Document control = dBuilder.parse(is);
             XMLUnit.setIgnoreWhitespace(true);
             XMLUnit.setIgnoreComments(true);
@@ -126,8 +123,7 @@ public abstract class JDBCGmlDomainModelVisitorTest extends AbstractJDBCSmartDat
 
         try (InputStream is =
                 JDBCGmlDomainModelVisitorTest.class.getResourceAsStream(entityPrefix + "meteo-maintainers-gml.xsd")) {
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            DocumentBuilder dBuilder = XMLUtils.newDocumentBuilder();
             Document control = dBuilder.parse(is);
             XMLUnit.setIgnoreWhitespace(true);
             XMLUnit.setIgnoreComments(true);

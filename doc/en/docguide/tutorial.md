@@ -30,4 +30,4 @@ In a single sentence, state what will be achieved in this section. Then list the
      
     !!! note
     
-        When documenting application use follow the [markdown](markdown.md#Basic-markup) guidelines for **buttons**, **links**, **`filenames`**, user `input` and `item` selection, and definition lists for filling in a form.
+        When documenting application use follow the [markdown](markdown.md#basic-markup) guidelines for **buttons**, **links**, **`filenames`**, user `input` and `item` selection, and definition lists for filling in a form.

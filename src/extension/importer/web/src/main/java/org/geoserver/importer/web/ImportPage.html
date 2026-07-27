@@ -16,14 +16,18 @@
    <div wicket:id="header">
    </div>
 
-    <fieldset class="pt-5">
-     <legend class="clearfix">
-       <span class="border-0 float-start" wicket:id="icon"></span>
-       <span class="border-0 float-start ms-3 text-nowrap fw-normal" wicket:id="title"></span>
-       <div class="gs-unordered-list-class plain horizontal float-end" wicket:id="select">
+   <fieldset class="pt-5">
+    <legend class="import-page-legend">
+      <div class="import-page-legend-main">
+        <span class="border-0 import-page-legend-icon" wicket:id="icon"></span>
+        <span class="border-0 import-page-legend-title" wicket:id="title"></span>
+      </div>
+      <div class="gs-unordered-list-class plain horizontal import-page-legend-actions" wicket:id="select">
          <div class="gs-list-item-class"> Select:</div>
          <div class="gs-list-item-class border-start-0 me-1"><a href="" wicket:id="select-all"><wicket:message key="all">All</wicket:message></a></div>
+         <div>|</div>
          <div class="gs-list-item-class me-1"><a href="" wicket:id="select-none"><wicket:message key="none">None</wicket:message></a></div>
+         <div>|</div>
          <div class="gs-list-item-class me-1"><a href="" wicket:id="select-ready"><wicket:message key="ready">Ready</wicket:message></a></div>
        </div>
      </legend>
@@ -32,10 +36,10 @@
    </fieldset>
 
    <div class="button-group pt-3">
-     <a href="" wicket:id="import">
+     <a class="button outline-primary" href="" wicket:id="import">
        <span><wicket:message key="import"></wicket:message></span>
      </a>
-     <a href="" wicket:id="cancel">
+     <a class="button outline-danger" href="" wicket:id="cancel">
        <span wicket:id="text"></span>
      </a>
    </div>

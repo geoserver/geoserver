@@ -12,21 +12,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Page;
+import java.util.function.Function;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.ComponentAuthorizer;
-import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.api.coverage.grid.Format;
 import org.geotools.api.data.DataAccessFactory;
@@ -76,17 +73,18 @@ public class NewDataPage extends GeoServerSecuredPage {
                 SubmitLink link = new SubmitLink("resourcelink") {
                     @Override
                     public void onSubmit() {
-                        setResponsePage(new DataAccessNewPage(dataStoreFactoryName));
+                        String wsName = getPageParameters().get("workspace").toOptionalString();
+                        DataAccessNewPage page = new DataAccessNewPage(dataStoreFactoryName, wsName);
+                        PageParameters wsParams = NewDataPage.this.workspaceParams();
+                        if (wsParams != null) page.setReturnPage(StorePage.class, wsParams);
+                        setResponsePage(page);
                     }
                 };
                 link.setEnabled(thereAreWorkspaces);
                 link.add(new Label("resourcelabel", dataStoreFactoryName));
                 item.add(link);
                 item.add(new Label("resourceDescription", description));
-                Image icon = new Image("storeIcon", icons.getStoreIcon(factory.getClass()));
-                // TODO: icons could provide a description too to be used in alt=...
-                icon.add(new AttributeModifier("alt", new Model<>("")));
-                item.add(icon);
+                item.add(icons.getStoreIconComponent("storeIcon", factory.getClass()));
             }
         };
 
@@ -104,17 +102,18 @@ public class NewDataPage extends GeoServerSecuredPage {
                 SubmitLink link = new SubmitLink("resourcelink") {
                     @Override
                     public void onSubmit() {
-                        setResponsePage(new CoverageStoreNewPage(coverageFactoryName));
+                        String wsName = getPageParameters().get("workspace").toOptionalString();
+                        CoverageStoreNewPage page = new CoverageStoreNewPage(coverageFactoryName, wsName);
+                        PageParameters wsParams = NewDataPage.this.workspaceParams();
+                        if (wsParams != null) page.setReturnPage(StorePage.class, wsParams);
+                        setResponsePage(page);
                     }
                 };
                 link.setEnabled(thereAreWorkspaces);
                 link.add(new Label("resourcelabel", coverageFactoryName));
                 item.add(link);
                 item.add(new Label("resourceDescription", description));
-                Image icon = new Image("storeIcon", icons.getStoreIcon(format.getClass()));
-                // TODO: icons could provide a description too to be used in alt=...
-                icon.add(new AttributeModifier("alt", new Model<>("")));
-                item.add(icon);
+                item.add(icons.getStoreIconComponent("storeIcon", format.getClass()));
             }
         };
 
@@ -127,7 +126,11 @@ public class NewDataPage extends GeoServerSecuredPage {
                 SubmitLink link = new SubmitLink("resourcelink") {
                     @Override
                     public void onSubmit() {
-                        setResponsePage(store.configurationPage);
+                        String wsName = getPageParameters().get("workspace").toOptionalString();
+                        GeoServerSecuredPage page = store.pageFactory.apply(wsName);
+                        PageParameters wsParams = NewDataPage.this.workspaceParams();
+                        if (wsParams != null) page.setReturnPage(StorePage.class, wsParams);
+                        setResponsePage(page);
                     }
                 };
                 link.setEnabled(thereAreWorkspaces);
@@ -136,9 +139,7 @@ public class NewDataPage extends GeoServerSecuredPage {
                 item.add(new Label(
                         "resourceDescription",
                         new ParamResourceModel("other." + store.key + ".description", NewDataPage.this)));
-                Image icon = new Image("storeIcon", store.icon);
-                // TODO: icons could provide a description too to be used in alt=...
-                icon.add(new AttributeModifier("alt", new Model<>("")));
+                GsIcon icon = new GsIcon("storeIcon", store.icon);
                 item.add(icon);
             }
         };
@@ -146,6 +147,11 @@ public class NewDataPage extends GeoServerSecuredPage {
         storeForm.add(dataStoreLinks);
         storeForm.add(coverageLinks);
         storeForm.add(otherStoresLinks);
+    }
+
+    private PageParameters workspaceParams() {
+        String ws = getPageParameters().get("workspace").toOptionalString();
+        return (ws != null && !ws.isEmpty()) ? new PageParameters().add("workspace", ws) : null;
     }
 
     /** @return the name/description set of available datastore factories */
@@ -184,10 +190,11 @@ public class NewDataPage extends GeoServerSecuredPage {
 
     private List<OtherStoreDescription> getOtherStores() {
         List<OtherStoreDescription> stores = new ArrayList<>();
-        PackageResourceReference wmsIcon =
-                new PackageResourceReference(GeoServerApplication.class, "img/icons/geosilk/server_map.png");
-        stores.add(new OtherStoreDescription("wms", wmsIcon, WMSStoreNewPage.class));
-        stores.add(new OtherStoreDescription("wmts", wmsIcon, WMTSStoreNewPage.class));
+        String wmsIcon = "gs-icon-server-map";
+        stores.add(new OtherStoreDescription(
+                "wms", wmsIcon, (Function<String, GeoServerSecuredPage> & Serializable) ws -> new WMSStoreNewPage(ws)));
+        stores.add(new OtherStoreDescription("wmts", wmsIcon, (Function<String, GeoServerSecuredPage> & Serializable)
+                ws -> new WMTSStoreNewPage(ws)));
 
         return stores;
     }
@@ -201,16 +208,15 @@ public class NewDataPage extends GeoServerSecuredPage {
     static class OtherStoreDescription implements Serializable {
         String key;
 
-        PackageResourceReference icon;
+        String icon;
 
-        Class<? extends Page> configurationPage;
+        Function<String, GeoServerSecuredPage> pageFactory;
 
-        public OtherStoreDescription(
-                String key, PackageResourceReference icon, Class<? extends Page> configurationPage) {
+        public OtherStoreDescription(String key, String icon, Function<String, GeoServerSecuredPage> pageFactory) {
             super();
             this.key = key;
             this.icon = icon;
-            this.configurationPage = configurationPage;
+            this.pageFactory = pageFactory;
         }
     }
 }

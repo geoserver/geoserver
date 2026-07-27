@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-OAuth2LoginAuthProviderPanel_MSGraphPanel">
+        <div>
+          <div class="choiceItem">
+            <input class="field autoTopBottom" id="msGraphMemberOf" type="checkbox" wicket:id="msGraphMemberOf" />
+            <label class="padLeftSmall">
+              <wicket:message key="msGraphMemberOf"></wicket:message>
+            </label>
+          </div>
+          <div class="choiceItem">
+            <input class="field autoTopBottom" id="msGraphAppRoleAssignments" type="checkbox" wicket:id="msGraphAppRoleAssignments" />
+            <label class="padLeftSmall">
+              <wicket:message key="msGraphAppRoleAssignments"></wicket:message>
+            </label>
+          </div>
+          <div class="" id="msGraphObjectIdDiv">
+            <div class="display-flex flex-column pad-checkbox">
+              <input type="text" class="field autoTopBottom" id="msGraphAppRoleAssignmentsObjectId" wicket:id="msGraphAppRoleAssignmentsObjectId" />
+              <label class="padLeftSmall">
+                <wicket:message key="msGraphAppRoleAssignmentsObjectId"></wicket:message>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="gs-form">
+          <div class="gs-form-group">
+            <label class="padTopLarge">
+              <wicket:message key="roleConverterTitle"></wicket:message>
+            </label>
+            <!--
+              `oninput` fires when user changes the value - this will
+              update the summary table.
+            -->
+            <input type="text" class="field" id="roleConverterString" wicket:id="roleConverterString" />
+          </div>
+          <label>
+            <wicket:message key="roleConverterHint"></wicket:message>
+          </label>
+          <div class="choiceItem">
+            <input class="field" id="onlyExternalListedRoles" type="checkbox" wicket:id="onlyExternalListedRoles" />
+            <label>
+              <wicket:message key="roleConverterOnlyListedExternalRoles"></wicket:message>
+            </label>
+          </div>
+        </div>
+        <div id="roleConverterStringDiv" class="padTopLarge">
+          <table id="roleConverterStringTable">
+            <thead>
+              <tr>
+                <th class="textAlignCenter">
+                  <wicket:message key="externalRoleTitle"></wicket:message>
+                </th>
+                <th class="textAlignCenter">
+                  <wicket:message key="gsRoleTitle"></wicket:message>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="roleConverterStringTbody">
+
+            </tbody>
+          </table>
+          <div class="display-flex justifyContentCenter fontSize10">
+            <div>
+              <wicket:message key="roleConverterTableTitle"></wicket:message>
+            </div>
+          </div>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
+</html>

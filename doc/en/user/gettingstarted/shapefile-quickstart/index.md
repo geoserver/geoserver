@@ -31,7 +31,7 @@ The next step is to create a workspace for the shapefile. A workspace is a conta
 
 2.  Log into GeoServer as described in the [Logging In](../web-admin-quickstart/index.md#logging_in) section.
 
-3.  Navigate to **Data --> Workspaces**.
+3.  Navigate to **Data > Workspaces**.
 
     ![](../../data/webadmin/img/data_workspaces.png)
 
@@ -50,7 +50,7 @@ The next step is to create a workspace for the shapefile. A workspace is a conta
     !!! note
         A workspace name is an identifier describing your project. It must not exceed ten characters or contain spaces. A Namespace URI (Uniform Resource Identifier) can usually be a URL associated with your project with an added trailing identifier indicating the workspace. The Namespace URI filed does not need to resolve to an actual valid web address.
 
-    ![](workspace_nycroads.png)
+    ![](workspace_nycroads.png)  
     *nyc workspace*
 
 7.  Click the **Submit** button. The `nyc` workspace will be added to the **Workspaces** list.
@@ -59,7 +59,7 @@ The next step is to create a workspace for the shapefile. A workspace is a conta
 
 Once the workspace is created we are ready to add a new store. The store tells GeoServer how to connect to the shapefile.
 
-1.  Navigate to **Data-->Stores**.
+1.  Navigate to **Data > Stores**.
 
 2.  You should see a list of stores, including the type of store and the workspace that the store belongs to.
 
@@ -121,11 +121,11 @@ Now that the store is loaded, we can publish the layer.
 
 In order to verify that the `nyc_roads` layer is published correctly, we can preview the layer.
 
-1.  Navigate to the **Layer Preview** screen and find the `nyc:nyc_roads` layer.
+1.  Navigate to the **Browse Layers** screen and find the `nyc:nyc_roads` layer.
 
     ![](layer_preview.png)
 
-    *Layer Preview*
+    *Browse Layers*
 
 2.  Click the **OpenLayers** link in the **Common Formats** column.
 

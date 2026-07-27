@@ -23,7 +23,7 @@ The first part of the plug-in documentation will go through the template syntax.
 - [Template Directives](directives.md)
 - [Template Configuration](configuration.md)
 - [Backward Mapping](querying.md)
-- [Features Templatring Rest API](rest.md)
+- [Features Templating Rest API](rest.md)
 - [Schemas Configuration](schemas.md)
 
 </div>

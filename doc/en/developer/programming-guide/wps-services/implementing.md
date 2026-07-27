@@ -20,7 +20,7 @@ To create a new WPS process plug-in module the first step is to create a Maven p
 1.  Create a new directory named `hello_wps` somewhere on the file system.
 2.  Add the following `pom.xml` to the root of the new module in the `hello_wps` directory:
 
-``` xml
+```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
@@ -146,7 +146,7 @@ To create a new WPS process plug-in module the first step is to create a Maven p
 
     Create a Java class called `HelloWPS.java` inside the created package (make sure you are in the 'src/main/java' folder and not in the 'src/test/java' folder):
 
-``` java
+```java
 package org.geoserver.hello.wps;
 
 import org.geotools.process.factory.DescribeParameter;
@@ -198,7 +198,7 @@ GeoServer uses the [Spring Framework](http://www.springsource.org/spring-framewo
 
 To build the custom process, run the following command from the root of the project:
 
-``` console
+```console
 mvn clean install
 ```
 
@@ -229,7 +229,7 @@ It is however also possible to leave the process to accept both raw inputs and o
 
 Raw inputs and outputs are represented by the RawData interface:
 
-``` java
+```java
 public interface RawData {
 
     /**

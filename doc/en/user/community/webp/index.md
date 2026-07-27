@@ -24,7 +24,7 @@ WebP is supported by all modern browsers ([caniuse](https://caniuse.com/webp)). 
 
 Example for [OpenLayers v7](https://openlayers.org/) WebP browser support check via javascript:
 
-``` javascript
+```javascript
 ...
 import ImageLayer from 'ol/layer/Image';
 import ImageWMS from 'ol/source/ImageWMS';

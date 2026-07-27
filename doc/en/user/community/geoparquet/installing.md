@@ -19,7 +19,7 @@ To install the GeoParquet extension:
 
 After restarting, verify the installation by:
 
-1.  Navigate to **Stores --> Add new Store** in the GeoServer web admin interface
+1.  Navigate to **Data > Stores > Add new Store** in the GeoServer web admin interface
 2.  Look for **GeoParquet** in the list of available data store types under "Vector Data Sources"
 3.  If the GeoParquet option appears, the extension has been successfully installed
 

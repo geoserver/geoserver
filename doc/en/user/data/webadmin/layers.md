@@ -78,7 +78,7 @@ The beginning sections---Basic Resource Info, Keywords and Metadata link---are a
 
 - **Enabled**---A layer that is not enabled won't be available to any kind of request, it will just show up in the configuration (and in REST config)
 
-- **Advertised**---A layer is advertised by default. A non-advertised layer will be available in all data access requests (for example, WMS GetMap, WMS GetFeature) but won't appear in any capabilities document or in the layer preview.
+- **Advertised**---A layer is advertised by default. A non-advertised layer will be available in all data access requests (for example, WMS GetMap, WMS GetFeature) but won't appear in any capabilities document or in the Browse Layers page.
 
 - **Title**---Human-readable description to briefly identify the layer to clients (required)
 
@@ -103,9 +103,9 @@ A coordinate reference system (CRS) defines how georeferenced spatial data relat
 - **Native SRS**---Specifies the coordinate system the layer is stored in. Clicking the projection link displays a description of the SRS.
 - **Declared SRS**---Specifies the coordinate system GeoServer publishes to clients
 - **SRS Handling**---Determines how GeoServer should handle projection when the two SRSs differ. Possible values are:
-  - **Force declared** (default): the declared SRS is forced upon the data, overwriting the native one. This is the default option and normally the best course of action, the declared code comes from the EPSG database and has a wealth of extra information in it, starting from a valid EPSG code, an area of validity, a link back in the database to find the best transformation steps to other coordinate reference systems should reprojection be required. Use this option when the source has no native CRS, has a wrong one, or has one matching the EPSG code (in order to get full metadata in the CRS used by GeoServer).
-  - **Reproject from native**: This setting should be used when the native data set has a CRS that is not matching any official EPSG. OGC protocols need to advertise a EPSG code for the layers, with this setting the declared one will be advertised, and reprojection from native will happen on the fly as needed (in case a third CRS is requested, the reprojection will go directly from native to declared)
-  - **Keep native**: this is a setting that should be used in very rare cases. Keeping native means using the declared one in the capabilities documents, but then using the native CRS in all other requests (with no reprojection in between, unless explicitly requested from client). This is particularly problematic if the source is a shapefile, as the PRJ files lack all the extra information provided by the EPSG database (it will for example break WFS 1.1 and 2.0 SRS declarations in GML output). The setting meant to be used in cases where WMS is the primary target, and the native and declared CRSs have very small differences, avoiding on the fly reprojection and datum change.
+    - **Force declared** (default): the declared SRS is forced upon the data, overwriting the native one. This is the default option and normally the best course of action, the declared code comes from the EPSG database and has a wealth of extra information in it, starting from a valid EPSG code, an area of validity, a link back in the database to find the best transformation steps to other coordinate reference systems should reprojection be required. Use this option when the source has no native CRS, has a wrong one, or has one matching the EPSG code (in order to get full metadata in the CRS used by GeoServer).
+    - **Reproject from native**: This setting should be used when the native data set has a CRS that is not matching any official EPSG. OGC protocols need to advertise a EPSG code for the layers, with this setting the declared one will be advertised, and reprojection from native will happen on the fly as needed (in case a third CRS is requested, the reprojection will go directly from native to declared)
+    - **Keep native**: this is a setting that should be used in very rare cases. Keeping native means using the declared one in the capabilities documents, but then using the native CRS in all other requests (with no reprojection in between, unless explicitly requested from client). This is particularly problematic if the source is a shapefile, as the PRJ files lack all the extra information provided by the EPSG database (it will for example break WFS 1.1 and 2.0 SRS declarations in GML output). The setting meant to be used in cases where WMS is the primary target, and the native and declared CRSs have very small differences, avoiding on the fly reprojection and datum change.
 
 In summary, use **Force Declared** as your primary option, **Reproject from native** only if your source data does not match any EPSG code, and **Keep Native** only if you really know what you're doing.
 
@@ -175,13 +175,13 @@ From the **Add attribute dialog** it is possible to define a new attribute for t
 - The type of the new attribute using the **Type** field. The most common types are available in a drop-down on editing, but it's possible to indicate any valid Java class, as long as GeoServer has a converter that goes from the value produced by the **Source** expression to the target type (new converters can be plugged in with some Java programming).
 - The source for the new attribute, which will be computed based on the **Source** CQL expression in the respective field.
 - A description for the new attribute, which will be visible wherever the feature type is described.
-- The ``nillability`` of the new attribute, for example, making the attribute mandatory even if it's not in the data source, and vice-versa.
+- The `nillability` of the new attribute, for example, making the attribute mandatory even if it's not in the data source, and vice-versa.
 
 ![](img/data_layers_feature_customize_add_attribute.png)
 
 *Add attribute dialog*
 
-For numeric or string types, the dialog also allows defining ``restrictions`` on the attribute value, which will be reported wherever the feature type is described. The restrictions set for an attribute are then available to clients, who may enforce them before applying changes to the feature type.
+For numeric or string types, the dialog also allows defining `restrictions` on the attribute value, which will be reported wherever the feature type is described. The restrictions set for an attribute are then available to clients, who may enforce them before applying changes to the feature type.
 
 Two kinds of restrictions are available, but only one can be specified at a time for an attribute:
 
@@ -203,7 +203,7 @@ When opening the **Edit attribute dialog** from a row in the attribute table, a 
 - Change the type of the attribute.
 - Change the source for the attribute.
 - Edit the description of the attribute.
-- Change the ``nillability`` of the attribute.
+- Change the `nillability` of the attribute.
 - Add or edit the restrictions on the attribute value (refer to the **Add attribute dialog** description above).
 
 Whenever an attribute has been edited with property values significantly different from the default, its representation in the **Feature Type Details** table displays these values in the **Details** column, as shown in the image below.
@@ -258,7 +258,7 @@ By default this behavior is inherited from the global WMS service settings (**WM
 
 ### Services Settings {: #data_webadmin_layers_services }
 
-GeoServer publishes ``virtual_layer_services`` associated with each layer using the configuration provided by [workspace services](workspaces.md#workspace_services)_, or default [global services](../../services/index.md). This configuration includes enable/disabled setting that determines if a service is available.
+GeoServer publishes `virtual_layer_services` associated with each layer using the configuration provided by [workspace services](workspaces.md#workspace_services)_, or default [global services](../../services/index.md). This configuration includes enable/disabled setting that determines if a service is available.
 
 For greater control the **Service Settings** allows specific services to be disabled.
 
@@ -291,10 +291,13 @@ Sets the WMS specific publishing parameters.
 
 - **Queryable**---Controls whether the layer is queryable via WMS `GetFeatureInfo` requests.
 - **Default style**---Style that will be used when the client does not specify a named style in GetMap requests.
-- **Additional styles**---Other styles that can be associated with this layer. Some clients (and the GeoServer Layer Preview) will present those as styling alternatives for that layer to the user.
+- **Additional styles**---Other styles that can be associated with this layer. Some clients (and the GeoServer Browse Layers page) will present those as styling alternatives for that layer to the user.
 - **Default rendering buffer**---Default value of the `buffer` GetMap/GetFeatureInfo vendor parameter. See the [WMS vendor parameters](../../services/wms/vendor.md) for more details.
 - **Default WMS path**---Location of the layer in the WMS capabilities layer tree. Useful for building non-opaque layer groups
-- **Default Interpolation Method**---Allows to specify a default resampling (interpolation) method for this layer. The available options are *Nearest neighbor*, *Bilinear*, *Bicubic*, or *Use service default*, which means that no layer specific configuration will be created (the default interpolation method selected in the WMS service configuration page will be used, see [Raster Rendering Options](../../services/wms/webadmin.md#services_webadmin_wms_raster_options) for details). Can be overridden by the [interpolations vendor parameter](../../services/wms/vendor.md#wms_vendor_parameter_interpolations).
+- **Default Interpolation Method**---Allows to specify a default resampling (interpolation) method for this layer. The available options are *Nearest neighbor*, *Bilinear*, *Bicubic*, or *Use service default*, which means that no layer specific configuration will be created (the default interpolation method selected in the WMS service configuration page will be used, see [Raster Rendering Options](../../services/wms/webadmin.md#services_webadmin_wms_raster_options) for details). Can be overridden by the [interpolations vendor parameter](../../services/wms/vendor.md#wms_vendor_parameter_interpolations). 
+
+    !!! note
+       The default WMS interpolation configured at the layer level is also honored when the layer is served through GeoWebCache in [full WMS mode](../../geowebcache/using.md#geowebcache_endpoint_url). In this case, the interpolation setting is propagated to the tile recomposition process and influences the resampling performed when tiles are merged and scaled to produce the final image.
 
 ### WMS Attribution
 
@@ -347,10 +350,10 @@ Limits features based on certain criteria, otherwise known as **regionation**.
 
 - **Default Regionating Attribute**---Choose which feature should show up more prominently than others.
 - **Regionating Methods**---There are four types of regionating methods:
-  - *external-sorting*---Creates a temporary auxiliary database within GeoServer. The first request to build an index takes longer than subsequent requests.
-  - *geometry*---Externally sorts by length (if lines) or area (if polygons)
-  - *native-sorting*---Uses the default sorting algorithm of the backend where the data is hosted. It is faster than external-sorting, but will only work with PostGIS datastores.
-  - *random*---Uses the existing order of the data and does not sort
+    - *external-sorting*---Creates a temporary auxiliary database within GeoServer. The first request to build an index takes longer than subsequent requests.
+    - *geometry*---Externally sorts by length (if lines) or area (if polygons)
+    - *native-sorting*---Uses the default sorting algorithm of the backend where the data is hosted. It is faster than external-sorting, but will only work with PostGIS datastores.
+    - *random*---Uses the existing order of the data and does not sort
 
 ## Edit Layer: Dimensions {: #data_webadmin_layers_edit_dimensions }
 
@@ -368,10 +371,10 @@ For each enabled dimension the following configuration options are available:
 - **End attribute**---Attribute name for picking the end of the value range for this dimension (optional, vector only).
 - **Presentation**---The presentation type for the available values in the capabilities document. Either *each value separately (list)*, *interval and resolution*, or *continuous interval*.
 - **Default value**---Default value to use for this dimension if none is provided with the request. Select one of from four strategies:
-  - **smallest domain value**---Uses the smallest available value from the data
-  - **biggest domain value**---Uses the biggest available value from the data
-  - **nearest to the reference value**---Selects the data value closest to the given reference value
-  - **reference value**---Tries to use the given reference value as-is, regardless of whether it's actually available in the data or not.
+    - **smallest domain value**---Uses the smallest available value from the data
+    - **biggest domain value**---Uses the biggest available value from the data
+    - **nearest to the reference value**---Selects the data value closest to the given reference value
+    - **reference value**---Tries to use the given reference value as-is, regardless of whether it's actually available in the data or not.
 - **Reference value**---The default value specifier. Only shown for the default value strategies where it's used.
 - **Nearest match**---Whether to enable, or not, WMS nearest match support on this dimension. Currently supported only on the time dimension.
 - **Nearest match on raw data**---Whether to enable, or not, nearest match support on this dimension for raw data requests (WCS for coverage layers, WFS for feature layers). Currently supported only on the time dimension for WCS service.
@@ -402,10 +405,10 @@ For each enabled dimension the following configuration options are available:
 - **End attribute**---Attribute name for picking the end of the value range for this dimension (optional, vector only).
 - **Presentation**---The presentation type for the available values in the capabilities document. Either *each value separately (list)*, *interval and resolution*, or *continuous interval*.
 - **Default value**---Default value to use for this dimension if none is provided with the request. Select one of from four strategies:
-  - **smallest domain value**---Uses the smallest available value from the data
-  - **biggest domain value**---Uses the biggest available value from the data
-  - **nearest to the reference value**---Selects the data value closest to the given reference value
-  - **reference value**---Tries to use the given reference value as-is, regardless of whether it's actually available in the data or not.
+    - **smallest domain value**---Uses the smallest available value from the data
+    - **biggest domain value**---Uses the biggest available value from the data
+    - **nearest to the reference value**---Selects the data value closest to the given reference value
+    - **reference value**---Tries to use the given reference value as-is, regardless of whether it's actually available in the data or not.
 - **Reference value**---The default value specifier. Only shown for the default value strategies where it's used.
 - **Nearest match**---Whether to enable, or not, WMS nearest match support on this dimension.
 - **Acceptable interval**---A maximum search distance from the specified value (available only when nearest match is enabled). Can be empty (no limit), a single value (symmetric search) or using a `before/after` syntax to specify an asymmetric search range.

@@ -4,37 +4,39 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-ParameterFilterEditor">
-        <div>
+        <div class="gs-form">
           <div wicket:id="container">
             <div wicket:id="table">
-              <form wicket:id="filtersForm">
-                <fieldset wicket:id="parameterFilters">
-                  <legend>
-                    <label wicket:id="key">Key</label>
-                  </legend>
-                  <div class="gwc-remove-link">
-                    <a href="#" wicket:id="removeLink">
-                      <span wicket:id="removeIcon"/>
-                    </a>
+              <form wicket:id="filtersForm" class="gs-form">
+                <div wicket:id="parameterFilters" class="gs-form">
+                  <div class="gs-inline-group">
+                    <h4 wicket:id="key">Key</h4>
+                    <div class="gwc-remove-link">
+                      <a href="#" wicket:id="removeLink">
+                        <span wicket:id="removeIcon"/>
+                      </a>
+                    </div>
                   </div>
-                  <div wicket:id="subform">Filter Specific Details</div>
-                </fieldset>
+                  <div wicket:id="subform" class="gs-form-group gs-content-divider">Filter Specific Details</div>
+                </div>
               </form>
             </div>
           </div>
-          <div>
+          <div class="gs-form gs-add-parameter-filter">
             <div class="gs-form-group">
               <label>Add filter</label>
               <div class="gs-input-group">
-                <input type="text" wicket:id="newFilterKey" list="commonKeys"/>
+                <input type="text" wicket:id="newFilterKey" list="commonKeys" class="w-fit" />
                 <datalist id="commonKeys" class="hidden"><option wicket:id="commonKeys">KEY</option></datalist>
                 <select class="select" wicket:id="availableFilterTypes"/>
                 <a class="button add-selected-btn" href="#" wicket:id="addFilter"><span wicket:id="addIcon"/></a>
               </div>
             </div>
-            <div class="button-group">
+            <div class="gs-form-group">
               <label>Add Style filter</label>
-              <a class="button" href="#" wicket:id="addStyleFilter"><span wicket:id="addIcon"/></a>
+              <div>
+                <a class="button" href="#" wicket:id="addStyleFilter"><span wicket:id="addIcon"/></a>
+              </div>
             </div>
           </div>
         </div>

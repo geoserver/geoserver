@@ -14,7 +14,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.web.MetadataTemplateTracker;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -46,65 +45,57 @@ public class TemplatesPositionPanel extends Panel {
             IModel<MetadataTemplate> model,
             GeoServerTablePanel<MetadataTemplate> tablePanel) {
         super(id, model);
-        ImageAjaxLink<Object> upLink =
-                new ImageAjaxLink<>("up", new ContextRelativeResourceReference("img/icons/silk/arrow_up.png")) {
-                    @Serial
-                    private static final long serialVersionUID = -4165434301439054175L;
+        ImageAjaxLink<Object> upLink = new ImageAjaxLink<>("up", "gs-icon-arrow-up") {
+            @Serial
+            private static final long serialVersionUID = -4165434301439054175L;
 
-                    @Override
-                    protected void onClick(AjaxRequestTarget target) {
-                        int index = templates.getObject().indexOf(model.getObject());
-                        tracker.switchTemplates(
-                                model.getObject(), templates.getObject().get(index - 1));
-                        templates
-                                .getObject()
-                                .add(index - 1, templates.getObject().remove(index));
-                        ((MarkupContainer) tablePanel.get("listContainer").get("items")).removeAll();
-                        tablePanel.clearSelection();
-                        target.add(tablePanel);
-                    }
+            @Override
+            protected void onClick(AjaxRequestTarget target) {
+                int index = templates.getObject().indexOf(model.getObject());
+                tracker.switchTemplates(model.getObject(), templates.getObject().get(index - 1));
+                templates.getObject().add(index - 1, templates.getObject().remove(index));
+                ((MarkupContainer) tablePanel.get("listContainer").get("items")).removeAll();
+                tablePanel.clearSelection();
+                target.add(tablePanel);
+            }
 
-                    @Override
-                    protected void onComponentTag(ComponentTag tag) {
-                        if (templates.getObject().indexOf(model.getObject()) == 0) {
-                            tag.put("class", "visibility-hidden");
-                        } else {
-                            tag.put("class", "visibility-visible");
-                        }
-                    }
-                };
+            @Override
+            protected void onComponentTag(ComponentTag tag) {
+                if (templates.getObject().indexOf(model.getObject()) == 0) {
+                    tag.put("class", "visibility-hidden");
+                } else {
+                    tag.put("class", "visibility-visible");
+                }
+            }
+        };
         upLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("up", this)));
         add(upLink);
 
-        ImageAjaxLink<Object> downLink =
-                new ImageAjaxLink<>("down", new ContextRelativeResourceReference("img/icons/silk/arrow_down.png")) {
-                    @Serial
-                    private static final long serialVersionUID = -8005026702401617344L;
+        ImageAjaxLink<Object> downLink = new ImageAjaxLink<>("down", "gs-icon-arrow-down") {
+            @Serial
+            private static final long serialVersionUID = -8005026702401617344L;
 
-                    @Override
-                    protected void onClick(AjaxRequestTarget target) {
-                        int index = templates.getObject().indexOf(model.getObject());
-                        tracker.switchTemplates(
-                                model.getObject(), templates.getObject().get(index + 1));
-                        templates
-                                .getObject()
-                                .add(index + 1, templates.getObject().remove(index));
+            @Override
+            protected void onClick(AjaxRequestTarget target) {
+                int index = templates.getObject().indexOf(model.getObject());
+                tracker.switchTemplates(model.getObject(), templates.getObject().get(index + 1));
+                templates.getObject().add(index + 1, templates.getObject().remove(index));
 
-                        ((MarkupContainer) tablePanel.get("listContainer").get("items")).removeAll();
-                        tablePanel.clearSelection();
-                        target.add(tablePanel);
-                    }
+                ((MarkupContainer) tablePanel.get("listContainer").get("items")).removeAll();
+                tablePanel.clearSelection();
+                target.add(tablePanel);
+            }
 
-                    @Override
-                    protected void onComponentTag(ComponentTag tag) {
-                        if (templates.getObject().indexOf(model.getObject())
-                                == templates.getObject().size() - 1) {
-                            tag.put("class", "visibility-hidden");
-                        } else {
-                            tag.put("class", "visibility-visible");
-                        }
-                    }
-                };
+            @Override
+            protected void onComponentTag(ComponentTag tag) {
+                if (templates.getObject().indexOf(model.getObject())
+                        == templates.getObject().size() - 1) {
+                    tag.put("class", "visibility-hidden");
+                } else {
+                    tag.put("class", "visibility-visible");
+                }
+            }
+        };
         downLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("down", this)));
         add(downLink);
     }

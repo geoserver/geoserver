@@ -18,5 +18,10 @@ public class NetCDFContainerXStreamInitializer implements XStreamPersisterInitia
         XStream xs = persister.getXStream();
         xs.alias("netCDFSettings", NetCDFSettingsContainer.class);
         xs.alias("netCDFLayerSettings", NetCDFLayerSettingsContainer.class);
+        // Alias for the per-band output settings list element introduced for multi-band coverages —
+        // see NetCDFSettingsContainer.BandSetting javadoc. Without an alias the persisted XML would
+        // carry the fully qualified inner class name as the element tag.
+        xs.alias("bandSetting", NetCDFSettingsContainer.BandSetting.class);
+        xs.allowTypes(new Class[] {NetCDFSettingsContainer.BandSetting.class});
     }
 }

@@ -6,7 +6,7 @@ It is possible to generate fills by randomly repeating a symbol in the polygons 
 
 Here is an example distributing up to 50 small "slash" symbols in a 100x100 pixel tile (in case of conflicts the symbol will be skipped), enabling random symbol rotation), and setting the seed to "5" to get a distribution different than the default one:
 
-``` scss
+```scss
 * {
   fill: symbol("shape://slash");
   :fill {
@@ -32,7 +32,7 @@ Here is an example distributing up to 50 small "slash" symbols in a 100x100 pixe
 
 Randomized distributions can also be used for thematic mapping, for example, here is the SLD for a version of topp:states that displays the number of inhabitantìs varying the density of a random point distribution:
 
-``` scss
+```scss
 * { 
   fill: symbol("circle");
   stroke: black;

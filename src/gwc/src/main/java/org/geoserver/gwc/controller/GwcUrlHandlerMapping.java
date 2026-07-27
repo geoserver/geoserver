@@ -28,6 +28,20 @@ import org.springframework.web.util.pattern.PathPattern;
  */
 public class GwcUrlHandlerMapping extends RequestMappingHandlerMapping implements HandlerInterceptor {
 
+    /**
+     * Default handler mapping order for GWC URL mappings.
+     *
+     * <p>GWC handler mappings need higher precedence (lower numeric order) than
+     * {@link org.geoserver.ows.OWSHandlerMapping#DEFAULT_ORDER OWSHandlerMapping} to ensure workspace-prefixed GWC URLs
+     * (e.g., {@code /topp/gwc/rest/wmts/...}) are matched by the GWC handler before the OWS handler tries to interpret
+     * the workspace prefix. This preserves the precedence relationship established in GEOS-10648, where GWC handlers
+     * were given {@code order=10} (higher precedence) while OWS handlers used the default {@code Integer.MAX_VALUE}
+     * (lowest precedence).
+     *
+     * @see org.geoserver.ows.OWSHandlerMapping#DEFAULT_ORDER
+     */
+    public static final int DEFAULT_ORDER = -100;
+
     protected String GWC_URL_PATTERN = "";
 
     private final Catalog catalog;
@@ -35,6 +49,7 @@ public class GwcUrlHandlerMapping extends RequestMappingHandlerMapping implement
     public GwcUrlHandlerMapping(Catalog catalog, String gwcUrlPattern) {
         this.catalog = catalog;
         GWC_URL_PATTERN = gwcUrlPattern;
+        setOrder(DEFAULT_ORDER);
     }
 
     @Override

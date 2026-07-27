@@ -13,6 +13,7 @@ import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.EntityResolver2;
 
 /** A wrapper allowing a EntityResolver to participate in schema validation */
 class EntityResolverToLSResourceResolver implements LSResourceResolver {
@@ -92,21 +93,15 @@ class EntityResolverToLSResourceResolver implements LSResourceResolver {
         }
 
         @Override
-        public void setBaseURI(String baseURI) {
-            //
-        }
+        public void setBaseURI(String baseURI) {}
 
         @Override
         public boolean getCertifiedText() {
-            // TODO Auto-generated method stub
             return false;
         }
 
         @Override
-        public void setCertifiedText(boolean certifiedText) {
-            // TODO Auto-generated method stub
-
-        }
+        public void setCertifiedText(boolean certifiedText) {}
     }
 
     EntityResolver entityResolver;
@@ -121,7 +116,13 @@ class EntityResolverToLSResourceResolver implements LSResourceResolver {
     public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
         // give the entity resolver an opportunity (mostly to throw an exception)
         try {
-            InputSource is = entityResolver.resolveEntity(publicId, systemId);
+            InputSource is;
+            if (entityResolver instanceof EntityResolver2 entityResolver2) {
+                // Note: order of arguments differs between LSResourceResolver and EntityResolver
+                is = entityResolver2.resolveEntity(null, publicId, baseURI, systemId);
+            } else {
+                is = entityResolver.resolveEntity(publicId, systemId);
+            }
             if (is != null) {
                 return new InputSourceToLSResource(is);
             }
@@ -129,6 +130,9 @@ class EntityResolverToLSResourceResolver implements LSResourceResolver {
             throw new RuntimeException(e);
         }
         // otherwise fall back on the default resolution path
-        return delegate.resolveResource(type, namespaceURI, publicId, systemId, baseURI);
+        if (delegate != null) {
+            return delegate.resolveResource(type, namespaceURI, publicId, systemId, baseURI);
+        }
+        return null;
     }
 }

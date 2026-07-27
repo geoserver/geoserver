@@ -123,7 +123,7 @@ feature-styles:
 
 The units for `stroke-width`, `size`, and other similar attributes default to pixels, meaning that graphics remain a constant size at different zoom levels. Alternately, units (feet or meters) can be specified for values, so graphics will scale as you zoom in or out. This example draws roads with a fixed width of 8 meters:
 
-``` yaml
+```yaml
 feature-styles:
 - rules:
   - symbolizers:
@@ -142,7 +142,7 @@ feature-styles:
 
 The default unit of measure for the symbolizer is defined using `uom`. This example uses a default of meters to supply distances for `stroke-width` and `stroke-dasharray` using meters.
 
-``` yaml
+```yaml
 line:
   uom: metre
   stroke-color: '#000000'

@@ -9,6 +9,7 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.util.InternationalStringUtils;
 import org.geotools.api.util.InternationalString;
 
+/** Implementation of {@link ContactInfo}. */
 public class ContactInfoImpl implements ContactInfo {
 
     private String id = "contact";
@@ -41,6 +42,8 @@ public class ContactInfoImpl implements ContactInfo {
 
     private String onlineResource;
 
+    private String title;
+
     private String welcome;
 
     private InternationalString internationalAddress;
@@ -72,6 +75,8 @@ public class ContactInfoImpl implements ContactInfo {
     private InternationalString internationalOnlineResource;
 
     private InternationalString internationalWelcome;
+
+    private InternationalString internationalTitle;
 
     @Override
     public String getId() {
@@ -218,8 +223,28 @@ public class ContactInfoImpl implements ContactInfo {
     }
 
     @Override
+    public String getTitle() {
+        return InternationalStringUtils.getOrDefault(title, internationalTitle);
+    }
+
+    @Override
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    @Override
     public void setOnlineResource(String onlineResource) {
         this.onlineResource = onlineResource;
+    }
+
+    @Override
+    public InternationalString getInternationalTitle() {
+        return internationalTitle;
+    }
+
+    @Override
+    public void setInternationalTitle(InternationalString title) {
+        this.internationalTitle = InternationalStringUtils.growable(title);
     }
 
     @Override
@@ -230,6 +255,16 @@ public class ContactInfoImpl implements ContactInfo {
     @Override
     public void setWelcome(String welcome) {
         this.welcome = welcome;
+    }
+
+    @Override
+    public InternationalString getInternationalWelcome() {
+        return internationalWelcome;
+    }
+
+    @Override
+    public void setInternationalWelcome(InternationalString internationalWelcome) {
+        this.internationalWelcome = InternationalStringUtils.growable(internationalWelcome);
     }
 
     @Override
@@ -300,16 +335,6 @@ public class ContactInfoImpl implements ContactInfo {
     @Override
     public void setInternationalOnlineResource(InternationalString internationalOnlineResource) {
         this.internationalOnlineResource = InternationalStringUtils.growable(internationalOnlineResource);
-    }
-
-    @Override
-    public InternationalString getInternationalWelcome() {
-        return internationalWelcome;
-    }
-
-    @Override
-    public void setInternationalWelcome(InternationalString internationalWelcome) {
-        this.internationalWelcome = InternationalStringUtils.growable(internationalWelcome);
     }
 
     @Override

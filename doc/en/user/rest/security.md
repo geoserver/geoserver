@@ -21,7 +21,7 @@ The REST API allows you to adjust GeoServer security settings.
 
 *Response*
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?><masterPassword>
     <oldMasterPassword>geoserver</oldMasterPassword>
 </masterPassword>
@@ -36,7 +36,7 @@ The REST API allows you to adjust GeoServer security settings.
 
 Given a `changes.xml` file:
 
-``` xml
+```xml
 <masterPassword>
    <oldMasterPassword>-"}3a^Kh</oldMasterPassword>
    <newMasterPassword>geoserver1</newMasterPassword>
@@ -65,7 +65,7 @@ Given a `changes.xml` file:
 
 *Response*
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog>
     <mode>HIDE</mode>
@@ -78,7 +78,7 @@ Given a `changes.xml` file:
 
 Given a `newMode.xml` file:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog>
     <mode>MIXED</mode>
@@ -103,7 +103,7 @@ Given a `newMode.xml` file:
 
 *Response*
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <rules />
 ```
@@ -117,7 +117,7 @@ Given a `newMode.xml` file:
 
 Given a `rules.xml` file:
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <rules>
    <rule resource="topp.*.r">ROLE_AUTHORIZED</rule>

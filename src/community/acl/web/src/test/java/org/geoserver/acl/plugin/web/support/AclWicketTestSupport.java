@@ -37,7 +37,7 @@ public abstract class AclWicketTestSupport extends GeoServerWicketTestSupport {
     @After
     public void clearRules() {
         AdminRuleAdminService adminService = adminService();
-        adminService.getAll().map(AdminRule::getId).forEach(adminService::delete);
+        adminService.getAll().map(AdminRule::id).forEach(adminService::delete);
     }
 
     protected AdminRuleAdminService adminService() {

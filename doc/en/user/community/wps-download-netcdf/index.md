@@ -62,7 +62,7 @@ Relevant parameters of the Raw Data Download process:
 
 Assuming that a *it.geosolutions:temperature* layer exists containing data for water temperature at different times (associated to *ingestion* attribute) and different elevations (associated to *elevation* attribute), the following example DataInputs is used to collect all the data within the specified temporal range and the specified elevation. (note that the dimensions need to be enabled to be used by the filtering machinery)
 
-``` xml
+```xml
 <ows:Identifier>gs:Download</ows:Identifier>
 <wps:DataInputs>
   <wps:Input>
@@ -96,7 +96,7 @@ By default, the Settings configured in the NetCDF Output Settings of the layer (
 
 The `writeParameters` input element of a process execution allows to specify parameters to be applied by the `outputFormat` encoder when producing the output file. Writing parameters are listed as multiple `<dwn:Parameter key="writingParameterName">value</dwn:Parameter>` within a `<dwn:Parameters>` parent element. See the below xml containing full syntax of a valid example for NetCDF output format:
 
-``` xml
+```xml
 <wps:Input>
   <ows:Identifier>writeParameters</ows:Identifier>
     <wps:Data>

@@ -169,19 +169,19 @@ public class WmsRequestAclEnforcerInterceptor extends AbstractDispatcherCallback
             // get the requested style
             String styleName = styles.get(i);
             if (styleName == null) {
-                if (layerConstraints.getDefaultStyle() != null) {
+                if (layerConstraints.defaultStyle() != null) {
                     try {
-                        StyleInfo si = catalog.getStyleByName(layerConstraints.getDefaultStyle());
+                        StyleInfo si = catalog.getStyleByName(layerConstraints.defaultStyle());
                         if (si == null) {
                             throw new ServiceException("Could not find default style suggested "
                                     + "by GeoRepository: "
-                                    + layerConstraints.getDefaultStyle());
+                                    + layerConstraints.defaultStyle());
                         }
                         getLegend.setStyle(si.getStyle());
                     } catch (IOException e) {
                         throw new ServiceException(
                                 "Unable to load the style suggested by GeoRepository: "
-                                        + layerConstraints.getDefaultStyle(),
+                                        + layerConstraints.defaultStyle(),
                                 e);
                     }
                 }
@@ -247,19 +247,19 @@ public class WmsRequestAclEnforcerInterceptor extends AbstractDispatcherCallback
             // if default use ACL's default
             if (styleName != null) {
                 checkStyleAllowed(layerConstraints, styleName);
-            } else if ((layerConstraints.getDefaultStyle() != null)) {
+            } else if ((layerConstraints.defaultStyle() != null)) {
                 try {
-                    StyleInfo si = catalog.getStyleByName(layerConstraints.getDefaultStyle());
+                    StyleInfo si = catalog.getStyleByName(layerConstraints.defaultStyle());
                     if (si == null) {
                         throw new ServiceException(
-                                "Could not find default style suggested by ACL: " + layerConstraints.getDefaultStyle());
+                                "Could not find default style suggested by ACL: " + layerConstraints.defaultStyle());
                     }
 
                     Style style = si.getStyle();
                     getMap.getStyles().set(i, style);
                 } catch (IOException e) {
                     throw new ServiceException(
-                            "Unable to load the style suggested by ACL: " + layerConstraints.getDefaultStyle(), e);
+                            "Unable to load the style suggested by ACL: " + layerConstraints.defaultStyle(), e);
                 }
             }
         }
@@ -296,11 +296,11 @@ public class WmsRequestAclEnforcerInterceptor extends AbstractDispatcherCallback
     private void checkStyleAllowed(AccessInfo accessInfo, String styleName) {
         // otherwise check if the requested style is allowed
         Set<String> allowedStyles = new HashSet<>();
-        if (accessInfo.getDefaultStyle() != null) {
-            allowedStyles.add(accessInfo.getDefaultStyle());
+        if (accessInfo.defaultStyle() != null) {
+            allowedStyles.add(accessInfo.defaultStyle());
         }
-        if (accessInfo.getAllowedStyles() != null) {
-            allowedStyles.addAll(accessInfo.getAllowedStyles());
+        if (accessInfo.allowedStyles() != null) {
+            allowedStyles.addAll(accessInfo.allowedStyles());
         }
 
         if ((!allowedStyles.isEmpty()) && !allowedStyles.contains(styleName)) {

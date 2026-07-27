@@ -28,7 +28,7 @@ The following request uploads an app-schema mapping file called `LandCoverVector
 
 *Response*
 
-``` xml
+```xml
 <dataStore>
   <name>LandCoverVector</name>
   <type>Application Schema DataAccess</type>
@@ -82,7 +82,7 @@ The following request uploads an app-schema mapping file called `LandCoverVector
 
 The main configuration file includes the second file:
 
-``` xml
+```xml
 ...
 <includedTypes>
   <Include>cgi_termvalue.xml</Include>
@@ -92,7 +92,7 @@ The main configuration file includes the second file:
 
 We also want to upload to GeoServer the schemas required to define the mapping, instead of having GeoServer retrieve them from the internet (which is especially useful in case our server doesn't have access to the web). The main schema is called `geosciml.xsd` and is referred to in `geosciml.appschema` as such:
 
-``` xml
+```xml
 ...
 <targetTypes>
   <FeatureType>
@@ -104,7 +104,7 @@ We also want to upload to GeoServer the schemas required to define the mapping, 
 
 In this case, the main schema depends on several other schemas:
 
-``` xml
+```xml
 <include schemaLocation="geologicUnit.xsd"/>
 <include schemaLocation="borehole.xsd"/>
 <include schemaLocation="vocabulary.xsd"/>
@@ -125,7 +125,7 @@ They don't need to be listed in the `targetTypes` section of the mapping configu
 
 To summarize, we'll upload to GeoServer a ZIP archive with the following contents:
 
-``` console
+```console
 geosciml.appschema      # main mapping file
 cgi_termvalue.xml       # secondary mapping file
 geosciml.xsd            # main schema
@@ -155,7 +155,7 @@ vocabulary.xsd
 
 A new `geosciml` data store will be created with three feature types in it:
 
-``` xml
+```xml
 <featureTypes>
   <featureType>
     <name>MappedFeature</name>
@@ -223,8 +223,8 @@ A new `geosciml` data store will be created with three feature types in it:
         curl -v -X POST 
           -u admin:geoserver http://localhost:8080/geoserver/rest/workspaces/{WORKSPACE}/appschemastores/{APP_SCHEMA_STORE_NAME}/datastores/{INTERNAL_STORE_ID}/rebuildMongoSchemas?ids={ID_1},{ID_2}&max={MAX_OBJECTS}
 
-- ids: Comma separated MongoDB JSON objects ids to query for generating schemas. Not required if the 'max' is setted.
-- max: Max number of MongoDB JSON objects to get for generating schemas. Not required if the 'ids' is setted.
+- ids: Comma separated MongoDB JSON objects ids to query for generating schemas. Not required if the 'max' is set.
+- max: Max number of MongoDB JSON objects to get for generating schemas. Not required if the 'ids' is set.
 
 *Request*
 
@@ -246,8 +246,8 @@ A new `geosciml` data store will be created with three feature types in it:
         curl -v -X POST 
           -u admin:geoserver http://localhost:8080/geoserver/rest/workspaces/{WORKSPACE}/appschemastores/{APP_SCHEMA_STORE_NAME}/rebuildMongoSchemas?ids={ID_1},{ID_2}&max={MAX_OBJECTS}
 
-- ids: Comma separated MongoDB JSON objects ids to query for generating schemas. Not required if the 'max' is setted.
-- max: Max number of MongoDB JSON objects to get for generating schemas. Not required if the 'ids' is setted.
+- ids: Comma separated MongoDB JSON objects ids to query for generating schemas. Not required if the 'max' is set.
+- max: Max number of MongoDB JSON objects to get for generating schemas. Not required if the 'ids' is set.
 
 *Request*
 
@@ -261,4 +261,4 @@ A new `geosciml` data store will be created with three feature types in it:
     200 OK
 
 !!! note
-    This endpoins are only available when App-Schema and MongoDB modules are installed on GeoServer, and involved app-schema store have internal MongoDB stores in mappings definition.
+    This endpoints are only available when App-Schema and MongoDB modules are installed on GeoServer, and involved app-schema store have internal MongoDB stores in mappings definition.

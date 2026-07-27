@@ -464,7 +464,7 @@ public class OSHISystemInfoCollector extends Thread {
                     mv.setAvailable(true);
                     double total = mm.getTotal();
                     if (total > 0.0) {
-                        double value = 100d * gsProc.getResidentSetSize() / total;
+                        double value = 100d * gsProc.getResidentMemory() / total;
                         mv.setValue(value);
                     } else {
                         mv.setValue(0);

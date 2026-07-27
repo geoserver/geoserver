@@ -12,7 +12,11 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.util.EntityResolverProvider;
+import org.geotools.util.NullEntityResolver;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -52,6 +56,16 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
     private XpathEngine WFS11_XPATH_ENGINE;
 
     private XpathEngine WFS20_XPATH_ENGINE;
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+    }
 
     @Before
     public void beforeTest() {

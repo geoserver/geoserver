@@ -2,7 +2,7 @@
 
 The default output for a `GetFeatureInfo` request on a raster layer contains just the value of the selected pixel, one for each band of the image. For instance, in case of an `application/json` output format:
 
-``` json
+```json
 {
 "type": "FeatureCollection",
 "features": [
@@ -24,7 +24,7 @@ The default output for a `GetFeatureInfo` request on a raster layer contains jus
 
 If the raster layer is associated with a Style based on a `ColorMap`, GeoServer allows to include in the output the labels of each `ColorMapEntry` matching the pixel. This is controlled by a `VendorOption`, that needs to be added inside the `RasterSymbolizer` holding the `ColorMap`.
 
-``` xml
+```xml
 <sld:RasterSymbolizer>
    <sld:ColorMap>
        <sld:ColorMapEntry color="#0000FF" quantity="1.0" label="low"/>
@@ -39,7 +39,7 @@ If the raster layer is associated with a Style based on a `ColorMap`, GeoServer 
 
 The output produced by the above `RasterSymbolizer` looks as follows:
 
-``` json
+```json
 {
 "type": "FeatureCollection",
 "features": [ 
@@ -72,7 +72,7 @@ Additionally, it is possible to customize the attribute name of the label value,
 
 Assuming to have a `RasterSymbolizer` like this
 
-``` xml
+```xml
 <sld:RasterSymbolizer>
    <sld:ColorMap>
        <sld:ColorMapEntry color="#0000FF" quantity="1.0" label="low"/>
@@ -88,7 +88,7 @@ Assuming to have a `RasterSymbolizer` like this
 
 we would obtain the following output, where the attribute name of the label value has been replaced by the one specified in the labelAttributeName `VendorOption`:
 
-``` json
+```json
 {
  "type": "FeatureCollection",
  "features": [

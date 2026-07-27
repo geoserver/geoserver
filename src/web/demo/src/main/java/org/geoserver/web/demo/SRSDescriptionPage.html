@@ -5,27 +5,27 @@
   <body>
     <wicket:extend>
       <h2 wicket:id="code">EPSG:XXXX</h2>
-      <div class="gs-unordered-list-class form-data">
-        <div class="gs-list-item-class">
+      <div class="gs-form">
+        <div class="gs-form-group">
           <span class="fieldname">
             <wicket:message key="name">Name</wicket:message>
           </span>
-          <div class="value-wide" wicket:id="crsName">name</div>
+          <div class="w-fit value-wide" wicket:id="crsName">name</div>
         </div>
-        <div class="gs-list-item-class">
+        <div class="gs-form-group">
           <span class="fieldname">
             <wicket:message key="scope">Scope</wicket:message>
           </span>
-          <div class="value-wide" wicket:id="crsScope">scope...</div>
+          <div class="w-fit value-wide" wicket:id="crsScope">scope...</div>
         </div>
-        <div class="gs-list-item-class">
+        <div class="gs-form-group">
           <span class="fieldname">
             <wicket:message key="remarks">Remarks</wicket:message>
           </span>
-          <div class="value-wide" wicket:id="crsRemarks">remarks...</div>
+          <div class="w-fit value-wide" wicket:id="crsRemarks">remarks...</div>
         </div>
-        <div class="gs-list-item-class">
-          <span wicket:id="reprojectFrom"></span><br/>
+        <div class="gs-form">
+          <span wicket:id="reprojectFrom"></span>
           <span wicket:id="reprojectTo"></span>
         </div>
         <div class="gs-list-item-class">
@@ -36,11 +36,17 @@
           <span class="fieldname">
             <wicket:message key="areaOfValidity">Area of validity</wicket:message>
           </span>
-          <div class="value-wide">
-            <pre wicket:id="aovCoords">0, 0</pre>
-          </div>
-          <div class="value-wide">
-            <div wicket:id="aovDescription">aov desc</div>
+          <div class="gs-form">
+            <div class="gs-form-group">
+              <div class="value-wide">
+                <pre wicket:id="aovCoords">0, 0</pre>
+              </div>
+            </div>
+            <div class="gs-form-group">
+              <div class="value-wide">
+                <div wicket:id="aovDescription">aov desc</div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="gs-list-item-class" wicket:id="areaOfValidityMap">

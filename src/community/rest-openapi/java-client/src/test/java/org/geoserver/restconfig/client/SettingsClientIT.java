@@ -15,14 +15,21 @@ import org.geoserver.openapi.model.config.SettingsInfo;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.RuleChain;
 
 /** Integration test suite for {@link SettingsClient} */
 public class SettingsClientIT {
 
-    public @Rule IntegrationTestSupport support = new IntegrationTestSupport();
+    private static GeoServerContainer geoserverContainer = new GeoServerContainer();
+
+    private static IntegrationTestSupport support = new IntegrationTestSupport(geoserverContainer);
+
+    @ClassRule
+    public static RuleChain chain = RuleChain.outerRule(geoserverContainer).around(support);
 
     public @Rule ExpectedException ex = ExpectedException.none();
 

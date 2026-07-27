@@ -70,7 +70,7 @@ The properties available in the template are:
 
 The JSON output format (and JSONP if enabled) return feature content as a [GeoJSON](http://geojson.org/) document. Here is an example of a simple GeoJSON file;
 
-``` json
+```json
 {  "type": "Feature",
    "geometry": {
       "type": "Point",
@@ -84,7 +84,7 @@ The JSON output format (and JSONP if enabled) return feature content as a [GeoJS
 
 The output properties can include the use of lists and maps:
 
-``` json
+```json
 {
   "type": "Feature",
   "id": "example.3",
@@ -126,7 +126,7 @@ A Default CSV file uses a comma to separate values. Each line of the file is a d
 csv file output `format_options`:
 
 - `format_option=filename:<file>`: if a file name is provided, the name is used as the output file name. For example, `format_options=filename:roads.csv`.
-- `format_option=csvseparator:<csvseparator>` (default is `` `, ```` ): if a separator is provided, it is used to separate values in output csv file. For example, ````format_options=csvseparator:-``\` is used to get dash separated file.
+- `format_option=csvseparator:<csvseparator>` (default is `,`): if a separator is provided, it is used to separate values in output csv file. For example, `format_options=csvseparator:-` is used to get dash separated file.
 
 Some special characters need to be handled using keywords as below:
 

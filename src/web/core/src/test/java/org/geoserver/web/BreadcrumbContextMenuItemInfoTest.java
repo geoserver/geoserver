@@ -55,8 +55,8 @@ public class BreadcrumbContextMenuItemInfoTest {
     @Test
     public void testSetIcon() {
         BreadcrumbContextMenuItemInfo info = new BreadcrumbContextMenuItemInfo();
-        info.setIcon("img/icons/silk/folder.png");
-        assertEquals("img/icons/silk/folder.png", info.getIcon());
+        info.setIcon("gs-icon-folder");
+        assertEquals("gs-icon-folder", info.getIcon());
     }
 
     @Test
@@ -108,7 +108,7 @@ public class BreadcrumbContextMenuItemInfoTest {
 
         assertEquals("myWorkspace", params.get("workspace").toString());
         assertEquals("myLayer", params.get("layer").toString());
-        assertEquals("myLayer", params.get("group").toString());
+        assertTrue(params.get("group").isNull());
     }
 
     @Test
@@ -128,7 +128,7 @@ public class BreadcrumbContextMenuItemInfoTest {
 
         assertTrue(params.get("workspace").isNull());
         assertEquals("myLayer", params.get("layer").toString());
-        assertEquals("myLayer", params.get("group").toString());
+        assertTrue(params.get("group").isNull());
     }
 
     @Test
@@ -197,7 +197,7 @@ public class BreadcrumbContextMenuItemInfoTest {
 
         assertEquals("ws", params.get("workspace").toString());
         assertEquals("res", params.get("layer").toString());
-        assertEquals("res", params.get("group").toString());
+        assertTrue(params.get("group").isNull());
     }
 
     @Test
@@ -207,6 +207,6 @@ public class BreadcrumbContextMenuItemInfoTest {
 
         assertEquals("ws", params.get("workspace").toString());
         assertEquals("res", params.get("layer").toString());
-        assertEquals("res", params.get("group").toString());
+        assertTrue(params.get("group").isNull());
     }
 }

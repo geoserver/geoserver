@@ -200,7 +200,7 @@ class CatalogSecurityFilterBuilder {
         Filter filter = acceptNone();
         Set<String> hideAllWorkspaceNames = new TreeSet<>();
         for (WorkspaceAccessSummary wsSummary : summaries) {
-            String workspace = wsSummary.getWorkspace();
+            String workspace = wsSummary.workspace();
             if (wsSummary.hideAll()) {
                 if (!ANY.equals(workspace)) {
                     hideAllWorkspaceNames.add(workspace);
@@ -276,9 +276,9 @@ class CatalogSecurityFilterBuilder {
     private Filter filterLayersOnWorkspace(
             WorkspaceAccessSummary vl, String workspaceProperty, boolean includeNullWorkspace, String nameProperty) {
 
-        final String workspace = vl.getWorkspace();
-        final Set<String> allowed = vl.getAllowed();
-        final Set<String> forbidden = vl.getForbidden();
+        final String workspace = vl.workspace();
+        final Set<String> allowed = vl.allowed();
+        final Set<String> forbidden = vl.forbidden();
 
         Filter workspaceFilter = workspaceNameFilter(workspaceProperty, includeNullWorkspace, Set.of(workspace));
         Filter filter;

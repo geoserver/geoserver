@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-OAuth2LoginAuthProviderPanel_KeycloakAPIPanel">
+        <div class="gs-form">
+          <div class="gs-form-group">
+            <label class="fontSize10">
+              <wicket:message key="keycloakAPI.derivedFromOidcHint">Server URL, Realm and admin client credentials are derived at resolution time from this filter's OIDC configuration above. The OIDC client itself must have service-accounts-enabled=true and the realm-management roles (view-realm / view-users / view-clients) assigned to its service-account user.</wicket:message>
+            </label>
+          </div>
+          <div class="gs-form-group">
+            <label class="padTopLarge">
+              <wicket:message key="keycloakAdminClientIdsOfRoleScopes">Client IDs for client-roles (comma-separated, optional)</wicket:message>
+            </label>
+            <input type="text" class="field" id="keycloakAdminClientIdsOfRoleScopes" wicket:id="keycloakAdminClientIdsOfRoleScopes" />
+            <label class="fontSize10">
+              <wicket:message key="keycloakAdminClientIdsOfRoleScopesHint">Leave blank to surface realm roles only. Otherwise list public clientIds whose client-roles should also be pulled in.</wicket:message>
+            </label>
+          </div>
+          <div class="choiceItem">
+            <input class="field" id="keycloakUseCompositeRoles" type="checkbox" wicket:id="keycloakUseCompositeRoles" />
+            <label>
+              <wicket:message key="keycloakUseCompositeRoles">Include composite &amp; group-inherited roles (uses Keycloak's transitive /composite endpoint)</wicket:message>
+            </label>
+          </div>
+        </div>
+        <div class="gs-form">
+          <div class="gs-form-group">
+            <label class="padTopLarge">
+              <wicket:message key="roleConverterTitle">Role Converter Map from External Roles to GeoServer Roles</wicket:message>
+            </label>
+            <input type="text" class="field" id="roleConverterString" wicket:id="roleConverterString" />
+          </div>
+          <label>
+            <wicket:message key="roleConverterHint">eg. ExternalRole1=GeoServerRole1;ExternalRole2=GeoServerRole2</wicket:message>
+          </label>
+          <div class="choiceItem">
+            <input class="field" id="onlyExternalListedRoles" type="checkbox" wicket:id="onlyExternalListedRoles" />
+            <label>
+              <wicket:message key="roleConverterOnlyListedExternalRoles">Only allow External Roles that are explicitly named above</wicket:message>
+            </label>
+          </div>
+        </div>
+        <div id="roleConverterStringDiv" class="padTopLarge">
+          <table id="roleConverterStringTable">
+            <thead>
+              <tr>
+                <th class="textAlignCenter">
+                  <wicket:message key="externalRoleTitle">External Role</wicket:message>
+                </th>
+                <th class="textAlignCenter">
+                  <wicket:message key="gsRoleTitle">GeoServer Role</wicket:message>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="roleConverterStringTbody">
+            </tbody>
+          </table>
+          <div class="display-flex justifyContentCenter fontSize10">
+            <div>
+              <wicket:message key="roleConverterTableTitle">Live preview of the conversion table</wicket:message>
+            </div>
+          </div>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
+</html>

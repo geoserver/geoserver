@@ -16,7 +16,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -26,12 +25,12 @@ import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
-import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.ConfirmationAjaxLink;
 import org.geoserver.web.wicket.DateTimeLabel;
 import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
@@ -72,10 +71,8 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
         if (property == StoreProvider.DATA_TYPE) {
             final StoreInfo storeInfo = itemModel.getObject();
 
-            ResourceReference storeIcon = icons.getStoreIcon(storeInfo);
-
             Fragment f = new Fragment(id, "iconFragment", this);
-            f.add(new CachingImage("storeIcon", storeIcon));
+            f.add(icons.getStoreIconComponent("storeIcon", storeInfo));
 
             return f;
         } else if (property == WORKSPACE) {
@@ -84,14 +81,14 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
             return storeNameLink(id, itemModel);
         } else if (property == ENABLED) {
             final StoreInfo storeInfo = itemModel.getObject();
-            ResourceReference enabledIcon;
+            String enabledIcon;
             if (storeInfo.isEnabled()) {
                 enabledIcon = icons.getEnabledIcon();
             } else {
                 enabledIcon = icons.getDisabledIcon();
             }
             Fragment f = new Fragment(id, "iconFragment", this);
-            f.add(new CachingImage("storeIcon", enabledIcon));
+            f.add(new GsIcon("storeIcon", enabledIcon));
             return f;
         } else if (property == StoreProvider.MODIFIED_TIMESTAMP) {
             return new DateTimeLabel(id, StoreProvider.MODIFIED_TIMESTAMP.getModel(itemModel));

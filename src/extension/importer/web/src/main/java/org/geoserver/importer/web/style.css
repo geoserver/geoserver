@@ -75,6 +75,67 @@ legend span.no-border {
     width: 75px;
 }
 
+.import-page-legend {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0;
+    width: 100%;
+}
+
+.import-page-legend-main {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+    gap: 0.75rem;
+    flex: 1 1 auto;
+}
+
+.import-page-legend-icon {
+    flex: 0 0 auto;
+}
+
+.import-page-legend-title {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.35;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.import-page-legend-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    font-size: 0.9375rem;
+    margin: 0;
+    flex: 0 1 auto;
+}
+
+.import-page-legend-actions .gs-list-item-class {
+    margin-right: 0;
+    margin-bottom: 0;
+}
+
+@media (max-width: 1024px) {
+    .import-page-legend {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .import-page-legend-main,
+    .import-page-legend-actions {
+        width: 100%;
+    }
+
+    .import-page-legend-actions {
+        justify-content: flex-start;
+    }
+}
+
 .refresh-link {
     background: transparent no-repeat left center;
     background-image: url(resources/org.geoserver.importer.web.JobQueuePanel/arrow_refresh.png);

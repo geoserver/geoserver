@@ -9,10 +9,12 @@ import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -155,71 +157,77 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
                     }
                 });
         provider = new InternationalEntriesProvider();
-        GeoServerTablePanel<GrowableStringModel.InternationalStringEntry> tablePanel =
-                new GeoServerTablePanel<>("tablePanel", provider) {
-                    @Override
-                    protected Component getComponentForProperty(
-                            String id,
-                            IModel<GrowableStringModel.InternationalStringEntry> itemModel,
-                            GeoServerDataProvider.Property<GrowableStringModel.InternationalStringEntry> property) {
-                        if (property.getName().equals("locale")) {
-                            Fragment localeFragment = new Fragment(id, "selectFragment", InternationalStringPanel.this);
-                            FormComponentFeedbackBorder localeBorder = new FormComponentFeedbackBorder("border");
-                            localeFragment.add(localeBorder);
-                            LocalesDropdown locales =
-                                    new LocalesDropdown("select", new PropertyModel<>(itemModel, "locale"));
-                            locales.setLabel(new ParamResourceModel("th.locale", InternationalStringPanel.this));
-                            localeBorder.add(locales);
-                            locales.add(new LocaleValidator());
-                            locales.setNullValid(true);
-                            return localeFragment;
-                        } else if (property.getName().equals("text")) {
-                            AbstractTextComponent<String> field =
-                                    getTextComponent("txt", new PropertyModel<>(itemModel, "text"));
-                            String fragmentId;
-                            if (field instanceof TextArea) fragmentId = "txtAreaFragment";
-                            else if (field instanceof TextField) fragmentId = "txtFragment";
-                            else
-                                throw new RuntimeException(
-                                        "The text component has to be either a TextField or a TextArea");
+        this.tablePanel = new GeoServerTablePanel<>("tablePanel", provider) {
+            @Override
+            protected Component getComponentForProperty(
+                    String id,
+                    IModel<GrowableStringModel.InternationalStringEntry> itemModel,
+                    GeoServerDataProvider.Property<GrowableStringModel.InternationalStringEntry> property) {
+                if (property.getName().equals("locale")) {
+                    Fragment localeFragment = new Fragment(id, "selectFragment", InternationalStringPanel.this);
+                    FormComponentFeedbackBorder localeBorder = new FormComponentFeedbackBorder("border");
+                    localeFragment.add(localeBorder);
+                    LocalesDropdown locales = new LocalesDropdown("select", new PropertyModel<>(itemModel, "locale"));
+                    locales.setLabel(new ParamResourceModel("th.locale", InternationalStringPanel.this));
+                    localeBorder.add(locales);
+                    locales.add(new LocaleValidator());
+                    locales.setNullValid(true);
 
-                            Fragment textFragment = new Fragment(id, fragmentId, InternationalStringPanel.this);
-                            FormComponentFeedbackBorder textBorder = new FormComponentFeedbackBorder("border");
-                            textFragment.add(textBorder);
-                            field.setLabel(new ParamResourceModel("th.text", InternationalStringPanel.this));
-                            textBorder.add(field);
-                            field.setRequired(true);
-                            return textFragment;
-                        } else if ("remove".equals(property.getName())) {
-                            Fragment removeFragment = new Fragment(id, "removeFragment", InternationalStringPanel.this);
-                            GeoServerAjaxFormLink removeLink = new GeoServerAjaxFormLink("remove") {
+                    locales.add(new AjaxFormComponentUpdatingBehavior("change") {
+                        @Override
+                        protected void onUpdate(AjaxRequestTarget target) {}
+                    });
+                    return localeFragment;
+                } else if (property.getName().equals("text")) {
+                    AbstractTextComponent<String> field =
+                            getTextComponent("txt", new PropertyModel<>(itemModel, "text"));
+                    String fragmentId;
+                    if (field instanceof TextArea) fragmentId = "txtAreaFragment";
+                    else if (field instanceof TextField) fragmentId = "txtFragment";
+                    else throw new RuntimeException("The text component has to be either a TextField or a TextArea");
 
-                                @Override
-                                protected void onClick(AjaxRequestTarget target, Form form) {
-                                    GrowableStringModel.InternationalStringEntry entry = itemModel.getObject();
-                                    provider.getItems().remove(entry);
-                                    InternationalStringPanel.this.modelChanged();
-                                    target.add(InternationalStringPanel.this);
-                                }
-                            };
-                            removeFragment.add(removeLink);
-                            return removeFragment;
+                    Fragment textFragment = new Fragment(id, fragmentId, InternationalStringPanel.this);
+                    FormComponentFeedbackBorder textBorder = new FormComponentFeedbackBorder("border");
+                    textFragment.add(textBorder);
+                    field.setLabel(new ParamResourceModel("th.text", InternationalStringPanel.this));
+                    textBorder.add(field);
+                    field.setRequired(true);
+
+                    field.add(new AjaxFormComponentUpdatingBehavior("change") {
+                        @Override
+                        protected void onUpdate(AjaxRequestTarget target) {}
+                    });
+                    return textFragment;
+                } else if ("remove".equals(property.getName())) {
+                    Fragment removeFragment = new Fragment(id, "removeFragment", InternationalStringPanel.this);
+                    GeoServerAjaxFormLink removeLink = new GeoServerAjaxFormLink("remove") {
+
+                        @Override
+                        protected void onClick(AjaxRequestTarget target, Form<?> form) {
+                            GrowableStringModel.InternationalStringEntry entry = itemModel.getObject();
+                            provider.getItems().remove(entry);
+                            InternationalStringPanel.this.tablePanel.modelChanged();
+                            target.add(InternationalStringPanel.this.tablePanel);
                         }
-                        return null;
-                    }
+                    };
+                    removeFragment.add(removeLink);
+                    return removeFragment;
+                }
+                return null;
+            }
 
-                    @Override
-                    public void processInputs() {
-                        this.visitChildren(FormComponent.class, (component, visit) -> {
-                            ((FormComponent<?>) component).convertInput();
-                            ((FormComponent<?>) component).processInput();
-                        });
-                    }
-                };
-        tablePanel.setSelectable(false);
-        tablePanel.setFilterable(false);
-        tablePanel.setPageable(false);
-        container.add(this.tablePanel = tablePanel);
+            @Override
+            public void processInputs() {
+                this.visitChildren(FormComponent.class, (component, visit) -> {
+                    ((FormComponent<?>) component).convertInput();
+                    ((FormComponent<?>) component).processInput();
+                });
+            }
+        };
+        this.tablePanel.setSelectable(false);
+        this.tablePanel.setFilterable(false);
+        this.tablePanel.setPageable(false);
+        container.add(this.tablePanel);
         add(container);
         this.tablePanel.setOutputMarkupId(true);
     }
@@ -235,9 +243,17 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
         @Override
         protected List<Property<GrowableStringModel.InternationalStringEntry>> getProperties() {
             return Arrays.asList(
-                    new BeanProperty<>("locale", "locale"),
+                    new BeanProperty<>("locale", "locale") {
+                        @Override
+                        public Comparator<GrowableStringModel.InternationalStringEntry> getComparator() {
+                            return Comparator.comparing(
+                                    GrowableStringModel.InternationalStringEntry::getLocale,
+                                    Comparator.nullsFirst(Comparator.comparing(
+                                            Locale::toLanguageTag, String.CASE_INSENSITIVE_ORDER)));
+                        }
+                    },
                     new BeanProperty<>("text", "text"),
-                    new BeanProperty<>("remove", "remove"));
+                    new GeoServerDataProvider.PropertyPlaceholder<>("remove"));
         }
 
         @Override

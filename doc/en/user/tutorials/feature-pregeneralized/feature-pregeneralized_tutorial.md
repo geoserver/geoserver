@@ -56,7 +56,7 @@ There are two possibilities how we can deploy our generalized shape files.
 
 First we need a XML config file
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <GeneralizationInfos version="1.0">
  <GeneralizationInfo dataSourceName="file:data/streams/0/streams.shp"  featureName="GenStreams" baseFeatureName="streams" geomPropertyName="the_geom">
@@ -73,7 +73,7 @@ Save this file as **`geninfo_shapefile.xml`** into **`{GEOSERVER_DATA_DIR}/data/
 !!! note
     The **dataSourceName** attribute in the XML config is not interpreted as a name, it could be the URL for a shape file or for a property file containing properties for data store creation (e. g. jdbc connect parameters). Remember, this is a hidden deployment and no names are needed. The only *official* name is the value of the attribute **featureName** in the **GeneralizationInfo** Element.
 
-Start GeoServer and go to **Config-->Data-->DataStores-->New** and fill in the form
+Start GeoServer and go to **Data > Stores > Add new Store** and fill in the form
 
 ![image](createdatastore.png)
 
@@ -150,7 +150,7 @@ Check the result by pressing **My GeoServer**, **Demo** and **Map Preview**. You
 
 No we need another XML configuration file
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <GeneralizationInfos version="1.0">
  <GeneralizationInfo dataSourceNameSpace="topp" dataSourceName="Streams_0"  featureName="GenStreams2" baseFeatureName="streams" geomPropertyName="the_geom">

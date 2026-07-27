@@ -21,7 +21,7 @@ Any kind of geometry may be styled with a `<PolygonSymbolizer>`. Point geometrie
 
 ## Stroke
 
-The `<Stroke>` element specifies the styling for the **border** of a polygon. The syntax is described in the `<LineSymbolizer>` [Stroke](linesymbolizer.md#stroke) section.
+The `<Stroke>` element specifies the styling for the **border** of a polygon. The syntax is described in the `<LineSymbolizer>` [Stroke](linesymbolizer.md#sld_reference_stroke) section.
 
 ## Fill
 

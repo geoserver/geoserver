@@ -18,13 +18,13 @@ GeoServer can have the capabilities documents report a proxy properly. "The Prox
 
 This setting is available in the Administration Console and REST API by GeoServer Administrator. This setting may also be managed using the `PROXY_BASE_URL` [application property](properties/index.md) defined by a System Administrator.
 
-``` bash
+```bash
 -DPROXY_BASE_URL=https://example.net/geoserver
 ```
 
 The Proxy Base URL field support environment parametrization (see [Parameterize catalog settings](../datadirectory/configtemplate.md) ) by activating the JVM parameter:
 
-``` bash
+```bash
 -DALLOW_ENV_PARAMETRIZATION=true
 ```
 
@@ -36,7 +36,7 @@ Once activated the environment parametrization Proxy Base URL can be parameters 
 
 Checking this box allows a by-request modification of the proxy URL using templates (templates based on HTTP proxy headers). This setting may also be managed using the `PROXY_BASE_URL_HEADERS` boolean system property or environment variable defined by a System Administrator: setting it to true will enable the headers variables usage for proxy base URL on all workspaces, overriding any GeoServer datadir configuration.
 
-``` bash
+```bash
 -DPROXY_BASE_URL_HEADERS=true
 ```
 
@@ -175,7 +175,7 @@ This setting can be overridden by system property, see [Advanced log configurati
 
 These settings enable the logging of the requested URL, and optionally request headers and the POST requests' contents, for all requests sent to GeoServer.
 
-- **Enable Request Logging**: Select to enable logging of incoming requests, this will include the operation (`GET`, `POST`, etc\...) and the URL requested.
+- **Enable Request Logging**: Select to enable logging of incoming requests, this will include the operation (`GET`, `POST`, etc...) and the URL requested.
 - **Log Request Bodies**: Select to enable logging the body of the incoming request. Text content will be logged, or the number of bytes for binary content, based on the setting Number of characters to log for incoming requests setting below.
 - **Number of characters to log for incoming POST requests**: In more verbose logging levels, GeoServer will log the body of incoming requests. It will only log the initial part of the request though, since it has to store (buffer) everything that gets logged for use in the parts of GeoServer that use it normally. This setting sets the size of this buffer, in characters. A setting of **0** will disable logging the body of the request.
 - **Log Request Headers**: Select to enable logging of request header information.
@@ -242,8 +242,8 @@ This configuration defines how user e-mail addresses are displayed in the GeoSer
 There are several options:
 
 - **HIDDEN**: The user's e-mail address is not shown.
-- **DOMAIN_ONLY**: Default mode. Only the domain part (for example, ``example.com``) is displayed.
-- **MASKED**: The local part (before the ``@``) is masked with ``*``, leaving only the first character visible. The domain part is fully visible.
+- **DOMAIN_ONLY**: Default mode. Only the domain part (for example, `example.com`) is displayed.
+- **MASKED**: The local part (before the `@`) is masked with `*`, leaving only the first character visible. The domain part is fully visible.
 - **FULL**: The complete e-mail address is displayed.
 
 #### Reveal Email at Click {: #config_globalsettings_web_admin_interface_reveal_email_at_click }
@@ -280,7 +280,7 @@ This parameter can be used to mute exception logging when doing REST operations 
 
 #### REST PathMapper Root directory path {: #config_globalsettings_rest_root_dir }
 
-This parameter is used by the RESTful API as the ``Root Directory`` for the newly uploaded files, following the structure:
+This parameter is used by the RESTful API as the `Root Directory` for the newly uploaded files, following the structure:
 
     ${rootDirectory}/workspace/store[/<file>]
 

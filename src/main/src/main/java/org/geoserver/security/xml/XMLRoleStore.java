@@ -30,11 +30,9 @@ import java.io.OutputStream;
 import java.util.SortedSet;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.geoserver.platform.resource.Resource;
@@ -42,6 +40,7 @@ import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.file.LockFile;
 import org.geoserver.security.impl.AbstractRoleStore;
 import org.geoserver.security.impl.GeoServerRole;
+import org.geotools.xml.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -78,7 +77,7 @@ public class XMLRoleStore extends AbstractRoleStore {
 
         DocumentBuilder builder = null;
         try {
-            builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            builder = XMLUtils.newDocumentBuilder();
         } catch (ParserConfigurationException e1) {
             throw new IOException(e1);
         }
@@ -144,7 +143,7 @@ public class XMLRoleStore extends AbstractRoleStore {
             //                XMLValidator.Singleton.validateRoleRegistry(doc);
             //            }
 
-            Transformer tx = TransformerFactory.newInstance().newTransformer();
+            Transformer tx = XMLUtils.newTransformer();
             tx.setOutputProperty(OutputKeys.METHOD, "XML");
             tx.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             tx.setOutputProperty(OutputKeys.INDENT, "yes");

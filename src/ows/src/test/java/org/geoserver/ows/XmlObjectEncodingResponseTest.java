@@ -7,14 +7,13 @@ package org.geoserver.ows;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
 import net.opengis.ows10.AcceptVersionsType;
 import net.opengis.ows10.GetCapabilitiesType;
 import net.opengis.ows10.Ows10Factory;
 import org.geoserver.ows.xml.v1_0.OWSConfiguration;
+import org.geotools.xml.XMLUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,9 +51,8 @@ public class XmlObjectEncodingResponseTest {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         response.write(caps, output, null);
 
-        Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        TransformerFactory.newInstance()
-                .newTransformer()
+        Document d = XMLUtils.newDocumentBuilder().newDocument();
+        XMLUtils.newTransformer()
                 .transform(new StreamSource(new ByteArrayInputStream(output.toByteArray())), new DOMResult(d));
 
         Assert.assertEquals("ows:GetCapabilities", d.getDocumentElement().getNodeName());

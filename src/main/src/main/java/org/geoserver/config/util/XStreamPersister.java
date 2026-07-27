@@ -51,6 +51,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -803,6 +804,7 @@ public class XStreamPersister {
 
                 // unwrap any proxies
                 value = unwrapProxies(value);
+
                 wrapped.visit(name, type, definedIn, value);
             }
         }
@@ -2435,7 +2437,7 @@ public class XStreamPersister {
                 obj.setContact(new ContactInfoImpl());
             }
             if (obj.getClientProperties() == null) {
-                obj.setClientProperties(new HashMap<>());
+                obj.setClientProperties(new LinkedHashMap<>());
             }
             return obj;
         }
@@ -2566,7 +2568,7 @@ public class XStreamPersister {
         public Object doUnmarshal(Object result, HierarchicalStreamReader reader, UnmarshallingContext context) {
             WMSLayerInfoImpl obj = (WMSLayerInfoImpl) super.doUnmarshal(result, reader, context);
             if (obj.getVendorParameters() == null) {
-                obj.setVendorParameters(new HashMap<>());
+                obj.setVendorParameters(new LinkedHashMap<>());
             }
             // setting the minimal defaults and clean object with no NULL values
             if (obj.getPreferredFormat() == null) {

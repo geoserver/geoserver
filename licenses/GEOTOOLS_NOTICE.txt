@@ -25,7 +25,7 @@ Public License</a> for more details.
 
 Any files or portions of files are available under a different license are
 documented in their file header. A copy of any license which is not designed
-to be included directly in the file header is included along side this notice.
+to be included directly in the file header is included alongside this notice.
 Look for files with names such as [EPSG](EPSG.md) and [OGC](OGC.md).
 
 * [Bitstream Vera Fonts Copyright](Bitstream-Vera-Fonts.md)

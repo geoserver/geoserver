@@ -2,7 +2,7 @@
 
 This chapter describes whether to use the GetLegendGraphics request. The SLD Specifications 1.0.0 gives a good description about GetLegendGraphic requests:
 
-``The GetLegendGraphic operation itself is optional for an SLD-enabled WMS. It provides a general mechanism for acquiring legend symbols, beyond the LegendURL reference of WMS Capabilities. Servers supporting the GetLegendGraphic call might code LegendURL references as GetLegendGraphic for interface consistency. Vendor-specific parameters may be added to GetLegendGraphic requests and all of the usual OGC-interface options and rules apply. No XML-POST method for GetLegendGraphic is presently defined``.
+> The GetLegendGraphic operation itself is optional for an SLD-enabled WMS. It provides a general mechanism for acquiring legend symbols, beyond the LegendURL reference of WMS Capabilities. Servers supporting the GetLegendGraphic call might code LegendURL references as GetLegendGraphic for interface consistency. Vendor-specific parameters may be added to GetLegendGraphic requests and all of the usual OGC-interface options and rules apply. No XML-POST method for GetLegendGraphic is presently defined.
 
 Here is an example invocation:
 
@@ -93,7 +93,7 @@ Here below I have drawn the structure of a typical legend, where some elements o
 
 Take as an instance one of the SLD files attached to this page, each row in the above table draws its essence from the ColorMapEntry element as shown here below:
 
-``` xml
+```xml
 <ColorMapEntry color="#732600" quantity="9888" opacity="1.0" label="<-70 mm"/>
 ```
 
@@ -243,7 +243,7 @@ A simple http request can be used:
 
 Which returns a JSON response:
 
-``` javascript
+```javascript
 {"Legend": [{
   "layerName": "states",
   "title": "USA Population",
@@ -312,7 +312,7 @@ Filters are encoded using [ECQL](../../../filter/ecql_reference.md), a rule with
 
 - PointSymbolizer
 
-  A point symbolizer will be represented as a series of elements containing metadata and an array of `graphics` symbols (see [here](../../../styling/sld/reference/pointsymbolizer.md#sld_reference_graphic)) , these can be well known `marks` or external graphics. The point symbolizer also provides an "URL" element which allows a client to make a request back to GeoServer to fetch a PNG image of the point symbol.
+  A point symbolizer will be represented as a series of elements containing metadata and an array of `graphics` symbols (see [here](../../../styling/sld/reference/pointsymbolizer.md#graphic)) , these can be well known `marks` or external graphics. The point symbolizer also provides an "URL" element which allows a client to make a request back to GeoServer to fetch a PNG image of the point symbol.
 
   ``` javascript
   {"Point":     {
@@ -337,7 +337,7 @@ Filters are encoded using [ECQL](../../../filter/ecql_reference.md), a rule with
 - LineSymbolizer
 
   A line symbolizer is represented as a list of metadata elements and the [stroke
-  parameters](#sld_reference_linesymbolizer_css), it is possible for there to be a [graphic-stroke](../../../styling/sld/reference/linesymbolizer.md#sld_reference_linesymbolizer_graphicstroke) element too.
+  parameters](../../../styling/sld/reference/linesymbolizer.md#sld_reference_linesymbolizer_css), it is possible for there to be a [graphic-stroke](../../../styling/sld/reference/linesymbolizer.md#sld_reference_linesymbolizer_graphicstroke) element too.
 
   ``` javascript
   {"Line":     {
@@ -371,8 +371,8 @@ Filters are encoded using [ECQL](../../../filter/ecql_reference.md), a rule with
 - PolygonSymbolizer
 
   A polygon symbolizer contains [stroke
-  parameters](#sld_reference_linesymbolizer_css) and [fill 
-  parameters](#sld_reference_fill).
+  parameters](../../../styling/sld/reference/linesymbolizer.md#sld_reference_linesymbolizer_css) and [fill 
+  parameters](../../../styling/sld/reference/polygonsymbolizer.md#fill).
 
   ``` javascript
   {"Polygon":       {
@@ -486,7 +486,7 @@ Filters are encoded using [ECQL](../../../filter/ecql_reference.md), a rule with
 
 In any case where one or more vendor options is included in the symbolizer there will be a `vendor-options` element included in the output. This object will include one line for each vendor option.
 
-``` javascript
+```javascript
 "vendor-options": {
   "labelAllGroup": "true",
   "spaceAround": "10",

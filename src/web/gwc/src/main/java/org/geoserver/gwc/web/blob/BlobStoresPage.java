@@ -23,7 +23,7 @@ import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geoserver.web.wicket.Icon;
+import org.geoserver.web.wicket.GsIcon;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geowebcache.config.BlobStoreInfo;
@@ -186,13 +186,13 @@ public class BlobStoresPage extends GeoServerSecuredPage {
                 };
             } else if (property == BlobStoresProvider.DEFAULT) {
                 if (blobStore.isDefault()) {
-                    return new Icon(id, CatalogIconFactory.ENABLED_ICON);
+                    return new GsIcon(id, CatalogIconFactory.ENABLED_ICON);
                 } else {
                     return new Label(id, "");
                 }
             } else if (property == BlobStoresProvider.ENABLED) {
                 if (blobStore.isEnabled()) {
-                    return new Icon(id, CatalogIconFactory.ENABLED_ICON);
+                    return new GsIcon(id, CatalogIconFactory.ENABLED_ICON);
                 } else {
                     return new Label(id, "");
                 }

@@ -154,12 +154,12 @@ public class AclIntegrationTestSupport extends ExternalResource {
 
     public RuleLimits setRuleLimits(Rule rule, CatalogMode mode, MultiPolygon allowedArea, Integer srid)
             throws ParseException {
-        return setRuleLimits(rule.getId(), mode, allowedArea.toText(), srid, null);
+        return setRuleLimits(rule.id(), mode, allowedArea.toText(), srid, null);
     }
 
     public RuleLimits setRuleLimits(Rule rule, CatalogMode mode, String allowedArea, Integer srid)
             throws ParseException {
-        return setRuleLimits(rule.getId(), mode, allowedArea, srid, null);
+        return setRuleLimits(rule.id(), mode, allowedArea, srid, null);
     }
 
     public RuleLimits setRuleLimits(String ruleId, CatalogMode mode, String allowedArea, Integer srid)
@@ -171,7 +171,7 @@ public class AclIntegrationTestSupport extends ExternalResource {
             Rule rule, CatalogMode mode, String allowedArea, Integer srid, SpatialFilterType spatialFilterType)
             throws org.locationtech.jts.io.ParseException {
 
-        return setRuleLimits(rule.getId(), mode, allowedArea, srid, spatialFilterType);
+        return setRuleLimits(rule.id(), mode, allowedArea, srid, spatialFilterType);
     }
 
     public RuleLimits setRuleLimits(
@@ -198,7 +198,7 @@ public class AclIntegrationTestSupport extends ExternalResource {
                 .map(LayerDetails::toBuilder)
                 .orElseGet(LayerDetails::builder);
         LayerDetails layerDetails = builder.cqlFilterRead(cql).build();
-        ruleService.setLayerDetails(allowRule.getId(), layerDetails);
+        ruleService.setLayerDetails(allowRule.id(), layerDetails);
         return layerDetails;
     }
 
@@ -208,7 +208,7 @@ public class AclIntegrationTestSupport extends ExternalResource {
                 .map(LayerDetails::toBuilder)
                 .orElseGet(LayerDetails::builder);
         LayerDetails layerDetails = builder.cqlFilterWrite(cql).build();
-        ruleService.setLayerDetails(allowRule.getId(), layerDetails);
+        ruleService.setLayerDetails(allowRule.id(), layerDetails);
         return layerDetails;
     }
 
@@ -220,7 +220,7 @@ public class AclIntegrationTestSupport extends ExternalResource {
             String cqlRead,
             String cqlWrite,
             LayerType layerType) {
-        return setLayerDetails(rule.getId(), allowedStyles, attributes, mode, cqlRead, cqlWrite, layerType);
+        return setLayerDetails(rule.id(), allowedStyles, attributes, mode, cqlRead, cqlWrite, layerType);
     }
 
     public LayerDetails setLayerDetails(
@@ -245,8 +245,8 @@ public class AclIntegrationTestSupport extends ExternalResource {
     }
 
     public void deleteRules() {
-        ruleService.getAll().map(Rule::getId).forEach(ruleService::delete);
-        adminRuleService.getAll().map(AdminRule::getId).forEach(adminRuleService::delete);
+        ruleService.getAll().map(Rule::id).forEach(ruleService::delete);
+        adminRuleService.getAll().map(AdminRule::id).forEach(adminRuleService::delete);
         assertEquals(0, ruleService.count());
         assertEquals(0, adminRuleService.count());
     }

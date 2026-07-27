@@ -45,7 +45,7 @@ public class FileInput extends Panel {
         if (!isCssEmpty) {
             response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
                     new org.apache.wicket.request.resource.PackageResourceReference(
-                            getClass(), getClass().getSimpleName() + ".css")));
+                            FileInput.class, FileInput.class.getSimpleName() + ".css")));
         }
     }
 

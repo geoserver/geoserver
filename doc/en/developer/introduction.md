@@ -13,7 +13,7 @@ Communication channels:
 - Announcements are made on <https://blog.geoserver.org/>
 - [geoserver-users](https://discourse.osgeo.org/c/geoserver/users) Discourse group
 - [geoserver-devel](https://lists.sourceforge.net/mailman/listinfo/geoserver-devel) email list
-- Developer colaboration on <https://gitter.im/geoserver/geoserver>
+- Developer collaboration on <https://gitter.im/geoserver/geoserver>
 
 We have a number of build servers employed to assist with day to day activities:
 

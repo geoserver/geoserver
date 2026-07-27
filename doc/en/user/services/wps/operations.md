@@ -4,7 +4,7 @@ The WPS 1.0.0 standard defines three operations for the discovery and execution 
 
 | **Operation** | **Description** |
 |----|----|
-| [GetCapabilities](#getcapabilities) | Retrieves details of the service offering, including service metadata and metadata describing the available processes |
+| [GetCapabilities](#wps_getcaps) | Retrieves details of the service offering, including service metadata and metadata describing the available processes |
 | [DescribeProcess](#describeprocess) | Retrieves a description of a WPS process available through the service |
 | [Execute](#execute) | A request to perform the process with specified input values and required output data items |
 | [Dismiss](#dismiss) (vendor extension) | Used to cancel the execution of a process |
@@ -76,7 +76,7 @@ The inputs and outputs required for the request depend on the process being exec
 
 Below is an example of a `Execute` POST request. The example process (`JTS:buffer`) takes as input a geometry `geom` (in this case the point `POINT(0 0)`), a `distance` (with the value `10`), a quantization factor `quadrantSegments` (here set to be 1), and a `capStyle` (specified as `flat`). The `<ResponseForm>` element specifies the format for the single output `result` to be GML 3.1.1.
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
   <ows:Identifier>JTS:buffer</ows:Identifier>
@@ -116,7 +116,7 @@ Below is an example of a `Execute` POST request. The example process (`JTS:buffe
 
 The process performs a buffer operation using the supplied inputs, and returns the outputs as specified. The response from the request is (with numbers rounded for clarity):
 
-``` xml
+```xml
 <?xml version="1.0" encoding="utf-8"?>
 <gml:Polygon xmlns:sch="http://www.ascc.net/xml/schematron"
  xmlns:gml="http://www.opengis.net/gml"
@@ -150,7 +150,7 @@ In GeoServer this link is implemented as a pseudo-operation called `GetExecution
 
 The `executionId` identifies the running request, and can be used in the `Dismiss` vendor operation in order to cancel the execution of the process:
 
-> [http://host:port/geoserver/ows?service=WPS&version=1.0.0&request=Dismiss&executionId=397e8cbd-7d51-48c5-ad72-b0fcbe7cfbdb](http://host:port/geoserver/ows?service=WPS&version=1.0.0&request=Dismiss&executionId=397e8cbd-7d51-48c5-ad72-b0fcbe7cfbdb)
+[http://host:port/geoserver/ows?service=WPS&version=1.0.0&request=Dismiss&executionId=397e8cbd-7d51-48c5-ad72-b0fcbe7cfbdb](http://host:port/geoserver/ows?service=WPS&version=1.0.0&request=Dismiss&executionId=397e8cbd-7d51-48c5-ad72-b0fcbe7cfbdb)
 
 Upon receipt GeoServer will do its best to stop the running process, and subsequent calls to `Dismiss` or `GetExecutionStatus` will report that the executionId is not known anymore. Internally, GeoServer will stop any process that attempts to report progress, and poison input and outputs to break the execution of the process, but the execution of processes that already got their inputs, and are not reporting their progress back, will continue until their natural end.
 
@@ -227,7 +227,7 @@ The GetExecutions Operations tries (best-effort) to retrieve the Input values sp
 
 Example requests with the `lineage` option active
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
   <ows:Identifier>JTS:convexHull</ows:Identifier>
@@ -247,7 +247,7 @@ Example requests with the `lineage` option active
 </wps:Execute>
 ```
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
   <ows:Identifier>gs:BufferFeatureCollection</ows:Identifier>
@@ -296,7 +296,7 @@ Example requests with the `lineage` option active
 </wps:Execute>
 ```
 
-``` xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
   <ows:Identifier>gs:Clip</ows:Identifier>

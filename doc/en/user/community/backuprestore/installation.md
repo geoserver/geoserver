@@ -2,29 +2,25 @@
 render_macros: true
 ---
 
-
 # Installation
 
-## Manual Install
+!!! warning
+    The module build must match your exact GeoServer version. A mismatched build will fail to load. Log in and check **About & Status > About GeoServer > Build Information** to determine the exact version in use.
 
-To download and install the required extensions by hand:
+1. Visit the [download page](https://geoserver.org/download/), switch to the **Development** tab, and locate the nightly build matching your GeoServer version.
 
-1.  Download the geoserver-{{ release }}-backup-restore-plugin.zip from:
+2. Follow the **Community Modules** link and download `geoserver-{{ release }}-backup-restore-plugin.zip`.
 
-    - [Community Builds](https://build.geoserver.org/geoserver/main/community-latest/) (GeoServer WebSite)
+   The website lists active nightly builds to provide feedback to developers. You may also [browse the build server](https://build.geoserver.org/geoserver/main/community-latest/) for the latest `main` community builds, or other branches under [https://build.geoserver.org/geoserver/](https://build.geoserver.org/geoserver/).
 
-    It is important to download the version that matches the GeoServer you are running.
+3. Stop GeoServer.
 
-2.  Stop the GeoServer application.
+4. Extract the contents of the archive into `WEB-INF/lib` of your GeoServer installation.
 
-3.  Navigate into the **`webapps/geoserver/WEB-INF/lib`** folder.
+5. Restart GeoServer.
 
-    These files make up the running GeoServer application.
+## Verification
 
-4.  Unzip the contents of the zip file into the **`lib`** folder.
+After restart, log in to the web admin interface and confirm that **Backup and Restore** appears under the **Data** section of the navigation menu. Open it and check that the page renders without errors.
 
-5.  Restart the Application Server.
-
-6.  Login to the Web Administration application. Select **Data** from the navigation menu. Click **Backup and Restore** and ensure the page is rendered correctly and without errors.
-
-Backup and Restore plugin can be used both via user interface and via HTTP REST interface. For more details please see the next sections.
+The module can be driven from both the web interface and the REST API — see [usage via the web interface](usagegui.md) and [usage via the REST API](usagerest.md).

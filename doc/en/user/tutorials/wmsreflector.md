@@ -75,13 +75,13 @@ Now, if you mainly want to show the restricted layer, but also provide the conte
 
 Say you have a webpage and you wish to include a picture that is 400 pixels wide and that shows the layer `topp:states`, on this page.
 
-``` html
+```html
 <img src="http://localhost:8080/geoserver/wms/reflect?layers=topp:states&width=400" />
 ```
 
 If you want the page to render in the browser before GeoServer is done, you should specify the height and width of the picture. You could just pick any approximate value, but it may be a good idea to look at the generated image first and then use those values. In the case of the layer above, the height becomes 169 pixels, so we can specify that as an attribute in the <img> tag:
 
-``` html
+```html
 <img src="http://localhost:8080/geoserver/wms/reflect?layers=topp:states&width=400" height="169" width="400"/>
 ```
 
@@ -93,7 +93,7 @@ The reflector can also create a simple instance of [OpenLayers](http://www.openl
 
 The image above then becomes
 
-``` html
+```html
 <a href="http://localhost:8080/geoserver/wms/reflect?format=application/openlayers&layers=topp:states">
 <img src="http://localhost:8080/geoserver/wms/reflect?layers=topp:states&width=400" height="169" width="400" />
 </a>
@@ -105,7 +105,7 @@ The image above then becomes
 
 Many people do not like iframes, and for good reasons, but they may be appropriate in this case. The following example will run OpenLayers in an iframe.
 
-``` html
+```html
 <iframe src ="http://localhost:8080/geoserver/wms/reflect?format=application/openlayers&layers=topp:states" width="100%">
 </iframe>
 ```

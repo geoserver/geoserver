@@ -11,11 +11,11 @@ MapML supports the following template types:
 | `mapml-feature-head.ftl` | Used to insert `map-style` elements into a MapML feature document.                                   |
 | `mapml-feature.ftl`      | Used to rewrite MapML features, with ability to change attributes, styles, geometries, and add links |
 
-## GetMap MapML HTML Preview/Layer Preview Head Stylesheet Templating
+## GetMap MapML HTML Preview/Browse Layers Head Stylesheet Templating
 
 The preview is returned when the format includes `subtype=mapml`. The preview is an HTML document that includes a `head` section with a link to the stylesheet. The default preview viewer is a simple viewer that includes a link to the default stylesheet. A template can be created to insert links to whole stylesheet or actual stylesheet elements. We can do this by creating a file called `mapml-preview-head.ftl` in the GeoServer data directory in the directory for the layer that we wish to append links to. For example we could create this file under `workspaces/topp/states_shapefile/states`. To add stylesheet links and stylesheet elements, we enter the following text inside this new file:
 
-``` html
+```html
 <!-- Added from the template -->   
 <link rel="stylesheet" href="mystyle.css">
 <style>
@@ -28,7 +28,7 @@ The preview is returned when the format includes `subtype=mapml`. The preview is
 
 This would result in a head section that would resemble:
 
-``` html
+```html
 <head>
   <title>USA Population</title>
   <meta charset='utf-8'>
@@ -59,7 +59,7 @@ This would result in a head section that would resemble:
 
 The MapML format includes a map-head element that includes map-link elements to link to other resources, including map style variants. Additional map-link elements can be added to the map-head element by creating a `mapml-head.ftl` template in the GeoServer data directory in the directory for the layer we wish to append map-links to. For example we could create the `mapml-head.ftl` file under `workspaces/tiger/nyc/poly_landmarks_shapefile/poly_landmarks`:
 
-``` bash
+```bash
 <!-- Added from the template -->   
 <map-style>.polygon-r1-s1{stroke-opacity:3.0; stroke-dashoffset:4; stroke-width:2.0; fill:#AAAAAA; fill-opacity:3.0; stroke:#DD0000; stroke-linecap:butt}</map-style>
 <map-link href="${serviceLink("${base}","${path}","${kvp}")}" rel="\${rel}" title="templateinsertedstyle"/>
@@ -68,7 +68,7 @@ The MapML format includes a map-head element that includes map-link elements to 
 
 This would result in a map-head section that would resemble (note the inserted css styles and map-link):
 
-``` html
+```html
 <map-head>
   <map-title>Manhattan (NY) landmarks</map-title>
   <map-base href="http://localhost:8080/geoserver/wms"/>
@@ -103,7 +103,7 @@ The `mapml-feature-head.ftl` file would look like:
 
 This would result in a MapML feature output header that would resemble:
 
-``` xml
+```xml
 <mapml- xmlns="http://www.w3.org/1999/xhtml">
   <map-head>
     <map-title>poi</map-title>
@@ -144,14 +144,14 @@ An example `mapml-feature.ftl` file to modify a point layer would look like:
             <!-- so, to link to another location in the current map, use href="#zoom,longitude,latitude -->
             <!-- shown below. For further information on how to create links of different behaviours, -->
             <!-- please refer to https://maps4html.org/web-map-doc/docs/other-elements/map-a/#target -->
-            <#if attributes.NAME.value == "museam"><map-a href="#16,-74.01046109936,40.70758762626"></#if>
+            <#if attributes.NAME.value == "museum"><map-a href="#16,-74.01046109936,40.70758762626"></#if>
             <map-point>
               <map-coordinates>
                 <#list gattribute.rawValue.coordinates as coord>${coord.x} ${coord.y}</#list>
               </map-coordinates>
             </map-point>
             <!-- DO NOT FORGET to close your tags, else look for errors in your log files -->
-            <#if attributes.NAME.value == "museam"></map-a></#if>
+            <#if attributes.NAME.value == "museum"></map-a></#if>
           </map-geometry>
          </#if>
        </#list>

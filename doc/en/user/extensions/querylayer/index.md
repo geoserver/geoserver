@@ -28,7 +28,7 @@ Filter functions are widely supported in GeoServer, so cross-layer filtering can
 
 4.  To check the module is properly installed request the WFS 1.1 capabilities from the GeoServer home page. The `Filter_Capabilities` section should contain a reference to a function named `queryCollection`.
 
-``` xml
+```xml
 ...
 <ogc:Filter_Capabilities>
     ...
@@ -87,7 +87,7 @@ The following examples use the `sf:bugsites`, `sf:roads` and `sf:restricted` dem
 
 The CQL cross-layer filter on the `bugsites` layer is
 
-> `INTERSECTS(the_geom, querySingle('restricted', 'the_geom','cat = 3'))`.
+`INTERSECTS(the_geom, querySingle('restricted', 'the_geom','cat = 3'))`.
 
 The WMS request is:
 
@@ -101,7 +101,7 @@ The result is:
 
 The CQL cross-layer filter on the `bugsites` layer is
 
-> `DWITHIN(the_geom, collectGeometries(queryCollection('sf:roads','the_geom','INCLUDE')), 200, meters)`.
+`DWITHIN(the_geom, collectGeometries(queryCollection('sf:roads','the_geom','INCLUDE')), 200, meters)`.
 
 The WMS request is:
 
@@ -117,7 +117,7 @@ The following examples use the `sf:bugsites`, `sf:roads` and `sf:restricted` dem
 
 - **Retrieve only the bug sites overlapping the restricted area whose category is 3**:
 
-``` xml
+```xml
 <wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs"
                 xmlns:sf="http://www.openplans.org/spearfish"
                 xmlns:ogc="http://www.opengis.net/ogc"
@@ -139,7 +139,7 @@ The following examples use the `sf:bugsites`, `sf:roads` and `sf:restricted` dem
 
 - **Retrieve all bugsites within 200 meters of any road**:
 
-``` xml
+```xml
 <wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs"
   xmlns:sf="http://www.openplans.org/spearfish"
   xmlns:ogc="http://www.opengis.net/ogc"

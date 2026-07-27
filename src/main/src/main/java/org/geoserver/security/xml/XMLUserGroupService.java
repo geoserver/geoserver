@@ -33,6 +33,7 @@ import org.geoserver.security.impl.Util;
 import org.geoserver.security.password.GeoServerPasswordEncoder;
 import org.geoserver.security.password.PasswordEncodingType;
 import org.geoserver.util.IOUtils;
+import org.geotools.xml.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -48,11 +49,11 @@ public class XMLUserGroupService extends AbstractUserGroupService {
     private boolean validatingXMLSchema = true;
 
     public XMLUserGroupService() throws IOException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
         factory.setNamespaceAware(true);
         factory.setIgnoringComments(true);
         try {
-            builder = factory.newDocumentBuilder();
+            builder = XMLUtils.newDocumentBuilder(factory);
         } catch (ParserConfigurationException e) {
             throw new IOException(e);
         }

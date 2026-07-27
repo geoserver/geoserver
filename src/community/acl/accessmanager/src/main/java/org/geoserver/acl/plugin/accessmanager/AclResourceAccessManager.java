@@ -372,7 +372,7 @@ public class AclResourceAccessManager extends AbstractResourceAccessManager
     private ProcessingResult wpsProcessingResult(AccessInfo accessInfo, WPSAccessInfo wpsAccessInfo) {
         Geometry intersectArea = wpsAccessInfo.getArea();
         Geometry clipArea = wpsAccessInfo.getClip();
-        org.geoserver.acl.domain.rules.CatalogMode catalogMode = accessInfo.getCatalogMode();
+        org.geoserver.acl.domain.rules.CatalogMode catalogMode = accessInfo.catalogMode();
         return new ProcessingResult(intersectArea, clipArea, catalogMode);
     }
 
@@ -477,7 +477,7 @@ public class AclResourceAccessManager extends AbstractResourceAccessManager
             ResourceInfo info, AccessInfo accessInfo, ProcessingResult resultLimits, final CatalogMode catalogMode) {
 
         final Geometry intersectsArea = resolveIntersectsArea(info, accessInfo, resultLimits);
-        Filter readFilter = toFilter(accessInfo.getGrant(), accessInfo.getCqlFilterRead());
+        Filter readFilter = toFilter(accessInfo.grant(), accessInfo.cqlFilterRead());
         MultiPolygon multiPoly = toMultiPoly(intersectsArea);
         return new WMTSAccessLimits(catalogMode, readFilter, multiPoly);
     }
@@ -486,7 +486,7 @@ public class AclResourceAccessManager extends AbstractResourceAccessManager
             ResourceInfo info, AccessInfo accessInfo, ProcessingResult resultLimits, final CatalogMode catalogMode) {
 
         final Geometry intersectsArea = resolveIntersectsArea(info, accessInfo, resultLimits);
-        Filter readFilter = toFilter(accessInfo.getGrant(), accessInfo.getCqlFilterRead());
+        Filter readFilter = toFilter(accessInfo.grant(), accessInfo.cqlFilterRead());
         boolean allowFeatureInfo = true;
         MultiPolygon multiPoly = toMultiPoly(intersectsArea);
         return new WMSAccessLimits(catalogMode, readFilter, multiPoly, allowFeatureInfo);
@@ -497,7 +497,7 @@ public class AclResourceAccessManager extends AbstractResourceAccessManager
 
         final Geometry intersectsArea = resolveIntersectsArea(info, accessInfo, resultLimits);
         final Geometry clipArea = resolveClipArea(info, accessInfo, resultLimits);
-        Filter readFilter = toFilter(accessInfo.getGrant(), accessInfo.getCqlFilterRead());
+        Filter readFilter = toFilter(accessInfo.grant(), accessInfo.cqlFilterRead());
         Geometry finalArea = null;
         if (clipArea != null && intersectsArea != null) {
             finalArea = clipArea.union(intersectsArea);
@@ -519,7 +519,7 @@ public class AclResourceAccessManager extends AbstractResourceAccessManager
 
         setFilters(info, accessInfo, resultLimits, accessLimits);
 
-        setAttributesAccessibility(accessInfo.getAttributes(), accessLimits);
+        setAttributesAccessibility(accessInfo.attributes(), accessLimits);
         return accessLimits;
     }
 
@@ -528,8 +528,8 @@ public class AclResourceAccessManager extends AbstractResourceAccessManager
         // merge the area among the filters
         final Geometry intersectsArea = resolveIntersectsArea(info, accessInfo, resultLimits);
         final Geometry clipArea = resolveClipArea(info, accessInfo, resultLimits);
-        Filter readFilter = toFilter(accessInfo.getGrant(), accessInfo.getCqlFilterRead());
-        Filter writeFilter = toFilter(accessInfo.getGrant(), accessInfo.getCqlFilterWrite());
+        Filter readFilter = toFilter(accessInfo.grant(), accessInfo.cqlFilterRead());
+        Filter writeFilter = toFilter(accessInfo.grant(), accessInfo.cqlFilterWrite());
         if (intersectsArea != null) {
             Filter areaFilter = intersects(intersectsArea);
             if (clipArea != null) {
@@ -576,7 +576,7 @@ public class AclResourceAccessManager extends AbstractResourceAccessManager
 
         if (resultLimits == null) {
             CoordinateReferenceSystem crs = GeometryUtils.getCRSFromInfo(info);
-            return adaptAndReproject(accessInfo.getIntersectArea(), crs);
+            return adaptAndReproject(accessInfo.intersectArea(), crs);
         }
         return resultLimits.getIntersectArea();
     }
@@ -585,7 +585,7 @@ public class AclResourceAccessManager extends AbstractResourceAccessManager
 
         if (resultLimits == null) {
             CoordinateReferenceSystem crs = GeometryUtils.getCRSFromInfo(info);
-            return adaptAndReproject(accessInfo.getClipArea(), crs);
+            return adaptAndReproject(accessInfo.clipArea(), crs);
         }
         return resultLimits.getClipArea();
     }
@@ -612,13 +612,13 @@ public class AclResourceAccessManager extends AbstractResourceAccessManager
      * @return the AccessLimits of the LayerGroup
      */
     LayerGroupAccessLimits buildLayerGroupAccessLimits(AccessInfo accessInfo) {
-        GrantType grant = accessInfo.getGrant();
+        GrantType grant = accessInfo.grant();
         // the SecureCatalog will grant access to the layerGroup
         // if AccessLimits are null
         if (grant.equals(ALLOW) || grant.equals(LIMIT)) {
             return null; // null == no-limits
         }
-        CatalogMode catalogMode = convert(accessInfo.getCatalogMode());
+        CatalogMode catalogMode = convert(accessInfo.catalogMode());
         return new LayerGroupAccessLimits(catalogMode);
     }
 
@@ -649,9 +649,9 @@ public class AclResourceAccessManager extends AbstractResourceAccessManager
 
     // get the catalogMode for the resource prioritizing the container one if passed
     private CatalogMode getCatalogMode(AccessInfo accessInfo, ProcessingResult resultLimits) {
-        return switch (accessInfo.getGrant()) {
+        return switch (accessInfo.grant()) {
             case DENY -> DEFAULT_CATALOG_MODE;
-            default -> convert(resultLimits == null ? accessInfo.getCatalogMode() : resultLimits.getCatalogModeDTO());
+            default -> convert(resultLimits == null ? accessInfo.catalogMode() : resultLimits.getCatalogModeDTO());
         };
     }
 
@@ -698,11 +698,11 @@ public class AclResourceAccessManager extends AbstractResourceAccessManager
             return;
         }
         for (LayerAttribute attribute : attributes) {
-            AccessType access = attribute.getAccess();
+            AccessType access = attribute.access();
             if (access == null /* shouldn't happen */ || access == AccessType.NONE) {
                 continue;
             }
-            PropertyName property = FF.property(attribute.getName());
+            PropertyName property = FF.property(attribute.name());
             if (access == AccessType.READWRITE) {
                 writeAttributes.add(property);
             } else {

@@ -72,6 +72,16 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
             }
         }
 
+        // Expand the test directories so their children are rendered (lazy rendering)
+        resourceBrowser
+                .expandedStates
+                .getResourceExpandedState(store.get("temp"))
+                .setObject(true);
+        resourceBrowser
+                .expandedStates
+                .getResourceExpandedState(store.get("temp/dir"))
+                .setObject(true);
+
         tester.startPage(resourceBrowser);
     }
 

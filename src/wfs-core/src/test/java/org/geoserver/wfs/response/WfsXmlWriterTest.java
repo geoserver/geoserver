@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.geoserver.wfs.WFSTestSupport;
+import org.geotools.xml.XMLUtils;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -32,10 +33,10 @@ public class WfsXmlWriterTest extends WFSTestSupport {
         writer.closeTag("wfs", "FeatureCollection");
         writer.close();
 
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory factory = XMLUtils.newDocumentBuilderFactory();
         factory.setNamespaceAware(true);
 
-        Document doc = factory.newDocumentBuilder().parse(tmp);
+        Document doc = XMLUtils.newDocumentBuilder(factory).parse(tmp);
 
         assertNotNull(doc);
 

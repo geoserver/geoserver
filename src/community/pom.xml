@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -132,11 +132,11 @@
         <module>ncwms</module>
         <module>gwc-sqlite</module>
         <module>jwt-headers</module>
-        <module>security</module>
         <module>oseo</module>
         <module>s3-geotiff</module>
         <module>netcdf-ghrsst</module>
-        <module>taskmanager</module>
+        <!-- Taskmanager removed as it did go well through the GeoServer upgrade, the plugin is not starting up -->
+        <!--module>taskmanager</module-->
         <module>web-ogr</module>
         <module>ogcapi</module>
         <module>importer-jdbc</module>
@@ -322,14 +322,7 @@
     <profile>
       <id>jwt-headers</id>
       <modules>
-        <module>jwt-headers/jwt-headers-util</module>
-        <module>jwt-headers/gs-jwt-headers</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>oidc</id>
-      <modules>
-        <module>security</module>
+        <module>jwt-headers</module>
       </modules>
     </profile>
     <profile>
@@ -578,6 +571,13 @@
                         <available file="src/assembly/assembly.xml"></available>
                       </not>
                     </condition>
+                    <!-- Skip dependency copy if assembly.xml doesn't exist OR module uses dependencySets -->
+                    <condition property="skipDependencyCopy" value="true">
+                      <or>
+                        <isset property="skipAssembly"></isset>
+                        <isset property="assembly.useDependencySets"></isset>
+                      </or>
+                    </condition>
                   </target>
                 </configuration>
               </execution>
@@ -593,7 +593,9 @@
                   <goal>copy-dependencies</goal>
                 </goals>
                 <configuration>
-                  <skip>${skipAssembly}</skip>
+                  <!-- Skip if assembly.xml doesn't exist OR if using dependencySets -->
+                  <skip>${skipDependencyCopy}</skip>
+                  <silent>true</silent>
                 </configuration>
               </execution>
             </executions>
@@ -602,7 +604,6 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-assembly-plugin</artifactId>
-            <version>3.2.0</version>
             <executions>
               <execution>
                 <phase>install</phase>

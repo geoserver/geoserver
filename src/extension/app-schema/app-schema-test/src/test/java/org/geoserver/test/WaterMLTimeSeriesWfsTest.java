@@ -8,6 +8,10 @@ package org.geoserver.test;
 
 import static org.junit.Assert.assertEquals;
 
+import org.geoserver.util.EntityResolverProvider;
+import org.geotools.util.NullEntityResolver;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -18,6 +22,16 @@ import org.w3c.dom.Document;
  * @author Rini Angreani (CSIRO Earth Science and Resource Engineering)
  */
 public class WaterMLTimeSeriesWfsTest extends AbstractAppSchemaTestSupport {
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(NullEntityResolver.INSTANCE);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        EntityResolverProvider.setEntityResolver(DevModeEntityResolver.INSTANCE);
+    }
 
     @Override
     protected WaterMLTimeSeriesMockData createTestData() {

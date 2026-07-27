@@ -8,6 +8,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.protocol.http.mock.MockServletContext;
+import org.geoserver.security.SecurityConfigDiagnostics;
+import org.geoserver.security.SecurityConfigDiagnostics.ComponentType;
+import org.geoserver.security.SecurityConfigDiagnostics.DisabledComponent;
 import org.geoserver.security.password.MasterPasswordProviderConfig;
 import org.geoserver.web.GeoServerApplication;
 import org.junit.Test;
@@ -52,5 +55,43 @@ public class SecurityHomePageContentProviderTest extends AbstractSecurityWicketT
         tester.assertComponent("swp", SecurityHomePageContentProvider.SecurityWarningsPanel.class);
         tester.assertVisible("swp:mpmessage");
         tester.assertVisible("swp:mplink");
+    }
+
+    /**
+     * Regression guard against XSS in the disabled-components notice: the persisted name/alias of a disabled component
+     * is attacker-controlled (crafted data directory), so it must be rendered HTML-escaped. The
+     * {@code disabledComponent} label relies on Wicket's default escaping (unlike its siblings it does NOT call
+     * setEscapeModelStrings(false)); this test fails if a future edit makes that markup render the value raw.
+     */
+    @Test
+    public void testDisabledComponentNameIsHtmlEscaped() throws Exception {
+        // record a disabled component whose persisted name carries an HTML/script payload
+        SecurityConfigDiagnostics diagnostics = getSecurityManager().getConfigDiagnostics();
+        diagnostics.clear();
+        diagnostics.addDisabledComponent(new DisabledComponent(
+                ComponentType.AUTHENTICATION_FILTER,
+                "<script>alert('xss')</script>",
+                "<b>evilAlias</b>",
+                null,
+                "Filter class is not available: <img src=x onerror=alert(1)>"));
+
+        tester.startComponentInPage(new SecurityHomePageContentProvider().getPageBodyComponent("swp"));
+        tester.assertComponent("swp", SecurityHomePageContentProvider.SecurityWarningsPanel.class);
+
+        String html = tester.getLastResponseAsString();
+        // the warning is shown...
+        assertTrue("the disabled-components notice should be rendered", html.contains("could not be loaded"));
+        // ...but the payload is escaped, never emitted as live markup
+        assertFalse(
+                "the disabled component name must be HTML-escaped, not rendered as a live <script> tag",
+                html.contains("<script>alert('xss')</script>"));
+        assertFalse(
+                "the disabled component reason must be HTML-escaped, not rendered as a live <img> tag",
+                html.contains("<img src=x onerror=alert(1)>"));
+        // the escaped form is present instead
+        assertTrue(
+                "the escaped script payload should appear in the output",
+                html.contains("&lt;script&gt;alert(&#039;xss&#039;)&lt;/script&gt;")
+                        || html.contains("&lt;script&gt;"));
     }
 }

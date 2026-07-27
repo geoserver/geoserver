@@ -14,7 +14,7 @@ import org.eclipse.imagen.Interpolation;
  */
 public class InterpolationPPIO extends LiteralPPIO {
 
-    protected InterpolationPPIO() {
+    public InterpolationPPIO() {
         super(Interpolation.class);
     }
 

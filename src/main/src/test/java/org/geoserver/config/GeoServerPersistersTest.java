@@ -22,7 +22,6 @@ import java.io.FileOutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
@@ -44,6 +43,7 @@ import org.geoserver.logging.LoggingUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
+import org.geotools.xml.XMLUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -1253,6 +1253,6 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
     }
 
     Document dom(File f) throws Exception {
-        return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(f);
+        return XMLUtils.newDocumentBuilder().parse(f);
     }
 }

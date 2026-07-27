@@ -159,9 +159,8 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
             UniqueVisitor visitor = new UniqueVisitor(DGGSStore.RESOLUTION);
 
             fs.getFeatures(Query.ALL).accepts(visitor, null);
-            @SuppressWarnings("unchecked")
-            List<Integer> list = visitor.getResult().toList();
-            return list.stream().mapToInt(v -> v).toArray();
+            List<?> list = visitor.getResult().toList();
+            return list.stream().mapToInt(CollectionDocument::toResolution).toArray();
         } else {
             DataAccess<SimpleFeatureType, SimpleFeature> datastore = (fs.getDataStore());
             if (datastore instanceof DGGSDataStore<?> ds) {
@@ -179,5 +178,12 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
     @JsonProperty("dggs-id")
     public String getDggsId() {
         return fs.getDGGS().getIdentifier();
+    }
+
+    static int toResolution(Object value) {
+        if (value instanceof Number number) {
+            return number.intValue();
+        }
+        return Integer.parseInt(value.toString());
     }
 }

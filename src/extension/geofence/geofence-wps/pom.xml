@@ -38,6 +38,13 @@
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-wps-core</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <!-- conflicts with geofence-persistence's org.ehcache:ehcache:jakarta classifier -->
+        <exclusion>
+          <artifactId>ehcache</artifactId>
+          <groupId>org.ehcache</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- test dependencies -->
@@ -61,6 +68,15 @@
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-geofence-server</artifactId>
       <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <!-- for GeofenceTestDatabase, the shared Testcontainers bootstrap -->
+      <groupId>org.geofence</groupId>
+      <artifactId>geofence-persistence</artifactId>
+      <version>${gf.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

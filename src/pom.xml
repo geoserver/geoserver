@@ -574,6 +574,13 @@
         <version>${hibernate-version}</version>
       </dependency>
       <dependency>
+        <!-- Hibernate ${hibernate-version}'s HQL parser needs the 4.13.x ATN serialization format;
+             an unrelated transitive path (gs-main -> Eclipse Imagen's Jiffle) otherwise pulls in 4.7.1. -->
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr4-runtime</artifactId>
+        <version>4.13.2</version>
+      </dependency>
+      <dependency>
         <groupId>xmlunit</groupId>
         <artifactId>xmlunit</artifactId>
         <version>1.6</version>

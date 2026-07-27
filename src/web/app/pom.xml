@@ -193,6 +193,18 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-geotiff</artifactId>
+      <exclusions>
+        <!-- conflicts with geofence-persistence's org.ehcache:ehcache:jakarta classifier when the
+             geofence-server profile is active; see GEOFENCE_SESSION_HANDOFF.md. Maven has no clean way
+             to scope an exclusion to only-when-a-profile-is-active, so this applies unconditionally -
+             low risk since it's the plain (non-jakarta) ehcache only used by gt-geotiff's COG
+             (Cloud-Optimized GeoTIFF) streaming support, itself only exercised if a COG-backed coverage
+             store is actually configured and read (an opt-in, community-module-gated feature). -->
+        <exclusion>
+          <artifactId>ehcache</artifactId>
+          <groupId>org.ehcache</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>

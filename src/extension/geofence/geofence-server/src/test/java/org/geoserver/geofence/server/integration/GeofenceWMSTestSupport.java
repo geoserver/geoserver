@@ -5,6 +5,7 @@
 package org.geoserver.geofence.server.integration;
 
 import java.util.Set;
+import org.geofence.core.db.GeofenceTestDatabase;
 import org.geofence.core.model.LayerAttribute;
 import org.geofence.core.model.LayerDetails;
 import org.geofence.core.model.Rule;
@@ -22,6 +23,10 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
 public class GeofenceWMSTestSupport extends WMSTestSupport {
+
+    static {
+        GeofenceTestDatabase.configureAsDatasourceOverride();
+    }
 
     protected RuleAdminService ruleService;
 

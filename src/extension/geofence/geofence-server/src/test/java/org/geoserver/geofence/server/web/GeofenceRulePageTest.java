@@ -15,6 +15,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.util.tester.FormTester;
+import org.geofence.core.db.GeofenceTestDatabase;
 import org.geofence.core.model.LayerDetails;
 import org.geofence.core.model.Rule;
 import org.geofence.core.model.RuleLimits;
@@ -30,6 +31,10 @@ import org.geoserver.web.data.layergroup.LayerGroupBaseTest;
 import org.junit.Test;
 
 public class GeofenceRulePageTest extends LayerGroupBaseTest {
+
+    static {
+        GeofenceTestDatabase.configureAsDatasourceOverride();
+    }
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {

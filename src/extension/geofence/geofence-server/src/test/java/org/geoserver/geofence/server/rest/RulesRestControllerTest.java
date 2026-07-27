@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.custommonkey.xmlunit.XMLAssert;
+import org.geofence.core.db.GeofenceTestDatabase;
 import org.geofence.core.db.dao.DuplicateKeyException;
 import org.geofence.core.model.IPAddressRange;
 import org.geofence.core.model.LayerAttribute;
@@ -52,6 +53,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class RulesRestControllerTest extends GeofenceBaseTest {
+
+    static {
+        GeofenceTestDatabase.configureAsDatasourceOverride();
+    }
 
     protected RulesRestController controller;
 
@@ -315,6 +320,8 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
 
     @Test
     public void testMovingRules() {
+        // this test asserts on absolute page contents/priorities, so start from an empty table
+        deleteAllRules();
         // create some rules for the test
         String prefix = UUID.randomUUID().toString();
         adminService.insert(

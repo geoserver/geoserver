@@ -116,6 +116,8 @@ public class AdminRulesRestControllerTest extends GeofenceBaseTest {
             conflict = true;
         }
         assertTrue(conflict);
+
+        controller.delete(id2);
     }
 
     @Test

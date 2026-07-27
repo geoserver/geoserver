@@ -16,6 +16,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.geofence.core.db.GeofenceTestDatabase;
 import org.geofence.core.model.enums.CatalogMode;
 import org.geofence.core.model.enums.GrantType;
 import org.geofence.core.model.enums.SpatialFilterType;
@@ -61,6 +62,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSupport {
+
+    static {
+        GeofenceTestDatabase.configureAsDatasourceOverride();
+    }
 
     public GeofenceIntegrationTestSupport support;
 

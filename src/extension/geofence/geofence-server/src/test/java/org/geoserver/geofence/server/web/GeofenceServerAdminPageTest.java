@@ -9,15 +9,22 @@ import static org.junit.Assert.assertEquals;
 import java.util.logging.Level;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.util.tester.FormTester;
+import org.geofence.core.db.GeofenceTestDatabase;
+import org.geofence.core.services.AdminRuleAdminService;
 import org.geofence.core.services.dto.ShortAdminRule;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.geofence.config.GeoFencePropertyPlaceholderConfigurer;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.junit.Before;
 import org.junit.Test;
 
 public class GeofenceServerAdminPageTest extends GeoServerWicketTestSupport {
+
+    static {
+        GeofenceTestDatabase.configureAsDatasourceOverride();
+    }
 
     static GeoFencePropertyPlaceholderConfigurer configurer;
 
@@ -29,6 +36,12 @@ public class GeofenceServerAdminPageTest extends GeoServerWicketTestSupport {
     @Before
     public void before() {
         login();
+        // this test asserts on the absolute rule count, so start from an empty table
+        AdminRuleAdminService adminService =
+                (AdminRuleAdminService) GeoServerApplication.get().getBean("adminRuleAdminService");
+        for (ShortAdminRule r : adminService.getAll()) {
+            adminService.delete(r.getId());
+        }
         tester.startPage(GeofenceServerAdminPage.class);
     }
 

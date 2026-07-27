@@ -30,7 +30,7 @@ public class InternalServicesTest extends ServicesTest {
 
     static {
         // Must run before the Spring context builds, so a static initializer.
-        GeofenceTestDatabase.applyAsSystemProperties();
+        GeofenceTestDatabase.configureAsDatasourceOverride();
     }
 
     protected RulesRestController controller;

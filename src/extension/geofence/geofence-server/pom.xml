@@ -74,8 +74,8 @@
       <exclusions>
         <!-- conflicts with geofence-persistence's org.ehcache:ehcache:jakarta classifier -->
         <exclusion>
-          <groupId>org.ehcache</groupId>
           <artifactId>ehcache</artifactId>
+          <groupId>org.ehcache</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -153,6 +153,16 @@
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-wms</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms1_1</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms1_3</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

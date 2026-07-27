@@ -13,10 +13,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Predicate;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.danekja.java.util.function.serializable.SerializableFunction;
 import org.geoserver.web.data.store.panel.ParamPanel;
 import org.springframework.util.StringUtils;
@@ -36,17 +39,6 @@ public class Select2ChoiceParamPanel<T extends Serializable> extends Panel imple
 
     private static final boolean isCssEmpty = IsWicketCssFileEmpty(Select2ChoiceParamPanel.class);
 
-    @Override
-    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
-        super.renderHead(response);
-        // if the panel-specific CSS file contains actual css then have the browser load the css
-        if (!isCssEmpty) {
-            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
-                    new org.apache.wicket.request.resource.PackageResourceReference(
-                            getClass(), getClass().getSimpleName() + ".css")));
-        }
-    }
-
     private Select2Choice<T> choice;
 
     public Select2ChoiceParamPanel(String id, IModel<String> labelModel, IModel<T> model, ChoiceProvider<T> provider) {
@@ -63,6 +55,19 @@ public class Select2ChoiceParamPanel<T extends Serializable> extends Panel imple
         feedback.add(choice);
         add(new Label("paramName", labelModel));
         add(feedback);
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            @SuppressWarnings("rawtypes")
+            Class<? extends Select2ChoiceParamPanel> scope = getClass();
+            String name = scope.getSimpleName() + ".css";
+            PackageResourceReference reference = new PackageResourceReference(scope, name);
+            response.render(CssHeaderItem.forReference(reference));
+        }
     }
 
     /**

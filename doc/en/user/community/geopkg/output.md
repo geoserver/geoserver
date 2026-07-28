@@ -106,27 +106,18 @@ Outline of the tiles layer:
 
 Each tiles layer has the following properties:
 
-    - `layers` (mandatory): comma-separated list of layers that will be included
-
-    - `styles`, `sld`, and `sldbody` are mutually exclusive, having one is mandatory
-
-      - `styles`: list of comma-separated styles to be used
-          - `sld`: path to SLD style file
-          - `sldbody`: inline SLD style file
-
-    - `format` (optional): mime-type of image format of tiles (image/png or image/jpeg)
-
-    - `bgcolor` (optional): background colour as a six-digit hexadecimal RGB value
-
-    - `transparent` (optional): transparency (true or false)
-
-    - `coverage` (optional)
-
-    - `minzoom`, `maxzoom`, `minColumn`, `maxColumn`, `minRow`, `maxRow` (all optional): set the minimum and maximum zoom level, column, and rows
-
-    - `gridset` (optional): see below
-
-    - `parameters` (optional): list of other parameters that can be used in a GetMap to produce tiles (open to all GeoServer vendor parameters)
+- `layers` (mandatory): comma-separated list of layers that will be included
+- `styles`, `sld`, and `sldbody` are mutually exclusive, having one is mandatory
+  - `styles`: list of comma-separated styles to be used
+      - `sld`: path to SLD style file
+      - `sldbody`: inline SLD style file
+- `format` (optional): mime-type of image format of tiles (image/png or image/jpeg)
+- `bgcolor` (optional): background colour as a six-digit hexadecimal RGB value
+- `transparent` (optional): transparency (true or false)
+- `coverage` (optional)
+- `minzoom`, `maxzoom`, `minColumn`, `maxColumn`, `minRow`, `maxRow` (all optional): set the minimum and maximum zoom level, column, and rows
+- `gridset` (optional): see below
+- `parameters` (optional): list of other parameters that can be used in a GetMap to produce tiles (open to all GeoServer vendor parameters)
 
 Gridset can take on two possible (mutually exclusive) forms:
 

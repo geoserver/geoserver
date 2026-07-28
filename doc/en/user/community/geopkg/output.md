@@ -64,14 +64,14 @@ Outline of the features layer:
 
 Each features layer has the following properties:
 
-:   - `featuretype` (mandatory): the feature type
-    - `propertynames` (optional): list of comma-separated names of properties in feature type to be included (default is all properties)
-    - `filter` (optional): any OGC filter that will be applied on features before output
-    - `indexed` (optional): include spatial indexes in the output (true/false)
-    - `styles` (optional): include styles in the output (true/false). The exported structure uses the portrayal and semantic annotation extensions, as described in [Testbed 16 E/R](http://docs.opengeospatial.org/per/20-019r1.md#_portrayal)
-    - `metadata` (optional): embed metadata referred by the layer metadata links into the GeoPackage (true/false). The base metadata tables are filled with contents, while semantic annotations might be used to add extra information about the metadata itself.
-    - `overviews` (optional): adds overview tables that can speed up rendering. See more at [Creating generalized tables](#overviews)
-    - `sort` (optional): a filter encoding `fes:SortByType` which allows sorting the table contents on one or more attributes. If the chosen attribute is a geometry, the table will be sorted on its GeoHash, [improving access locality](http://docs.opengeospatial.org/per/20-019r1.md#record_sorting) when using spatial indexes.
+- `featuretype` (mandatory): the feature type
+- `propertynames` (optional): list of comma-separated names of properties in feature type to be included (default is all properties)
+- `filter` (optional): any OGC filter that will be applied on features before output
+- `indexed` (optional): include spatial indexes in the output (true/false)
+- `styles` (optional): include styles in the output (true/false). The exported structure uses the portrayal and semantic annotation extensions, as described in [Testbed 16 E/R](http://docs.opengeospatial.org/per/20-019r1.md#_portrayal)
+- `metadata` (optional): embed metadata referred by the layer metadata links into the GeoPackage (true/false). The base metadata tables are filled with contents, while semantic annotations might be used to add extra information about the metadata itself.
+- `overviews` (optional): adds overview tables that can speed up rendering. See more at [Creating generalized tables](#overviews)
+- `sort` (optional): a filter encoding `fes:SortByType` which allows sorting the table contents on one or more attributes. If the chosen attribute is a geometry, the table will be sorted on its GeoHash, [improving access locality](http://docs.opengeospatial.org/per/20-019r1.md#record_sorting) when using spatial indexes.
 
 Outline of the tiles layer:
 

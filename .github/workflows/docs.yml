@@ -58,9 +58,9 @@ jobs:
             echo "aliases=3.1.x main" >> $GITHUB_OUTPUT
             echo "is_default=false" >> $GITHUB_OUTPUT
           elif [ "$BRANCH" = "3.0.x" ]; then
-            echo "version=stable" >> $GITHUB_OUTPUT
+            echo "version=3.0.x" >> $GITHUB_OUTPUT
             echo "title=3.0.x (Stable)" >> $GITHUB_OUTPUT
-            echo "aliases=3.0.x" >> $GITHUB_OUTPUT
+            echo "aliases=stable" >> $GITHUB_OUTPUT
             echo "is_default=true" >> $GITHUB_OUTPUT
           else
             echo "version=$BRANCH" >> $GITHUB_OUTPUT

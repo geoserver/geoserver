@@ -45,6 +45,8 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
     public static final APIConformance ORIENTATION = CORE.extend(BASE + "orientation");
     public static final APIConformance TIFF = CORE.extend(BASE + "tiff");
     public static final APIConformance SVG = CORE.extend(BASE + "svg");
+    public static final APIConformance GENERAL_SUBSETTING = new APIConformance(
+            BASE + "general-subsetting", STANDARD, APIConformance.Type.EXTENSION, CORE, "generalSubsetting");
 
     /** GeoServer extension: WMS-style GetFeatureInfo on a map, not part of the OGC API - Maps standard. */
     public static final APIConformance FEATURE_INFO = new APIConformance(
@@ -72,6 +74,7 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
     private Boolean orientation = null;
     private Boolean tiff = null;
     private Boolean svg = null;
+    private Boolean generalSubsetting = null;
     private Boolean featureInfo = null;
     private Boolean legend = null;
 
@@ -109,6 +112,7 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
                 ORIENTATION,
                 TIFF,
                 SVG,
+                GENERAL_SUBSETTING,
                 FEATURE_INFO,
                 LEGEND));
     }
@@ -140,6 +144,7 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
         if (orientation(wmsInfo)) conformance.add(ORIENTATION);
         if (tiff(wmsInfo)) conformance.add(TIFF);
         if (svg(wmsInfo)) conformance.add(SVG);
+        if (generalSubsetting(wmsInfo)) conformance.add(GENERAL_SUBSETTING);
         if (featureInfo(wmsInfo)) conformance.add(FEATURE_INFO);
         if (legend(wmsInfo)) conformance.add(LEGEND);
         return conformance;
@@ -337,6 +342,27 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
     /** @return {@code true} if SVG conformance is enabled, resolving {@code null} to the class default */
     public boolean svg(WMSInfo wmsInfo) {
         return isEnabled(wmsInfo, svg, SVG);
+    }
+
+    /** @return the general subsetting conformance flag, or {@code null} for the class default. */
+    public Boolean isGeneralSubsetting() {
+        return generalSubsetting;
+    }
+
+    /**
+     * Sets the general subsetting conformance flag; {@code null} restores the class default.
+     *
+     * @param enabled the flag value, or {@code null} for the default
+     */
+    public void setGeneralSubsetting(Boolean enabled) {
+        this.generalSubsetting = enabled;
+    }
+
+    /**
+     * @return {@code true} if general subsetting conformance is enabled, resolving {@code null} to the class default
+     */
+    public boolean generalSubsetting(WMSInfo wmsInfo) {
+        return isEnabled(wmsInfo, generalSubsetting, GENERAL_SUBSETTING);
     }
 
     /** @return the GetFeatureInfo conformance flag, or {@code null} for the class default. */

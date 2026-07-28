@@ -3,7 +3,7 @@
 A custom GeoPackage can be created with any number of tiles and features layers using the `GeoPackage` WPS Process (see [Process Cookbook](../../services/wps/processes/index.md)).
 
 !!! warning
-    While the process generates a compliant GeoPackage, some abilities like generalization, style and part of the metadata export are based on unofficial extensions discussed in the [Testbed 16 GeoPackage engineering report](http://docs.opengeospatial.org/per/20-019r1.md).
+    While the process generates a compliant GeoPackage, some abilities like generalization, style and part of the metadata export are based on unofficial extensions discussed in the [Testbed 16 GeoPackage engineering report](https://docs.ogc.org/per/20-019r1.html).
 
 The WPS process takes in one parameter: `contents` which is an XML schema that represents the desired output.
 
@@ -158,7 +158,7 @@ where the `name` of a known gridset is specified; or a custom gridset may be def
 
 ## Creating generalized tables {: #overviews }
 
-The process can create generalized tables, as described in [Testbed 16 generalized tables extension](http://docs.opengeospatial.org/per/20-019r1.md#im_generalized_tables_extension).
+The process can create generalized tables, as described in [Testbed 16 generalized tables extension](https://docs.ogc.org/per/20-019r1.html#im_generalized_tables_extension).
 
 Generalized tables are sidecar tables that typically contain less records than the original table, with the option to also generalize their geometry. These are created by adding a list of `overview` directives in a feature layer description, each one containing:
 

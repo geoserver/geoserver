@@ -6,6 +6,7 @@ package org.geoserver.ogcapi;
 
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,7 +15,9 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
@@ -29,6 +32,7 @@ public class CollectionExtents {
     public static final String WGS84 = "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
     List<ReferencedEnvelope> spatial;
     DateRange temporal;
+    Map<String, DimensionExtent> additionalDimensions;
 
     /** Spatial extent bboxs, each bbox xmin,ymin,xmax,ymax crs CRS84. */
     public class SpatialExtents {
@@ -168,5 +172,21 @@ public class CollectionExtents {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Extents of dimensions beyond space and time, each serialized as a sibling of {@code spatial} and {@code temporal}
+     * keyed by the dimension name (OGC API - Common, additional dimensions).
+     */
+    @JsonAnyGetter
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    public Map<String, DimensionExtent> getAdditionalDimensions() {
+        return additionalDimensions;
+    }
+
+    /** Adds one additional dimension extent, keyed by its name. */
+    public void addDimension(String name, DimensionExtent extent) {
+        if (additionalDimensions == null) additionalDimensions = new LinkedHashMap<>();
+        additionalDimensions.put(name, extent);
     }
 }

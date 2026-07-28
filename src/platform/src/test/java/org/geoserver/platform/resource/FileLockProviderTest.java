@@ -6,23 +6,25 @@ package org.geoserver.platform.resource;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-/**
- * The file lock provider is actually not reentrant (not possible with Java) but the keys for meta-tile caching are
- * different, so we don't really need it to handle nested locks on the same key.
- */
+/** Tests for {@link FileLockProvider}, including reentrant (nested) locking on the same thread. */
 public class FileLockProviderTest {
 
     /** Small timeout for testing failure cases quickly */
@@ -57,8 +59,8 @@ public class FileLockProviderTest {
     @Test
     public void testLockTimeoutThrowsException() throws Exception {
         String key = "timeout-key";
-        // Create a second provider instance pointing to the same root
-        // This ensures they don't share the same MemoryLockProvider
+        // A second provider instance has its own gate, so contention between the two can only
+        // be enforced by the real OS-level file lock, as would happen across two processes
         FileLockProvider provider2 = new FileLockProvider(root, TEST_TIMEOUT_SECONDS);
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -121,6 +123,115 @@ public class FileLockProviderTest {
         assertFalse("Thread should have terminated after interruption", testThread.isAlive());
 
         firstLock.release();
+    }
+
+    /**
+     * A thread that already holds the lock for a key must be able to acquire it again without blocking or throwing, and
+     * the lock file must still be cleaned up once both acquisitions are released.
+     */
+    @Test
+    public void testReentrantAcquire() throws Exception {
+        String key = "nested-key";
+
+        Resource.Lock outer = provider.acquire(key);
+        try {
+            // must return immediately, not throw OverlappingFileLockException nor wait
+            // for the timeout, since the same thread already holds the lock
+            Resource.Lock inner = provider.acquire(key);
+            inner.release();
+        } finally {
+            outer.release();
+        }
+
+        File lockFile = getLockFile(key);
+        await().atMost(2, SECONDS).until(() -> !lockFile.exists());
+    }
+
+    /**
+     * When a lock is acquired twice on the same thread, releasing only the inner (nested) acquisition must not drop the
+     * underlying OS lock; the lock file is only removed once every acquisition on that key has been released.
+     */
+    @Test
+    public void testReentrantAcquireHoldCount() throws Exception {
+        String key = "nested-balanced-key";
+
+        Resource.Lock outer = provider.acquire(key);
+        Resource.Lock inner = provider.acquire(key);
+
+        File lockFile = getLockFile(key);
+        assertTrue("Lock file should still exist while outer hold is active", lockFile.exists());
+
+        inner.release();
+        assertTrue("Releasing only the nested acquire must not drop the OS lock", lockFile.exists());
+
+        outer.release();
+        await().atMost(2, SECONDS).until(() -> !lockFile.exists());
+    }
+
+    /** Locks on different keys must not interfere with each other. */
+    @Test
+    public void testIndependentKeys() throws Exception {
+        Resource.Lock lockA = provider.acquire("key-a");
+        Resource.Lock lockB = provider.acquire("key-b");
+
+        assertTrue(getLockFile("key-a").exists());
+        assertTrue(getLockFile("key-b").exists());
+
+        lockA.release();
+        lockB.release();
+    }
+
+    /**
+     * Reentrancy must only apply within a single thread: a different thread trying to acquire an already-held key must
+     * still block on the gate and eventually time out, exactly as before this change.
+     */
+    @Test
+    public void testConcurrentAcquireOnSameKeyBlocks() throws Exception {
+        String key = "contention-key";
+        Resource.Lock firstLock = provider.acquire(key);
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            long start = System.currentTimeMillis();
+            Future<Boolean> future = executor.submit(() -> {
+                try {
+                    provider.acquire(key);
+                    return false; // should not have succeeded while firstLock is held
+                } catch (IllegalStateException e) {
+                    return true; // expected: timed out waiting for the other thread
+                }
+            });
+
+            assertTrue("A different thread must not be granted the same key while it is held", future.get(5, SECONDS));
+            long duration = System.currentTimeMillis() - start;
+            assertTrue("Timeout was too fast: " + duration, duration >= 1000);
+        } finally {
+            firstLock.release();
+            executor.shutdownNow();
+        }
+    }
+
+    /**
+     * A resource can be locked and, while the lock is held, written to and closed on the same thread: closing the
+     * output stream re-acquires the same lock key internally (to atomically move the temp file into place), which is
+     * exactly the nested-acquire scenario this class must support.
+     */
+    @Test
+    public void testWriteWhileLockHeld() throws Exception {
+        FileSystemResourceStore store = new FileSystemResourceStore(root);
+        store.setLockProvider(provider);
+        Resource resource = store.get("nested/resource.txt");
+
+        Resource.Lock lock = resource.lock();
+        try {
+            try (OutputStream out = resource.out()) {
+                out.write("hello".getBytes(StandardCharsets.UTF_8));
+            }
+        } finally {
+            lock.release();
+        }
+
+        assertEquals("hello", IOUtils.toString(resource.in(), StandardCharsets.UTF_8));
     }
 
     private File getLockFile(String key) {

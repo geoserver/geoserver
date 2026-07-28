@@ -8,16 +8,20 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.geofence.core.services.spi.UserResolver;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 /**
  * Links GeoServer users/roles to internal Geofence server
  *
  * @author Niels Charlier
  */
+@Component
+@Primary
 @PropertySource("classpath*:application.properties")
 public class SecurityContextUserResolver implements UserResolver {
 

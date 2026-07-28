@@ -8,6 +8,8 @@ import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.io.Serializable;
 import java.util.List;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Radio;
 import org.apache.wicket.markup.html.form.RadioGroup;
@@ -16,6 +18,7 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.danekja.java.util.function.serializable.SerializableFunction;
 import org.geoserver.web.data.store.panel.ParamPanel;
 
@@ -23,17 +26,6 @@ import org.geoserver.web.data.store.panel.ParamPanel;
 public class RadioGroupParamPanel<T extends Serializable> extends Panel implements ParamPanel<T> {
 
     private static final boolean isCssEmpty = IsWicketCssFileEmpty(RadioGroupParamPanel.class);
-
-    @Override
-    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
-        super.renderHead(response);
-        // if the panel-specific CSS file contains actual css then have the browser load the css
-        if (!isCssEmpty) {
-            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
-                    new org.apache.wicket.request.resource.PackageResourceReference(
-                            getClass(), getClass().getSimpleName() + ".css")));
-        }
-    }
 
     private RadioGroup<T> group;
 
@@ -58,6 +50,19 @@ public class RadioGroupParamPanel<T extends Serializable> extends Panel implemen
     @Override
     public RadioGroup<T> getFormComponent() {
         return group;
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            @SuppressWarnings("rawtypes")
+            Class<? extends RadioGroupParamPanel> scope = getClass();
+            String name = scope.getSimpleName() + ".css";
+            PackageResourceReference reference = new PackageResourceReference(scope, name);
+            response.render(CssHeaderItem.forReference(reference));
+        }
     }
 
     /** ListView to dynamically generate the radios */

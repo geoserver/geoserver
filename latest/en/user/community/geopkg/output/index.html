@@ -30076,7 +30076,7 @@
 <p>A custom GeoPackage can be created with any number of tiles and features layers using the <code>GeoPackage</code> WPS Process (see <a href="../../../services/wps/processes/">Process Cookbook</a>).</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>While the process generates a compliant GeoPackage, some abilities like generalization, style and part of the metadata export are based on unofficial extensions discussed in the <a href="http://docs.opengeospatial.org/per/20-019r1.md">Testbed 16 GeoPackage engineering report</a>.</p>
+<p>While the process generates a compliant GeoPackage, some abilities like generalization, style and part of the metadata export are based on unofficial extensions discussed in the <a href="https://docs.ogc.org/per/20-019r1.html">Testbed 16 GeoPackage engineering report</a>.</p>
 </div>
 <p>The WPS process takes in one parameter: <code>contents</code> which is an XML schema that represents the desired output.</p>
 <p>General outline of a <code>contents</code> scheme:</p>
@@ -30129,14 +30129,16 @@
 <a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="nt">&lt;/features&gt;</span>
 </code></pre></div>
 <p>Each features layer has the following properties:</p>
-<p>:   - <code>featuretype</code> (mandatory): the feature type
-    - <code>propertynames</code> (optional): list of comma-separated names of properties in feature type to be included (default is all properties)
-    - <code>filter</code> (optional): any OGC filter that will be applied on features before output
-    - <code>indexed</code> (optional): include spatial indexes in the output (true/false)
-    - <code>styles</code> (optional): include styles in the output (true/false). The exported structure uses the portrayal and semantic annotation extensions, as described in <a href="http://docs.opengeospatial.org/per/20-019r1.md#_portrayal">Testbed 16 E/R</a>
-    - <code>metadata</code> (optional): embed metadata referred by the layer metadata links into the GeoPackage (true/false). The base metadata tables are filled with contents, while semantic annotations might be used to add extra information about the metadata itself.
-    - <code>overviews</code> (optional): adds overview tables that can speed up rendering. See more at <a href="#overviews">Creating generalized tables</a>
-    - <code>sort</code> (optional): a filter encoding <code>fes:SortByType</code> which allows sorting the table contents on one or more attributes. If the chosen attribute is a geometry, the table will be sorted on its GeoHash, <a href="http://docs.opengeospatial.org/per/20-019r1.md#record_sorting">improving access locality</a> when using spatial indexes.</p>
+<ul>
+<li><code>featuretype</code> (mandatory): the feature type</li>
+<li><code>propertynames</code> (optional): list of comma-separated names of properties in feature type to be included (default is all properties)</li>
+<li><code>filter</code> (optional): any OGC filter that will be applied on features before output</li>
+<li><code>indexed</code> (optional): include spatial indexes in the output (true/false)</li>
+<li><code>styles</code> (optional): include styles in the output (true/false). The exported structure uses the portrayal and semantic annotation extensions, as described in <a href="https://docs.ogc.org/per/20-019r1.html#_portrayal">Testbed 16 E/R</a></li>
+<li><code>metadata</code> (optional): embed metadata referred by the layer metadata links into the GeoPackage (true/false). The base metadata tables are filled with contents, while semantic annotations might be used to add extra information about the metadata itself.</li>
+<li><code>overviews</code> (optional): adds overview tables that can speed up rendering. See more at <a href="#overviews">Creating generalized tables</a></li>
+<li><code>sort</code> (optional): a filter encoding <code>fes:SortByType</code> which allows sorting the table contents on one or more attributes. If the chosen attribute is a geometry, the table will be sorted on its GeoHash, <a href="https://docs.ogc.org/per/20-019r1.html#record_sorting">improving access locality</a> when using spatial indexes.</li>
+</ul>
 <p>Outline of the tiles layer:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&lt;tiles</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;mytileslayer&quot;</span><span class="w"> </span><span class="na">identifier=</span><span class="s">&quot;L02&quot;</span><span class="nt">&gt;</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="nt">&lt;description&gt;</span>...<span class="nt">&lt;/description&gt;</span>
@@ -30166,27 +30168,22 @@
 <a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="nt">&lt;/tiles&gt;</span>
 </code></pre></div>
 <p>Each tiles layer has the following properties:</p>
-<p>:   - <code>layers</code> (mandatory): comma-separated list of layers that will be included</p>
-<div class="highlight"><pre><span></span><code>- `styles`, `sld`, and `sldbody` are mutually exclusive, having one is mandatory
-
-  - `styles`: list of comma-separated styles to be used
-      - `sld`: path to SLD style file
-      - `sldbody`: inline SLD style file
-
-- `format` (optional): mime-type of image format of tiles (image/png or image/jpeg)
-
-- `bgcolor` (optional): background colour as a six-digit hexadecimal RGB value
-
-- `transparent` (optional): transparency (true or false)
-
-- `coverage` (optional)
-
-- `minzoom`, `maxzoom`, `minColumn`, `maxColumn`, `minRow`, `maxRow` (all optional): set the minimum and maximum zoom level, column, and rows
-
-- `gridset` (optional): see below
-
-- `parameters` (optional): list of other parameters that can be used in a GetMap to produce tiles (open to all GeoServer vendor parameters)
-</code></pre></div>
+<ul>
+<li><code>layers</code> (mandatory): comma-separated list of layers that will be included</li>
+<li><code>styles</code>, <code>sld</code>, and <code>sldbody</code> are mutually exclusive, having one is mandatory</li>
+<li><code>styles</code>: list of comma-separated styles to be used<ul>
+<li><code>sld</code>: path to SLD style file</li>
+<li><code>sldbody</code>: inline SLD style file</li>
+</ul>
+</li>
+<li><code>format</code> (optional): mime-type of image format of tiles (image/png or image/jpeg)</li>
+<li><code>bgcolor</code> (optional): background colour as a six-digit hexadecimal RGB value</li>
+<li><code>transparent</code> (optional): transparency (true or false)</li>
+<li><code>coverage</code> (optional)</li>
+<li><code>minzoom</code>, <code>maxzoom</code>, <code>minColumn</code>, <code>maxColumn</code>, <code>minRow</code>, <code>maxRow</code> (all optional): set the minimum and maximum zoom level, column, and rows</li>
+<li><code>gridset</code> (optional): see below</li>
+<li><code>parameters</code> (optional): list of other parameters that can be used in a GetMap to produce tiles (open to all GeoServer vendor parameters)</li>
+</ul>
 <p>Gridset can take on two possible (mutually exclusive) forms:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">&lt;gridset&gt;</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="nt">&lt;name&gt;</span>mygridset<span class="nt">&lt;/name&gt;</span>
@@ -30210,7 +30207,7 @@
 <a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="nt">&lt;/gridset&gt;</span>
 </code></pre></div>
 <h2 id="overviews">Creating generalized tables<a class="headerlink" href="#overviews" title="Permanent link">&para;</a></h2>
-<p>The process can create generalized tables, as described in <a href="http://docs.opengeospatial.org/per/20-019r1.md#im_generalized_tables_extension">Testbed 16 generalized tables extension</a>.</p>
+<p>The process can create generalized tables, as described in <a href="https://docs.ogc.org/per/20-019r1.html#im_generalized_tables_extension">Testbed 16 generalized tables extension</a>.</p>
 <p>Generalized tables are sidecar tables that typically contain less records than the original table, with the option to also generalize their geometry. These are created by adding a list of <code>overview</code> directives in a feature layer description, each one containing:</p>
 <ul>
 <li><code>name</code> (mandatory): the generalized table name</li>

@@ -106,7 +106,7 @@ Outline of the tiles layer:
 
 Each tiles layer has the following properties:
 
-:   - `layers` (mandatory): comma-separated list of layers that will be included
+    - `layers` (mandatory): comma-separated list of layers that will be included
 
     - `styles`, `sld`, and `sldbody` are mutually exclusive, having one is mandatory
 

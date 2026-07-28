@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.catalog.Catalog;
@@ -46,6 +47,7 @@ import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.HTMLResponseBody;
 import org.geoserver.ogcapi.StyleDocument;
 import org.geoserver.ogcapi.TimeExtentCalculator;
+import org.geoserver.ows.kvp.ElevationParser;
 import org.geoserver.ows.kvp.FormatOptionsKvpParser;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.ServiceException;
@@ -63,6 +65,7 @@ import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.WebMapService;
+import org.geoserver.wms.capabilities.DimensionHelper;
 import org.geoserver.wms.legendgraphic.GetLegendGraphicKvpReader;
 import org.geoserver.wms.legendgraphic.LegendGraphic;
 import org.geotools.api.referencing.FactoryException;
@@ -351,17 +354,17 @@ public class MapsService {
         String contentBbox = latFirst
                 ? bbox.getMinY() + "," + bbox.getMinX() + "," + bbox.getMaxY() + "," + bbox.getMaxX()
                 : bbox.getMinX() + "," + bbox.getMinY() + "," + bbox.getMaxX() + "," + bbox.getMaxY();
-        return new String[] {identifier != null ? crsUri(identifier) : null, contentBbox};
+        return new String[] {identifier != null ? "<" + crsUri(identifier) + ">" : null, contentBbox};
     }
 
     /**
-     * The {@code Content-Crs} value for an authority identifier: the CRS URI between angle brackets, e.g.
-     * {@code <http://www.opengis.net/def/crs/EPSG/0/4326>} for {@code EPSG:4326}, as the header examples of
+     * The CRS URI of an authority identifier, e.g. {@code http://www.opengis.net/def/crs/EPSG/0/4326} for
+     * {@code EPSG:4326}. The {@code Content-Crs} header wraps it in angle brackets, as the examples of
      * {@code /req/core/map-response} show.
      */
-    private static String crsUri(String identifier) {
+    static String crsUri(String identifier) {
         String[] parts = identifier.split(":");
-        return "<http://www.opengis.net/def/crs/" + parts[0] + "/0/" + parts[parts.length - 1] + ">";
+        return "http://www.opengis.net/def/crs/" + parts[0] + "/0/" + parts[parts.length - 1];
     }
 
     /**
@@ -715,6 +718,9 @@ public class MapsService {
         rawParamers.put("layers", collectionId);
         rawParamers.put("styles", styleId);
         if (datetime != null) rawParamers.put("datetime", datetime);
+        if (subset != null && conf.generalSubsetting(wmsInfo)) {
+            applyExtraDimensions(subset, p, request, rawParamers);
+        }
         request.setRawKvp(rawParamers);
         return request;
     }
@@ -866,6 +872,8 @@ public class MapsService {
     private static class SubsetResult {
         ReferencedEnvelope envelope;
         String time;
+        // axes that are neither spatial nor time, kept as name -> raw range for the general subsetting class
+        final Map<String, String> extraDimensions = new LinkedHashMap<>();
     }
 
     /**
@@ -904,7 +912,11 @@ public class MapsService {
         return "*".equals(value) ? ".." : value;
     }
 
-    /** Parses a {@code Lat(30:60),Lon(10:20)} / {@code time(...)} subset, mapping Lat/Lon (or N/E, Y/X) to a box. */
+    /**
+     * Parses a {@code Lat(30:60),Lon(10:20)} / {@code time(...)} subset, mapping Lat/Lon (or N/E, Y/X) to a box and the
+     * time axis apart; any other axis (elevation or a custom dimension) is collected as an extra dimension for the
+     * general subsetting class to apply.
+     */
     private SubsetResult parseSubset(String subset, String subsetCrs) throws FactoryException {
         SubsetResult result = new SubsetResult();
         // the ranges are keyed by axis name (Lat/Lon), so the envelope is built in longitude/latitude order and only
@@ -928,22 +940,24 @@ public class MapsService {
                 result.time = toDatetime(range);
                 continue;
             }
+            boolean isX = axis.equalsIgnoreCase("Lon") || axis.equalsIgnoreCase("E") || axis.equalsIgnoreCase("X");
+            boolean isY = axis.equalsIgnoreCase("Lat") || axis.equalsIgnoreCase("N") || axis.equalsIgnoreCase("Y");
+            if (!isX && !isY) {
+                // elevation or a custom dimension; keep the raw range as given, its values need not be numeric
+                result.extraDimensions.put(axis, range.trim());
+                continue;
+            }
             String[] bounds = range.split(":");
             double low = Double.parseDouble(bounds[0].trim());
             double high = bounds.length > 1 ? Double.parseDouble(bounds[1].trim()) : low;
-            if (axis.equalsIgnoreCase("Lon") || axis.equalsIgnoreCase("E") || axis.equalsIgnoreCase("X")) {
+            if (isX) {
                 minX = low;
                 // a low longitude greater than the high one means an extent crossing the wrapping point, see
                 // /req/spatial-subsetting/subset-definition; extend past 180 like the bbox path does
                 maxX = low > high && crs instanceof GeographicCRS ? high + 360 : high;
-            } else if (axis.equalsIgnoreCase("Lat") || axis.equalsIgnoreCase("N") || axis.equalsIgnoreCase("Y")) {
+            } else {
                 minY = low;
                 maxY = high;
-            } else {
-                throw new APIException(
-                        APIException.INVALID_PARAMETER_VALUE,
-                        "Unsupported subset axis: " + axis,
-                        HttpStatus.BAD_REQUEST);
             }
         }
         if (minX != null && minY != null) {
@@ -1001,5 +1015,54 @@ public class MapsService {
         if (openLow) low = ISO_INSTANT.format(extent.getMinValue().toInstant());
         if (openHigh) high = ISO_INSTANT.format(extent.getMaxValue().toInstant());
         return low + "/" + high;
+    }
+
+    /** Applies the subset's elevation and custom axes to the WMS request, rejecting any unknown axis with a 400. */
+    private void applyExtraDimensions(
+            SubsetResult subset, PublishedInfo p, GetMapRequest request, Map<String, String> rawKvp) {
+        if (subset.extraDimensions.isEmpty()) return;
+
+        // dimensions live on layers only; a layer group has none, so every axis will be unknown below
+        ResourceInfo resource = p instanceof LayerInfo layer ? layer.getResource() : null;
+        DimensionInfo elevation =
+                resource == null ? null : resource.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
+        Set<String> customNames = resource == null
+                ? Set.of()
+                : DimensionHelper.getCustomDimensions(resource).keySet();
+
+        for (Map.Entry<String, String> e : subset.extraDimensions.entrySet()) {
+            String axis = e.getKey();
+            // OGC subset uses low:high for an interval, WMS dimension KVP uses low/high
+            String value = e.getValue().replace(':', '/');
+
+            // elevation is a first-class WMS dimension, set directly on the request
+            if (axis.equalsIgnoreCase("elevation") && elevation != null && elevation.isEnabled()) {
+                request.setElevation(parseElevation(value));
+                continue;
+            }
+
+            // a custom dimension goes into the WMS pipeline as its DIM_<NAME> (upper-cased) raw KVP entry
+            String custom = customNames.stream()
+                    .filter(n -> n.equalsIgnoreCase(axis))
+                    .findFirst()
+                    .orElse(null);
+            if (custom == null) {
+                // known parameter, invalid value: the spec mandates a 4xx (/req/general-subsetting/subset-definition)
+                throw new APIException(INVALID_PARAMETER_VALUE, "Unknown subset axis: " + axis, HttpStatus.BAD_REQUEST);
+            }
+            rawKvp.put(DimensionInfo.getDimensionKey(custom), value);
+        }
+    }
+
+    /** Parses an elevation subset (WMS {@code low/high} syntax) into the list a GetMapRequest expects. */
+    private static List<Object> parseElevation(String value) {
+        try {
+            @SuppressWarnings("unchecked")
+            Collection<Object> parsed = new ElevationParser().parse(value);
+            return new ArrayList<>(parsed);
+        } catch (ParseException ex) {
+            throw new APIException(
+                    INVALID_PARAMETER_VALUE, "Invalid elevation subset: " + value, HttpStatus.BAD_REQUEST, ex);
+        }
     }
 }

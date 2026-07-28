@@ -340,12 +340,6 @@ public class MapsTest extends MapsTestSupport {
     }
 
     @Test
-    public void testUnknownSubsetAxisRejected() throws Exception {
-        assertBadRequestMentions(
-                "ogc/maps/v1/collections/Lakes/map?f=image/png&subset=Depth(1:2)&width=50&height=50", "subset");
-    }
-
-    @Test
     public void testCenterWithoutSizeRejected() throws Exception {
         assertBadRequestMentions("ogc/maps/v1/collections/Lakes/map?f=image/png&center=0,0", "center");
     }

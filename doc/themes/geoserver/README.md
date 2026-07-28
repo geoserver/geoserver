@@ -16,9 +16,6 @@ doc/themes/geoserver/
 │   └── extra.css              # Custom CSS for all documentation
 ├── overrides/
 │   └── partials/              # (empty - reserved for future overrides)
-├── static/                    # Legacy Sphinx theme files (not used by MkDocs)
-├── layout.html                # Legacy Sphinx layout (not used by MkDocs)
-├── theme.conf                 # Legacy Sphinx config (not used by MkDocs)
 └── README.md                  # This file
 ```
 

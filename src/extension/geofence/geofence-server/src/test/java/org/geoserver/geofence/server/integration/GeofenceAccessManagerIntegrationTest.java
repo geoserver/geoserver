@@ -155,8 +155,8 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
 
             VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, places);
 
-            assertEquals(vl.getReadFilter(), Filter.INCLUDE);
-            assertEquals(vl.getWriteFilter(), Filter.INCLUDE);
+            assertEquals(Filter.INCLUDE, vl.getReadFilter());
+            assertEquals(Filter.INCLUDE, vl.getWriteFilter());
             logout();
         } finally {
             removeLayerGroup(group1, group2);
@@ -625,8 +625,8 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
 
             VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, places);
 
-            assertEquals(vl.getReadFilter(), Filter.INCLUDE);
-            assertEquals(vl.getWriteFilter(), Filter.INCLUDE);
+            assertEquals(Filter.INCLUDE, vl.getReadFilter());
+            assertEquals(Filter.INCLUDE, vl.getWriteFilter());
             logout();
         } finally {
             removeLayerGroup(group1, group2);

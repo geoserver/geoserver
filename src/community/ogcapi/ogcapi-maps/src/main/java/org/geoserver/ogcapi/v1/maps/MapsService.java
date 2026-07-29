@@ -80,7 +80,9 @@ import org.geotools.util.DateRange;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.BindParam;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -209,42 +211,8 @@ public class MapsService {
             @PathVariable(name = "collectionId") String collectionId,
             @PathVariable(name = "styleId", required = false) String styleId,
             @RequestParam(name = "f") String format,
-            @RequestParam(name = "bbox", required = false) String bbox,
-            @RequestParam(name = "bbox-crs", required = false) String bboxCrs,
-            @RequestParam(name = "subset", required = false) String subset,
-            @RequestParam(name = "subset-crs", required = false) String subsetCrs,
-            @RequestParam(name = "center", required = false) String center,
-            @RequestParam(name = "center-crs", required = false) String centerCrs,
-            @RequestParam(name = "crs", required = false) String crs,
-            @RequestParam(name = "datetime", required = false) String datetime,
-            @RequestParam(name = "width", required = false) Integer width,
-            @RequestParam(name = "height", required = false) Integer height,
-            @RequestParam(name = "scale-denominator", required = false) Double scaleDenominator,
-            @RequestParam(name = "mm-per-pixel", required = false) Double mmPerPixel,
-            @RequestParam(name = "orientation", required = false) Double orientation,
-            @RequestParam(name = "transparent", required = false, defaultValue = "true") boolean transparent,
-            @RequestParam(name = "bgcolor", required = false) String bgcolor,
-            @RequestParam(name = "void-color", required = false) String voidColor,
-            @RequestParam(name = "void-transparent", required = false) Boolean voidTransparent)
+            @ModelAttribute MapQuery query)
             throws IOException, FactoryException, ParseException {
-        MapQuery query = new MapQuery(
-                bbox,
-                bboxCrs,
-                subset,
-                subsetCrs,
-                center,
-                centerCrs,
-                crs,
-                datetime,
-                width,
-                height,
-                scaleDenominator,
-                mmPerPixel,
-                orientation,
-                transparent,
-                bgcolor,
-                voidColor,
-                voidTransparent);
         checkFormatConformance(format);
         GetMapRequest request = toGetMapRequest(collectionId, styleId, format, query);
 
@@ -253,7 +221,7 @@ public class MapsService {
             if (request.getCrs() != null) request.setSRS(ResourcePool.lookupIdentifier(request.getCrs(), false));
             request.getRawKvp().put("width", String.valueOf(request.getWidth()));
             request.getRawKvp().put("height", String.valueOf(request.getHeight()));
-            if (height != null) request.setHeight(height);
+            if (query.height() != null) request.setHeight(query.height());
             return new HTMLMap(new WMSMapContent(request));
         }
         WebMap map = wms.reflect(request);
@@ -388,35 +356,39 @@ public class MapsService {
                 HttpStatus.NOT_ACCEPTABLE);
     }
 
-    /** Query parameters shared by the map operations; hyphenated OGC names cannot be Java fields, hence a carrier. */
+    /**
+     * Query parameters shared by the map operations, bound from the request by Spring constructor binding. Some
+     * parameter names cannot be Java identifiers, hence the {@link BindParam} mapping.
+     */
     record MapQuery(
             String bbox,
-            String bboxCrs,
+            @BindParam("bbox-crs") String bboxCrs,
             String subset,
-            String subsetCrs,
+            @BindParam("subset-crs") String subsetCrs,
             String center,
-            String centerCrs,
+            @BindParam("center-crs") String centerCrs,
             String crs,
             String datetime,
             Integer width,
             Integer height,
-            Double scaleDenominator,
-            Double mmPerPixel,
+            @BindParam("scale-denominator") Double scaleDenominator,
+            @BindParam("mm-per-pixel") Double mmPerPixel,
             Double orientation,
-            boolean transparent,
+            Boolean transparent,
             String bgcolor,
-            String voidColor,
-            Boolean voidTransparent) {
+            @BindParam("void-color") String voidColor,
+            @BindParam("void-transparent") Boolean voidTransparent) {
 
-        /** Query for the GetFeatureInfo endpoint, where the single crs applies to both the bbox and the output. */
-        static MapQuery forInfo(
-                String bbox,
-                String crs,
-                String datetime,
-                Integer width,
-                Integer height,
-                boolean transparent,
-                String bgcolor) {
+        /** Maps are transparent unless asked otherwise. */
+        boolean isTransparent() {
+            return !Boolean.FALSE.equals(transparent);
+        }
+
+        /**
+         * Reduced to the parameters the GetFeatureInfo extension supports, where the single crs applies to both the
+         * bbox and the output.
+         */
+        MapQuery forInfo() {
             return new MapQuery(
                     bbox,
                     crs,
@@ -453,16 +425,10 @@ public class MapsService {
             @PathVariable(name = "collectionId") String collectionId,
             @PathVariable(name = "styleId", required = false) String styleId,
             @RequestParam(name = "f") String format,
-            @RequestParam(name = "bbox", required = false) String bbox,
-            @RequestParam(name = "crs", required = false) String crs,
-            @RequestParam(name = "datetime", required = false) String datetime,
-            @RequestParam(name = "width", required = false) Integer width,
-            @RequestParam(name = "height", required = false) Integer height,
-            @RequestParam(name = "transparent", required = false, defaultValue = "true") boolean transparent,
-            @RequestParam(name = "bgcolor", required = false) String bgcolor,
             @RequestParam(name = "i") int i,
             @RequestParam(name = "j") int j,
-            @RequestParam(name = "limit", required = false, defaultValue = "1") int limit
+            @RequestParam(name = "limit", required = false, defaultValue = "1") int limit,
+            @ModelAttribute MapQuery query
             // TODO: add all the vendor parameters we normally support in WMS
             ) throws IOException, FactoryException, ParseException {
         WMSInfo wmsInfo = getService();
@@ -471,8 +437,7 @@ public class MapsService {
             throw new APIException(
                     INVALID_PARAMETER_VALUE, "limit must be greater than zero, got " + limit, HttpStatus.BAD_REQUEST);
         }
-        MapQuery query = MapQuery.forInfo(bbox, crs, datetime, width, height, transparent, bgcolor);
-        GetMapRequest getMapRequest = toGetMapRequest(collectionId, styleId, "image/png", query);
+        GetMapRequest getMapRequest = toGetMapRequest(collectionId, styleId, "image/png", query.forInfo());
         DefaultWebMapService.autoSetBoundsAndSize(getMapRequest);
 
         GetFeatureInfoRequest request = new GetFeatureInfoRequest();
@@ -703,7 +668,7 @@ public class MapsService {
         if (q.orientation() != null) request.setAngle(q.orientation());
         String background = q.bgcolor() != null ? q.bgcolor() : q.voidColor();
         if (background != null) request.setBgColor(Color.decode(background));
-        request.setTransparent(q.transparent());
+        request.setTransparent(q.isTransparent());
         if (datetime != null) {
             setupTimeSubset(datetime, p, request);
         }

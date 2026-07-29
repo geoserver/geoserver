@@ -33,6 +33,19 @@
         <include>geofence-services-api-*.jar</include>
         <include>geofence-admin-services-api-*.jar</include>
         <include>geofence-services-impl-*.jar</include>
+        <!-- bundles gs-geofence's own REST-client fallback RuleReaderService and its Jersey client stack -->
+        <include>geofence-rest-api-*.jar</include>
+        <include>geofence-rest-client-*.jar</include>
+        <include>jersey-client-*.jar</include>
+        <include>jersey-common-*.jar</include>
+        <include>jersey-entity-filtering-*.jar</include>
+        <include>jersey-media-json-jackson-*.jar</include>
+        <include>jersey-media-multipart-*.jar</include>
+        <include>jersey-proxy-client-*.jar</include>
+        <include>jakarta.ws.rs-api-*.jar</include>
+        <include>mimepull-*.jar</include>
+        <include>osgi-resource-locator-*.jar</include>
+        <include>jackson-module-jakarta-xmlbind-annotations-2*.jar</include>
         <include>hibernate-core-*.jar</include>
         <include>hibernate-jcache-*.jar</include>
         <include>hibernate-spatial-*.jar</include>

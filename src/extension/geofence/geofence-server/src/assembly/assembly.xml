@@ -84,6 +84,13 @@
   </fileSets>
   <files>
     <file>
+      <!-- Same filename as the antlr4-runtime jar pulled in by the base install's Jiffle support, but
+           empty (no classes) - overwrites it on plain extraction into WEB-INF/lib, so the incompatible
+           old jar can never coexist with antlr4-runtime-4.13.2.jar even with no manual step. See README. -->
+      <source>src/assembly/stub-jars/antlr4-runtime-4.7.1.jar</source>
+      <outputDirectory/>
+    </file>
+    <file>
       <source>src/assembly/geofence-server-README.md</source>
       <outputDirectory/>
     </file>

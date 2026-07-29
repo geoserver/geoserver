@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const MM_PER_INCH = 25.4;
     const INCHES_PER_METER = 39.37;
     const FEATURE_INFO_LIMIT = 50;
-    const FILTER_TYPE_TO_PARAM = { cql: "CQL_FILTER", ogc: "FILTER", fid: "FEATUREID" };
+    const DEFAULT_FILTER_LANG = "cql2-text";
     // request keys OGCMap sets on its own (or that live in the request path), never passed as user params
     const OGC_MANAGED = new Set(["layers", "styles", "crs", "bbox-crs", "bbox", "width", "height", "f"]);
 
@@ -43,6 +43,12 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("input.param").forEach((input) => {
         if (!OGC_MANAGED.has(input.title.toLowerCase())) vendorParams[input.title] = input.value;
     });
+
+    // a filter that came with the request is shown in the toolbar, so it can be edited instead of retyped
+    if (vendorParams.filter) {
+        el("filter").value = vendorParams.filter;
+        el("filterType").value = vendorParams["filter-lang"] || DEFAULT_FILTER_LANG;
+    }
 
     // the bbox in the axis order the CRS authority declares (OpenLayers works in x,y), shared by the tiled map and
     // the feature info requests
@@ -232,13 +238,13 @@ document.addEventListener("DOMContentLoaded", () => {
         updateParams({ f: imageFormat });
     });
 
+    // the OGC API - Features - Part 3 filter parameters, applied by the server on top of bbox and datetime
     const updateFilter = () => {
         const filterValue = el("filter").value.trim();
-        const filter = { FILTER: undefined, CQL_FILTER: undefined, FEATUREID: undefined };
-        if (filterValue !== "") {
-            filter[FILTER_TYPE_TO_PARAM[el("filterType").value]] = filterValue;
-        }
-        updateParams(filter);
+        const language = el("filterType").value;
+        updateParams(filterValue === ""
+            ? { filter: undefined, "filter-lang": undefined }
+            : { filter: filterValue, "filter-lang": language });
     };
     el("updateFilterButton").addEventListener("click", updateFilter);
     el("resetFilterButton").addEventListener("click", () => {

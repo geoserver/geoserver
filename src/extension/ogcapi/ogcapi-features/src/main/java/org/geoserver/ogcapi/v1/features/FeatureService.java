@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -40,8 +39,10 @@ import org.geoserver.ogcapi.APIFilterParser;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.APISearchQuery;
 import org.geoserver.ogcapi.APIService;
+import org.geoserver.ogcapi.CQL2Conformance;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.DefaultContentType;
+import org.geoserver.ogcapi.ECQLConformance;
 import org.geoserver.ogcapi.FunctionsDocument;
 import org.geoserver.ogcapi.HTMLResponseBody;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
@@ -422,24 +423,14 @@ public class FeatureService {
             }
         }
         if (filter != null) {
-            CQL2Conformance cql2 = CQL2Conformance.configuration(wfs);
-            ECQLConformance ecql = ECQLConformance.configuration(wfs);
-
             if (features.filter(wfs)) {
-                if (APIFilterParser.ECQL_TEXT.equals(filterLanguage) && !ecql.text(wfs)) {
-                    ignoreFilterLanguage(APIFilterParser.ECQL_TEXT, ECQLConformance.ECQL_TEXT);
-                } else if (APIFilterParser.CQL2_TEXT.equals(filterLanguage) && !cql2.text(wfs)) {
-                    ignoreFilterLanguage(APIFilterParser.CQL2_TEXT, CQL2Conformance.CQL2_TEXT);
-                } else if (APIFilterParser.CQL2_JSON.equals(filterLanguage) && !cql2.json(wfs)) {
-                    ignoreFilterLanguage(APIFilterParser.CQL2_TEXT, CQL2Conformance.CQL2_JSON);
-                } else {
-                    Filter parsedFilter = filterParser.parse(filter, filterLanguage, filterCRS);
-                    filters.add(parsedFilter);
-                }
+                // a language outside the enabled ones is rejected, it is not in the API document either
+                String lang = APIFilterParser.resolveLanguage(filterLanguage, wfs);
+                filters.add(filterParser.parse(filter, lang, filterCRS));
             } else {
-                LOGGER.warning(() -> "The filter parameter is not supported by the service, requires "
+                LOGGER.info(() -> "The filter parameter is not supported by the service, requires "
                         + FeatureConformance.FILTER.getId()
-                        + " conformance to be enabled.");
+                        + " conformance, and one filter language, to be enabled.");
             }
         }
         query.setFilter(mergeFiltersAnd(filters));
@@ -513,16 +504,6 @@ public class FeatureService {
         // build a response tracking both results and request to allow reusing the existing WFS
         // output formats
         return new FeaturesResponse(request.getAdaptee(), response);
-    }
-
-    private static void ignoreFilterLanguage(String filterLanguage, APIConformance conformance) {
-        if (LOGGER.isLoggable(Level.WARNING)) {
-            LOGGER.warning("The filter language '"
-                    + filterLanguage
-                    + "' is not supported by the service, requires "
-                    + conformance.getId()
-                    + " conformance to be enabled.");
-        }
     }
 
     @PostMapping(path = "collections/{collectionId}/search", name = "searchFeatures")

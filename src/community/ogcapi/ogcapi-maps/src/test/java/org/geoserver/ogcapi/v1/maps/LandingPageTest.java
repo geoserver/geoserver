@@ -39,7 +39,8 @@ public class LandingPageTest extends MapsTestSupport {
                         "getCollectionMap",
                         "getLandingPage",
                         "getConformanceDeclaration",
-                        "getStyles"));
+                        "getStyles",
+                        "getQueryables"));
     }
 
     @Test

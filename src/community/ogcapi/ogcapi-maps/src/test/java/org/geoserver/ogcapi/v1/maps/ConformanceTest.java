@@ -12,7 +12,12 @@ import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
+import org.geoserver.config.GeoServer;
+import org.geoserver.ogcapi.CQL2Conformance;
 import org.geoserver.ogcapi.ConformanceClass;
+import org.geoserver.ogcapi.ECQLConformance;
+import org.geoserver.wms.WMSInfo;
+import org.jsoup.nodes.Document;
 import org.junit.Test;
 
 public class ConformanceTest extends MapsTestSupport {
@@ -45,8 +50,19 @@ public class ConformanceTest extends MapsTestSupport {
                         MapsConformance.CRS.getId(),
                         MapsConformance.BACKGROUND.getId(),
                         MapsConformance.ORIENTATION.getId(),
+                        MapsConformance.FILTER.getId(),
+                        MapsConformance.QUERYABLES.getId(),
+                        MapsConformance.MAP_FILTER.getId(),
                         MapsConformance.FEATURE_INFO.getId(),
-                        MapsConformance.LEGEND.getId()));
+                        MapsConformance.LEGEND.getId(),
+                        ECQLConformance.ECQL_TEXT.getId(),
+                        CQL2Conformance.CQL2_TEXT.getId(),
+                        CQL2Conformance.CQL2_BASIC.getId(),
+                        CQL2Conformance.CQL2_ADVANCED.getId(),
+                        CQL2Conformance.CQL2_BASIC_SPATIAL.getId(),
+                        CQL2Conformance.CQL2_SPATIAL.getId()));
+        // features-filter is bound to the items resource, Maps must not claim it
+        assertThat(classes, not(hasItems(ConformanceClass.FEATURES_FILTER)));
         // the pre-1.0.0 draft URIs must be gone
         assertThat(
                 classes,
@@ -64,7 +80,7 @@ public class ConformanceTest extends MapsTestSupport {
 
     @Test
     public void testConformanceHTML() throws Exception {
-        org.jsoup.nodes.Document document = getAsJSoup("ogc/maps/v1/conformance?f=text/html");
+        Document document = getAsJSoup("ogc/maps/v1/conformance?f=text/html");
         assertEquals(
                 "GeoServer OGC API Maps Conformance", document.select("#title").text());
         String content = document.select("#content").text();
@@ -88,6 +104,53 @@ public class ConformanceTest extends MapsTestSupport {
             List<String> classes = getAsJSONPath("ogc/maps/v1/conformance", 200).read("$.conformsTo");
             assertThat(classes, not(hasItems(MapsConformance.FEATURE_INFO.getId())));
         });
+    }
+
+    /**
+     * Filtering takes both the standard class and the GeoServer binding, so disabling either one hides both, plus the
+     * filter languages, which would have no parameter to apply to, and the queryables, which only describe it.
+     */
+    @Test
+    public void testMapFilterDisabled() throws Exception {
+        withConformance(MapsConformance::setMapFilter, false, () -> assertNoFilterClasses());
+    }
+
+    @Test
+    public void testFilterDisabled() throws Exception {
+        withConformance(MapsConformance::setFilter, false, () -> assertNoFilterClasses());
+    }
+
+    /** The filter class takes a language, advertising it with none enabled would leave the filter unusable. */
+    @Test
+    public void testAllFilterLanguagesDisabled() throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        CQL2Conformance cql2 = CQL2Conformance.configuration(wms);
+        ECQLConformance ecql = ECQLConformance.configuration(wms);
+        cql2.setText(false);
+        cql2.setJSON(false);
+        ecql.setText(false);
+        gs.save(wms);
+        try {
+            assertNoFilterClasses();
+        } finally {
+            cql2.setText(null);
+            cql2.setJSON(null);
+            ecql.setText(null);
+            gs.save(wms);
+        }
+    }
+
+    private void assertNoFilterClasses() throws Exception {
+        List<String> classes = getAsJSONPath("ogc/maps/v1/conformance", 200).read("$.conformsTo");
+        assertThat(
+                classes,
+                not(hasItems(
+                        MapsConformance.FILTER.getId(),
+                        MapsConformance.MAP_FILTER.getId(),
+                        MapsConformance.QUERYABLES.getId(),
+                        ECQLConformance.ECQL_TEXT.getId(),
+                        CQL2Conformance.CQL2_TEXT.getId())));
     }
 
     @Test

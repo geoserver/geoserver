@@ -405,9 +405,13 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
             result.setFilter(mappedFilter);
         }
         if (query.getPropertyNames() != null && query.getPropertyNames().length > 0) {
+            // distinct: different complex names can map to the same source attribute (e.g.
+            // parentIdentifier and a collection path both map to eoParentIdentifier), and a
+            // duplicate would make SimpleFeatureTypeBuilder.retype fail
             String[] mappedPropertyNames = Arrays.stream(query.getPropertyNames())
                     .map(name -> propertyMapper.getSourceName(name))
                     .filter(name -> name != null)
+                    .distinct()
                     .toArray(size -> new String[size]);
             if (mappedPropertyNames.length == 0) {
                 result.setPropertyNames(Query.ALL_NAMES);

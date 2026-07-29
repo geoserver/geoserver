@@ -32,6 +32,13 @@ public class CoverageAccessInfoImpl implements Serializable, CoverageAccessInfo 
     public static final long DEFAULT_ImageIOCacheThreshold = 10 * 1024;
     long imageIOCacheThreshold = DEFAULT_ImageIOCacheThreshold;
 
+    // nullable, so a config saved before this setting existed deserializes as null and falls back to the default,
+    // instead of a misleading explicit 0
+    public static final int DEFAULT_GranuleCacheMaxSizeMB = 128;
+    public static final int DEFAULT_GranuleCacheThresholdKB = 1024;
+    Integer granuleCacheMaxSizeMB;
+    Integer granuleCacheThresholdKB;
+
     public CoverageAccessInfoImpl() {
         threadPoolExecutor = null;
     }
@@ -97,6 +104,28 @@ public class CoverageAccessInfoImpl implements Serializable, CoverageAccessInfo 
     }
 
     @Override
+    public int getGranuleCacheMaxSizeMB() {
+        // null (never configured, or a pre-existing config) falls back to the default budget, so the cache is on
+        // out of the box; it stays idle until a mosaic opts in via its read parameters
+        return granuleCacheMaxSizeMB != null ? granuleCacheMaxSizeMB : DEFAULT_GranuleCacheMaxSizeMB;
+    }
+
+    @Override
+    public void setGranuleCacheMaxSizeMB(int granuleCacheMaxSizeMB) {
+        this.granuleCacheMaxSizeMB = granuleCacheMaxSizeMB;
+    }
+
+    @Override
+    public int getGranuleCacheThresholdKB() {
+        return granuleCacheThresholdKB != null ? granuleCacheThresholdKB : DEFAULT_GranuleCacheThresholdKB;
+    }
+
+    @Override
+    public void setGranuleCacheThresholdKB(int granuleCacheThresholdKB) {
+        this.granuleCacheThresholdKB = granuleCacheThresholdKB;
+    }
+
+    @Override
     public void dispose() {}
 
     @Override
@@ -108,6 +137,8 @@ public class CoverageAccessInfoImpl implements Serializable, CoverageAccessInfo 
         result = prime * result + keepAliveTime;
         result = prime * result + maxPoolSize;
         result = prime * result + ((queueType == null) ? 0 : queueType.hashCode());
+        result = prime * result + getGranuleCacheMaxSizeMB();
+        result = prime * result + getGranuleCacheThresholdKB();
         return result;
     }
 
@@ -121,6 +152,8 @@ public class CoverageAccessInfoImpl implements Serializable, CoverageAccessInfo 
         if (imageIOCacheThreshold != other.imageIOCacheThreshold) return false;
         if (keepAliveTime != other.keepAliveTime) return false;
         if (maxPoolSize != other.maxPoolSize) return false;
+        if (getGranuleCacheMaxSizeMB() != other.getGranuleCacheMaxSizeMB()) return false;
+        if (getGranuleCacheThresholdKB() != other.getGranuleCacheThresholdKB()) return false;
         if (queueType == null) {
             if (other.queueType != null) return false;
         } else if (!queueType.equals(other.queueType)) return false;

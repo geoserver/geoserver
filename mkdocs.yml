@@ -1,11 +1,12 @@
 site_name: Documentation
-site_url: https://docs.geoserver.org/3.0.x/
+site_url: https://docs.geoserver.org/3.1.x
 repo_url: https://github.com/geoserver/geoserver
 repo_name: geoserver/geoserver
 edit_uri: edit/main/doc/
 
 docs_dir: doc
 site_dir: mkdocs_output
+strict: true
 
 # Exclude include files from the build (they are included by other pages)
 exclude_docs: |
@@ -13,6 +14,7 @@ exclude_docs: |
   target
   /index.html
   venv
+  en/release
   en/user/styling/ysld/reference/symbolizers/include/
   en/developer/policies/gsip_voting.md
   en/developer/quickstart/checkout.md
@@ -56,8 +58,12 @@ theme:
 
 extra:
   version:
-    default: latest
     provider: mike
+    default:
+      - latest
+      - stable
+      - 3.0.x
+    alias: false
 
   social:
     - icon: fontawesome/brands/github
@@ -109,11 +115,17 @@ extra_javascript:
   - javascripts/hide-empty-toc.js
   - javascripts/version-archive.js
 
+validation:
+  links:
+    absolute_links: ignore
+    anchors: ignore
+    unrecognized_links: warn
+    not_found: warn
+
 not_in_nav: |
   en/docguide/sphinx.md
   en/index.md
   en/LICENSE.md
-  en/release/rest.md
   en/user/data/webadmin/layerpreview.md
   en/user/installation/upgrade2.md
 
@@ -841,6 +853,10 @@ nav:
         - en/user/community/jwt-headers/overview.md
         - en/user/community/jwt-headers/installing.md
         - en/user/community/jwt-headers/configuration.md
+      - Keycloak Role Service:
+        - en/user/community/keycloak/index.md
+        - en/user/community/keycloak/installing.md
+        - en/user/community/keycloak/configuration.md
       - Libdeflate: en/user/community/libdeflate/index.md
       - MBTiles Extension:
         - en/user/community/mbtiles/index.md

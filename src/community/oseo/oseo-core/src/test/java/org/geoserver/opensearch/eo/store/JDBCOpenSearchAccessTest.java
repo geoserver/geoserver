@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.Matchers.greaterThan;
@@ -25,6 +26,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
@@ -708,6 +710,50 @@ public class JDBCOpenSearchAccessTest {
         Assert.assertNotNull(collection);
         Property layerProperty = collection.getProperty(layersName);
         Assert.assertNull(layerProperty);
+    }
+
+    @Test
+    public void testIndexCreationDottedCollection() throws Exception {
+        // collection ids with dots must not break the index DDL (unquoted SQL identifier)
+        Indexable simple = new Indexable("eo:cloud_cover", CQL.toExpression("opt:cloudCover"), FieldType.Other);
+        osAccess.updateIndexes("TSM.CAT.SRA.AS.S", Arrays.asList(simple));
+
+        assertThat(osAccess.getIndexNames("product"), hasItem("tsm_cat_sra_as_s_eo_cloud_cover_idx"));
+
+        osAccess.updateIndexes("TSM.CAT.SRA.AS.S", Collections.emptyList());
+        assertThat(osAccess.getIndexNames("product"), not(hasItem(startsWith("tsm_cat_sra_as_s_"))));
+    }
+
+    @Test
+    public void testIndexCreationDigitLeadingCollection() throws Exception {
+        // an unquoted SQL identifier cannot start with a digit, the index name must be prefixed
+        Indexable simple = new Indexable("eo:cloud_cover", CQL.toExpression("opt:cloudCover"), FieldType.Other);
+        osAccess.updateIndexes("2023.MISSION", Arrays.asList(simple));
+
+        assertThat(osAccess.getIndexNames("product"), hasItem("_2023_mission_eo_cloud_cover_idx"));
+
+        osAccess.updateIndexes("2023.MISSION", Collections.emptyList());
+        assertThat(osAccess.getIndexNames("product"), not(hasItem(startsWith("_2023_mission_"))));
+    }
+
+    @Test
+    public void testIndexCreationLongCollection() throws Exception {
+        // a name over the Postgres 63 char limit must be shortened and made unique with a hash,
+        // otherwise silent truncation would let distinct index names clash
+        String collection = "very_long_collection_identifier_that_goes_well_past_the_postgres_limit";
+        Indexable simple = new Indexable("eo:cloud_cover", CQL.toExpression("opt:cloudCover"), FieldType.Other);
+        osAccess.updateIndexes(collection, Arrays.asList(simple));
+
+        String prefix = collection.substring(0, 30);
+        String index = osAccess.getIndexNames("product").stream()
+                .filter(n -> n.startsWith(prefix))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("index not created"));
+        assertThat(index.length(), lessThanOrEqualTo(63));
+        assertThat(index, endsWith("_idx"));
+
+        osAccess.updateIndexes(collection, Collections.emptyList());
+        assertThat(osAccess.getIndexNames("product"), not(hasItem(startsWith(prefix))));
     }
 
     @Test

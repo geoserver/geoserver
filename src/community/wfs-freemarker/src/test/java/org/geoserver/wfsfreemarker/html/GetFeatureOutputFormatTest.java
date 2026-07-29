@@ -32,7 +32,7 @@ public class GetFeatureOutputFormatTest extends WFSTestSupport {
 
         XMLAssert.assertXpathExists("/html/body/table", dom);
         XMLAssert.assertXpathEvaluatesTo("Forests", "/html/body/table/caption", dom);
-        XMLAssert.assertXpathEvaluatesTo("2", "count(/html/body/table/tr)", dom);
-        XMLAssert.assertXpathEvaluatesTo("Green Forest", "/html/body/table/tr[2]/td[3]", dom);
+        XMLAssert.assertXpathEvaluatesTo("3", "count(/html/body/table/tbody/tr)", dom);
+        XMLAssert.assertXpathEvaluatesTo("Green Forest", "/html/body/table/tbody/tr[3]/td[1]", dom);
     }
 }

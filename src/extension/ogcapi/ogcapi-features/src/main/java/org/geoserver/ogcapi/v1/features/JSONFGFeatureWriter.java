@@ -112,6 +112,7 @@ public class JSONFGFeatureWriter<T extends FeatureType, F extends Feature> exten
     }
 
     private void writeCoordRefSys(GeoJSONBuilder jsonWriter, CoordinateReferenceSystem crs) {
+        if (crs == null) return;
         // write the CRS block only if needed
         if (!CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, crs)) {
             jsonWriter.key(JSONFGFeaturesResponse.COORD_REF_SYS);

@@ -289,9 +289,9 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                         + layer
                         + "&width=20&height=20&i=10&j=10";
         Document dom = getAsDOM(request);
-        // print(dom);
+        // print(dom,System.out);
         // count lines that do contain a forest reference
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'Forests.')])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tbody/tr/td[starts-with(.,'Forests.')])", dom);
     }
 
     /** Tests GetFeatureInfo with a buffer specified works, and that the result contains the expected polygon */
@@ -309,19 +309,19 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                         + "&width=300&height=300";
         Document dom = getAsDOM(base + "&i=85&j=230");
         // make sure the document is empty, as we chose an area with no features inside
-        assertXpathEvaluatesTo("0", "count(/html/body/table/tr)", dom);
+        assertXpathEvaluatesTo("0", "count(/html/body/table/tbody/tr)", dom);
 
         // another request that will catch one feature due to the extended buffer, make sure it's in
         dom = getAsDOM(base + "&i=85&j=230&buffer=40");
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'BasicPolygons.')])", dom);
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'BasicPolygons.1107531493630'])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tbody/tr/td[starts-with(.,'BasicPolygons.')])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tbody/tr/td[. = 'BasicPolygons.1107531493630'])", dom);
 
         // this one would end up catching everything (3 features) if it wasn't that we say the max
         // buffer at 50
         // in the WMS configuration
         dom = getAsDOM(base + "&i=85&j=230&buffer=300");
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'BasicPolygons.')])", dom);
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'BasicPolygons.1107531493630'])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tbody/tr/td[starts-with(.,'BasicPolygons.')])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tbody/tr/td[. = 'BasicPolygons.1107531493630'])", dom);
     }
 
     /** Tests GetFeatureInfo with a buffer specified works, and that the result contains the expected polygon */
@@ -336,13 +336,13 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                         + "&width=300&height=300&i=111&j=229";
         Document dom = getAsDOM(base + "&styles=");
         // make sure the document is empty, the style we chose has thin lines
-        assertXpathEvaluatesTo("0", "count(/html/body/table/tr)", dom);
+        assertXpathEvaluatesTo("0", "count(/html/body/table/tbody/tr)", dom);
 
         // another request that will catch one feature due to the style with a thick stroke, make
         // sure it's in
         dom = getAsDOM(base + "&styles=thickStroke");
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'BasicPolygons.')])", dom);
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'BasicPolygons.1107531493630'])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tbody/tr/td[starts-with(.,'BasicPolygons.')])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tbody/tr/td[. = 'BasicPolygons.1107531493630'])", dom);
     }
 
     /** Tests GetFeatureInfo with a buffer specified works, and that the result contains the expected polygon */
@@ -365,17 +365,17 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         // second request, should provide oe result, scale is 1:50
         w = (int) (200.0 / 0.28 * 1000); // dpi compensation
         dom = getAsDOM(featureInfoRequest(base, w));
-        // print(dom);
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'squares.')])", dom);
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'squares.1'])", dom);
+        // print(dom,System.out);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tbody/tr/td[starts-with(.,'squares.')])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tbody/tr/td[. = 'squares.1'])", dom);
 
         // third request, should provide two result, scale is 1:10
         w = (int) (1000.0 / 0.28 * 1000); // dpi compensation
         dom = getAsDOM(featureInfoRequest(base, w));
         // print(dom);
-        assertXpathEvaluatesTo("2", "count(/html/body/table/tr/td[starts-with(.,'squares.')])", dom);
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'squares.1'])", dom);
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'squares.2'])", dom);
+        assertXpathEvaluatesTo("2", "count(/html/body/table/tbody/tr/td[starts-with(.,'squares.')])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tbody/tr/td[. = 'squares.1'])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tbody/tr/td[. = 'squares.2'])", dom);
     }
 
     private String featureInfoRequest(String base, int w) {
@@ -435,9 +435,9 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         Document dom = getAsDOM(request);
         // print(dom);
         // we also have the charset which may be platf. dep.
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'RED_BAND'])", dom);
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'GREEN_BAND'])", dom);
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'BLUE_BAND'])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tbody/tr/th[. = 'RED_BAND'])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tbody/tr/th[. = 'GREEN_BAND'])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tbody/tr/th[. = 'BLUE_BAND'])", dom);
     }
 
     @Test
@@ -453,14 +453,14 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
 
         // this one should be blank
         Document dom = getAsDOM(request + "&width=300&height=300");
-        assertXpathEvaluatesTo("0", "count(/html/body/table/tr/th)", dom);
+        assertXpathEvaluatesTo("0", "count(/html/body/table/tbody/tr/th)", dom);
 
         // this one should draw the coverage
         dom = getAsDOM(request + "&width=600&height=600");
         // we also have the charset which may be platf. dep.
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'RED_BAND'])", dom);
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'GREEN_BAND'])", dom);
-        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'BLUE_BAND'])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tbody/tr/th[. = 'RED_BAND'])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tbody/tr/th[. = 'GREEN_BAND'])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tbody/tr/th[. = 'BLUE_BAND'])", dom);
     }
 
     @Test
@@ -478,7 +478,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         // this one should be blank, but not be a service exception
         Document dom = getAsDOM(request + "");
         assertXpathEvaluatesTo("1", "count(/html)", dom);
-        assertXpathEvaluatesTo("0", "count(/html/body/table/tr/th)", dom);
+        assertXpathEvaluatesTo("0", "count(/html/body/table/tbody/tr/th)", dom);
     }
 
     /** Check we report back an exception when query_layer contains layers not part of LAYERS */

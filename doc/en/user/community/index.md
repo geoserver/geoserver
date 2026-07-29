@@ -55,6 +55,7 @@ Community modules are provided "as is" alongside the [nightly builds](https://bu
 - [JDBCConfig](jdbcconfig/index.md)
 - [JDBCStore](jdbcstore/index.md)
 - [JWT Headers](jwt-headers/index.md)
+- [Keycloak Role Service](keycloak/index.md)
 - [Libdeflate](libdeflate/index.md)
 - [MBTiles Extension](mbtiles/index.md)
 - [Monitoring Kafka storage](monitor-kafka/index.md)

@@ -270,4 +270,4 @@ All errors use a simple payload:
 
 ## See also
 
-- [OpenAPI reference]({{ api_url3 }}?urls.primaryName=Authentication%20Providers)
+- [OpenAPI reference]({{ api_url }}?urls.primaryName=Authentication%20Providers)

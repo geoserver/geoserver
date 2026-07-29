@@ -151,7 +151,7 @@ Optional: It is no longer required to use the `User Info URI` - if you leave tha
 This option (**Disable token signature validation**, field `disableSignatureValidation`) is **unchecked by default**, so GeoServer validates the token signature out of the box --- the secure default. Check it only to **disable** signature validation (for example against a development IDP whose keys you do not want to verify); leave it unchecked in production.
 
 !!! note
-    This replaces the legacy `enforceTokenValidation` flag, whose polarity was the opposite (it defaulted to `true` and was checked to *enforce* validation). The new `disableSignatureValidation` flag is inverted: the unchecked default already enforces validation. See [Migrating from the legacy OAuth2/OIDC plugins](../migrating.md#geoserver-field-renames).
+    This replaces the legacy `enforceTokenValidation` flag, whose polarity was the opposite (it defaulted to `true` and was checked to *enforce* validation). The new `disableSignatureValidation` flag is inverted: the unchecked default already enforces validation. See [Migrating from the legacy OAuth2/OIDC plugins](migrating.md#geoserver-field-renames).
 
 Per the `RFC 7517` or this doc from `auth0`, the parameters do not include either `public_key_use` (but `use`) nor `key_id` (but `kid`)
 

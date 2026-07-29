@@ -55,4 +55,4 @@ Rules can be managed and tested with simulated headers in the rules management U
 
 ## REST API
 
-The rules can also be managed by means of a REST API found at `geoserver/rest/proxy-base-ext`. Documentation for it is available in [Swagger format]({{ api_url4 }}?urls.primaryName=Proxy%20Base%20Extension)
+The rules can also be managed by means of a REST API found at `geoserver/rest/proxy-base-ext`. Documentation for it is available in [Swagger format]({{ api_url }}?urls.primaryName=Proxy%20Base%20Extension)

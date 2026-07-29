@@ -17,9 +17,9 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.geofence.core.model.enums.GrantType;
 import org.geofence.core.services.RuleReaderService;
 import org.geofence.core.services.dto.AccessInfo;
+import org.geofence.core.services.dto.GrantTypeDTO;
 import org.geofence.core.services.dto.RuleFilter;
 import org.geoserver.data.test.MockData;
 import org.geoserver.geofence.services.RuleReaderServiceFactory;
@@ -55,12 +55,12 @@ public class GeofenceAccessManagerVirtualServiceTest extends GeoServerSystemTest
                 if ("WFS".equalsIgnoreCase(filter.getService().getText())
                         && MockData.BRIDGES
                                 .getLocalPart()
-                                .equals(filter.getLayer().getText())) return new AccessInfo(GrantType.ALLOW);
+                                .equals(filter.getLayer().getText())) return new AccessInfo(GrantTypeDTO.ALLOW);
                 if ("WMS".equalsIgnoreCase(filter.getService().getText())
                         && MockData.BUILDINGS
                                 .getLocalPart()
-                                .equals(filter.getLayer().getText())) return new AccessInfo(GrantType.ALLOW);
-                return new AccessInfo(GrantType.DENY);
+                                .equals(filter.getLayer().getText())) return new AccessInfo(GrantTypeDTO.ALLOW);
+                return new AccessInfo(GrantTypeDTO.DENY);
             }
         };
     }

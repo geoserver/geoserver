@@ -23,11 +23,11 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.geofence.core.model.LayerAttribute;
-import org.geofence.core.model.enums.AccessType;
-import org.geofence.core.model.enums.GrantType;
 import org.geofence.core.services.dto.AccessInfo;
+import org.geofence.core.services.dto.AccessTypeDTO;
 import org.geofence.core.services.dto.CatalogModeDTO;
+import org.geofence.core.services.dto.GrantTypeDTO;
+import org.geofence.core.services.dto.LayerAttributeDTO;
 import org.geofence.core.services.dto.RuleFilter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
@@ -411,7 +411,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
             if (summaries != null && !summaries.isEmpty()) {
                 boolean allOpaque = allOpaque(summaries);
                 // all opaque we deny and don't perform any resolution of group limits.
-                if (allOpaque) accessInfo.setGrant(GrantType.DENY);
+                if (allOpaque) accessInfo.setGrant(GrantTypeDTO.DENY);
                 boolean anySingle =
                         summaries.stream().anyMatch(gs -> gs.getMode().equals(LayerGroupInfo.Mode.SINGLE));
                 // if a single group is present we don't apply any limit from containers.
@@ -581,8 +581,8 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
     AccessLimits buildResourceAccessLimits(
             ResourceInfo info, AccessInfo accessInfo, ContainerLimitResolver.ProcessingResult resultLimits) {
 
-        GrantType actualGrant = accessInfo.getGrant();
-        boolean includeFilter = actualGrant == GrantType.ALLOW || actualGrant == GrantType.LIMIT;
+        GrantTypeDTO actualGrant = accessInfo.getGrant();
+        boolean includeFilter = actualGrant == GrantTypeDTO.ALLOW || actualGrant == GrantTypeDTO.LIMIT;
         Filter readFilter = includeFilter ? Filter.INCLUDE : Filter.EXCLUDE;
         Filter writeFilter = includeFilter ? Filter.INCLUDE : Filter.EXCLUDE;
         try {
@@ -665,10 +665,10 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
      * @return the AccessLimits of the LayerGroup
      */
     AccessLimits buildLayerGroupAccessLimits(AccessInfo accessInfo) {
-        GrantType grant = accessInfo.getGrant();
+        GrantTypeDTO grant = accessInfo.getGrant();
         // the SecureCatalog will grant access  to the layerGroup
         // if AccessLimits are null
-        if (grant.equals(GrantType.ALLOW) || grant.equals(GrantType.LIMIT)) return null;
+        if (grant.equals(GrantTypeDTO.ALLOW) || grant.equals(GrantTypeDTO.LIMIT)) return null;
         else return new LayerGroupAccessLimits(convert(accessInfo.getCatalogMode()));
     }
 
@@ -755,7 +755,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
     }
 
     /** Builds the equivalent {@link PropertyName} list for the specified access mode */
-    private List<PropertyName> toPropertyNames(Set<LayerAttribute> attributes, PropertyAccessMode mode) {
+    private List<PropertyName> toPropertyNames(Set<LayerAttributeDTO> attributes, PropertyAccessMode mode) {
         // handle simple case
         if (attributes == null || attributes.isEmpty()) {
             return null;
@@ -763,9 +763,9 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
 
         // filter and translate
         List<PropertyName> result = new ArrayList<>();
-        for (LayerAttribute attribute : attributes) {
-            if ((attribute.getAccess() == AccessType.READWRITE)
-                    || ((mode == PropertyAccessMode.READ) && (attribute.getAccess() == AccessType.READONLY))) {
+        for (LayerAttributeDTO attribute : attributes) {
+            if ((attribute.getAccess() == AccessTypeDTO.READWRITE)
+                    || ((mode == PropertyAccessMode.READ) && (attribute.getAccess() == AccessTypeDTO.READONLY))) {
                 PropertyName property = FF.property(attribute.getName());
                 result.add(property);
             }

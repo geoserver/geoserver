@@ -15,6 +15,18 @@
   <name>GeoFence WPS extension</name>
   <description>GeoFence auth at process level</description>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <!-- Hibernate's HQL parser needs 4.13.x; gs-main's Jiffle dependency needs 4.7.1 and the two
+             can't coexist on one classpath, so this is scoped here rather than the root pom. -->
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr4-runtime</artifactId>
+        <version>4.13.2</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
 
     <dependency>

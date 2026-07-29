@@ -12,6 +12,7 @@ import org.geofence.core.model.enums.AdminGrantType;
 import org.geofence.core.model.enums.GrantType;
 import org.geofence.core.services.AdminRuleAdminService;
 import org.geofence.core.services.RuleAdminService;
+import org.geofence.core.services.dto.GrantTypeDTO;
 import org.geofence.core.services.dto.ShortAdminRule;
 import org.geofence.core.services.dto.ShortRule;
 import org.geofence.core.services.exception.BadRequestServiceEx;
@@ -116,7 +117,7 @@ public class BatchRestControllerTest extends GeofenceBaseTest {
 
             // rule was inserted.
             ShortRule inserted = ruleService.getRuleByPriority(99L);
-            assertEquals(GrantType.DENY, inserted.getAccess());
+            assertEquals(GrantTypeDTO.DENY, inserted.getAccess());
             assertEquals("ROLE_ANONYMOUS", inserted.getRoleName());
 
             // clean up.

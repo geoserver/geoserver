@@ -194,12 +194,8 @@
       <groupId>org.geotools</groupId>
       <artifactId>gt-geotiff</artifactId>
       <exclusions>
-        <!-- conflicts with geofence-persistence's org.ehcache:ehcache:jakarta classifier when the
-             geofence-server profile is active; see GEOFENCE_SESSION_HANDOFF.md. Maven has no clean way
-             to scope an exclusion to only-when-a-profile-is-active, so this applies unconditionally -
-             low risk since it's the plain (non-jakarta) ehcache only used by gt-geotiff's COG
-             (Cloud-Optimized GeoTIFF) streaming support, itself only exercised if a COG-backed coverage
-             store is actually configured and read (an opt-in, community-module-gated feature). -->
+        <!-- plain ehcache conflicts with geofence-persistence's jakarta-classifier one; can't scope an
+             exclusion to a profile, but this jar is only used by gt-geotiff's opt-in COG support. -->
         <exclusion>
           <artifactId>ehcache</artifactId>
           <groupId>org.ehcache</groupId>
@@ -1113,6 +1109,17 @@
     </profile>
     <profile>
       <id>geofence-server</id>
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <!-- Hibernate's HQL parser needs 4.13.x; Eclipse Imagen's Jiffle needs 4.7.1 and can't
+                 coexist with it, so Jiffle raster band-math breaks whenever this profile is active. -->
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>4.13.2</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.extension</groupId>

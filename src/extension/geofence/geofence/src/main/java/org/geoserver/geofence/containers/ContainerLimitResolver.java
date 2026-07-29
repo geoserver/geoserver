@@ -13,10 +13,10 @@ import java.util.Map;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geofence.core.model.enums.GrantType;
 import org.geofence.core.services.RuleReaderService;
 import org.geofence.core.services.dto.AccessInfo;
 import org.geofence.core.services.dto.CatalogModeDTO;
+import org.geofence.core.services.dto.GrantTypeDTO;
 import org.geofence.core.services.dto.RuleFilter;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.geofence.config.GeoFenceConfiguration;
@@ -411,11 +411,11 @@ public class ContainerLimitResolver {
     }
 
     private boolean isAllow(AccessInfo accessInfo) {
-        return accessInfo != null && accessInfo.getGrant().equals(GrantType.ALLOW);
+        return accessInfo != null && accessInfo.getGrant().equals(GrantTypeDTO.ALLOW);
     }
 
     private boolean isDeny(AccessInfo accessInfo) {
-        return accessInfo != null && accessInfo.getGrant().equals(GrantType.DENY);
+        return accessInfo != null && accessInfo.getGrant().equals(GrantTypeDTO.DENY);
     }
 
     /** Data class meant to return a result for the whole limit resolution. */

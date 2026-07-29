@@ -9,8 +9,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import org.geofence.core.model.enums.GrantType;
 import org.geofence.core.services.dto.AccessInfo;
+import org.geofence.core.services.dto.GrantTypeDTO;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StoreInfo;
@@ -240,7 +240,7 @@ public class GeofenceAccessManagerTest extends GeofenceBaseTest {
         FeatureTypeInfo resource = (FeatureTypeInfo)
                 catalog.getLayerByName(getLayerId(MockData.GENERICENTITY)).getResource();
 
-        AccessInfo accessInfo = new AccessInfo(GrantType.LIMIT);
+        AccessInfo accessInfo = new AccessInfo(GrantTypeDTO.LIMIT);
         accessInfo.setClipAreaWkt("MULTIPOLYGON(((48 62, 48 63, 49 63, 49 62, 48 62)))");
 
         VectorAccessLimits vl =

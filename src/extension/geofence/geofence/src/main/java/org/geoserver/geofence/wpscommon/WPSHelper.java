@@ -7,8 +7,8 @@ package org.geoserver.geofence.wpscommon;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
-import org.geofence.core.model.enums.GrantType;
 import org.geofence.core.services.dto.AccessInfo;
+import org.geofence.core.services.dto.GrantTypeDTO;
 import org.geofence.core.services.dto.RuleFilter;
 import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geoserver.geofence.util.AccessInfoUtils;
@@ -77,7 +77,7 @@ public class WPSHelper implements ApplicationContextAware {
             r.setSubfield(procName);
 
             AccessInfo accessInfo = ruleServiceFactory.getService().getAccessInfo(r);
-            if (accessInfo.getGrant() == GrantType.DENY) {
+            if (accessInfo.getGrant() == GrantTypeDTO.DENY) {
                 // shortcut: if at least one process is not allowed for current resource, do
                 // not evaluate the other procs
                 LOGGER.fine("Process " + procName + " not allowed to operate on layer");

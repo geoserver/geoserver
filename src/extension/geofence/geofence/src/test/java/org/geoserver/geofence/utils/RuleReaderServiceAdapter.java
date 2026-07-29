@@ -27,9 +27,4 @@ public class RuleReaderServiceAdapter implements RuleReaderService {
     public List<ShortRule> getMatchingRules(RuleFilter filter) {
         return null;
     }
-
-    //    @Override
-    //    public AuthUser authorize(String username, String password) {
-    //        return null;
-    //    }
 }

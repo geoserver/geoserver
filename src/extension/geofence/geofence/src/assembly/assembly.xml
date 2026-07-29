@@ -7,18 +7,25 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>target/dependency</directory>
+      <directory>target</directory>
       <outputDirectory/>
       <includes>
-        <include>*geofence*</include>
+        <include>*.jar</include>
       </includes>
       <excludes>
-        <exclude>*geofence-server*.jar</exclude>
-        <exclude>*geofence-persistence*.jar</exclude>
-        <exclude>*geofence-services-impl*.jar</exclude>
-        <exclude>*geofence-model-internal*</exclude>
-        <exclude>*geofence-wps*</exclude>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-javadoc.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+        <exclude>*-test-sources.jar</exclude>
       </excludes>
+    </fileSet>
+    <fileSet>
+      <directory>target/dependency</directory>
+      <outputDirectory/>
+      <!-- geofence-services-api has no third-party deps beyond what the base install already provides -->
+      <includes>
+        <include>geofence-services-api-*.jar</include>
+      </includes>
     </fileSet>
     <fileSet>
       <directory>${geoserverBaseDir}/release/target/html/licenses</directory>

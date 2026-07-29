@@ -45,11 +45,6 @@
       <artifactId>geofence-services-api</artifactId>
       <version>${gf.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.geofence</groupId>
-      <artifactId>geofence-model</artifactId>
-      <version>${gf.version}</version>
-    </dependency>
 
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -72,11 +67,6 @@
     <!--      <artifactId>jakarta.servlet-api</artifactId>-->
     <!--      <scope>provided</scope>-->
     <!--    </dependency>-->
-
-    <dependency>
-      <groupId>org.geotools.jdbc</groupId>
-      <artifactId>gt-jdbc-postgis</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.springframework</groupId>

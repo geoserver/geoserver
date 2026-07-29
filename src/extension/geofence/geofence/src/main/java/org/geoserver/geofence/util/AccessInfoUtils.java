@@ -8,11 +8,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import org.geofence.core.model.LayerAttribute;
-import org.geofence.core.model.enums.AccessType;
-import org.geofence.core.model.enums.GrantType;
 import org.geofence.core.services.dto.AccessInfo;
+import org.geofence.core.services.dto.AccessTypeDTO;
 import org.geofence.core.services.dto.CatalogModeDTO;
+import org.geofence.core.services.dto.GrantTypeDTO;
+import org.geofence.core.services.dto.LayerAttributeDTO;
 import org.locationtech.jts.geom.Geometry;
 
 /** @author "etj (Emanuele Tajariol @ GeoSolutions)" */
@@ -28,7 +28,7 @@ public class AccessInfoUtils {
         Geometry clipRet = null;
 
         for (AccessInfo accessInfo : accessInfoArr) {
-            if (accessInfo.getGrant() == GrantType.DENY) {
+            if (accessInfo.getGrant() == GrantTypeDTO.DENY) {
                 return new WPSAccessInfo(AccessInfo.DENY_ALL); // shortcut
             }
 
@@ -74,7 +74,7 @@ public class AccessInfoUtils {
         return "(" + c1 + ") AND (" + c2 + ")";
     }
 
-    public static Set<LayerAttribute> intersectAttributes(Set<LayerAttribute> s1, Set<LayerAttribute> s2) {
+    public static Set<LayerAttributeDTO> intersectAttributes(Set<LayerAttributeDTO> s1, Set<LayerAttributeDTO> s2) {
         if (s1 == null) {
             return s2;
         }
@@ -82,17 +82,17 @@ public class AccessInfoUtils {
             return s1;
         }
 
-        Map<String, LayerAttribute[]> map = new HashMap<>();
-        for (LayerAttribute la : s1) {
-            map.put(la.getName(), new LayerAttribute[] {la, null});
+        Map<String, LayerAttributeDTO[]> map = new HashMap<>();
+        for (LayerAttributeDTO la : s1) {
+            map.put(la.getName(), new LayerAttributeDTO[] {la, null});
         }
-        for (LayerAttribute la : s2) {
-            LayerAttribute[] arr = map.computeIfAbsent(la.getName(), k -> new LayerAttribute[] {null, la});
+        for (LayerAttributeDTO la : s2) {
+            LayerAttributeDTO[] arr = map.computeIfAbsent(la.getName(), k -> new LayerAttributeDTO[] {null, la});
             arr[1] = la;
         }
 
-        Set<LayerAttribute> ret = new HashSet<>();
-        for (LayerAttribute[] arr : map.values()) {
+        Set<LayerAttributeDTO> ret = new HashSet<>();
+        for (LayerAttributeDTO[] arr : map.values()) {
             if (arr[0] == null) {
                 ret.add(arr[1]);
             }
@@ -100,7 +100,7 @@ public class AccessInfoUtils {
                 ret.add(arr[0]);
             }
 
-            LayerAttribute la = new LayerAttribute();
+            LayerAttributeDTO la = new LayerAttributeDTO();
             la.setName(arr[0].getName());
             la.setDatatype(arr[0].getDatatype());
             la.setAccess(getStricter(arr[0].getAccess(), arr[1].getAccess()));
@@ -110,11 +110,11 @@ public class AccessInfoUtils {
         return ret;
     }
 
-    public static AccessType getStricter(AccessType a1, AccessType a2) {
-        if (a1 == null || a2 == null) return AccessType.NONE; // should not happen
-        if (a1 == AccessType.NONE || a2 == AccessType.NONE) return AccessType.NONE;
-        if (a1 == AccessType.READONLY || a2 == AccessType.READONLY) return AccessType.READONLY;
-        return AccessType.READWRITE;
+    public static AccessTypeDTO getStricter(AccessTypeDTO a1, AccessTypeDTO a2) {
+        if (a1 == null || a2 == null) return AccessTypeDTO.NONE; // should not happen
+        if (a1 == AccessTypeDTO.NONE || a2 == AccessTypeDTO.NONE) return AccessTypeDTO.NONE;
+        if (a1 == AccessTypeDTO.READONLY || a2 == AccessTypeDTO.READONLY) return AccessTypeDTO.READONLY;
+        return AccessTypeDTO.READWRITE;
     }
 
     public static CatalogModeDTO getStricter(CatalogModeDTO m1, CatalogModeDTO m2) {

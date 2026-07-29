@@ -24,6 +24,7 @@ import org.geofence.core.model.enums.GrantType;
 import org.geofence.core.model.enums.LayerType;
 import org.geofence.core.model.enums.SpatialFilterType;
 import org.geofence.core.services.RuleAdminService;
+import org.geofence.core.services.dto.GrantTypeDTO;
 import org.geofence.core.services.dto.ShortRule;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerApplication;
@@ -46,7 +47,7 @@ public class GeofenceRulePageTest extends LayerGroupBaseTest {
     public void testAddLayerGroupRule() {
         GeofenceRulesModel model = new GeofenceRulesModel();
         ShortRule shortRule = model.newRule();
-        shortRule.setAccess(GrantType.LIMIT);
+        shortRule.setAccess(GrantTypeDTO.LIMIT);
         tester.startPage(new GeofenceRulePage(shortRule, model));
         tester.assertRenderedPage(GeofenceRulePage.class);
         FormTester ft = tester.newFormTester("form");
@@ -89,7 +90,7 @@ public class GeofenceRulePageTest extends LayerGroupBaseTest {
         LayerDetails layerDetails = new LayerDetails();
         adminService.setDetails(ruleId, layerDetails);
         GeofenceRulesModel model = new GeofenceRulesModel();
-        ShortRule ruleModel = new ShortRule(rule);
+        ShortRule ruleModel = adminService.getRuleByPriority(9999L);
         try {
             login();
             tester.startPage(new GeofenceRulePage(ruleModel, model));
@@ -139,7 +140,7 @@ public class GeofenceRulePageTest extends LayerGroupBaseTest {
         LayerDetails layerDetails = new LayerDetails();
         adminService.setDetails(ruleId, layerDetails);
         GeofenceRulesModel model = new GeofenceRulesModel();
-        ShortRule ruleModel = new ShortRule(rule);
+        ShortRule ruleModel = adminService.getRuleByPriority(9999L);
         try {
             login();
             tester.startPage(new GeofenceRulePage(ruleModel, model));

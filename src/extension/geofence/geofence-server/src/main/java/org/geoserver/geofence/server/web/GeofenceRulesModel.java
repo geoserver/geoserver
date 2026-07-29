@@ -23,6 +23,7 @@ import org.geofence.core.model.enums.CatalogMode;
 import org.geofence.core.model.enums.GrantType;
 import org.geofence.core.model.enums.SpatialFilterType;
 import org.geofence.core.services.RuleAdminService;
+import org.geofence.core.services.dto.GrantTypeDTO;
 import org.geofence.core.services.dto.ShortRule;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -244,7 +245,7 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
 
     public ShortRule newRule() {
         ShortRule rule = new ShortRule();
-        rule.setAccess(GrantType.ALLOW);
+        rule.setAccess(GrantTypeDTO.ALLOW);
         rule.setPriority(0);
         return rule;
     }
@@ -287,7 +288,7 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
         rule.setSubfield(shortRule.getSubfield());
         rule.setWorkspace(shortRule.getWorkspace());
         rule.setLayer(shortRule.getLayer());
-        rule.setAccess(shortRule.getAccess());
+        rule.setAccess(GrantType.valueOf(shortRule.getAccess().name()));
 
         rule.setAddressRange(
                 shortRule.getAddressRange() != null ? new IPAddressRange(shortRule.getAddressRange()) : null);

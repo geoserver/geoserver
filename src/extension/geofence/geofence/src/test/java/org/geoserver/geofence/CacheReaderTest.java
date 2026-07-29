@@ -13,7 +13,6 @@ import com.google.common.base.Ticker;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geofence.core.services.RuleReaderService;
 import org.geofence.core.services.dto.AccessInfo;
 import org.geofence.core.services.dto.RuleFilter;
 import org.geoserver.geofence.cache.CacheConfiguration;
@@ -43,15 +42,12 @@ public class CacheReaderTest extends GeofenceBaseTest {
 
     private GeoFencePropertyPlaceholderConfigurer configurer;
 
-    private RuleReaderService realReader;
-
     @Before
     public void onInitCachedReader() {
         configurer = (GeoFencePropertyPlaceholderConfigurer) applicationContext.getBean("geofence-configurer");
         configurer.setLocation(
                 new UrlResource(Objects.requireNonNull(this.getClass().getResource("/test-cache-config.properties"))));
 
-        //        realReader = applicationContext.getBean("restRuleReaderService", RuleReaderService.class);
         RuleReaderServiceFactory rrsFactory = new RuleReaderServiceFactory("restRuleReaderService", false);
         rrsFactory.setApplicationContext(applicationContext);
 

@@ -85,7 +85,7 @@ public class GeofencePage extends GeoServerSecuredPage {
         form.add(new TextField<>("instanceName", new PropertyModel<>(configModel, "instanceName")).setRequired(true));
         IModel<String> servicesUrlModel = embeddedBackend
                 ? new StringResourceModel(GeofencePage.class.getSimpleName() + ".servicesUrlEmbedded")
-                : new ExtPropertyModel<String>(configModel, "servicesUrl");
+                : new ExtPropertyModel<>(configModel, "servicesUrl");
         form.add(new TextField<>("servicesUrl", servicesUrlModel)
                 .setRequired(!embeddedBackend)
                 .setEnabled(!embeddedBackend));

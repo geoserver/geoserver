@@ -5,10 +5,8 @@
  */
 package org.geoserver.geofence.config;
 
-import com.thoughtworks.xstream.XStream;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterInitializer;
-// import org.geoserver.geoserver.authentication.auth.GeoFenceAuthenticationProviderConfig;
 import org.springframework.stereotype.Component;
 
 /** @author ETj (etj at geo-solutions.it) */
@@ -16,11 +14,5 @@ import org.springframework.stereotype.Component;
 public class GeoFenceXStreamPersisterInitializer implements XStreamPersisterInitializer {
 
     @Override
-    public void init(XStreamPersister persister) {
-
-        XStream xs = persister.getXStream();
-        //        xs.alias("geoFenceAuthenticationProviderConfig", GeoFenceAuthenticationProviderConfig.class);
-        //
-        //        xs.allowTypes(new Class[] {GeoFenceAuthenticationProviderConfig.class});
-    }
+    public void init(XStreamPersister persister) {}
 }

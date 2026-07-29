@@ -61,9 +61,9 @@
           <div class="filter-container">
             <div class="gs-input-group">
               <select id="filterType">
-                <option value="cql">CQL</option>
-                <option value="ogc">OGC</option>
-                <option value="fid">FeatureID</option>
+                <option value="cql2-text">CQL2 Text</option>
+                <option value="cql2-json">CQL2 JSON</option>
+                <option value="ecql-text">ECQL Text</option>
               </select>
               <button id="updateFilterButton" title="Apply filter">Apply</button>
               <button id="resetFilterButton" title="Reset filter">Reset</button>

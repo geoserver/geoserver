@@ -36,11 +36,13 @@ import org.geoserver.ogcapi.DimensionExtent.Grid;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.ogcapi.LinkInfoConverter;
 import org.geoserver.ogcapi.LinksBuilder;
+import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.TimeExtentCalculator;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.capabilities.DimensionHelper;
 import org.geoserver.wms.capabilities.DimensionHelper.ElevationDimensionRasterHelper;
@@ -112,6 +114,18 @@ public class CollectionDocument extends AbstractCollectionDocument<PublishedInfo
                     Collections.singletonMap("f", format.toString()),
                     URLMangler.URLType.SERVICE);
             addLink(new Link(mapHref, REL_MAP, format.toString(), collectionId + " map as " + format, "defaultMap"));
+        }
+
+        // queryables, only for the collections that expose a filterable schema
+        WMSInfo wmsInfo = geoServer.getService(WMSInfo.class);
+        if (MapsConformance.configuration(wmsInfo).queryablesAvailable(wmsInfo)
+                && MapsService.queryableSchema(published) != null) {
+            new LinksBuilder(Queryables.class, "ogc/maps/v1/collections/")
+                    .segment(collectionId, true)
+                    .segment("queryables")
+                    .title("Queryable attributes as ")
+                    .rel(Queryables.REL)
+                    .add(this);
         }
 
         // styles

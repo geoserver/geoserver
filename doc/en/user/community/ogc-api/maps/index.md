@@ -11,7 +11,9 @@ A [OGC API - Maps](https://github.com/opengeospatial/ogcapi-maps) implementation
 - Map of a collection, in the default style or in any style associated to it
 - API definition (OpenAPI 3), filtered to the conformance classes enabled on the server
 - Optional map parameters: spatial subsetting, general subsetting (elevation and custom dimensions), scaling, display resolution, datetime, output CRS, background and orientation
-- Two GeoServer extensions outside the standard: feature info on a map, and legends
+- Attribute filtering of the rendered features, with the queryable attributes of each collection
+- Three GeoServer extensions outside the standard: feature info on a map, legends, and the binding of the
+  filter parameters to the map resources
 
 Missing functionality at the time of writing:
 
@@ -83,10 +85,11 @@ What happens to a request that still uses the disabled functionality depends on 
   contents, and the preview offers no palette. The class needs `datasetMap` to mean anything, so turning that off
   disables both, and neither is then declared in the `conformance` document.
 - The filter classes (`filter`, `mapFilter`, and the language ones): the `filter` parameter is ignored, like the
-  other parameter classes. Filtering needs `filter` and `mapFilter` together, so turning off either one disables
-  it: neither class is then declared in the `conformance` document, and neither are the filter languages nor the
-  queryables, since there is no filter to write or to describe. A filter written in a language that is not
-  declared is ignored too.
+  other parameter classes. Filtering needs `filter` and `mapFilter` together, plus at least one filter language,
+  so turning off any of them disables it: none of those classes is then declared in the `conformance` document,
+  and neither are the queryables, since there is no filter to write or to describe. When filtering is on instead,
+  a `filter-lang` value outside the declared languages is refused with a `400` status, so a filter is never
+  dropped without notice.
 - `queryables`: the resource is removed from the API document, the link disappears from the collection
   description, and a request for it answers with a `404` status. Turning filtering off has the same effect,
   since on a map the queryables exist only to describe what the `filter` parameter accepts.
@@ -118,6 +121,9 @@ The area, size and appearance of the map are controlled by the parameters of the
 - `bgcolor`, `transparent`, `void-color` and `void-transparent`, for the map background.
 - `orientation`, to rotate the map, in degrees.
 
+- `filter`, `filter-lang` and `filter-crs`, to render only the features matching a filter. See
+  [Filtering a map](#filtering-a-map) below.
+
 Every response carries the delivered area back in the `Content-Crs`, `Content-Bbox`, `Content-Orientation` and
 `Content-Datetime` headers. `Content-Bbox` follows the axis order of the CRS authority, so for `EPSG:4326` it reads
 latitude,longitude, and it always reports the area before any rotation. `Content-Crs` holds the CRS URI between
@@ -144,6 +150,49 @@ Two extra resources are GeoServer extensions, not part of the standard:
   Unless otherwise specified, the parameters supported by a WMS GetFeatureInfo are also available in the `.../map/info` resource.
 - `.../legend` and `.../styles/{styleId}/legend`, the legend of a style, with the same `width`, `height`, `scale`,
   `rule`, `lang`, `transparent`, `bgcolor` and `legend-options` parameters as the WMS `GetLegendGraphic` request (as well as other parameters supported by it).
+
+## Filtering a map
+
+Filtering is not part of OGC API - Maps 1.0.0. GeoServer applies the filter parameters of
+[OGC API - Features - Part 3: Filtering](https://docs.ogc.org/is/19-079r2/19-079r2.html) to the map resources,
+so only the features matching the filter are rendered. Binding those parameters to the map resources is itself a
+GeoServer extension, declared as a separate conformance class. The request parameters are:
+
+- `filter`, the filter expression.
+- `filter-lang`, its language: `cql2-text` (the default), `cql2-json`, or `ecql-text`, the GeoServer own
+  Extended CQL. XML filters and feature identifiers are not supported, though they might be added in the future.
+  Only the languages enabled in the service configuration are accepted, the API document lists them in the
+  `filter-lang` parameter, and any other value gives a `400` status.
+- `filter-crs`, the CRS of the geometry literals used in spatial predicates. Defaults to CRS84.
+
+For example, to render only the roads whose type is a motorway:
+
+```
+.../collections/topp:roads/map?f=image/png&filter=type='motorway'
+```
+
+The filter is combined with `bbox`, `datetime` and `subset` by AND, so a feature is drawn only when it satisfies
+all of them. The same parameters work on the `.../map/info` resource, so the feature info reports only the
+features that the map shows. An invalid expression, an unknown language, or an unknown CRS is answered with a
+`400` status.
+
+The attributes that can be used in a filter, with their types, are listed by the queryables resource:
+
+```
+.../collections/topp:roads/queryables
+```
+
+It answers a JSON Schema document (`application/schema+json`), also available as HTML, and is linked from the
+collection description. A vector layer lists the attributes of its features. A raster layer lists them only when
+it is structured, an image mosaic for example: the filter then selects which files to mosaic, using the attributes
+of the index, such as the file location, the time of ingestion or the elevation. Other raster layers, and layer
+groups, answer with a `404` status, a layer group because each of its members has its own set of attributes. A
+filter on a layer group is applied to every member, so it must use attributes that all of them have.
+
+A filter naming an attribute that none of the collections drawn lists as a queryable is answered with a `400`
+status, rather than being quietly dropped, so a typo in an attribute name shows up right away.
+
+The map preview offers a filter box, where the language is picked from a dropdown.
 
 ## Installing the GeoServer OGC API - Maps module
 
@@ -175,8 +224,10 @@ The module is based on the GeoServer WMS one, follows the same configuration and
 The optional conformance classes are all enabled by default. They can be turned off individually from the
 **Services > WMS** settings page in the admin UI, on the **Maps** tab: it lists each optional class with an
 Enabled checkbox, covering spatial subsetting, general subsetting, scaling, display resolution, datetime,
-output CRS, background, orientation, the TIFF and SVG output formats, and the two GeoServer extensions,
-feature info and legend.
+output CRS, background, orientation, the TIFF and SVG output formats, filtering and queryables, and the three
+GeoServer extensions: feature info, legend, and the class binding the filter parameters to the map resources,
+without which filtering does not work at all. The same tab lists the CQL2 and ECQL filter languages, and the
+CQL2 capabilities, in two further tables.
 
 Disabling a class removes it from the `conformance` document and removes its parameters from the API document.
 What happens to a request that still uses the disabled functionality depends on the kind of class:
@@ -187,5 +238,13 @@ What happens to a request that still uses the disabled functionality depends on 
   off, the elevation and custom-dimension axes of a `subset` are dropped rather than rejected.
 - An output format class (`tiff`, `svg`): the format is no longer offered, so a request for it fails HTTP content
   negotiation with a `406` status.
-- The two GeoServer extensions (`featureInfo`, `legend`): the resource is removed from the API document and answers
-  with a `404` status, since it is not part of the standard.
+- The two GeoServer extension resources (`featureInfo`, `legend`): the resource is removed from the API document
+  and answers with a `404` status, since it is not part of the standard.
+- The filter classes (`filter`, `mapFilter`, and the language ones): the `filter` parameter is ignored, like the
+  other parameter classes. Filtering needs `filter` and `mapFilter` together, so turning off either one disables
+  it: neither class is then declared in the `conformance` document, and neither are the filter languages nor the
+  queryables, since there is no filter to write or to describe. A filter written in a language that is not
+  declared is ignored too.
+- `queryables`: the resource is removed from the API document, the link disappears from the collection
+  description, and a request for it answers with a `404` status. Turning filtering off has the same effect,
+  since on a map the queryables exist only to describe what the `filter` parameter accepts.

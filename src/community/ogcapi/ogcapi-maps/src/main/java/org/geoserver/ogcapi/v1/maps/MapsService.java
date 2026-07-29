@@ -18,17 +18,23 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
@@ -43,17 +49,23 @@ import org.geoserver.ogcapi.APIBBoxParser;
 import org.geoserver.ogcapi.APIConformance;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.ogcapi.APIException;
+import org.geoserver.ogcapi.APIFilterParser;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.APIService;
 import org.geoserver.ogcapi.CollectionExtents;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.DefaultContentType;
 import org.geoserver.ogcapi.HTMLResponseBody;
+import org.geoserver.ogcapi.Queryables;
+import org.geoserver.ogcapi.QueryablesBuilder;
 import org.geoserver.ogcapi.StyleDocument;
+import org.geoserver.ogcapi.SwaggerJSONSchemaMessageConverter;
 import org.geoserver.ogcapi.TimeExtentCalculator;
+import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.kvp.ElevationParser;
 import org.geoserver.ows.kvp.FormatOptionsKvpParser;
 import org.geoserver.ows.kvp.TimeParser;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.DimensionWarning;
 import org.geoserver.util.DimensionWarning.WarningType;
@@ -72,6 +84,8 @@ import org.geoserver.wms.WebMapService;
 import org.geoserver.wms.capabilities.DimensionHelper;
 import org.geoserver.wms.legendgraphic.GetLegendGraphicKvpReader;
 import org.geoserver.wms.legendgraphic.LegendGraphic;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.Filter;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.crs.GeographicCRS;
@@ -79,13 +93,16 @@ import org.geotools.api.referencing.cs.CoordinateSystemAxis;
 import org.geotools.api.referencing.cs.RangeMeaning;
 import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.api.referencing.operation.TransformException;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.util.ColorConverterFactory;
+import org.geotools.filter.FilterAttributeExtractor;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.util.DateRange;
+import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Coordinate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -102,6 +119,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/maps/v1")
 public class MapsService {
 
+    static final Logger LOGGER = Logging.getLogger(MapsService.class);
+
     private static final String DISPLAY_NAME = "OGC API Maps";
 
     /** The display resolution assumed when {@code mm-per-pixel} is not given, by spec. */
@@ -110,6 +129,7 @@ public class MapsService {
     private static final double MM_PER_INCH = 25.4;
 
     private TimeParser timeParser = new TimeParser();
+    private final APIFilterParser filterParser = new APIFilterParser();
 
     private final GeoServer geoServer;
     private final WebMapService wms;
@@ -218,6 +238,55 @@ public class MapsService {
                 ? new ArrayList<>(APIRequestInfo.get().getProducibleMediaTypes(LegendResponse.class, false))
                 : List.of();
         return new StylesDocument(p, legendFormats);
+    }
+
+    @GetMapping(
+            path = "collections/{collectionId}/queryables",
+            name = "getQueryables",
+            produces = SwaggerJSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
+    @ResponseBody
+    @HTMLResponseBody(templateName = "queryables.ftl", fileName = "queryables.html")
+    public Queryables queryables(@PathVariable(name = "collectionId") String collectionId) throws IOException {
+        WMSInfo wmsInfo = getService();
+        if (!MapsConformance.configuration(wmsInfo).queryablesAvailable(wmsInfo)) {
+            throw new APIException(
+                    APIException.NOT_FOUND, "Queryables are not enabled on this server", HttpStatus.NOT_FOUND);
+        }
+        PublishedInfo p = getPublished(collectionId);
+        FeatureType schema = queryableSchema(p);
+        if (schema == null) {
+            throw new APIException(
+                    APIException.NOT_FOUND,
+                    "Collection " + collectionId + " does not expose queryables",
+                    HttpStatus.NOT_FOUND);
+        }
+        String id = ResponseUtils.buildURL(
+                APIRequestInfo.get().getBaseURL(),
+                "ogc/maps/v1/collections/" + ResponseUtils.urlEncode(collectionId) + "/queryables",
+                null,
+                URLMangler.URLType.RESOURCE);
+        Queryables queryables = new QueryablesBuilder(id).forType(schema).build();
+        queryables.setCollectionId(collectionId);
+        queryables.setTitle(Optional.ofNullable(p.getTitle()).orElse(collectionId));
+        queryables.setDescription(p.getAbstract());
+        return queryables;
+    }
+
+    /**
+     * The attributes a map filter can use on the given collection, null if it does not expose any: a vector layer
+     * filters on its own feature type, a structured coverage on its granule index, while a simple raster has nothing to
+     * filter on, and a layer group has one schema per member.
+     */
+    static FeatureType queryableSchema(PublishedInfo published) throws IOException {
+        if (!(published instanceof LayerInfo layer)) return null;
+        ResourceInfo resource = layer.getResource();
+        if (resource instanceof FeatureTypeInfo ft) return ft.getFeatureType();
+        if (!(resource instanceof CoverageInfo ci)) return null;
+        if (!(ci.getGridCoverageReader(null, null) instanceof StructuredGridCoverage2DReader reader)) return null;
+        // a single coverage reader is allowed to leave the native name unset in the configuration
+        String nativeName = ci.getNativeCoverageName();
+        if (nativeName == null) nativeName = reader.getGridCoverageNames()[0];
+        return reader.getGranules(nativeName, true).getSchema();
     }
 
     private PublishedInfo getPublished(String collectionId) {
@@ -463,7 +532,10 @@ public class MapsService {
             Boolean transparent,
             String bgcolor,
             @BindParam("void-color") String voidColor,
-            @BindParam("void-transparent") Boolean voidTransparent) {
+            @BindParam("void-transparent") Boolean voidTransparent,
+            String filter,
+            @BindParam("filter-lang") String filterLang,
+            @BindParam("filter-crs") String filterCrs) {
 
         /**
          * Maps are transparent unless asked otherwise, or unless a background color is given, which would otherwise
@@ -503,7 +575,10 @@ public class MapsService {
                     transparent,
                     bgcolor,
                     voidColor,
-                    voidTransparent);
+                    voidTransparent,
+                    filter,
+                    filterLang,
+                    filterCrs);
         }
     }
 
@@ -802,45 +877,20 @@ public class MapsService {
         rawParamers.put("layers", collectionId);
         rawParamers.put("styles", styleId);
         if (datetime != null) rawParamers.put("datetime", datetime);
+        // the attribute filter, combined with bbox, datetime and subset by AND (/req/filter/mixing-expressions):
+        // the renderer applies it on top of the spatial and dimension restrictions already set above
+        if (q.filter() != null) {
+            Filter parsed = filterParser.parse(q.filter(), q.filterLang(), q.filterCrs());
+            checkFilterAttributes(parsed, request.getLayers());
+            request.setFilter(Collections.nCopies(request.getLayers().size(), parsed));
+            rawParamers.put("filter", q.filter());
+            if (q.filterLang() != null) rawParamers.put("filter-lang", q.filterLang());
+        }
         if (subset != null && conf.generalSubsetting(wmsInfo)) {
             applyExtraDimensions(subset, p, request, rawParamers);
         }
         request.setRawKvp(rawParamers);
         return request;
-    }
-
-    /**
-     * Applies the background parameters. GeoServer paints the areas with no data and the ones outside the valid area of
-     * the projection with the same colour and opacity, so the {@code void-color} and {@code void-transparent} values
-     * act as the defaults of the background pair rather than the other way around, which is the direction OGC API -
-     * Maps defines them in ({@code /req/background/void-color-definition} C, {@code /req/background/void-transparent-
-     * definition} B). With neither given the renderer paints an opaque map white, as requirement D asks.
-     */
-    private static void applyBackground(MapQuery q, GetMapRequest request) {
-        String parameter = q.bgcolor() != null ? "bgcolor" : "void-color";
-        String color = q.bgcolor() != null ? q.bgcolor() : q.voidColor();
-        if (color != null) request.setBgColor(parseColor(parameter, color));
-        request.setTransparent(q.isTransparent());
-    }
-
-    /**
-     * A background colour: a hexadecimal red-green-blue value, with or without a {@code 0x} or {@code #} prefix, or a
-     * case insensitive W3C web colour name (OGC API - Maps, {@code /req/background/bgcolor-definition} A and B).
-     */
-    private static Color parseColor(String parameter, String value) {
-        Color named = ColorConverterFactory.CSS_COLORS.get(value.toLowerCase());
-        if (named != null) return named;
-        // a bare value is hexadecimal, the only numeric notation the standard defines
-        String hex = value.startsWith("#") || value.startsWith("0x") || value.startsWith("0X") ? value : "0x" + value;
-        try {
-            return Color.decode(hex);
-        } catch (NumberFormatException e) {
-            throw new APIException(
-                    INVALID_PARAMETER_VALUE,
-                    parameter + " must be a hexadecimal RGB value or a W3C web color name, got " + value,
-                    HttpStatus.BAD_REQUEST,
-                    e);
-        }
     }
 
     /**
@@ -855,6 +905,8 @@ public class MapsService {
         // one subset string carries axes of three different classes, so it survives when any of them is on, and each
         // axis is then applied, or ignored, where the parsed result is used
         boolean anySubset = subsetting || conf.datetime(wms) || conf.generalSubsetting(wms);
+        // the language is resolved here, so that the parser gets the same default the API document declares
+        String filterLang = q.filter() != null ? filterLanguage(q.filterLang(), conf, wms) : null;
         return new MapQuery(
                 subsetting ? q.bbox() : null,
                 subsetting ? q.bboxCrs() : null,
@@ -872,7 +924,26 @@ public class MapsService {
                 q.transparent(),
                 conf.background(wms) ? q.bgcolor() : null,
                 conf.background(wms) ? q.voidColor() : null,
-                conf.background(wms) ? q.voidTransparent() : null);
+                conf.background(wms) ? q.voidTransparent() : null,
+                filterLang != null ? q.filter() : null,
+                filterLang,
+                q.filterCrs());
+    }
+
+    /**
+     * The filter language to use, {@code null} when the filter parameters must be ignored because filtering is not
+     * enabled. Fails the request if the language is not one of those advertised in the API document.
+     */
+    private String filterLanguage(String filterLang, MapsConformance conf, WMSInfo wms) {
+        if (!conf.filtering(wms)) {
+            LOGGER.info(() -> "Ignoring the filter parameter, it requires the "
+                    + MapsConformance.FILTER.getId()
+                    + " and "
+                    + MapsConformance.MAP_FILTER.getId()
+                    + " conformance classes, plus one filter language, to be enabled");
+            return null;
+        }
+        return APIFilterParser.resolveLanguage(filterLang, wms);
     }
 
     private static void checkPositiveSize(String parameter, Integer value) {
@@ -910,6 +981,69 @@ public class MapsService {
         // in any other case, the style was not recognized
         throw new APIException(
                 APIException.INVALID_PARAMETER_VALUE, "Invalid style identifier: " + styleId, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Rejects a filter naming an attribute that no drawn layer exposes as a queryable, which would otherwise be
+     * silently dropped by the renderer. The comparison uses the queryables, not the raw schemas, so that restricting
+     * them one day also restricts what a filter can name.
+     */
+    private static void checkFilterAttributes(Filter filter, List<MapLayerInfo> layers) throws IOException {
+        FilterAttributeExtractor extractor = new FilterAttributeExtractor();
+        filter.accept(extractor, null);
+        Set<String> unknown = new LinkedHashSet<>(extractor.getAttributeNameSet());
+        if (unknown.isEmpty()) return;
+
+        // a map draws several layers, each with its own schema, so an attribute known to any of them is usable
+        for (MapLayerInfo layer : layers) {
+            FeatureType schema = queryableSchema(layer.getLayerInfo());
+            if (schema == null) continue;
+            unknown.removeAll(new QueryablesBuilder("")
+                    .forType(schema)
+                    .build()
+                    .getProperties()
+                    .keySet());
+            if (unknown.isEmpty()) return;
+        }
+        throw new APIException(
+                INVALID_PARAMETER_VALUE,
+                "The filter references attributes that are not queryable on any of the requested collections: "
+                        + String.join(", ", unknown),
+                HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Applies the background parameters. GeoServer paints the areas with no data and the ones outside the valid area of
+     * the projection with the same colour and opacity, so the {@code void-color} and {@code void-transparent} values
+     * act as the defaults of the background pair rather than the other way around, which is the direction OGC API -
+     * Maps defines them in ({@code /req/background/void-color-definition} C, {@code /req/background/void-transparent-
+     * definition} B). With neither given the renderer paints an opaque map white, as requirement D asks.
+     */
+    private static void applyBackground(MapQuery q, GetMapRequest request) {
+        String parameter = q.bgcolor() != null ? "bgcolor" : "void-color";
+        String color = q.bgcolor() != null ? q.bgcolor() : q.voidColor();
+        if (color != null) request.setBgColor(parseColor(parameter, color));
+        request.setTransparent(q.isTransparent());
+    }
+
+    /**
+     * A background colour: a hexadecimal red-green-blue value, with or without a {@code 0x} or {@code #} prefix, or a
+     * case insensitive W3C web colour name (OGC API - Maps, {@code /req/background/bgcolor-definition} A and B).
+     */
+    private static Color parseColor(String parameter, String value) {
+        Color named = ColorConverterFactory.CSS_COLORS.get(value.toLowerCase());
+        if (named != null) return named;
+        // a bare value is hexadecimal, the only numeric notation the standard defines
+        String hex = value.startsWith("#") || value.startsWith("0x") || value.startsWith("0X") ? value : "0x" + value;
+        try {
+            return Color.decode(hex);
+        } catch (NumberFormatException e) {
+            throw new APIException(
+                    INVALID_PARAMETER_VALUE,
+                    parameter + " must be a hexadecimal RGB value or a W3C web color name, got " + value,
+                    HttpStatus.BAD_REQUEST,
+                    e);
+        }
     }
 
     private ReferencedEnvelope parseSingleBBox(String bbox, String bboxCrs) throws FactoryException {

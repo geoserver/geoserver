@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNotNull;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Schema;
 import java.util.List;
 import java.util.Set;
 import org.geoserver.catalog.Catalog;
@@ -218,7 +219,11 @@ public class ApiTest extends MapsTestSupport {
     }
 
     private static List<String> mapParamRefs(OpenAPI api) {
-        return api.getPaths().get("/collections/{collectionId}/map").getGet().getParameters().stream()
+        return paramRefs(api, "/collections/{collectionId}/map");
+    }
+
+    private static List<String> paramRefs(OpenAPI api, String path) {
+        return api.getPaths().get(path).getGet().getParameters().stream()
                 .map(p -> p.get$ref())
                 .toList();
     }
@@ -274,6 +279,52 @@ public class ApiTest extends MapsTestSupport {
             OpenAPI api = readApi();
             assertThat(api.getPaths().keySet(), not(hasItems("/collections/{collectionId}/map/info")));
         });
+    }
+
+    @Test
+    public void testFilterParametersDeclared() throws Exception {
+        OpenAPI api = readApi();
+        assertThat(api.getPaths().keySet(), hasItems("/collections/{collectionId}/queryables"));
+        // the filter parameters are on both the map and the info resources
+        assertThat(
+                mapParamRefs(api),
+                hasItems(
+                        "#/components/parameters/filter",
+                        "#/components/parameters/filter-lang",
+                        "#/components/parameters/filter-crs"));
+        assertThat(paramRefs(api, "/collections/{collectionId}/map/info"), hasItems("#/components/parameters/filter"));
+        // filter-lang carries the enum and the default, both required by the filter conformance class
+        Schema<?> lang = api.getComponents().getParameters().get("filter-lang").getSchema();
+        assertEquals(List.of("cql2-text", "cql2-json", "ecql-text"), lang.getEnum());
+        assertEquals("cql2-text", lang.getDefault());
+    }
+
+    @Test
+    public void testFilterParametersDroppedWhenDisabled() throws Exception {
+        withConformance(MapsConformance::setMapFilter, false, () -> {
+            OpenAPI api = readApi();
+            assertThat(
+                    mapParamRefs(api),
+                    not(hasItems(
+                            "#/components/parameters/filter",
+                            "#/components/parameters/filter-lang",
+                            "#/components/parameters/filter-crs")));
+            assertThat(paramRefs(api, "/collections/{collectionId}/map/info"), not(hasItems("filter")));
+            // the definitions are gone too, nothing is left declaring the parameters
+            assertThat(
+                    api.getComponents().getParameters().keySet(), not(hasItems("filter", "filter-lang", "filter-crs")));
+            // the queryables only describe what the filter accepts, so the resource goes with it
+            assertThat(api.getPaths().keySet(), not(hasItems("/collections/{collectionId}/queryables")));
+        });
+    }
+
+    @Test
+    public void testQueryablesPathRemovedWhenDisabled() throws Exception {
+        withConformance(
+                MapsConformance::setQueryables,
+                false,
+                () -> assertThat(
+                        readApi().getPaths().keySet(), not(hasItems("/collections/{collectionId}/queryables"))));
     }
 
     @Test

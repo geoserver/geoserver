@@ -16,6 +16,13 @@
         <#assign collection=model>
         <#assign showStorageCrs=true>
         <#include "collection_include.ftl">
+        <#if model.getLinkUrl('queryables', 'text/html')??>
+        <div class="card-body border-top">
+          <ul>
+            <li>Queryable <a id="html_${model.htmlId}_queryables" href="${model.getLinkUrl('queryables', 'text/html')}">attributes</a> usable in the map filter.</li>
+          </ul>
+        </div>
+        </#if>
       </div>
     </div>
   </div>

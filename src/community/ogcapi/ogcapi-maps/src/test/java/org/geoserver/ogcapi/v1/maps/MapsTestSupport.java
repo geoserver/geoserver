@@ -27,6 +27,9 @@ public class MapsTestSupport extends OGCApiTestSupport {
     protected static final QName TIMESERIES = new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
     static final QName TIME_WITH_START_END = new QName(MockData.SF_URI, "TimeWithStartEnd", MockData.SF_PREFIX);
 
+    /** An image mosaic, whose structured reader can apply a filter on the granule index. */
+    static final QName WATER_TEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
+
     static final QName TIME_WITH_START_END_DATE =
             new QName(MockData.SF_URI, "TimeWithStartEndDate", MockData.SF_PREFIX);
 
@@ -39,6 +42,11 @@ public class MapsTestSupport extends OGCApiTestSupport {
     protected void setUpTestData(SystemTestData testData) throws Exception {
         testData.setUpDefault();
         testData.setUpDefaultRasterLayers();
+    }
+
+    /** Adds {@link #WATER_TEMP}, left out of the default setup because it would change the collection counts. */
+    protected void addWaterTemp(SystemTestData testData) throws Exception {
+        testData.addRasterLayer(WATER_TEMP, "watertemp.zip", null, null, SystemTestData.class, getCatalog());
     }
 
     @Override

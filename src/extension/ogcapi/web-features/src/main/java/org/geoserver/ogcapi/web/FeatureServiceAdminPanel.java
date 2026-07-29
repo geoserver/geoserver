@@ -7,8 +7,8 @@ package org.geoserver.ogcapi.web;
 import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import org.apache.wicket.model.IModel;
-import org.geoserver.ogcapi.v1.features.CQL2Conformance;
-import org.geoserver.ogcapi.v1.features.ECQLConformance;
+import org.geoserver.ogcapi.CQL2Conformance;
+import org.geoserver.ogcapi.ECQLConformance;
 import org.geoserver.ogcapi.v1.features.FeatureConformance;
 import org.geoserver.web.ogcapi.ConformanceTable;
 import org.geoserver.web.services.AdminPagePanel;

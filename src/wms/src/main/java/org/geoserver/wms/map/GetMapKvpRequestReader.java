@@ -1625,9 +1625,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
     }
 
     private boolean isDefaultLgStyle(String styleName, LayerGroupInfo groupInfo) {
-        return CapabilityUtil.encodeGroupDefaultStyle(wms, groupInfo)
-                && styleName != null
-                && styleName.equals(CapabilityUtil.getGroupDefaultStyleName(groupInfo));
+        return CapabilityUtil.isDefaultGroupStyleName(wms, groupInfo, styleName);
     }
 
     private boolean isGroupStyleName(String styleName, LayerGroupInfo groupInfo) {

@@ -58,9 +58,12 @@ theme:
 
 extra:
   version:
-    default: stable
-    alias: true
     provider: mike
+    default:
+      - latest
+      - stable
+      - 3.0.x
+    alias: false
 
   social:
     - icon: fontawesome/brands/github

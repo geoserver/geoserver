@@ -93,6 +93,24 @@ public class MapsTest extends MapsTestSupport {
         ImageAssert.assertEquals(expectedImage, image, 0);
     }
 
+    /**
+     * The map is transparent unless the parameter says otherwise, so a corner outside the lakes is opaque only then.
+     */
+    @Test
+    public void testTransparent() throws Exception {
+        String path = "ogc/maps/v1/collections/Lakes/map?f=image/png&width=100&height=100";
+        assertEquals(0, getAsImage(path, "image/png").getRGB(0, 0) >>> 24);
+        assertEquals(0, getAsImage(path + "&transparent=true", "image/png").getRGB(0, 0) >>> 24);
+        assertEquals(255, getAsImage(path + "&transparent=false", "image/png").getRGB(0, 0) >>> 24);
+    }
+
+    /** A numeric parameter that is not a number is a client error, not a server one. */
+    @Test
+    public void testInvalidNumber() throws Exception {
+        DocumentContext json = getAsJSONPath("ogc/maps/v1/collections/Lakes/map?f=image/png&width=abcd", 400);
+        assertEquals(APIException.INVALID_PARAMETER_VALUE, json.read("type"));
+    }
+
     @Test
     public void testDatetimeJson() throws Exception {
         setupStartEndTimeDimension(TIME_WITH_START_END, "time", "startTime", "endTime");

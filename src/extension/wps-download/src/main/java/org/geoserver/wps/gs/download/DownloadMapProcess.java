@@ -61,6 +61,8 @@ import org.geoserver.wps.process.RawData;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.util.ProgressListener;
+import org.geotools.data.ows.URLCheckerException;
+import org.geotools.data.ows.URLCheckers;
 import org.geotools.data.util.DefaultProgressListener;
 import org.geotools.filter.function.EnvFunction;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -577,6 +579,11 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         String capabilitiesUrl = layer.getCapabilities();
         WebMapServer server = cache.get(capabilitiesUrl);
         if (server == null) {
+            try {
+                URLCheckers.confirm(capabilitiesUrl);
+            } catch (URLCheckerException e) {
+                throw new WPSException("Invalid Capabilities URL: " + capabilitiesUrl, e);
+            }
             HTTPClient client = httpClientSupplier.get();
             server = new WebMapServer(new URL(layer.getCapabilities()), client);
             cache.put(capabilitiesUrl, server);

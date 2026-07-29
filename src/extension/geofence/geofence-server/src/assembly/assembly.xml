@@ -31,6 +31,7 @@
         <include>geofence-model-*.jar</include>
         <include>geofence-persistence-*.jar</include>
         <include>geofence-services-api-*.jar</include>
+        <include>geofence-admin-services-api-*.jar</include>
         <include>geofence-services-impl-*.jar</include>
         <include>hibernate-core-*.jar</include>
         <include>hibernate-jcache-*.jar</include>

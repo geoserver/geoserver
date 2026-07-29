@@ -128,7 +128,12 @@ Two extra resources are GeoServer extensions, not part of the standard:
 
 - `.../map/info`, the feature information at a pixel, selected with the `i` and `j` parameters. `limit` sets the
   maximum number of features returned, one by default, counted across all the layers of the collection: a layer
-  group needs a higher limit to report something from more than one of its layers
+  group needs a higher limit to report something from more than one of its layers. The pixel is read from the
+  same map the `map` resource returns, so all the map parameters above apply here too, and the reported features
+  are the ones the map shows. `orientation` is the exception, it is currently ignored: the pixel is always read
+  from the map as it would be drawn without rotation, so on a rotated map use the `map` resource to see the
+  rotation and this one to query it. When no `bbox-crs` is given, `crs` applies to the `bbox` as well.
+  Unless otherwise specified, the parameters supported by a WMS GetFeatureInfo are also available in the `.../map/info` resource.
 - `.../legend` and `.../styles/{styleId}/legend`, the legend of a style, with the same `width`, `height`, `scale`,
   `rule`, `lang`, `transparent`, `bgcolor` and `legend-options` parameters as the WMS `GetLegendGraphic` request (as well as other parameters supported by it).
 

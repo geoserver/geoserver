@@ -385,28 +385,32 @@ public class MapsService {
         }
 
         /**
-         * Reduced to the parameters the GetFeatureInfo extension supports, where the single crs applies to both the
-         * bbox and the output.
+         * The query as the feature info resource uses it: the pixel is picked from the very same map, so every
+         * parameter shaping it is kept, with two adjustments. The output crs applies to the bbox as well unless a
+         * bbox-crs is given, and the orientation is dropped for now: the wms-core identifiers invert an unrotated world
+         * to screen transform (see {@code WMS#pixelToWorld} and {@code VectorRenderingLayerIdentifier}), while
+         * {@code WMSMapContent#getRenderingTransform} rotates when rendering, so a rotated map would answer for the
+         * pixel rotated back around the image centre. Teaching those identifiers the angle would lift the limitation.
          */
         MapQuery forInfo() {
             return new MapQuery(
                     bbox,
-                    crs,
-                    null,
-                    null,
-                    null,
-                    null,
+                    bboxCrs != null ? bboxCrs : crs,
+                    subset,
+                    subsetCrs,
+                    center,
+                    centerCrs,
                     crs,
                     datetime,
                     width,
                     height,
-                    null,
-                    null,
+                    scaleDenominator,
+                    mmPerPixel,
                     null,
                     transparent,
                     bgcolor,
-                    null,
-                    null);
+                    voidColor,
+                    voidTransparent);
         }
     }
 

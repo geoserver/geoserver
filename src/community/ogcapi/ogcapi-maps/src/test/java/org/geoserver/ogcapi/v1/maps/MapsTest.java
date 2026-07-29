@@ -509,6 +509,34 @@ public class MapsTest extends MapsTestSupport {
         assertEquals(instant, northEastPixel("datetime=../2012-02-11T00:00:00Z"));
     }
 
+    /**
+     * The feature info reports the features of the very same map, so a subset restricts it too: the north-east quadrant
+     * is empty at the first timestamp and holds one feature over the whole extent.
+     */
+    @Test
+    public void testInfoHonorsSubset() throws Exception {
+        setupStartEndTimeDimension(TIME_WITH_START_END, "time", "startTime", "endTime");
+        assertEquals(0, northEastFeatures("subset=time(\"2012-02-11T00:00:00Z\")"));
+        assertEquals(1, northEastFeatures("subset=time(*:*)"));
+
+        // the spatial axes of a subset move the map too, so the pixel lands in the north west quadrant, which does
+        // hold data at the first timestamp (the bbox is left out, it cannot be combined with a spatial subset)
+        DocumentContext json = getAsJSONPath(
+                "ogc/maps/v1/collections/sf:TimeWithStartEnd/map/info?f=application%2Fjson&width=40&height=40&i=30&j=10"
+                        + "&subset=Lon(-180:0),Lat(0:90)&datetime=2012-02-11T00:00:00Z",
+                200);
+        assertEquals(Integer.valueOf(1), json.read("$.numberReturned", Integer.class));
+    }
+
+    /** Features the info resource reports at the north-east quadrant pixel of the time enabled layer. */
+    private int northEastFeatures(String query) throws Exception {
+        DocumentContext json = getAsJSONPath(
+                "ogc/maps/v1/collections/sf:TimeWithStartEnd/map/info?f=application%2Fjson&width=40&height=40"
+                        + "&bbox=-180,-90,180,90&i=30&j=10&" + query.replace("\"", "%22"),
+                200);
+        return json.read("$.numberReturned", Integer.class);
+    }
+
     /** Pixel of the north-east quadrant of the time enabled layer, rendered under the given time query. */
     private int northEastPixel(String timeQuery) throws Exception {
         String path = "ogc/maps/v1/collections/sf:TimeWithStartEnd/map?f=image/png&width=40&height=40"

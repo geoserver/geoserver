@@ -32,6 +32,8 @@ import net.minidev.json.JSONArray;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ogcapi.APIException;
+import org.geoserver.ogcapi.CQL2Conformance;
+import org.geoserver.ogcapi.ECQLConformance;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wfs.WFSInfo;
@@ -397,6 +399,38 @@ public class FeatureTest extends FeaturesTestSupport {
                 400);
         assertEquals("InvalidParameterValue", json.read("code", String.class));
         assertThat(json.read("description", String.class), Matchers.containsString("foo-bar"));
+    }
+
+    /** A language whose conformance class is disabled is not in the API document enum, so it is rejected too. */
+    @Test
+    public void testCqlFilterDisabledLanguage() throws Exception {
+        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
+        ECQLConformance ecql = ECQLConformance.configuration(wfs);
+        ecql.setText(false);
+        getGeoServer().save(wfs);
+        try {
+            String url = "ogc/features/v1/collections/" + getLayerId(MockData.PRIMITIVEGEOFEATURE)
+                    + "/items?filter=name='name-f001'&filter-lang=ecql-text";
+            DocumentContext json = getAsJSONPath(url, 400);
+            assertEquals("InvalidParameterValue", json.read("code", String.class));
+            assertThat(json.read("description", String.class), Matchers.containsString("ecql-text"));
+        } finally {
+            ecql.setText(null);
+            getGeoServer().save(wfs);
+        }
+    }
+
+    /** With no language enabled there is no filtering at all, so the parameter is ignored rather than rejected. */
+    @Test
+    public void testFilterIgnoredWithoutLanguages() throws Exception {
+        String url = "ogc/features/v1/collections/" + getLayerId(MockData.PRIMITIVEGEOFEATURE)
+                + "/items?filter=name='name-f001'";
+        int matching = getAsJSONPath(url, 200).read("features.length()", Integer.class);
+
+        withFilterLanguagesDisabled(() -> {
+            int all = getAsJSONPath(url, 200).read("features.length()", Integer.class);
+            assertThat(all, Matchers.greaterThan(matching));
+        });
     }
 
     @Test

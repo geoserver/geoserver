@@ -2,19 +2,16 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.ogcapi.v1.features;
+package org.geoserver.ogcapi;
 
 import static org.geoserver.ogcapi.APIConformance.Level.STANDARD;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.geoserver.ogcapi.APIConformance;
-import org.geoserver.ogcapi.ConformanceClass;
-import org.geoserver.ogcapi.ConformanceInfo;
-import org.geoserver.wfs.WFSInfo;
+import org.geoserver.config.ServiceInfo;
 
-/** CQL2 Configuration for FeatureService. */
-public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
+/** CQL2 conformance configuration, shared by any OGC API service that supports the filter parameters. */
+public class CQL2Conformance extends ConformanceInfo<ServiceInfo> {
     public static final String METADATA_KEY = "cql2";
     /** CQL Text conformance. */
     public static final APIConformance CQL2_TEXT = new APIConformance(ConformanceClass.CQL2_TEXT, STANDARD, "text");
@@ -34,7 +31,7 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
     /**
      * Indicates CQL2 Functions are supported.
      *
-     * <p>FeatureService is required to support {@code /functions} endpoint, providing a
+     * <p>The service is required to support {@code /functions} endpoint, providing a
      * {@link org.geoserver.ogcapi.FunctionsDocument}
      */
     public static final APIConformance CQL2_FUNCTIONS =
@@ -74,19 +71,19 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
     }
 
     /**
-     * Obtain CQL2Conformance configuration for WFSInfo.
+     * Obtain CQL2Conformance configuration for ServiceInfo.
      *
      * <p>Uses configuration stored in metadata map, or creates default if needed.
      *
-     * @param wfsInfo WFSService configuration
+     * @param serviceInfo the service configuration holding the metadata map
      * @return CQL2 configuration
      */
-    public static CQL2Conformance configuration(WFSInfo wfsInfo) {
-        if (wfsInfo.getMetadata().containsKey(METADATA_KEY)) {
-            return (CQL2Conformance) wfsInfo.getMetadata().get(METADATA_KEY);
+    public static CQL2Conformance configuration(ServiceInfo serviceInfo) {
+        if (serviceInfo.getMetadata().containsKey(METADATA_KEY)) {
+            return (CQL2Conformance) serviceInfo.getMetadata().get(METADATA_KEY);
         } else {
             CQL2Conformance conf = new CQL2Conformance();
-            wfsInfo.getMetadata().put(METADATA_KEY, conf);
+            serviceInfo.getMetadata().put(METADATA_KEY, conf);
             return conf;
         }
     }
@@ -97,7 +94,7 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
      * @return Enable for either CQL2_TEXT or CQL2_JSON
      */
     @Override
-    public boolean isEnabled(WFSInfo info) {
+    public boolean isEnabled(ServiceInfo info) {
         return text(info) || json(info);
     }
 
@@ -116,35 +113,35 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
     }
 
     @Override
-    public List<APIConformance> conformances(WFSInfo wfsInfo) {
+    public List<APIConformance> conformances(ServiceInfo serviceInfo) {
         List<APIConformance> conformanceList = new ArrayList<>();
-        if (isEnabled(wfsInfo)) {
-            if (text(wfsInfo)) {
+        if (isEnabled(serviceInfo)) {
+            if (text(serviceInfo)) {
                 conformanceList.add(CQL2_TEXT);
             }
-            if (json(wfsInfo)) {
+            if (json(serviceInfo)) {
                 conformanceList.add(CQL2_JSON);
             }
 
-            if (basic(wfsInfo)) {
+            if (basic(serviceInfo)) {
                 conformanceList.add(CQL2_BASIC);
             }
-            if (advanced(wfsInfo)) {
+            if (advanced(serviceInfo)) {
                 conformanceList.add(CQL2_ADVANCED);
             }
-            if (arithmetic(wfsInfo)) {
+            if (arithmetic(serviceInfo)) {
                 conformanceList.add(CQL2_ARITHMETIC);
             }
-            if (propertyProperty(wfsInfo)) {
+            if (propertyProperty(serviceInfo)) {
                 conformanceList.add(CQL2_PROPERTY_PROPERTY);
             }
-            if (basicSpatial(wfsInfo)) {
+            if (basicSpatial(serviceInfo)) {
                 conformanceList.add(CQL2_BASIC_SPATIAL);
             }
-            if (spatial(wfsInfo)) {
+            if (spatial(serviceInfo)) {
                 conformanceList.add(CQL2_SPATIAL);
             }
-            if (functions(wfsInfo)) {
+            if (functions(serviceInfo)) {
                 conformanceList.add(CQL2_FUNCTIONS);
             }
         }
@@ -159,7 +156,7 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
         text = enabled;
     }
 
-    public boolean text(WFSInfo info) {
+    public boolean text(ServiceInfo info) {
         return isEnabled(info, text, CQL2_TEXT);
     }
 
@@ -171,7 +168,7 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
         json = enabled;
     }
 
-    public boolean json(WFSInfo info) {
+    public boolean json(ServiceInfo info) {
         return isEnabled(info, json, CQL2_JSON);
     }
 
@@ -183,7 +180,7 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
         advanced = enabled;
     }
 
-    public boolean advanced(WFSInfo info) {
+    public boolean advanced(ServiceInfo info) {
         return isEnabled(info, advanced, CQL2_ADVANCED);
     }
 
@@ -195,7 +192,7 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
         arithmetic = enabled;
     }
 
-    public boolean arithmetic(WFSInfo info) {
+    public boolean arithmetic(ServiceInfo info) {
         return isEnabled(info, arithmetic, CQL2_ARITHMETIC);
     }
 
@@ -207,7 +204,7 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
         basic = enabled;
     }
 
-    public boolean basic(WFSInfo info) {
+    public boolean basic(ServiceInfo info) {
         return isEnabled(info, basic, CQL2_BASIC);
     }
 
@@ -219,7 +216,7 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
         basicSpatial = enabled;
     }
 
-    public boolean basicSpatial(WFSInfo info) {
+    public boolean basicSpatial(ServiceInfo info) {
         return isEnabled(info, basicSpatial, CQL2_BASIC_SPATIAL);
     }
 
@@ -231,7 +228,7 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
         functions = enabled;
     }
 
-    public boolean functions(WFSInfo info) {
+    public boolean functions(ServiceInfo info) {
         return isEnabled(info, functions, CQL2_FUNCTIONS);
     }
 
@@ -243,7 +240,7 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
         propertyProperty = enabled;
     }
 
-    public boolean propertyProperty(WFSInfo info) {
+    public boolean propertyProperty(ServiceInfo info) {
         return isEnabled(info, propertyProperty, CQL2_PROPERTY_PROPERTY);
     }
 
@@ -255,7 +252,7 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
         spatial = enabled;
     }
 
-    public boolean spatial(WFSInfo info) {
+    public boolean spatial(ServiceInfo info) {
         return isEnabled(info, spatial, CQL2_SPATIAL);
     }
 

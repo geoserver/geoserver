@@ -7,6 +7,7 @@ package org.geoserver.ogcapi.v1.features;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ogcapi.AbstractLandingPageDocumentNoConformance;
+import org.geoserver.ogcapi.CQL2Conformance;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.FunctionsDocument;
 import org.geoserver.ogcapi.Link;

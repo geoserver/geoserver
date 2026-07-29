@@ -22,9 +22,11 @@ import java.util.Set;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.ogcapi.APIFilterParser;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.OpenAPIBuilder;
+import org.geoserver.ogcapi.Queryables;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
@@ -38,6 +40,8 @@ public class MapsAPIBuilder extends OpenAPIBuilder<WMSInfo> {
             "/collections/{collectionId}/styles/{styleId}/map",
             "/collections/{collectionId}/map/info",
             "/collections/{collectionId}/styles/{styleId}/map/info");
+
+    private static final List<String> FILTER_PARAMETERS = List.of("filter", "filter-lang", "filter-crs");
 
     public MapsAPIBuilder() {
         super(MapsAPIBuilder.class, "openapi.yaml", "Maps 1.0 server", MapsService.class);
@@ -61,8 +65,25 @@ public class MapsAPIBuilder extends OpenAPIBuilder<WMSInfo> {
             api.getPaths().remove("/collections/{collectionId}/styles/{styleId}/legend");
         }
 
+        // the queryables resource exists only when its conformance class is enabled, and filtering with it
+        if (!maps.queryablesAvailable(wms)) {
+            api.getPaths().remove("/collections/{collectionId}/queryables");
+        } else {
+            declareGetResponseFormats(api, "/collections/{collectionId}/queryables", Queryables.class);
+        }
+
+        // filtering already accounts for the languages, none enabled means no filtering at all
+        List<String> filterLanguages = APIFilterParser.enabledLanguages(wms);
+        boolean filtering = maps.filtering(wms);
+
         // prune optional map parameters that map to disabled conformance classes
-        pruneMapParameters(api, maps, wms);
+        pruneMapParameters(api, maps, wms, filtering);
+        if (filtering) {
+            declareFilterLanguages(api, filterLanguages);
+        } else {
+            FILTER_PARAMETERS.forEach(
+                    name -> api.getComponents().getParameters().remove(name));
+        }
 
         // declare the negotiated response formats
         declareGetResponseFormats(api, "/", OpenAPI.class);
@@ -115,7 +136,7 @@ public class MapsAPIBuilder extends OpenAPIBuilder<WMSInfo> {
      * Removes the parameters of every disabled conformance class from all the map operations, the info ones included:
      * they take the same query parameters and {@link MapsService} ignores them there too.
      */
-    private void pruneMapParameters(OpenAPI api, MapsConformance maps, WMSInfo wms) {
+    private void pruneMapParameters(OpenAPI api, MapsConformance maps, WMSInfo wms, boolean filtering) {
         List<String> disabled = new ArrayList<>();
         if (!maps.spatialSubsetting(wms)) {
             disabled.addAll(List.of("bbox", "bbox-crs", "subset", "subset-crs", "center", "center-crs"));
@@ -129,6 +150,7 @@ public class MapsAPIBuilder extends OpenAPIBuilder<WMSInfo> {
         if (!maps.crs(wms)) disabled.add("crs");
         if (!maps.background(wms)) disabled.addAll(List.of("bgcolor", "transparent", "void-color", "void-transparent"));
         if (!maps.orientation(wms)) disabled.add("orientation");
+        if (!filtering) disabled.addAll(FILTER_PARAMETERS);
         if (disabled.isEmpty()) return;
 
         for (String path : MAP_PATHS) {
@@ -139,6 +161,20 @@ public class MapsAPIBuilder extends OpenAPIBuilder<WMSInfo> {
                 parameters.removeIf(p -> ("#/components/parameters/" + name).equals(p.get$ref()));
             }
         }
+    }
+
+    /**
+     * Declares the {@code enum} and the {@code default} of the {@code filter-lang} parameter, both required by OGC API
+     * - Features - Part 3 {@code /req/filter/filter-lang-param}, from the enabled language conformance classes.
+     */
+    @SuppressWarnings("unchecked")
+    private void declareFilterLanguages(OpenAPI api, List<String> languages) {
+        Parameter filterLang = api.getComponents().getParameters().get("filter-lang");
+        if (filterLang == null) return;
+        Schema<String> schema = (Schema<String>) filterLang.getSchema();
+        schema.setEnum(languages);
+        // cql2-text is the spec default, any other one only when it is not available
+        schema.setDefault(languages.contains(APIFilterParser.CQL2_TEXT) ? APIFilterParser.CQL2_TEXT : languages.get(0));
     }
 
     /** Replaces the 200 response of {@code path} with an inline one advertising the given media types. */

@@ -10,8 +10,11 @@ import static org.geoserver.ogcapi.APIConformance.Level.STANDARD;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.ogcapi.APIConformance;
+import org.geoserver.ogcapi.APIFilterParser;
+import org.geoserver.ogcapi.CQL2Conformance;
 import org.geoserver.ogcapi.ConformanceClass;
 import org.geoserver.ogcapi.ConformanceInfo;
+import org.geoserver.ogcapi.ECQLConformance;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 
@@ -52,6 +55,25 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
     public static final APIConformance GENERAL_SUBSETTING = new APIConformance(
             BASE + "general-subsetting", STANDARD, APIConformance.Type.EXTENSION, CORE, "generalSubsetting");
 
+    /**
+     * Attribute filtering is not part of OGC API - Maps 1.0.0; the Features Part 3 classes are reused because their
+     * requirements are not bound to the features resource, and the Part 3 roadmap expects them to move to OGC API -
+     * Common. The {@code features-filter} class is deliberately not declared, it is bound to
+     * {@code /collections/{collectionId}/items}.
+     */
+    public static final APIConformance FILTER = CORE.extend(ConformanceClass.FILTER);
+
+    /** Required by {@link #FILTER}, which has a hard dependency on the queryables class. */
+    public static final APIConformance QUERYABLES = CORE.extend(ConformanceClass.QUERYABLES);
+
+    /** GeoServer extension: binds the filter parameters to the map resources. */
+    public static final APIConformance MAP_FILTER = new APIConformance(
+            "http://geoserver.org/spec/ogcapi-maps/1.0/conf/map-filter",
+            COMMUNITY_STANDARD,
+            APIConformance.Type.EXTENSION,
+            CORE,
+            "mapFilter");
+
     /** GeoServer extension: WMS-style GetFeatureInfo on a map, not part of the OGC API - Maps standard. */
     public static final APIConformance FEATURE_INFO = new APIConformance(
             "http://geoserver.org/spec/ogcapi-maps/1.0/conf/featureinfo",
@@ -79,6 +101,9 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
     private Boolean tiff = null;
     private Boolean svg = null;
     private Boolean generalSubsetting = null;
+    private Boolean filter = null;
+    private Boolean queryables = null;
+    private Boolean mapFilter = null;
     private Boolean featureInfo = null;
     private Boolean legend = null;
 
@@ -117,6 +142,9 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
                 TIFF,
                 SVG,
                 GENERAL_SUBSETTING,
+                FILTER,
+                QUERYABLES,
+                MAP_FILTER,
                 FEATURE_INFO,
                 LEGEND));
     }
@@ -149,6 +177,13 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
         if (tiff(wmsInfo)) conformance.add(TIFF);
         if (svg(wmsInfo)) conformance.add(SVG);
         if (generalSubsetting(wmsInfo)) conformance.add(GENERAL_SUBSETTING);
+        if (filtering(wmsInfo)) {
+            conformance.add(FILTER);
+            conformance.add(MAP_FILTER);
+            if (queryables(wmsInfo)) conformance.add(QUERYABLES);
+            conformance.addAll(ECQLConformance.configuration(wmsInfo).conformances(wmsInfo));
+            conformance.addAll(CQL2Conformance.configuration(wmsInfo).conformances(wmsInfo));
+        }
         if (featureInfo(wmsInfo)) conformance.add(FEATURE_INFO);
         if (legend(wmsInfo)) conformance.add(LEGEND);
         return conformance;
@@ -373,6 +408,82 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
      */
     public boolean generalSubsetting(WMSInfo wmsInfo) {
         return isEnabled(wmsInfo, generalSubsetting, GENERAL_SUBSETTING);
+    }
+
+    /** @return the filter conformance flag, or {@code null} for the class default. */
+    public Boolean isFilter() {
+        return filter;
+    }
+
+    /**
+     * Sets the filter conformance flag; {@code null} restores the class default.
+     *
+     * @param enabled the flag value, or {@code null} for the default
+     */
+    public void setFilter(Boolean enabled) {
+        this.filter = enabled;
+    }
+
+    /** @return {@code true} if filter conformance is enabled, resolving {@code null} to the class default */
+    public boolean filter(WMSInfo wmsInfo) {
+        return isEnabled(wmsInfo, filter, FILTER);
+    }
+
+    /** @return the queryables conformance flag, or {@code null} for the class default. */
+    public Boolean isQueryables() {
+        return queryables;
+    }
+
+    /**
+     * Sets the queryables conformance flag; {@code null} restores the class default.
+     *
+     * @param enabled the flag value, or {@code null} for the default
+     */
+    public void setQueryables(Boolean enabled) {
+        this.queryables = enabled;
+    }
+
+    /** @return {@code true} if queryables conformance is enabled, resolving {@code null} to the class default */
+    public boolean queryables(WMSInfo wmsInfo) {
+        return isEnabled(wmsInfo, queryables, QUERYABLES);
+    }
+
+    /**
+     * @return {@code true} if the filter parameters are available, which takes the standard {@link #FILTER} class, the
+     *     {@link #MAP_FILTER} one binding it to the map resources, and at least one filter language, since OGC API -
+     *     Features - Part 3 {@code /req/filter/filter-lang-param} makes the language classes part of the filter class
+     */
+    public boolean filtering(WMSInfo wmsInfo) {
+        return filter(wmsInfo)
+                && mapFilter(wmsInfo)
+                && !APIFilterParser.enabledLanguages(wmsInfo).isEmpty();
+    }
+
+    /**
+     * @return {@code true} if the queryables resource is available. On a map the queryables only describe what the
+     *     filter parameters accept, so they follow {@link #filtering(WMSInfo)}
+     */
+    public boolean queryablesAvailable(WMSInfo wmsInfo) {
+        return filtering(wmsInfo) && queryables(wmsInfo);
+    }
+
+    /** @return the map filter conformance flag, or {@code null} for the class default. */
+    public Boolean isMapFilter() {
+        return mapFilter;
+    }
+
+    /**
+     * Sets the map filter conformance flag; {@code null} restores the class default.
+     *
+     * @param enabled the flag value, or {@code null} for the default
+     */
+    public void setMapFilter(Boolean enabled) {
+        this.mapFilter = enabled;
+    }
+
+    /** @return {@code true} if map filter conformance is enabled, resolving {@code null} to the class default */
+    public boolean mapFilter(WMSInfo wmsInfo) {
+        return isEnabled(wmsInfo, mapFilter, MAP_FILTER);
     }
 
     /** @return the GetFeatureInfo conformance flag, or {@code null} for the class default. */

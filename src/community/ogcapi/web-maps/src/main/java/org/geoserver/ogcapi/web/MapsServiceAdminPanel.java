@@ -5,6 +5,8 @@
 package org.geoserver.ogcapi.web;
 
 import org.apache.wicket.model.IModel;
+import org.geoserver.ogcapi.CQL2Conformance;
+import org.geoserver.ogcapi.ECQLConformance;
 import org.geoserver.ogcapi.v1.maps.MapsConformance;
 import org.geoserver.web.ogcapi.ConformanceTable;
 import org.geoserver.web.services.AdminPagePanel;
@@ -18,5 +20,9 @@ public class MapsServiceAdminPanel extends AdminPagePanel {
         // resolve the configuration from the live WMSInfo on each access: the service is reloaded per request
         add(new ConformanceTable(
                 "mapsConformance", IModel.of(() -> MapsConformance.configuration((WMSInfo) info.getObject())), this));
+        add(new ConformanceTable(
+                "cqlConformance", IModel.of(() -> CQL2Conformance.configuration((WMSInfo) info.getObject())), this));
+        add(new ConformanceTable(
+                "ecqlConformance", IModel.of(() -> ECQLConformance.configuration((WMSInfo) info.getObject())), this));
     }
 }

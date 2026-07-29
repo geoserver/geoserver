@@ -96,6 +96,20 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
+  '/collections/{collectionId}/queryables':
+    get:
+      tags: [Data]
+      summary: attributes that can be used in the filter parameter
+      operationId: getQueryables
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      responses:
+        '200':
+          $ref: '#/components/responses/Queryables'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
   '/collections/{collectionId}/map':
     get:
       tags: [Maps]
@@ -121,6 +135,9 @@ paths:
         - $ref: '#/components/parameters/transparent'
         - $ref: '#/components/parameters/void-color'
         - $ref: '#/components/parameters/void-transparent'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/filter-lang'
+        - $ref: '#/components/parameters/filter-crs'
       responses:
         '200':
           $ref: '#/components/responses/Map'
@@ -154,6 +171,9 @@ paths:
         - $ref: '#/components/parameters/transparent'
         - $ref: '#/components/parameters/void-color'
         - $ref: '#/components/parameters/void-transparent'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/filter-lang'
+        - $ref: '#/components/parameters/filter-crs'
       responses:
         '200':
           $ref: '#/components/responses/Map'
@@ -184,6 +204,9 @@ paths:
         - $ref: '#/components/parameters/i'
         - $ref: '#/components/parameters/j'
         - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/filter-lang'
+        - $ref: '#/components/parameters/filter-crs'
       responses:
         '200':
           description: the feature information at the queried pixel
@@ -215,6 +238,9 @@ paths:
         - $ref: '#/components/parameters/i'
         - $ref: '#/components/parameters/j'
         - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/filter-lang'
+        - $ref: '#/components/parameters/filter-crs'
       responses:
         '200':
           description: the feature information at the queried pixel
@@ -409,6 +435,23 @@ components:
       in: query
       required: false
       schema: {type: boolean, default: true}
+    filter:
+      name: filter
+      in: query
+      description: attribute filter, in the language declared by filter-lang
+      required: false
+      schema: {type: string}
+    filter-lang:
+      name: filter-lang
+      in: query
+      required: false
+      schema: {type: string, enum: [cql2-text, cql2-json, ecql-text], default: cql2-text}
+    filter-crs:
+      name: filter-crs
+      in: query
+      description: CRS of the geometry literals in the filter, CRS84 when absent
+      required: false
+      schema: {type: string, format: uri}
     i:
       name: i
       in: query
@@ -450,6 +493,11 @@ components:
       content:
         image/png: {schema: {type: string, format: binary}}
         image/jpeg: {schema: {type: string, format: binary}}
+    Queryables:
+      description: the queryable attributes of a collection
+      content:
+        application/schema+json:
+          schema: {$ref: '#/components/schemas/queryables'}
     NotFound:
       description: the requested resource does not exist
     ServerError:
@@ -518,6 +566,15 @@ components:
               id: {type: string}
               title: {type: string}
               links: {type: array, items: {$ref: '#/components/schemas/link'}}
+    queryables:
+      type: object
+      required: [$schema, $id, type, properties]
+      properties:
+        $schema: {type: string}
+        $id: {type: string}
+        type: {type: string, enum: [object]}
+        title: {type: string}
+        properties: {type: object, additionalProperties: {type: object}}
     exception:
       type: object
       required: [code]

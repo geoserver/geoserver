@@ -44,4 +44,9 @@ The OGC API Feature Service is modular, allowing you to enable/disable the funct
 
   *ECQL Filter configuration*
 
+- The enabled filter languages are listed in the `filter-lang` parameter of the API document, and the first one is
+  its default. A request using any other language gets a `400` status. With every language disabled the filter
+  parameters are not available at all: the filter conformance classes disappear from the `conformance` document,
+  the parameters are removed from the API document, and a `filter` sent anyway is ignored.
+
 For more information see [Status](status.md).

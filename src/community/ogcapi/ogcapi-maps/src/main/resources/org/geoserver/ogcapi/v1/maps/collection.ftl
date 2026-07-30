@@ -14,6 +14,7 @@
           <h2>${model.id}</h2>
         </div>
         <#assign collection=model>
+        <#assign showStorageCrs=true>
         <#include "collection_include.ftl">
       </div>
     </div>

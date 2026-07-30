@@ -28,15 +28,17 @@ import org.geotools.util.logging.Logging;
  * A class representing the Maps service "collections" in a way that Jackson can easily translate to JSON/YAML (and can
  * be used as a Freemarker template model)
  */
-@JsonPropertyOrder({"links", "collections"})
+@JsonPropertyOrder({"links", "crs", "collections"})
 public class CollectionsDocument extends AbstractDocument {
     static final Logger LOGGER = Logging.getLogger(CollectionsDocument.class);
     private final GeoServer geoServer;
     private final List<Consumer<CollectionDocument>> collectionDecorators = new ArrayList<>();
     private final boolean skipInvalid;
+    private final List<String> crs;
 
-    public CollectionsDocument(GeoServer geoServer) {
+    public CollectionsDocument(GeoServer geoServer, List<String> crs) {
         this.geoServer = geoServer;
+        this.crs = crs;
 
         // build the self links
         String path = "ogc/maps/v1/collections/";
@@ -48,6 +50,11 @@ public class CollectionsDocument extends AbstractDocument {
     @Override
     public List<Link> getLinks() {
         return links;
+    }
+
+    /** The CRSs supported by every collection, which each of them references as {@code #/crs}. */
+    public List<String> getCrs() {
+        return crs;
     }
 
     /**
@@ -75,7 +82,8 @@ public class CollectionsDocument extends AbstractDocument {
             PublishedInfo published, CloseableIterator<PublishedInfo> publisheds) {
         CollectionDocument collection = null;
         try {
-            collection = new CollectionDocument(geoServer, published);
+            // the collections share the list published at the root of this document, hence the JSON pointer
+            collection = new CollectionDocument(geoServer, published, List.of("#/crs"));
             for (Consumer<CollectionDocument> collectionDecorator : collectionDecorators) {
                 collectionDecorator.accept(collection);
             }

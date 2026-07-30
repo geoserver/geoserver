@@ -24,6 +24,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.APIException;
@@ -44,9 +45,11 @@ import org.geoserver.wms.WebMap;
 import org.geoserver.wms.capabilities.DimensionHelper;
 import org.geoserver.wms.capabilities.DimensionHelper.ElevationDimensionRasterHelper;
 import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.temporal.object.DefaultPeriodDuration;
 import org.geotools.util.DateRange;
@@ -67,8 +70,10 @@ public class CollectionDocument extends AbstractCollectionDocument<PublishedInfo
     static final String UNKNOWN_DEFINITION = "http://www.opengis.net/def/nil/OGC/0/unknown";
 
     PublishedInfo published;
+    List<String> crs;
+    String storageCrs;
 
-    public CollectionDocument(GeoServer geoServer, PublishedInfo published) throws IOException {
+    public CollectionDocument(GeoServer geoServer, PublishedInfo published, List<String> crs) throws IOException {
         super(published);
         LinkInfoConverter.addLinksToDocument(this, published, MapsService.class);
         // basic info
@@ -80,8 +85,20 @@ public class CollectionDocument extends AbstractCollectionDocument<PublishedInfo
         DateRange timeExtent = getTimeExtent(published);
         CollectionExtents extents = new CollectionExtents(bbox, timeExtent);
         addAdditionalDimensions(extents, geoServer, published);
-        setExtent(extents);
         this.published = published;
+
+        // the CRSs the map can be delivered in, with the storage one, which the map renders without reprojecting
+        // (/req/collection-map/desc-crs). A CRS84 storage CRS is left out, the requirement asks for the others only
+        this.storageCrs = crsUri(storageCrs(published));
+        this.crs = crs;
+        if (storageCrs != null) {
+            if (!crs.contains(storageCrs)) {
+                this.crs = new ArrayList<>(crs);
+                this.crs.add(1, storageCrs);
+            }
+            extents.setStorageCrsBbox(storageBounds(published));
+        }
+        setExtent(extents);
 
         addSelfLinks("ogc/maps/v1/collections/" + id);
 
@@ -104,6 +121,50 @@ public class CollectionDocument extends AbstractCollectionDocument<PublishedInfo
                 .title("Styles as ")
                 .rel("styles")
                 .add(this);
+    }
+
+    public List<String> getCrs() {
+        return crs;
+    }
+
+    public String getStorageCrs() {
+        return storageCrs;
+    }
+
+    /** The CRS the collection is delivered in without reprojecting, null when it is not known. */
+    private static CoordinateReferenceSystem storageCrs(PublishedInfo published) {
+        if (published instanceof LayerInfo layer) return layer.getResource().getCRS();
+        ReferencedEnvelope bounds = ((LayerGroupInfo) published).getBounds();
+        return bounds != null ? bounds.getCoordinateReferenceSystem() : null;
+    }
+
+    /**
+     * The URI of a storage CRS, null when it is CRS84, which the requirement excludes, and when it carries no authority
+     * code, a custom projection for example.
+     */
+    private static String crsUri(CoordinateReferenceSystem crs) {
+        if (crs == null || CRS.equalsIgnoreMetadata(crs, DefaultGeographicCRS.WGS84)) return null;
+        try {
+            String identifier = ResourcePool.lookupIdentifier(crs, false);
+            return identifier == null ? null : MapsService.crsUri(identifier);
+        } catch (FactoryException e) {
+            LOGGER.log(Level.FINER, "Could not look up the authority code of the storage CRS", e);
+            return null;
+        }
+    }
+
+    /**
+     * The collection bounds in its storage CRS, for the {@code storageCrsBbox}, null when they cannot be worked out, in
+     * which case the extent reports the CRS84 box only.
+     */
+    private static ReferencedEnvelope storageBounds(PublishedInfo published) {
+        if (!(published instanceof LayerInfo layer)) return ((LayerGroupInfo) published).getBounds();
+        try {
+            return layer.getResource().boundingBox();
+        } catch (Exception e) {
+            LOGGER.log(Level.FINE, "Could not compute the collection bounds in its storage CRS", e);
+            return null;
+        }
     }
 
     private ReferencedEnvelope getSpatialExtents(PublishedInfo published) {

@@ -85,6 +85,24 @@ public class ApiTest extends MapsTestSupport {
         assertThat(enumOf(api, "collectionId"), hasItems("cite:Lakes", NATURE_GROUP));
     }
 
+    /**
+     * /conf/api-operations/operation-id: the map paths carry the dot separated suffixes the standard assigns to the
+     * collection map and the styled collection map, behind an instance prefix that keeps them unique.
+     */
+    @Test
+    public void testMapOperationIdSuffixes() throws Exception {
+        OpenAPI api = readApi();
+        assertEquals(
+                "maps.collection.getMap",
+                api.getPaths().get("/collections/{collectionId}/map").getGet().getOperationId());
+        assertEquals(
+                "maps.collection.style.getMap",
+                api.getPaths()
+                        .get("/collections/{collectionId}/styles/{styleId}/map")
+                        .getGet()
+                        .getOperationId());
+    }
+
     @Test
     public void testApiYaml() throws Exception {
         MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/maps/v1/openapi.yaml", 200);

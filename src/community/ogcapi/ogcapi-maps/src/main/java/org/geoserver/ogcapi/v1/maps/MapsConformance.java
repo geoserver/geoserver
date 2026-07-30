@@ -12,6 +12,7 @@ import java.util.List;
 import org.geoserver.ogcapi.APIConformance;
 import org.geoserver.ogcapi.ConformanceClass;
 import org.geoserver.ogcapi.ConformanceInfo;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 
 /**
@@ -23,6 +24,9 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
     public static String METADATA_KEY = "ogcapiMaps";
 
     private static final String BASE = "https://www.opengis.net/spec/ogcapi-maps-1/1.0/conf/";
+
+    /** The {@link WMSInfo} metadata key holding the SVG renderer choice, see {@code WMS#getSvgRenderer()}. */
+    private static final String SVG_RENDERER_KEY = "svgRenderer";
 
     public static final APIConformance CORE = new APIConformance(BASE + "core", STANDARD);
     public static final APIConformance COLLECTION_MAP = CORE.extend(BASE + "collection-map");
@@ -339,8 +343,14 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
         this.svg = enabled;
     }
 
-    /** @return {@code true} if SVG conformance is enabled, resolving {@code null} to the class default */
+    /**
+     * @return {@code true} if SVG conformance is enabled. With no explicit setting the class follows the WMS SVG
+     *     renderer of this service: only the Batik one draws in a coordinate system running from 0,0 to the requested
+     *     width and height, as {@code /req/svg/content} demands, while the default streaming renderer writes the world
+     *     coordinates instead. Setting the flag turns the class on regardless, deviation included.
+     */
     public boolean svg(WMSInfo wmsInfo) {
+        if (svg == null) return WMS.SVG_BATIK.equals(wmsInfo.getMetadata().get(SVG_RENDERER_KEY));
         return isEnabled(wmsInfo, svg, SVG);
     }
 

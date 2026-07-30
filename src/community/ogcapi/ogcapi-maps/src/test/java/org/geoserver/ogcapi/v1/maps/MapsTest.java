@@ -104,6 +104,23 @@ public class MapsTest extends MapsTestSupport {
         assertEquals(255, getAsImage(path + "&transparent=false", "image/png").getRGB(0, 0) >>> 24);
     }
 
+    /**
+     * A background color with no explicit transparent means an opaque map, otherwise the color would never show
+     * (Background, transparent requirement D).
+     */
+    @Test
+    public void testBgColorImpliesOpaque() throws Exception {
+        String path = "ogc/maps/v1/collections/Lakes/map?f=image/png&width=100&height=100&bgcolor=0xFF0000";
+        assertEquals(0xFFFF0000, getAsImage(path, "image/png").getRGB(0, 0));
+        // an explicit transparent still wins
+        assertEquals(0, getAsImage(path + "&transparent=true", "image/png").getRGB(0, 0) >>> 24);
+        // with the background class off the color is ignored, so the transparent default comes back
+        withConformance(
+                MapsConformance::setBackground,
+                false,
+                () -> assertEquals(0, getAsImage(path, "image/png").getRGB(0, 0) >>> 24));
+    }
+
     /** A numeric parameter that is not a number is a client error, not a server one. */
     @Test
     public void testInvalidNumber() throws Exception {

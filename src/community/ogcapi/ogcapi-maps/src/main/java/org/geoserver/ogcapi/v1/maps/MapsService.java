@@ -379,9 +379,12 @@ public class MapsService {
             @BindParam("void-color") String voidColor,
             @BindParam("void-transparent") Boolean voidTransparent) {
 
-        /** Maps are transparent unless asked otherwise. */
+        /**
+         * Maps are transparent unless asked otherwise, or unless a background color is given, which would otherwise
+         * never show (OGC API - Maps, {@code /req/background/transparent-definition} C and D).
+         */
         boolean isTransparent() {
-            return !Boolean.FALSE.equals(transparent);
+            return transparent != null ? transparent : bgcolor == null;
         }
 
         /**

@@ -75,13 +75,16 @@ import org.geoserver.wms.legendgraphic.LegendGraphic;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.crs.GeographicCRS;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.data.util.ColorConverterFactory;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.util.DateRange;
+import org.locationtech.jts.geom.Coordinate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -98,6 +101,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class MapsService {
 
     private static final String DISPLAY_NAME = "OGC API Maps";
+
+    /** The display resolution assumed when {@code mm-per-pixel} is not given, by spec. */
+    private static final double DEFAULT_MM_PER_PIXEL = 0.28;
+
+    private static final double MM_PER_INCH = 25.4;
+
     private TimeParser timeParser = new TimeParser();
 
     private final GeoServer geoServer;
@@ -636,6 +645,14 @@ public class MapsService {
         checkPositiveSize("width", q.width());
         checkPositiveSize("height", q.height());
 
+        // a rendering device pixel has a positive size (/req/display-resolution/mm-per-pixel-definition B)
+        if (q.mmPerPixel() != null && q.mmPerPixel() <= 0) {
+            throw new APIException(
+                    INVALID_PARAMETER_VALUE,
+                    "mm-per-pixel must be a positive number, got " + q.mmPerPixel(),
+                    HttpStatus.BAD_REQUEST);
+        }
+
         // scale-denominator with an explicit width/height is only defined when spatial subsetting is available
         // (OGC API - Maps, Scaling, scale-denominator requirement D)
         boolean explicitSize = q.width() != null || q.height() != null;
@@ -686,7 +703,11 @@ public class MapsService {
         // a bbox or spatial subset is an explicit extent; center is not (it needs width/height and scale-denominator)
         boolean explicitExtent = region != null;
         if (region == null && q.center() != null) {
-            region = boundsFromCenter(q, width, height);
+            region = boundsAround(parseCenter(q), q, width, height);
+        } else if (region == null && q.scaleDenominator() != null && width != null && height != null) {
+            // no spatial subset at all: the scale and the image size define the extent, laid out around the middle
+            // of the data (/req/scaling/scale-denominator-definition F)
+            region = boundsAround(dataCenter(request), q, width, height);
         }
         if (region != null
                 && outputCrs != null
@@ -727,6 +748,7 @@ public class MapsService {
         if (height != null) request.setHeight(height);
         if (q.orientation() != null) request.setAngle(q.orientation());
         applyBackground(q, request);
+        applyDisplayResolution(q, request);
         if (datetime != null) {
             setupTimeSubset(datetime, p, request);
         }
@@ -883,7 +905,18 @@ public class MapsService {
 
     /** OGC pixel size in meters, from mm-per-pixel or the default 0.28 mm (see OGC API - Maps, Scaling). */
     private double pixelSizeMeters(MapQuery q) {
-        return (q.mmPerPixel() != null ? q.mmPerPixel() : 0.28) / 1000d;
+        return (q.mmPerPixel() != null ? q.mmPerPixel() : DEFAULT_MM_PER_PIXEL) / 1000d;
+    }
+
+    /**
+     * Passes {@code mm-per-pixel} down to the renderer as the WMS {@code dpi} format option, so that the scale the
+     * symbology rules are selected with reflects the requested display resolution and not just the image size
+     * ({@code /req/display-resolution/map-success} B). The default is the renderer own one, so it needs no option.
+     */
+    private static void applyDisplayResolution(MapQuery q, GetMapRequest request) {
+        if (q.mmPerPixel() == null || q.mmPerPixel() == DEFAULT_MM_PER_PIXEL) return;
+        // the rendering pipeline reads the option as an integer, see VectorRenderingLayerIdentifier
+        request.getFormatOptions().put("dpi", (int) Math.round(MM_PER_INCH / q.mmPerPixel()));
     }
 
     private int[] sizeFromScale(ReferencedEnvelope region, double scaleDenominator, double pixelSizeMeters) {
@@ -896,13 +929,11 @@ public class MapsService {
         return new int[] {width, height};
     }
 
-    private ReferencedEnvelope boundsFromCenter(MapQuery q, Integer width, Integer height) throws FactoryException {
-        if (width == null || height == null || q.scaleDenominator() == null) {
-            throw new APIException(
-                    APIException.INVALID_PARAMETER_VALUE,
-                    "center requires width, height and scale-denominator to define the map extent",
-                    HttpStatus.BAD_REQUEST);
-        }
+    /** A map centre in longitude/latitude order, with the XY twin of the CRS it is expressed in. */
+    private record Center(double lon, double lat, CoordinateReferenceSystem crs) {}
+
+    /** The centre asked for by the {@code center} and {@code center-crs} parameters. */
+    private static Center parseCenter(MapQuery q) throws FactoryException {
         String[] ordinates = q.center().split(",");
         if (ordinates.length < 2) {
             throw new APIException(
@@ -915,14 +946,66 @@ public class MapsService {
                 q.centerCrs() != null ? APIBBoxParser.parseCRS(q.centerCrs()) : DefaultGeographicCRS.WGS84;
         // center ordinates follow the identifier axis order; read them into longitude/latitude and work in the XY twin
         boolean northEast = CRS.getAxisOrder(crs) == CRS.AxisOrder.NORTH_EAST;
-        double lon = northEast ? c[1] : c[0];
-        double lat = northEast ? c[0] : c[1];
-        crs = APIBBoxParser.toLonLat(crs);
-        double metersPerUnit = RendererUtilities.toMeters(1d, crs);
+        return new Center(northEast ? c[1] : c[0], northEast ? c[0] : c[1], APIBBoxParser.toLonLat(crs));
+    }
+
+    /** The middle of the data, used as the map centre when the request states none. */
+    private static Center dataCenter(GetMapRequest request) throws IOException {
+        ReferencedEnvelope centers = new ReferencedEnvelope(DefaultGeographicCRS.WGS84);
+        for (MapLayerInfo layer : request.getLayers()) {
+            centers.expandToInclude(layerCenter(layer));
+        }
+        if (centers.isNull()) {
+            throw new APIException(
+                    APIException.INVALID_PARAMETER_VALUE,
+                    "Cannot place the map, the collection has no known extent, use bbox, subset or center",
+                    HttpStatus.BAD_REQUEST);
+        }
+        return new Center(centers.getMedian(0), centers.getMedian(1), DefaultGeographicCRS.WGS84);
+    }
+
+    /**
+     * The centre of a layer, in WGS84. Reprojecting the native centre keeps the point in the middle of the data: the
+     * declared latitude/longitude box is the envelope of the reprojected footprint, whose centre drifts away from the
+     * data when the footprint curves.
+     */
+    private static Coordinate layerCenter(MapLayerInfo layer) throws IOException {
+        ReferencedEnvelope bounds;
+        try {
+            bounds = layer.getBoundingBox();
+        } catch (Exception e) {
+            throw new IOException("Failed to read the bounds of layer " + layer.getName(), e);
+        }
+        // remote sources and layers with no native box fall back to the declared one, already in WGS84
+        if (bounds == null || bounds.isEmpty()) bounds = layer.getLatLongBoundingBox();
+        Coordinate center = new Coordinate(bounds.getMedian(0), bounds.getMedian(1));
+        try {
+            MathTransform tx =
+                    CRS.findMathTransform(bounds.getCoordinateReferenceSystem(), DefaultGeographicCRS.WGS84, true);
+            return JTS.transform(center, null, tx);
+        } catch (FactoryException | TransformException e) {
+            throw new IOException("Failed to locate the centre of layer " + layer.getName(), e);
+        }
+    }
+
+    /** The extent a map of the given pixel size covers around a centre, at the requested scale and resolution. */
+    private ReferencedEnvelope boundsAround(Center center, MapQuery q, Integer width, Integer height) {
+        if (width == null || height == null || q.scaleDenominator() == null) {
+            throw new APIException(
+                    APIException.INVALID_PARAMETER_VALUE,
+                    "center requires width, height and scale-denominator to define the map extent",
+                    HttpStatus.BAD_REQUEST);
+        }
+        double metersPerUnit = RendererUtilities.toMeters(1d, center.crs());
         double groundResolution = q.scaleDenominator() * pixelSizeMeters(q); // meters per pixel
         double halfWidth = (width / 2d) * groundResolution / metersPerUnit;
         double halfHeight = (height / 2d) * groundResolution / metersPerUnit;
-        return new ReferencedEnvelope(lon - halfWidth, lon + halfWidth, lat - halfHeight, lat + halfHeight, crs);
+        return new ReferencedEnvelope(
+                center.lon() - halfWidth,
+                center.lon() + halfWidth,
+                center.lat() - halfHeight,
+                center.lat() + halfHeight,
+                center.crs());
     }
 
     /** Result of an OGC subset expression: a spatial envelope and/or a temporal value. */

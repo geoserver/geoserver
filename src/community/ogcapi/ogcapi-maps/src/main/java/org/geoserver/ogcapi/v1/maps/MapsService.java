@@ -300,9 +300,11 @@ public class MapsService {
     private void addContentHeaders(GetMapRequest request) throws FactoryException {
         HttpServletResponse response = APIRequestInfo.get().getResponse();
         if (response == null) return;
-        // the rotation actually applied, in decimal degrees, zero when the map is north up
+        // the rotation applied, reported only when the orientation parameter was used
         // (/req/orientation/response-headers A)
-        response.setHeader("Content-Orientation", String.valueOf(request.getAngle()));
+        if (request.getRawKvp().containsKey("orientation")) {
+            response.setHeader("Content-Orientation", String.valueOf(request.getAngle()));
+        }
         if (request.getBbox() != null) {
             String[] headers = contentCrsAndBbox(
                     new ReferencedEnvelope(request.getBbox(), request.getCrs()),
@@ -802,7 +804,13 @@ public class MapsService {
         }
         if (width != null) request.setWidth(width);
         if (height != null) request.setHeight(height);
-        if (q.orientation() != null) request.setAngle(q.orientation());
+        if (q.orientation() != null) {
+            // a non finite rotation is not a valid orientation, and would silently render a broken map
+            if (!Double.isFinite(q.orientation()))
+                throw new APIException(
+                        INVALID_PARAMETER_VALUE, "Invalid orientation: " + q.orientation(), HttpStatus.BAD_REQUEST);
+            request.setAngle(q.orientation());
+        }
         applyBackground(q, request);
         applyDisplayResolution(q, request);
         if (datetime != null) {
@@ -812,6 +820,8 @@ public class MapsService {
         Map<String, String> rawParamers = new LinkedHashMap<>();
         if (q.bbox() != null) rawParamers.put("bbox", q.bbox());
         if (q.crs() != null) rawParamers.put("crs", q.crs());
+        // the rotation applied, kept for the Content-Orientation header
+        if (q.orientation() != null) rawParamers.put("orientation", String.valueOf(q.orientation()));
         // the requested time, kept for the Content-Datetime header: the parsed value is a range even for an instant
         if (datetime != null) rawParamers.put("time", datetime);
         rawParamers.put("width", String.valueOf(width));

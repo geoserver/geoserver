@@ -4,6 +4,8 @@
  */
 package org.geoserver.ogcapi.v1.maps;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
@@ -13,6 +15,8 @@ import java.util.Map;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 
@@ -20,6 +24,36 @@ import org.springframework.http.MediaType;
 public class StylesTest extends MapsTestSupport {
 
     public StylesTest() {}
+
+    /** The styles page offers the map of each style as HTML, and the other map formats in the format picker. */
+    @Test
+    public void testStylesHtmlMapFormats() throws Exception {
+        Document document = getAsJSoup("ogc/maps/v1/collections/BlueMarble/styles?f=html");
+
+        Element html = document.select(".card-footer a.btn").first();
+        assertEquals("HTML", html.text());
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/maps/v1/collections/wcs%3ABlueMarble/styles/raster/map?f=text%2Fhtml",
+                html.attr("href"));
+        List<String> formats = document.select(".card-footer select option").eachText();
+        assertThat(formats, hasItem("image/png"));
+        assertThat(formats, hasItem("image/jpeg"));
+    }
+
+    /** The collection page offers the default map the same way, its HTML link carrying the identifier of the card. */
+    @Test
+    public void testCollectionHtmlMapFormats() throws Exception {
+        Document document = getAsJSoup("ogc/maps/v1/collections/cite:Lakes?f=html");
+
+        Element html = document.select("#html_cite__Lakes_link").first();
+        assertEquals("HTML", html.text());
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/maps/v1/collections/cite:Lakes/map?f=text%2Fhtml",
+                html.attr("href"));
+        List<String> formats = document.select(".card-footer select option").eachText();
+        assertThat(formats, hasItem("image/png"));
+        assertThat(formats, hasItem("image/jpeg"));
+    }
 
     @Test
     public void testCollectionsJsonDefault() throws Exception {

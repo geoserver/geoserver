@@ -21,22 +21,10 @@
           <#assign legendUrl = style.getLinkUrl('https://www.opengis.net/def/rel/ogc/1.0/legend', 'image/png')!''>
           <#if legendUrl?has_content><img src="${legendUrl}&legend-options=fontAntiAliasing:true" alt="Legend for ${style.id}"/></#if>
         </div>
-        <div class="card-footer">
-          <div class="row">
-            <div class="col-auto pe-0 py-1">
-              Map as <a class="btn btn-outline-primary btn-sm" href="${style.getLinkUrl('items', 'text/html')!}">HTML</a>
-              or choose another format:
-            </div>
-            <div class="col-auto py-1">
-              <select class="form-select form-select-sm form-select-open-limit">
-                <option value="none" selected>-- Please choose a format --</option>
-                <#list style.getLinksExcept('items', 'text/html') as link>
-                <option value="${link.href}">${link.type}</option>
-                </#list>
-              </select>
-            </div>
-          </div>
-        </div>
+        <#assign mapFormatsResource = style>
+        <#assign mapFormatsRel = 'items'>
+        <#assign mapFormatsLabel = 'Map as'>
+        <#include "map-formats.ftl">
       </div>
     </div>
     </#list>

@@ -6,6 +6,7 @@ package org.geoserver.ogcapi.v1.maps;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
@@ -25,6 +26,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.SwaggerJSONAPIMessageConverter;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -118,11 +120,30 @@ public class ApiTest extends MapsTestSupport {
     @Test
     public void testMapFormats() throws Exception {
         OpenAPI api = readApi();
-        // f-map parameter enum and the map 200 response both advertise the standard MIME subset
-        assertThat(enumOf(api, "f-map"), hasItems("image/png", "image/jpeg", "image/tiff", "image/svg+xml"));
-        assertThat(map200Formats(api), hasItems("image/png", "image/jpeg", "image/tiff", "image/svg+xml"));
+        // f-map parameter enum and the map 200 response both advertise the standard MIME subset. SVG is left out: its
+        // conformance class follows the WMS SVG renderer, and the default streaming one is not conformant
+        assertThat(enumOf(api, "f-map"), hasItems("image/png", "image/jpeg", "image/tiff"));
+        assertThat(map200Formats(api), hasItems("image/png", "image/jpeg", "image/tiff"));
+        assertThat(enumOf(api, "f-map"), not(hasItem("image/svg+xml")));
         // the whole WMS catalog must not leak in
         assertThat(enumOf(api, "f-map"), not(hasItems("application/pdf", "image/gif", "application/json")));
+    }
+
+    /** SVG becomes an offered encoding once the service is configured with the conformant Batik renderer. */
+    @Test
+    public void testSvgOfferedWithBatikRenderer() throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        wms.getMetadata().put("svgRenderer", WMS.SVG_BATIK);
+        gs.save(wms);
+        try {
+            OpenAPI api = readApi();
+            assertThat(enumOf(api, "f-map"), hasItem("image/svg+xml"));
+            assertThat(map200Formats(api), hasItem("image/svg+xml"));
+        } finally {
+            wms.getMetadata().remove("svgRenderer");
+            gs.save(wms);
+        }
     }
 
     @Test

@@ -5,8 +5,11 @@
 package org.geoserver.ogcapi.v1.maps;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -14,10 +17,15 @@ import static org.junit.Assert.assertTrue;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import javax.imageio.ImageIO;
+import org.geoserver.config.GeoServer;
+import org.geoserver.wms.WMS;
+import org.geoserver.wms.WMSInfo;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * The map encodings and the content negotiation that selects them: {@code /conf/core/map-op},
@@ -98,22 +106,74 @@ public class EncodingsTest extends MapsTestSupport {
     }
 
     /**
-     * /conf/svg/content: a single SVG document sized as requested. The second assertion of the requirement, map
-     * coordinates running from 0,0 to the requested width and height, is not met by the streaming SVG renderer
-     * GeoServer uses by default: it writes the world coordinates in the {@code viewBox} instead. That is the shared WMS
-     * SVG encoder, so the deviation is recorded here rather than changed under the Maps API.
+     * /conf/svg/content: with the Batik renderer configured, which is what the SVG conformance class follows, a single
+     * SVG document sized as requested and drawn in a coordinate system running from 0,0 to that size.
      */
     @Test
     public void testSvgContent() throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(MAP + "&f=image/svg%2Bxml");
-        assertEquals(200, response.getStatus());
-        assertEquals("image/svg+xml", getBaseMimeType(response.getContentType()));
-        Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
-        assertEquals("svg", dom.getDocumentElement().getLocalName());
-        assertEquals("100", dom.getDocumentElement().getAttribute("width"));
-        assertEquals("100", dom.getDocumentElement().getAttribute("height"));
-        // one map per document: the lake polygon is there, and it is the only feature drawn
-        assertEquals(1, dom.getElementsByTagName("path").getLength());
+        withSvgRenderer(WMS.SVG_BATIK, () -> {
+            MockHttpServletResponse response = getAsServletResponse(MAP + "&f=image/svg%2Bxml");
+            assertEquals(200, response.getStatus());
+            assertEquals("image/svg+xml", getBaseMimeType(response.getContentType()));
+            Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+            Element svg = dom.getDocumentElement();
+            assertEquals("svg", svg.getLocalName());
+            assertEquals("100", svg.getAttribute("width"));
+            assertEquals("100", svg.getAttribute("height"));
+            // no viewBox means the default user space, which starts at 0,0 and ends at the width and height
+            assertEquals("", svg.getAttribute("viewBox"));
+
+            // the map is clipped to exactly that pixel box, and every drawn coordinate falls inside it
+            NodeList paths = dom.getElementsByTagName("path");
+            assertEquals("M0 0 L100 0 L100 100 L0 100 L0 0 Z", ((Element) paths.item(0)).getAttribute("d"));
+            assertThat(paths.getLength(), greaterThan(1));
+            for (int i = 1; i < paths.getLength(); i++) {
+                for (String ordinate :
+                        ((Element) paths.item(i)).getAttribute("d").split("[^0-9.]+")) {
+                    if (ordinate.isEmpty()) continue;
+                    assertThat(Double.parseDouble(ordinate), allOf(greaterThanOrEqualTo(0d), lessThanOrEqualTo(100d)));
+                }
+            }
+        });
+    }
+
+    /**
+     * The streaming SVG renderer, the GeoServer default, writes the world coordinates in the {@code viewBox} instead of
+     * drawing in the requested pixel space, so it does not meet {@code /req/svg/content} B. The conformance class
+     * follows the renderer choice, so with that one configured SVG is not an offered encoding at all.
+     */
+    @Test
+    public void testStreamingSvgNotOffered() throws Exception {
+        withSvgRenderer(WMS.SVG_SIMPLE, () -> {
+            MockHttpServletResponse response = getAsServletResponse(MAP + "&f=image/svg%2Bxml");
+            assertEquals(406, response.getStatus());
+            assertThat(response.getContentAsString(), containsString("SVG"));
+        });
+        // an administrator accepting the deviation can still turn the class on, and then the map is encoded
+        withSvgRenderer(
+                WMS.SVG_SIMPLE,
+                () -> withConformance(MapsConformance::setSvg, true, () -> {
+                    MockHttpServletResponse response = getAsServletResponse(MAP + "&f=image/svg%2Bxml");
+                    assertEquals(200, response.getStatus());
+                    Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+                    // the non conformant part: the coordinate system is the world one, not the pixel one
+                    assertThat(dom.getDocumentElement().getAttribute("viewBox"), containsString("-0.002"));
+                }));
+    }
+
+    /** Runs the body with the given WMS SVG renderer configured, restoring the previous choice afterwards. */
+    private void withSvgRenderer(String renderer, ThrowingRunnable body) throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        String previous = (String) wms.getMetadata().get("svgRenderer");
+        wms.getMetadata().put("svgRenderer", renderer);
+        gs.save(wms);
+        try {
+            body.run();
+        } finally {
+            wms.getMetadata().put("svgRenderer", previous);
+            gs.save(wms);
+        }
     }
 
     /** /conf/html/content: an HTML document presenting the geospatial data as a map. */

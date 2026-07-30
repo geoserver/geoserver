@@ -730,9 +730,13 @@ public class MapsService {
         // set both CRS and SRS: wms.reflect() guesses the layer SRS when getSRS() is null, which would silently
         // overwrite the requested output CRS
         if (region != null) {
+            // the same CRS spelled as an OGC URI, a URN or a safe CURIE decodes to differently identified objects, and
+            // only some of those identifiers can be decoded back; normalise to the longitude/latitude twin, which the
+            // ordinates already follow and whose SRS the rendering pipeline understands
+            CoordinateReferenceSystem delivered = APIBBoxParser.toLonLat(region.getCoordinateReferenceSystem());
             request.setBbox(region);
-            request.setCrs(region.getCoordinateReferenceSystem());
-            request.setSRS(CRS.toSRS(region.getCoordinateReferenceSystem()));
+            request.setCrs(delivered);
+            request.setSRS(CRS.toSRS(delivered));
         } else if (outputCrs != null) {
             request.setCrs(outputCrs);
             request.setSRS(CRS.toSRS(outputCrs));
@@ -1052,6 +1056,19 @@ public class MapsService {
         return "*".equals(value) ? ".." : value;
     }
 
+    /*
+     * The subset axis names, lower cased: the ones the standard requires plus the aliases it recommends, see
+     * /req/spatial-subsetting/subset-definition and /req/datetime/subset-definition. An axis outside these sets and
+     * outside the collection additional dimensions is rejected with a 400.
+     */
+    private static final Set<String> X_AXES = Set.of("lon", "long", "longitude", "e", "easting", "x");
+
+    private static final Set<String> Y_AXES = Set.of("lat", "latitude", "n", "northing", "y");
+    private static final Set<String> TIME_AXES = Set.of("time", "t");
+
+    /** The vertical axis names, which a flat map applies as the WMS elevation dimension. */
+    private static final Set<String> VERTICAL_AXES = Set.of("h", "z");
+
     /**
      * Parses a {@code Lat(30:60),Lon(10:20)} / {@code time(...)} subset, mapping Lat/Lon (or N/E, Y/X) to a box and the
      * time axis apart; any other axis (elevation or a custom dimension) is collected as an extra dimension for the
@@ -1075,16 +1092,18 @@ public class MapsService {
                         HttpStatus.BAD_REQUEST);
             }
             String axis = dim.substring(0, open).trim();
+            String name = axis.toLowerCase();
             String range = dim.substring(open + 1, dim.length() - 1);
-            if (axis.equalsIgnoreCase("time")) {
+            if (TIME_AXES.contains(name)) {
                 result.time = toDatetime(range);
                 continue;
             }
-            boolean isX = axis.equalsIgnoreCase("Lon") || axis.equalsIgnoreCase("E") || axis.equalsIgnoreCase("X");
-            boolean isY = axis.equalsIgnoreCase("Lat") || axis.equalsIgnoreCase("N") || axis.equalsIgnoreCase("Y");
+            boolean isX = X_AXES.contains(name);
+            boolean isY = Y_AXES.contains(name);
             if (!isX && !isY) {
-                // elevation or a custom dimension; keep the raw range as given, its values need not be numeric
-                result.extraDimensions.put(axis, range.trim());
+                // a vertical axis is the elevation of a flat map; any other one is a custom dimension, whose raw
+                // range is kept as given since its values need not be numeric
+                result.extraDimensions.put(VERTICAL_AXES.contains(name) ? "elevation" : axis, range.trim());
                 continue;
             }
             String[] bounds = range.split(":");

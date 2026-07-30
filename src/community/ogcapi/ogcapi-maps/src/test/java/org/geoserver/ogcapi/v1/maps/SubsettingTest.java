@@ -6,10 +6,14 @@ package org.geoserver.ogcapi.v1.maps;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.wms.WMSInfo;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -161,6 +165,99 @@ public class SubsettingTest extends MapsTestSupport {
         for (String crs : new String[] {"[EPSG:4326]", "http://www.opengis.net/def/crs/EPSG/0/4326", "EPSG:4326"}) {
             MockHttpServletResponse response = getAsServletResponse(projected + crs.replace("[", "%5B"));
             assertEquals(crs, 200, response.getStatus());
+        }
+    }
+    /**
+     * /conf/spatial-subsetting/subset-definition D: an interval falling entirely outside the valid range of its axis
+     * has nothing to return, so a CITE compliant server answers 404 rather than drawing an empty map. Only latitude can
+     * ever trip this: longitude wraps around, and projected and vertical axes declare no bounds.
+     */
+    @Test
+    public void testSubsetOutsideAxisRangeNotFoundWhenCiteCompliant() throws Exception {
+        withCiteCompliance(true, () -> {
+            for (String subset : new String[] {"Lat(200:300)", "Lat(-300:-200)", "Lat(95)"}) {
+                MockHttpServletResponse response = getAsServletResponse(MAP + "&subset=" + subset);
+                assertEquals(subset, 404, response.getStatus());
+            }
+            // an interval merely overlapping the valid range is clipped and rendered, not refused
+            assertEquals(
+                    200,
+                    getAsServletResponse(MAP + "&subset=Lat(80:100),Lon(0:2)").getStatus());
+            // a projected subset CRS declares no axis bounds, so nothing is refused there
+            assertEquals(
+                    200,
+                    getAsServletResponse(MAP + "&subset=N(9000000:9500000),E(0:100000)&subset-crs=EPSG:3857")
+                            .getStatus());
+        });
+    }
+
+    /**
+     * Outside CITE compliance the same request is served rather than refused: clients ask for round latitude bounds all
+     * the time, and an empty map is more useful to them than an error.
+     */
+    @Test
+    public void testSubsetOutsideAxisRangeToleratedByDefault() throws Exception {
+        for (String subset : new String[] {"Lat(200:300)", "Lat(-300:-200)", "Lat(95)"}) {
+            MockHttpServletResponse response = getAsServletResponse(MAP + "&subset=" + subset);
+            assertEquals(subset, 200, response.getStatus());
+        }
+    }
+
+    /** Runs the body with the CITE compliance flag set, restoring the previous value afterwards. */
+    private void withCiteCompliance(boolean citeCompliant, ThrowingRunnable body) throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        boolean previous = wms.isCiteCompliant();
+        wms.setCiteCompliant(citeCompliant);
+        gs.save(wms);
+        try {
+            body.run();
+        } finally {
+            wms.setCiteCompliant(previous);
+            gs.save(wms);
+        }
+    }
+
+    /**
+     * Longitude wraps around, so no interval is ever entirely outside it: a low value greater than the high one is the
+     * antimeridian case, and values past 180 are equivalent positions.
+     */
+    @Test
+    public void testWrappingAxisNeverOutOfRange() throws Exception {
+        for (String subset : new String[] {"Lon(170:-170),Lat(-5:5)", "Lon(200:300),Lat(-5:5)"}) {
+            MockHttpServletResponse response = getAsServletResponse(MAP + "&subset=" + subset);
+            assertEquals(subset, 200, response.getStatus());
+        }
+    }
+
+    /**
+     * /conf/crs/crs-definition B and C: the CRSs the collection advertises are accepted by the crs parameter and, when
+     * the same value is used there, by bbox-crs and subset-crs too.
+     */
+    @Test
+    public void testAdvertisedCrsAcceptedEverywhere() throws Exception {
+        List<String> advertised =
+                getAsJSONPath("ogc/maps/v1/collections/cite:Lakes", 200).read("crs");
+        // the list is large when no SRS list is configured, so check the ones the standard names plus a projected one
+        for (String crs : new String[] {
+            "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+            "http://www.opengis.net/def/crs/EPSG/0/4326",
+            "http://www.opengis.net/def/crs/EPSG/0/3857"
+        }) {
+            assertThat(advertised, hasItem(crs));
+            MockHttpServletResponse response = getAsServletResponse(MAP + "&crs=" + crs);
+            assertEquals(crs, 200, response.getStatus());
+            // and the same value drives the subsetting parameters, as requirement C asks
+            assertEquals(
+                    crs,
+                    200,
+                    getAsServletResponse(MAP + "&crs=" + crs + "&bbox=0,0,2,1&bbox-crs=" + crs)
+                            .getStatus());
+            assertEquals(
+                    crs,
+                    200,
+                    getAsServletResponse(MAP + "&crs=" + crs + "&subset=Lon(0:2),Lat(0:1)&subset-crs=" + crs)
+                            .getStatus());
         }
     }
 }

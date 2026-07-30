@@ -75,6 +75,8 @@ import org.geoserver.wms.legendgraphic.LegendGraphic;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.crs.GeographicCRS;
+import org.geotools.api.referencing.cs.CoordinateSystemAxis;
+import org.geotools.api.referencing.cs.RangeMeaning;
 import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.data.util.ColorConverterFactory;
@@ -684,7 +686,9 @@ public class MapsService {
         // area of interest: bbox, or subset spatial ranges, or a box built around a center point
         String datetime = q.datetime();
         ReferencedEnvelope region = q.bbox() != null ? parseSingleBBox(q.bbox(), q.bboxCrs()) : null;
-        SubsetResult subset = q.subset() != null ? parseSubset(q.subset(), q.subsetCrs()) : null;
+        SubsetResult subset = q.subset() != null
+                ? parseSubset(q.subset(), q.subsetCrs(), wmsInfo.isCiteCompliant() && conf.spatialSubsetting(wmsInfo))
+                : null;
 
         // bbox, center and the spatial axes of a subset all define the same map extent, so at most one of them can be
         // used (per spec). A subset for time or an additional dimension is no conflict.
@@ -817,11 +821,14 @@ public class MapsService {
         boolean scaling = conf.scaling(wms);
         // {@code width} and  {@code height} are supported by both the scaling and the spatial subsetting classes
         boolean size = scaling || subsetting;
+        // one subset string carries axes of three different classes, so it survives when any of them is on, and each
+        // axis is then applied, or ignored, where the parsed result is used
+        boolean anySubset = subsetting || conf.datetime(wms) || conf.generalSubsetting(wms);
         return new MapQuery(
                 subsetting ? q.bbox() : null,
                 subsetting ? q.bboxCrs() : null,
-                q.subset(),
-                q.subsetCrs(),
+                anySubset ? q.subset() : null,
+                subsetting ? q.subsetCrs() : null,
                 subsetting ? q.center() : null,
                 subsetting ? q.centerCrs() : null,
                 conf.crs(wms) ? q.crs() : null,
@@ -1073,8 +1080,11 @@ public class MapsService {
      * Parses a {@code Lat(30:60),Lon(10:20)} / {@code time(...)} subset, mapping Lat/Lon (or N/E, Y/X) to a box and the
      * time axis apart; any other axis (elevation or a custom dimension) is collected as an extra dimension for the
      * general subsetting class to apply.
+     *
+     * @param checkRanges whether a spatial range outside its axis is a 404, which only holds in CITE compliant mode and
+     *     only when the spatial subsetting class can act on that range
      */
-    private SubsetResult parseSubset(String subset, String subsetCrs) throws FactoryException {
+    private SubsetResult parseSubset(String subset, String subsetCrs, boolean checkRanges) throws FactoryException {
         SubsetResult result = new SubsetResult();
         // the ranges are keyed by axis name (Lat/Lon), so the envelope is built in longitude/latitude order and only
         // needs the matching XY CRS regardless of the identifier axis order
@@ -1109,6 +1119,7 @@ public class MapsService {
             String[] bounds = range.split(":");
             double low = Double.parseDouble(bounds[0].trim());
             double high = bounds.length > 1 ? Double.parseDouble(bounds[1].trim()) : low;
+            if (checkRanges) checkAxisRange(axis, crs.getCoordinateSystem().getAxis(isX ? 0 : 1), low, high);
             if (isX) {
                 minX = low;
                 // a low longitude greater than the high one means an extent crossing the wrapping point, see
@@ -1123,6 +1134,22 @@ public class MapsService {
             result.envelope = new ReferencedEnvelope(minX, maxX, minY, maxY, crs);
         }
         return result;
+    }
+
+    /**
+     * Fails with a 404 when a subset interval falls entirely outside the valid range of its axis
+     * ({@code /req/spatial-subsetting/subset-definition} D). Only called in CITE compliant mode.
+     */
+    private static void checkAxisRange(String axis, CoordinateSystemAxis csAxis, double low, double high) {
+        if (csAxis.getRangeMeaning() == RangeMeaning.WRAPAROUND) return;
+        double min = csAxis.getMinimumValue();
+        double max = csAxis.getMaximumValue();
+        if (Math.max(low, high) >= min && Math.min(low, high) <= max) return;
+        throw new APIException(
+                APIException.NOT_FOUND,
+                "The " + axis + " subset " + low + ":" + high + " falls entirely outside the valid range of the axis, "
+                        + min + " to " + max,
+                HttpStatus.NOT_FOUND);
     }
 
     private void setupTimeSubset(String datetime, PublishedInfo p, GetMapRequest request)

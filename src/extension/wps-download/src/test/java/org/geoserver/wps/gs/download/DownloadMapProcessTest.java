@@ -75,7 +75,7 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
             MockHttpServletResponse response = postAsServletResponse("wps", request);
             assertEquals("text/xml", response.getContentType());
             String content = new String(response.getContentAsByteArray(), UTF_8);
-            assertThat(content, containsString("Invalid Capabilities URL"));
+            assertThat(content, containsString("URL Check denied"));
             assertThat(content, containsString("was not accepted by external URL checks"));
         } finally {
             dao.saveChecks(previousChecks);

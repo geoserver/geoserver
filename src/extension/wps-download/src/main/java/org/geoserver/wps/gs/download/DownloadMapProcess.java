@@ -582,7 +582,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             try {
                 URLCheckers.confirm(capabilitiesUrl);
             } catch (URLCheckerException e) {
-                throw new WPSException("Invalid Capabilities URL: " + capabilitiesUrl, e);
+                throw new WPSException("URL Check denied: " + capabilitiesUrl, e);
             }
             HTTPClient client = httpClientSupplier.get();
             server = new WebMapServer(new URL(layer.getCapabilities()), client);

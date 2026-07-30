@@ -265,9 +265,35 @@ public class MapsService {
             if (query.height() != null) request.setHeight(query.height());
             return new HTMLMap(new WMSMapContent(request));
         }
-        WebMap map = wms.reflect(request);
+        WebMap map;
+        try {
+            map = wms.reflect(request);
+        } catch (ServiceException e) {
+            // checks if the exception is related to a dimension mismatch, otherwise returns it as-is
+            throw notFoundOnDimensionMismatch(e);
+        }
         addContentHeaders(request);
         return map;
+    }
+
+    /**
+     * Turns the WMS "no match for a dimension value" failure into a 404, per standard compliance when a subset falls
+     * entirely outside the values valid for its axis ({@code /req/datetime/subset-definition} D and
+     * {@code /req/general-subsetting/subset-definition} D). Any other service exception travels on unchanged.
+     *
+     * <p>The check itself is the WMS one, so it obeys {@code WMSInfo#exceptionOnInvalidDimension()}: turned off, the
+     * server draws an empty map and answers 200 instead.
+     */
+    private static RuntimeException notFoundOnDimensionMismatch(ServiceException e) {
+        if (!ServiceException.INVALID_DIMENSION_VALUE.equals(e.getCode())) return e;
+        // the locator is the WMS request key, so a custom dimension arrives as DIM_<NAME>; name the axis as the
+        // client wrote it in the subset instead
+        String axis = e.getLocator().replaceFirst("^DIM_", "");
+        return new APIException(
+                APIException.NOT_FOUND,
+                "The requested " + axis + " value falls outside the values available for that dimension",
+                HttpStatus.NOT_FOUND,
+                e);
     }
 
     /** Sets the OGC API - Maps content headers describing the delivered CRS, extent, orientation and time. */
@@ -519,7 +545,12 @@ public class MapsService {
         request.setFeatureCount(limit);
         request.setQueryLayers(getMapRequest.getLayers());
 
-        FeatureCollectionType collection = wms.getFeatureInfo(request);
+        FeatureCollectionType collection;
+        try {
+            collection = wms.getFeatureInfo(request);
+        } catch (ServiceException e) {
+            throw notFoundOnDimensionMismatch(e);
+        }
         return new FeatureInfoResponse(collection, request);
     }
 

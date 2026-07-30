@@ -100,7 +100,7 @@ paths:
     get:
       tags: [Maps]
       summary: retrieve a map of a collection in its default style
-      operationId: getCollectionMap
+      operationId: maps.collection.getMap
       parameters:
         - $ref: '#/components/parameters/collectionId'
         - $ref: '#/components/parameters/f-map'
@@ -132,7 +132,7 @@ paths:
     get:
       tags: [Maps]
       summary: retrieve a map of a collection in a given style
-      operationId: getCollectionStyleMap
+      operationId: maps.collection.style.getMap
       parameters:
         - $ref: '#/components/parameters/collectionId'
         - $ref: '#/components/parameters/styleId'

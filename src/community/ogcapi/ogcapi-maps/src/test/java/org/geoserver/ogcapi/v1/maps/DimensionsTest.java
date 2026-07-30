@@ -15,9 +15,11 @@ import static org.junit.Assert.assertNotEquals;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
@@ -63,6 +65,22 @@ public class DimensionsTest extends MapsTestSupport {
         di.setPresentation(DimensionPresentation.LIST);
         cust.getMetadata().put(CUSTOM_DIMENSION_PREFIX + CUSTOM_DIMENSION_NAME, di);
         getCatalog().save(cust);
+    }
+
+    /**
+     * Each test configures the dimensions it needs on the shared vector layer, so clear them afterwards: a leftover
+     * dimension applies its default value to the following requests and silently changes what they render.
+     */
+    @After
+    public void clearVectorDimensions() {
+        FeatureTypeInfo ft = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
+        if (ft == null) return;
+        ft.getMetadata()
+                .keySet()
+                .removeIf(k -> k.equals(ResourceInfo.TIME)
+                        || k.equals(ResourceInfo.ELEVATION)
+                        || k.startsWith(CUSTOM_DIMENSION_PREFIX));
+        getCatalog().save(ft);
     }
 
     /** The units tests reconfigure the shared coverage, so put back the setup the other tests expect. */
@@ -221,6 +239,133 @@ public class DimensionsTest extends MapsTestSupport {
                 "image/png");
         assertEquals(50, image.getWidth());
         assertOpaque(image, new int[] {25, 25});
+    }
+
+    /**
+     * /conf/general-subsetting/subset-definition D: a subset whose values fall entirely outside the ones valid for the
+     * axis has nothing to return, so the answer is a 404 rather than an empty map. This holds for a vector dimension, a
+     * coverage one and a custom one alike, WMS finding it out with an existence query as it applies the dimension.
+     */
+    @Test
+    public void testSubsetOutsideDimensionValuesNotFound() throws Exception {
+        setupDimension(TIME_WITH_START_END, ResourceInfo.ELEVATION, "startElevation", DimensionPresentation.LIST, null);
+        // the vector elevation domain is 1.0 and 2.0
+        assertNotFound("sf:TimeWithStartEnd", "subset=elevation(500:600)", "elevation");
+        // the coverage elevation domain is 0 and 100
+        assertNotFound("sf:watertemp", "subset=elevation(500:600)", "elevation");
+        // and the coverage custom dimension only knows the CustomDimValue* strings
+        assertNotFound("sf:custwatertemp", "subset=" + CUSTOM_DIMENSION_NAME + "(NotAValue)", CUSTOM_DIMENSION_NAME);
+    }
+
+    /** A value inside the domain still renders, so the 404 above is about the range and not about the axis. */
+    @Test
+    public void testSubsetInsideDimensionValuesRenders() throws Exception {
+        setupDimension(TIME_WITH_START_END, ResourceInfo.ELEVATION, "startElevation", DimensionPresentation.LIST, null);
+        assertEquals(
+                200,
+                getAsServletResponse(
+                                "ogc/maps/v1/collections/sf:TimeWithStartEnd/map?f=image/png&width=50&height=50&subset=elevation(1.0)")
+                        .getStatus());
+        assertEquals(
+                200,
+                getAsServletResponse(
+                                "ogc/maps/v1/collections/sf:watertemp/map?f=image/png&width=50&height=50&subset=elevation(0)")
+                        .getStatus());
+    }
+
+    /** /conf/datetime/subset-definition D: the same rule on the time axis, through both spellings of the parameter. */
+    @Test
+    public void testTimeOutsideDimensionValuesNotFound() throws Exception {
+        setupStartEndTimeDimension(TIME_WITH_START_END, "time", "startTime", "endTime");
+        assertNotFound("sf:TimeWithStartEnd", "datetime=1990-01-01T00:00:00Z", "time");
+        assertNotFound("sf:TimeWithStartEnd", "subset=time(%221990-01-01T00:00:00Z%22)", "time");
+        // a time the layer does have still renders
+        assertEquals(
+                200,
+                getAsServletResponse(
+                                "ogc/maps/v1/collections/sf:TimeWithStartEnd/map?f=image/png&width=50&height=50&datetime=2012-02-11T00:00:00Z")
+                        .getStatus());
+    }
+
+    /** The feature info resource answers on the same map, so it reports the missing dimension value the same way. */
+    @Test
+    public void testInfoOutsideDimensionValuesNotFound() throws Exception {
+        setupDimension(TIME_WITH_START_END, ResourceInfo.ELEVATION, "startElevation", DimensionPresentation.LIST, null);
+        MockHttpServletResponse response = getAsServletResponse(
+                "ogc/maps/v1/collections/sf:TimeWithStartEnd/map/info?f=application%2Fjson&width=50&height=50"
+                        + "&i=25&j=25&subset=elevation(500:600)");
+        assertEquals(404, response.getStatus());
+    }
+
+    /** Asserts a map request is refused with a 404 naming the dimension that has no matching value. */
+    private void assertNotFound(String collection, String query, String dimension) throws Exception {
+        String url = "ogc/maps/v1/collections/" + collection + "/map?f=image/png&width=50&height=50&" + query;
+        MockHttpServletResponse response = getAsServletResponse(url);
+        assertEquals(query, 404, response.getStatus());
+        assertEquals("application/json", getBaseMimeType(response.getContentType()));
+        DocumentContext json = JsonPath.parse(response.getContentAsString());
+        assertEquals("NotFound", json.read("type"));
+        assertThat(json.read("title"), containsString(dimension));
+    }
+
+    /**
+     * Nearest match is a GeoServer configuration option, applied by the WMS dimension handling the map request goes
+     * through: a time the layer does not have snaps to the closest one it has, rather than being refused.
+     */
+    @Test
+    public void testTimeNearestMatch() throws Exception {
+        setupNearestTimeDimension(null);
+        MockHttpServletResponse response = getAsServletResponse(nearestTimeMap());
+        assertEquals(200, response.getStatus());
+        // the two features starting on the first day of the domain are drawn, the one starting a day later is not
+        BufferedImage image = renderedMap(response);
+        assertOpaque(image, NW);
+        assertOpaque(image, SW);
+        assertTransparent(image, NE);
+        assertEquals(
+                List.of("99 Nearest value used: time=2012-02-11T00:00:00.000Z  (sf:TimeWithStartEnd)"),
+                List.copyOf(response.getHeaders("Warning")));
+        // the API header reports the time drawn, not the one asked for (OGC API - Maps, /req/core/map-response)
+        assertEquals("2012-02-11T00:00:00Z", response.getHeader("Content-Datetime"));
+    }
+
+    /** The nearest value must fall inside the configured acceptable interval, otherwise nothing matches. */
+    @Test
+    public void testTimeNearestMatchOutsideAcceptableInterval() throws Exception {
+        setupNearestTimeDimension("P1D");
+        MockHttpServletResponse response = getAsServletResponse(nearestTimeMap());
+        assertEquals(200, response.getStatus());
+        BufferedImage image = renderedMap(response);
+        assertTransparent(image, NW);
+        assertTransparent(image, SW);
+        assertTransparent(image, NE);
+        assertEquals(
+                List.of("99 No nearest value found on sf:TimeWithStartEnd: time"),
+                List.copyOf(response.getHeaders("Warning")));
+        // nothing was drawn, so there is no rendered time to report and the requested one stands
+        assertEquals("1990-01-01T00:00:00Z", response.getHeader("Content-Datetime"));
+    }
+
+    /** The map in the response, checking it is a PNG: the nearest match tests need its headers and its pixels. */
+    private BufferedImage renderedMap(MockHttpServletResponse response) throws Exception {
+        assertEquals("image/png", getBaseMimeType(response.getContentType()));
+        return ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+    }
+
+    /** A map request for a time twenty years before the layer domain, the case nearest match exists for. */
+    private static String nearestTimeMap() {
+        return "ogc/maps/v1/collections/sf:TimeWithStartEnd/map?f=image/png&width=50&height=50"
+                + "&datetime=1990-01-01T00:00:00Z";
+    }
+
+    /** Enables the time dimension with nearest match on, and an optional acceptable interval around the request. */
+    private void setupNearestTimeDimension(String acceptableInterval) {
+        setupStartEndTimeDimension(TIME_WITH_START_END, ResourceInfo.TIME, "startTime", "endTime");
+        FeatureTypeInfo info = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
+        DimensionInfo time = info.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+        time.setNearestMatchEnabled(true);
+        time.setAcceptableInterval(acceptableInterval);
+        getCatalog().save(info);
     }
 
     @Test

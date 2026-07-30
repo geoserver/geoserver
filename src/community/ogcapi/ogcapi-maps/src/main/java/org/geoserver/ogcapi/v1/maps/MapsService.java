@@ -76,6 +76,7 @@ import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.crs.GeographicCRS;
 import org.geotools.api.referencing.operation.TransformException;
+import org.geotools.data.util.ColorConverterFactory;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -429,10 +430,14 @@ public class MapsService {
 
         /**
          * Maps are transparent unless asked otherwise, or unless a background color is given, which would otherwise
-         * never show (OGC API - Maps, {@code /req/background/transparent-definition} C and D).
+         * never show (OGC API - Maps, {@code /req/background/transparent-definition} C and D). The void settings act as
+         * the fallback, GeoServer having a single background for both the no data areas and the projection void, see
+         * {@link MapsService#applyBackground}.
          */
         boolean isTransparent() {
-            return transparent != null ? transparent : bgcolor == null;
+            if (transparent != null) return transparent;
+            if (voidTransparent != null) return voidTransparent;
+            return bgcolor == null && voidColor == null;
         }
 
         /**
@@ -721,9 +726,7 @@ public class MapsService {
         if (width != null) request.setWidth(width);
         if (height != null) request.setHeight(height);
         if (q.orientation() != null) request.setAngle(q.orientation());
-        String background = q.bgcolor() != null ? q.bgcolor() : q.voidColor();
-        if (background != null) request.setBgColor(Color.decode(background));
-        request.setTransparent(q.isTransparent());
+        applyBackground(q, request);
         if (datetime != null) {
             setupTimeSubset(datetime, p, request);
         }
@@ -743,6 +746,40 @@ public class MapsService {
         }
         request.setRawKvp(rawParamers);
         return request;
+    }
+
+    /**
+     * Applies the background parameters. GeoServer paints the areas with no data and the ones outside the valid area of
+     * the projection with the same colour and opacity, so the {@code void-color} and {@code void-transparent} values
+     * act as the defaults of the background pair rather than the other way around, which is the direction OGC API -
+     * Maps defines them in ({@code /req/background/void-color-definition} C, {@code /req/background/void-transparent-
+     * definition} B). With neither given the renderer paints an opaque map white, as requirement D asks.
+     */
+    private static void applyBackground(MapQuery q, GetMapRequest request) {
+        String parameter = q.bgcolor() != null ? "bgcolor" : "void-color";
+        String color = q.bgcolor() != null ? q.bgcolor() : q.voidColor();
+        if (color != null) request.setBgColor(parseColor(parameter, color));
+        request.setTransparent(q.isTransparent());
+    }
+
+    /**
+     * A background colour: a hexadecimal red-green-blue value, with or without a {@code 0x} or {@code #} prefix, or a
+     * case insensitive W3C web colour name (OGC API - Maps, {@code /req/background/bgcolor-definition} A and B).
+     */
+    private static Color parseColor(String parameter, String value) {
+        Color named = ColorConverterFactory.CSS_COLORS.get(value.toLowerCase());
+        if (named != null) return named;
+        // a bare value is hexadecimal, the only numeric notation the standard defines
+        String hex = value.startsWith("#") || value.startsWith("0x") || value.startsWith("0X") ? value : "0x" + value;
+        try {
+            return Color.decode(hex);
+        } catch (NumberFormatException e) {
+            throw new APIException(
+                    INVALID_PARAMETER_VALUE,
+                    parameter + " must be a hexadecimal RGB value or a W3C web color name, got " + value,
+                    HttpStatus.BAD_REQUEST,
+                    e);
+        }
     }
 
     /**

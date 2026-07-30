@@ -9,6 +9,10 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.APIException;
 import org.junit.Test;
 
@@ -19,41 +23,89 @@ import org.junit.Test;
  */
 public class BackgroundTest extends MapsTestSupport {
 
+    /** Opaque colours as {@link java.awt.image.BufferedImage#getRGB} returns them, alpha in the high byte. */
+    private static final int RED = 0xFFFF0000;
+
+    private static final int GREEN = 0xFF00FF00;
+
+    private static final int BLUE = 0xFF0000FF;
+
+    private static final int WHITE = 0xFFFFFFFF;
+
+    private static final int CORNFLOWER_BLUE = 0xFF6495ED;
+
+    private static final int MID_BLUE = 0xFF3366CC;
+
     /** A map wholly outside the Lakes data, so every pixel of it is a no data pixel showing the background. */
     private static final String EMPTY_MAP =
             "ogc/maps/v1/collections/Lakes/map?f=image/png&width=20&height=20&bbox=10,10,11,11";
+
+    /** The same map in a style declaring a green background of its own. */
+    private static final String STYLED_EMPTY_MAP =
+            "ogc/maps/v1/collections/cite:Lakes/styles/bggreen/map?f=image/png&width=20&height=20&bbox=10,10,11,11";
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        Catalog catalog = getCatalog();
+        testData.addStyle("bggreen", getClass(), catalog);
+        LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
+        lakes.getStyles().add(catalog.getStyleByName("bggreen"));
+        catalog.save(lakes);
+    }
 
     /** The colour of the no data area under the given background query. */
     private int background(String query) throws Exception {
         return getAsImage(EMPTY_MAP + query, "image/png").getRGB(10, 10);
     }
 
+    /** The same, in the style that declares a background colour of its own. */
+    private int styledBackground(String query) throws Exception {
+        return getAsImage(STYLED_EMPTY_MAP + query, "image/png").getRGB(10, 10);
+    }
+
     /** /conf/background/bgcolor-definition A: a six digit hexadecimal red-green-blue value. */
     @Test
     public void testBgColorHexadecimal() throws Exception {
         // the same colour in the three notations the parameter accepts
-        assertEquals(0xFF3366CC, background("&bgcolor=0x3366CC"));
-        assertEquals(0xFF3366CC, background("&bgcolor=%233366CC"));
-        assertEquals(0xFF3366CC, background("&bgcolor=3366CC"));
+        assertEquals(MID_BLUE, background("&bgcolor=0x3366CC"));
+        assertEquals(MID_BLUE, background("&bgcolor=%233366CC"));
+        assertEquals(MID_BLUE, background("&bgcolor=3366CC"));
         // the digit pairs really are red, green and blue in that order
-        assertEquals(0xFFFF0000, background("&bgcolor=0xFF0000"));
-        assertEquals(0xFF00FF00, background("&bgcolor=0x00FF00"));
-        assertEquals(0xFF0000FF, background("&bgcolor=0x0000FF"));
+        assertEquals(RED, background("&bgcolor=0xFF0000"));
+        assertEquals(GREEN, background("&bgcolor=0x00FF00"));
+        assertEquals(BLUE, background("&bgcolor=0x0000FF"));
     }
 
     /** /conf/background/bgcolor-definition B: a case insensitive W3C web colour name. */
     @Test
     public void testBgColorWebColorName() throws Exception {
-        assertEquals(0xFF6495ED, background("&bgcolor=cornflowerblue"));
-        assertEquals(0xFF6495ED, background("&bgcolor=CornflowerBlue"));
-        assertEquals(0xFF6495ED, background("&bgcolor=CORNFLOWERBLUE"));
-        assertEquals(0xFFFF0000, background("&bgcolor=red"));
+        assertEquals(CORNFLOWER_BLUE, background("&bgcolor=cornflowerblue"));
+        assertEquals(CORNFLOWER_BLUE, background("&bgcolor=CornflowerBlue"));
+        assertEquals(CORNFLOWER_BLUE, background("&bgcolor=CORNFLOWERBLUE"));
+        assertEquals(RED, background("&bgcolor=red"));
     }
 
     /** /conf/background/bgcolor-definition D: an opaque map with no background colour asked for is white. */
     @Test
     public void testBgColorDefaultsToWhite() throws Exception {
-        assertEquals(0xFFFFFFFF, background("&transparent=false"));
+        assertEquals(WHITE, background("&transparent=false"));
+    }
+
+    /**
+     * /conf/background/bgcolor-definition C: with no bgcolor asked for, a style declaring a background colour supplies
+     * it. The renderer paints that background as map content, so the map comes out solid in that colour whatever the
+     * transparency settings say, and the style wins over an explicit bgcolor too.
+     */
+    @Test
+    public void testStyleBackgroundColor() throws Exception {
+        assertEquals(GREEN, styledBackground(""));
+        assertEquals(GREEN, styledBackground("&transparent=false"));
+        // the style background is content, not an image background, so it survives transparent=true and a bgcolor
+        assertEquals(GREEN, styledBackground("&transparent=true"));
+        assertEquals(GREEN, styledBackground("&bgcolor=red"));
+        // without the style the very same map is transparent, so the colour really comes from the style
+        assertEquals(0, background("") >>> 24);
     }
 
     /** A colour that is neither hexadecimal nor a known name is a client error, not a server one. */
@@ -75,10 +127,10 @@ public class BackgroundTest extends MapsTestSupport {
         // no transparent and no bgcolor: transparent is assumed (requirement C)
         assertEquals(0, background("") >>> 24);
         // no transparent but a bgcolor: opaque is assumed, or the colour would never show (requirement D)
-        assertEquals(0xFFFF0000, background("&bgcolor=red"));
+        assertEquals(RED, background("&bgcolor=red"));
         // an explicit transparent=false is opaque, with or without a colour
-        assertEquals(0xFFFFFFFF, background("&transparent=false"));
-        assertEquals(0xFFFF0000, background("&transparent=false&bgcolor=red"));
+        assertEquals(WHITE, background("&transparent=false"));
+        assertEquals(RED, background("&transparent=false&bgcolor=red"));
         // an explicit transparent=true wins over the colour, whose opacity becomes 0 (requirement E)
         assertEquals(0, background("&transparent=true") >>> 24);
         assertEquals(0, background("&transparent=true&bgcolor=red") >>> 24);
@@ -91,12 +143,12 @@ public class BackgroundTest extends MapsTestSupport {
      */
     @Test
     public void testVoidColor() throws Exception {
-        assertEquals(0xFFFF0000, background("&void-color=0xFF0000"));
-        assertEquals(0xFF6495ED, background("&void-color=CornflowerBlue"));
+        assertEquals(RED, background("&void-color=0xFF0000"));
+        assertEquals(CORNFLOWER_BLUE, background("&void-color=CornflowerBlue"));
         // requirement C, the void defaults to the background colour: both spellings give the same map
         assertEquals(background("&bgcolor=red"), background("&bgcolor=red&void-color=red"));
         // a bgcolor and a differing void-color cannot be honoured apart, the background one is used
-        assertEquals(0xFFFF0000, background("&bgcolor=red&void-color=lime"));
+        assertEquals(RED, background("&bgcolor=red&void-color=lime"));
     }
 
     /**
@@ -107,11 +159,11 @@ public class BackgroundTest extends MapsTestSupport {
     public void testVoidTransparent() throws Exception {
         // requirement B, the default follows transparent: stating both alike changes nothing
         assertEquals(0, background("&transparent=true&void-transparent=true") >>> 24);
-        assertEquals(0xFFFFFFFF, background("&transparent=false&void-transparent=false"));
+        assertEquals(WHITE, background("&transparent=false&void-transparent=false"));
         // transparent wins when the two disagree, the void being painted with the map background
-        assertEquals(0xFFFFFFFF, background("&transparent=false&void-transparent=true"));
+        assertEquals(WHITE, background("&transparent=false&void-transparent=true"));
         // on its own the void form drives the background, so a void-transparent=false map is opaque
-        assertEquals(0xFFFFFFFF, background("&void-transparent=false"));
+        assertEquals(WHITE, background("&void-transparent=false"));
         assertEquals(0, background("&void-transparent=true") >>> 24);
     }
 

@@ -18,6 +18,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -46,6 +47,7 @@ import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.APIService;
 import org.geoserver.ogcapi.CollectionExtents;
 import org.geoserver.ogcapi.ConformanceDocument;
+import org.geoserver.ogcapi.DefaultContentType;
 import org.geoserver.ogcapi.HTMLResponseBody;
 import org.geoserver.ogcapi.StyleDocument;
 import org.geoserver.ogcapi.TimeExtentCalculator;
@@ -232,16 +234,18 @@ public class MapsService {
             },
             name = "getCollectionMap")
     @ResponseBody
+    @DefaultContentType(MediaType.IMAGE_PNG_VALUE)
     public WebMap map(
             @PathVariable(name = "collectionId") String collectionId,
             @PathVariable(name = "styleId", required = false) String styleId,
-            @RequestParam(name = "f") String format,
+            @RequestParam(name = "f", required = false) String format,
             @ModelAttribute MapQuery query)
             throws IOException, FactoryException, ParseException {
-        checkFormatConformance(format);
-        GetMapRequest request = toGetMapRequest(collectionId, styleId, format, query);
+        String encoding = mapFormat(format);
+        checkFormatConformance(encoding);
+        GetMapRequest request = toGetMapRequest(collectionId, styleId, encoding, query);
 
-        if ("text/html".equals(format) || "html".equals(format)) {
+        if ("text/html".equals(encoding) || "html".equals(encoding)) {
             DefaultWebMapService.autoSetBoundsAndSize(request);
             if (request.getCrs() != null) request.setSRS(ResourcePool.lookupIdentifier(request.getCrs(), false));
             request.getRawKvp().put("width", String.valueOf(request.getWidth()));
@@ -358,6 +362,25 @@ public class MapsService {
     static String crsUri(String identifier) {
         String[] parts = identifier.split(":");
         return "http://www.opengis.net/def/crs/" + parts[0] + "/0/" + parts[parts.length - 1];
+    }
+
+    /**
+     * The encoding of a map: the best offered match for what the client asked, which {@code /req/core/map-op} uses to
+     * negotiate the media type. The OGC API Common {@code f} parameter already overrides the {@code Accept} header in
+     * the requested types. PNG is preferred among equally acceptable encodings, and used when the client stated no
+     * preference at all. An encoding this server cannot produce is a failed negotiation, not a rendering error.
+     */
+    private String mapFormat(String format) {
+        List<MediaType> offered = new ArrayList<>(APIRequestInfo.get().getProducibleMediaTypes(WebMap.class, true));
+        offered.sort(Comparator.comparing(m -> MediaType.IMAGE_PNG.equalsTypeAndSubtype(m) ? 0 : 1));
+        // the requested types arrive sorted by specificity and quality, so the first offered match is the best one
+        List<MediaType> requestedTypes = APIRequestInfo.get().getRequestedMediaTypes();
+        for (MediaType requested : requestedTypes) {
+            for (MediaType candidate : offered) {
+                if (requested.isCompatibleWith(candidate)) return candidate.toString();
+            }
+        }
+        throw notAcceptableFormat(format != null ? format : requestedTypes.toString());
     }
 
     /**

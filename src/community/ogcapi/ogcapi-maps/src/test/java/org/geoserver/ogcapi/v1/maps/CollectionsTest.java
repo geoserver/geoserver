@@ -4,6 +4,9 @@
  */
 package org.geoserver.ogcapi.v1.maps;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -90,11 +93,35 @@ public class CollectionsTest extends MapsTestSupport {
         });
     }
 
+    /**
+     * The supported CRSs are listed once at the root of the document, each collection pointing at that list, unless it
+     * has a storage CRS of its own to add.
+     */
+    @Test
+    public void testCollectionsCrsList() throws Exception {
+        DocumentContext json = getAsJSONPath("ogc/maps/v1/collections", 200);
+        assertEquals("http://www.opengis.net/def/crs/OGC/1.3/CRS84", json.read("$.crs[0]"));
+        // no SRS list is configured, so every code the referencing database knows is advertised
+        assertThat(json.read("$.crs.length()", Integer.class), greaterThan(1000));
+        List<String> crs = json.read("$.crs");
+        assertThat(crs, hasItem("http://www.opengis.net/def/crs/EPSG/0/32615"));
+
+        // a collection stored in CRS84 only references the shared list; the filter returns one match per
+        // collection, each holding that collection own list
+        assertEquals(List.of(List.of("#/crs")), json.read("$.collections[?(@.id=='cite:Lakes')].crs", List.class));
+        // one stored in a projected CRS adds it, since the reference cannot carry it
+        assertEquals(
+                List.of(List.of("#/crs", "http://www.opengis.net/def/crs/EPSG/0/32615")),
+                json.read("$.collections[?(@.id=='cgf:Polygons')].crs", List.class));
+    }
+
     @Test
     public void testCollectionsHTML() throws Exception {
         org.jsoup.nodes.Document document = getAsJSoup("ogc/maps/v1/collections?f=html");
         // This may need update if the layout is styled
         assertEquals(getNumberOfLayers(), document.select("#content h2 a[href]").size());
+        // the storage CRS belongs to the single collection page, the list would just repeat it
+        assertTrue(document.select("#cgf__Polygons_storageCrs").isEmpty());
     }
 
     @Test

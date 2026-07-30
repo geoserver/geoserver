@@ -31,6 +31,7 @@ public class CollectionExtents {
     public static final String WGS84H = "http://www.opengis.net/def/crs/OGC/0/CRS84h";
     public static final String WGS84 = "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
     List<ReferencedEnvelope> spatial;
+    ReferencedEnvelope storageCrsBbox;
     DateRange temporal;
     Map<String, DimensionExtent> additionalDimensions;
 
@@ -74,6 +75,16 @@ public class CollectionExtents {
         public String getCrs() {
             if (spatial != null && spatial.stream().anyMatch(re -> re instanceof ReferencedEnvelope3D)) return WGS84H;
             return WGS84;
+        }
+
+        /** Same shape as {@link #getBbox()}, in the collection storage CRS, absent when that one is CRS84. */
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        public List<double[]> getStorageCrsBbox() {
+            return storageCrsBbox == null ? null : List.of(getDoubles(storageCrsBbox));
+        }
+
+        public void setStorageCrsBbox(List<double[]> bbox) {
+            // ignored on parsing, see setCrs
         }
 
         public void setCrs(String crs) {
@@ -139,6 +150,11 @@ public class CollectionExtents {
 
     public void setSpatial(List<ReferencedEnvelope> spatial) {
         this.spatial = spatial;
+    }
+
+    /** Sets the overall bounds in the collection storage CRS, reported inside the spatial extent. */
+    public void setStorageCrsBbox(ReferencedEnvelope storageCrsBbox) {
+        this.storageCrsBbox = storageCrsBbox;
     }
 
     @JsonIgnore

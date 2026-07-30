@@ -124,6 +124,14 @@ latitude,longitude, and it always reports the area before any rotation. `Content
 angle brackets, for example `<http://www.opengis.net/def/crs/EPSG/0/4326>`, and is omitted when the CRS has no
 authority code, for example when using an AUTO code. `Content-Orientation` is the rotation applied, zero for a map with the default orientation.
 
+The CRSs a map can be delivered in are advertised as CRS URIs by the collection description, in its `crs`
+property, and by the `/collections` document, which lists them once at its root so that each collection can
+point at that single list with `#/crs`. The list is the **Services > WMS** SRS list when one is configured,
+otherwise it's all the known codes. A collection whose storage CRS is
+not CRS84 also reports it as `storageCrs`, adding it to the `crs` list, and repeats its extent in that CRS under
+`extent.spatial.storageCrsBbox`. That is the CRS a map is delivered in when the request does not ask for another
+one, so no reprojection takes place.
+
 Two extra resources are GeoServer extensions, not part of the standard:
 
 - `.../map/info`, the feature information at a pixel, selected with the `i` and `j` parameters. `limit` sets the

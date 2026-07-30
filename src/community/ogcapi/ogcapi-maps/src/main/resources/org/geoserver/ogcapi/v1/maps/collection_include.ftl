@@ -6,7 +6,8 @@
       <#if collection.description??>
       <li><b>Description</b>: <span id="${collection.htmlId}_description">${collection.description!}</span><br/></li>
       </#if>
-      <#if collection.storageCrs??>
+      <#-- only the single collection page sets this: in the list the CRS of every collection is just noise -->
+      <#if (showStorageCrs!false) && collection.storageCrs??>
       <li><b>Storage CRS</b>: <span id="${collection.htmlId}_storageCrs">${collection.storageCrs!}</span><br/></li>
       </#if>
       <#assign spatial = collection.extent.spatial>

@@ -37,12 +37,14 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.crs.CapabilitiesCRSProvider;
 import org.geoserver.ogcapi.APIBBoxParser;
 import org.geoserver.ogcapi.APIConformance;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.APIService;
+import org.geoserver.ogcapi.CollectionExtents;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.HTMLResponseBody;
 import org.geoserver.ogcapi.StyleDocument;
@@ -124,6 +126,29 @@ public class MapsService {
         return geoServer.getCatalog();
     }
 
+    /**
+     * The CRSs a collection can be delivered in, as URIs, CRS84 first: the SRS list configured on the WMS service, or
+     * every code the referencing database knows when that list is empty, matching what OGC API - Features advertises
+     * (see {@code /req/collection-map/desc-crs}).
+     */
+    List<String> serviceCRSList() {
+        List<String> configured = getService().getSRS();
+        List<String> result;
+        if (configured == null || configured.isEmpty()) {
+            CapabilitiesCRSProvider provider = new CapabilitiesCRSProvider();
+            provider.getAuthorityExclusions().add("CRS");
+            provider.setCodeMapper((authority, code) -> crsUri(authority + ":" + code));
+            result = new ArrayList<>(provider.getCodes());
+        } else {
+            // mutable on purpose, CRS84 is moved to the front below
+            result = configured.stream().map(MapsService::crsUri).collect(toCollection(ArrayList::new));
+        }
+        // CRS84 is always supported, and cannot be found in the list above, which is EPSG based
+        result.remove(CollectionExtents.WGS84);
+        result.add(0, CollectionExtents.WGS84);
+        return result;
+    }
+
     @GetMapping(name = "getLandingPage")
     @ResponseBody
     @HTMLResponseBody(templateName = "landingPage.ftl", fileName = "landingPage.html")
@@ -156,7 +181,7 @@ public class MapsService {
     @ResponseBody
     @HTMLResponseBody(templateName = "collections.ftl", fileName = "collections.html")
     public CollectionsDocument getCollections() {
-        return new CollectionsDocument(geoServer);
+        return new CollectionsDocument(geoServer, serviceCRSList());
     }
 
     @GetMapping(path = "collections/{collectionId}", name = "describeCollection")
@@ -164,7 +189,7 @@ public class MapsService {
     @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
     public CollectionDocument collection(@PathVariable(name = "collectionId") String collectionId) throws IOException {
         PublishedInfo p = getPublished(collectionId);
-        CollectionDocument collection = new CollectionDocument(geoServer, p);
+        CollectionDocument collection = new CollectionDocument(geoServer, p, serviceCRSList());
 
         return collection;
     }

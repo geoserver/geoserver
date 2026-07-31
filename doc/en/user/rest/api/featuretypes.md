@@ -63,7 +63,14 @@ The `recurse` parameter recursively deletes all layers referenced by the specifi
 
 #### `recalculate` {: #rest_api_featuretypes_recalculate }
 
-The `recalculate` parameter specifies which feature type properties GeoServer should recalculate when processing the request. Some properties are recalculated automatically when necessary. In particular, the native bounding box is recalculated when the projection or projection policy changes, and the lat/long bounding box is recalculated when the native bounding box is recalculated or when a new native bounding box is explicitly provided in the request. The native and lat/long bounding boxes are not automatically recalculated when they are explicitly included in the request.
+The `recalculate` parameter specifies which feature type properties (`nativebbox`,`latlonbbox`,`attributes`) to recalculate when processing the request.
+
+Some properties are recalculated automatically when necessary:
+
+- `nativebbox` is recalculated when the projection or projection policy changes.
+- `latlonbbox` is recalculated when `nativebbox` is recalculated, or when a new `nativebbox` is explicitly provided in the request.
+
+The `nativebbox` and `latlonbbox` bounding boxes are not automatically recalculated when they are explicitly included in the request.
 
 The client may also explicitly request a fixed set of properties to recalculate by including a comma-separated list of their names in the `recalculate` parameter. The supported values are:
 

@@ -48,7 +48,8 @@ public class CacheReaderTest extends GeofenceBaseTest {
         configurer.setLocation(
                 new UrlResource(Objects.requireNonNull(this.getClass().getResource("/test-cache-config.properties"))));
 
-        RuleReaderServiceFactory rrsFactory = new RuleReaderServiceFactory("restRuleReaderService", false);
+        RuleReaderServiceFactory rrsFactory =
+                new RuleReaderServiceFactory(RuleReaderServiceFactory.REMOTE_RULE_READER_NAME, false);
         rrsFactory.setApplicationContext(applicationContext);
 
         ticker = new CustomTicker();

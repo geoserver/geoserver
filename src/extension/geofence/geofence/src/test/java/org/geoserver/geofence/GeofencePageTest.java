@@ -97,7 +97,7 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
 
         tester.clickLink("form:test", true);
 
-        tester.assertContains("ProcessingException");
+        tester.assertContains("Invalid GeoFence REST URL");
     }
 
     @Test

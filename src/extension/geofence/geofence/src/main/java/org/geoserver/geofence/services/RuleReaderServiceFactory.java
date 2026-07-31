@@ -33,7 +33,10 @@ import org.springframework.context.ApplicationContextAware;
 public class RuleReaderServiceFactory implements ApplicationContextAware, SmartInitializingSingleton {
 
     /** Bean name of the embedded engine, provided by geofence-server when it's on the classpath. */
-    public static final String EMBEDDED_BEAN_NAME = "ruleReaderServiceImpl";
+    public static final String INTERNAL_RULE_READER_NAME = "ruleReaderServiceImpl";
+
+    /** Bean name of the REST client to a standalone GeoFence instance. */
+    public static final String REMOTE_RULE_READER_NAME = "restRuleReaderService";
 
     private ApplicationContext context;
     private volatile String activeServiceName;

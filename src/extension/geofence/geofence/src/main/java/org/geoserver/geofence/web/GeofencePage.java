@@ -74,7 +74,8 @@ public class GeofencePage extends GeoServerSecuredPage {
 
         RuleReaderServiceFactory backendFactory =
                 (RuleReaderServiceFactory) GeoServerExtensions.bean("ruleReaderBackendFactory");
-        embeddedBackend = RuleReaderServiceFactory.EMBEDDED_BEAN_NAME.equals(backendFactory.getActiveServiceName());
+        embeddedBackend =
+                RuleReaderServiceFactory.INTERNAL_RULE_READER_NAME.equals(backendFactory.getActiveServiceName());
 
         final IModel<GeoFenceConfiguration> configModel = getGeoFenceConfigModel();
         final IModel<CacheConfiguration> cacheModel = getCacheConfigModel();

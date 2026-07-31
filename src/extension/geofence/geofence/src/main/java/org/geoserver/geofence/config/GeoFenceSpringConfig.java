@@ -97,9 +97,9 @@ public class GeoFenceSpringConfig implements ApplicationContextAware {
         if (explicit != null && !explicit.isBlank()) {
             return explicit;
         }
-        return context.containsBeanDefinition(RuleReaderServiceFactory.EMBEDDED_BEAN_NAME)
-                ? RuleReaderServiceFactory.EMBEDDED_BEAN_NAME
-                : "restRuleReaderService";
+        return context.containsBeanDefinition(RuleReaderServiceFactory.INTERNAL_RULE_READER_NAME)
+                ? RuleReaderServiceFactory.INTERNAL_RULE_READER_NAME
+                : RuleReaderServiceFactory.REMOTE_RULE_READER_NAME;
     }
 
     @Bean

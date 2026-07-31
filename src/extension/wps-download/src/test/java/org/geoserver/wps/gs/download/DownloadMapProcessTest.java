@@ -7,6 +7,8 @@ package org.geoserver.wps.gs.download;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -18,8 +20,11 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.imageio.ImageIO;
@@ -27,8 +32,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.kml.KMZMapOutputFormat;
+import org.geoserver.security.urlchecks.AbstractURLCheck;
+import org.geoserver.security.urlchecks.GeoServerURLChecker;
+import org.geoserver.security.urlchecks.RegexURLCheck;
+import org.geoserver.security.urlchecks.URLCheckDAO;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
+import org.geotools.data.ows.URLCheckers;
 import org.geotools.http.HTTPClient;
 import org.geotools.image.test.ImageAssert;
 import org.junit.Test;
@@ -37,10 +47,75 @@ import org.w3c.dom.Document;
 
 public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
+    private static final String CAPABILITIES_URL =
+            "http://geoserver.org/geoserver/wms?request=GetCapabilities&version=1.1.0";
+
     @Override
     protected void registerNamespaces(Map<String, String> namespaces) {
         super.registerNamespaces(namespaces);
         namespaces.put("kml", "http://www.opengis.net/kml/2.2");
+    }
+
+    @Test
+    public void testCapabilitiesUrlDenied() throws Exception {
+        // GeoServerURLChecker self-registers into the static URLCheckers registry and stays
+        // there for the life of the Spring context, shared across this class' tests, so it
+        // must be explicitly registered/deregistered around this test to avoid affecting the
+        // other, unrelated remote-download tests (getBean() alone won't re-register it once
+        // a prior test has deregistered the cached singleton).
+        GeoServerURLChecker checker = applicationContext.getBean(GeoServerURLChecker.class);
+        URLCheckers.register(checker);
+        URLCheckDAO dao = applicationContext.getBean(URLCheckDAO.class);
+        List<AbstractURLCheck> previousChecks = dao.getChecks();
+        try {
+            dao.saveChecks(Collections.emptyList());
+            dao.save(new RegexURLCheck("deny", "Won't match anything useful", "^abcd$"));
+
+            String request = getTestRequest("mapRemoteSimple11.xml");
+            MockHttpServletResponse response = postAsServletResponse("wps", request);
+            assertEquals("text/xml", response.getContentType());
+            String content = new String(response.getContentAsByteArray(), UTF_8);
+            assertThat(content, containsString("URL Check denied"));
+            assertThat(content, containsString("was not accepted by external URL checks"));
+        } finally {
+            dao.saveChecks(previousChecks);
+            URLCheckers.deregister(checker);
+        }
+    }
+
+    @Test
+    public void testCapabilitiesUrlAllowed() throws Exception {
+        // see comment in testCapabilitiesUrlDenied about register/deregister
+        GeoServerURLChecker checker = applicationContext.getBean(GeoServerURLChecker.class);
+        URLCheckers.register(checker);
+        URLCheckDAO dao = applicationContext.getBean(URLCheckDAO.class);
+        List<AbstractURLCheck> previousChecks = dao.getChecks();
+        DownloadMapProcess process = applicationContext.getBean(DownloadMapProcess.class);
+        Supplier<HTTPClient> oldSupplier = process.getHttpClientSupplier();
+        try {
+            dao.saveChecks(Collections.emptyList());
+            dao.save(new RegexURLCheck("allow", "Matches the test capabilities URL", Pattern.quote(CAPABILITIES_URL)));
+
+            String request = getTestRequest("mapRemoteSimple11.xml");
+            String caps111 = getTestRequest("caps111.xml");
+            byte[] getMapBytes = FileUtils.readFileToByteArray(new File(SAMPLES + "mapSimple.png"));
+            MockHttpClient client = new MockHttpClient();
+            client.expectGet(
+                    new URL("http://geoserver.org/geoserver/wms?service=WMS&request=GetCapabilities&version=1.1.0"),
+                    new MockHttpResponse(caps111, "text/xml"));
+            client.expectGet(
+                    new URL("http://mock.test.geoserver"
+                            + ".org/wms11?SERVICE=WMS&LAYERS=cite:BasicPolygons&FORMAT=image%2Fpng&HEIGHT=256&TRANSPARENT=false"
+                            + "&REQUEST=GetMap&WIDTH=256&BBOX=-2.4,1.4,0.4,4.2&SRS=EPSG:4326&VERSION=1.1.1"),
+                    new MockHttpResponse(getMapBytes, "image/png"));
+            process.setHttpClientSupplier(() -> client);
+            MockHttpServletResponse response = postAsServletResponse("wps", request);
+            assertEquals("image/png", response.getContentType());
+        } finally {
+            process.setHttpClientSupplier(oldSupplier);
+            dao.saveChecks(previousChecks);
+            URLCheckers.deregister(checker);
+        }
     }
 
     @Test

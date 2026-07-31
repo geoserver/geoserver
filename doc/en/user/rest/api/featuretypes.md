@@ -63,22 +63,20 @@ The `recurse` parameter recursively deletes all layers referenced by the specifi
 
 #### `recalculate` {: #rest_api_featuretypes_recalculate }
 
-The `recalculate` parameter specifies which feature type properties (`nativebbox`,`latlonbbox`,`attributes`) to recalculate when processing the request.
+The `recalculate` parameter can be used specifiy which feature type properties (`nativebbox`,`latlonbbox`,`attributes`) to recalculate when processing the request, or to control automatic recalculating.
 
-Some properties are recalculated automatically when necessary:
+Feature type properties recalculated automatically when necessary (if not included in the Request):
 
 - `nativebbox` is recalculated when the projection or projection policy changes.
 - `latlonbbox` is recalculated when `nativebbox` is recalculated, or when a new `nativebbox` is explicitly provided in the request.
 
-The `nativebbox` and `latlonbbox` bounding boxes are not automatically recalculated when they are explicitly included in the request.
+To force recalculation use `recalculate` to provide a comma-separated list of feature type properties:
 
-The client may also explicitly request a fixed set of properties to recalculate by including a comma-separated list of their names in the `recalculate` parameter. The supported values are:
-
-- `recalculate=` (empty parameter): Do not recalculate any properties, regardless of changes to the projection, projection policy, or other feature type settings. This may be useful for avoiding slow calculations when operating against large datasets.
 - `recalculate=attributes`: Reload the feature type attributes from the underlying data source. This is required when the source schema has changed, for example when columns have been added, removed, renamed, or otherwise modified. The underlying schema must be updated before this operation is invoked.
 - `recalculate=nativebbox`: Recalculate the native bounding box, but do not recalculate the lat/long bounding box.
 - `recalculate=nativebbox,latlonbbox`: Recalculate both the native bounding box and the lat/long bounding box.
 - `recalculate=attributes,nativebbox,latlonbbox`: Reload the feature type attributes and recalculate both the native and lat/long bounding boxes.
+- `recalculate=` (empty parameter): Do not recalculate any properties, regardless of changes to the projection, projection policy, or other feature type settings. This may be useful for avoiding slow calculations when operating against large datasets.
 
 #### `Projection Policy`
 

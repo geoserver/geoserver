@@ -10,7 +10,6 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -233,10 +232,8 @@ public class DimensionsTest extends MapsTestSupport {
     @Test
     public void testCoverageCustomDimensionSubsetApplied() throws Exception {
         // subset=MY_DIMENSION(CustomDimValueA) reaches the WMS DIM_MY_DIMENSION pipeline and the coverage renders
-        BufferedImage image = getAsImage(
-                "ogc/maps/v1/collections/sf:custwatertemp/map?f=image/png&subset=" + CUSTOM_DIMENSION_NAME
-                        + "(CustomDimValueA)&width=50&height=50",
-                "image/png");
+        BufferedImage image = getAsPNG("ogc/maps/v1/collections/sf:custwatertemp/map?f=image/png&subset="
+                + CUSTOM_DIMENSION_NAME + "(CustomDimValueA)&width=50&height=50");
         assertEquals(50, image.getWidth());
         assertOpaque(image, new int[] {25, 25});
     }
@@ -382,17 +379,8 @@ public class DimensionsTest extends MapsTestSupport {
     }
 
     private BufferedImage quadrantMap(String subset) throws Exception {
-        return getAsImage(
-                "ogc/maps/v1/collections/sf:TimeWithStartEnd/map?f=image/png&" + subset + "&width=50&height=50",
-                "image/png");
-    }
-
-    private static void assertOpaque(BufferedImage image, int[] xy) {
-        assertNotEquals("expected rendered data at " + xy[0] + "," + xy[1], 0, image.getRGB(xy[0], xy[1]) >>> 24);
-    }
-
-    private static void assertTransparent(BufferedImage image, int[] xy) {
-        assertEquals("expected no data at " + xy[0] + "," + xy[1], 0, image.getRGB(xy[0], xy[1]) >>> 24);
+        return getAsPNG(
+                "ogc/maps/v1/collections/sf:TimeWithStartEnd/map?f=image/png&" + subset + "&width=50&height=50");
     }
 
     private void setupDimension(

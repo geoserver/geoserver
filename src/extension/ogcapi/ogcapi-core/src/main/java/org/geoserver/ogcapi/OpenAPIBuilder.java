@@ -13,7 +13,9 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.BinarySchema;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.servers.Server;
 import java.io.IOException;
@@ -108,6 +110,22 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
                 .description(service.getAbstract())
                 .version(this.serviceAnnotation.version());
         api.info(info);
+    }
+
+    /**
+     * Declares the {@code enum} and the {@code default} of the {@code filter-lang} parameter from the languages the
+     * service enables, both required by OGC API - Features - Part 3 {@code /req/filter/filter-lang-param}. The default
+     * is the language {@link APIFilterParser#resolveLanguage(String, ServiceInfo)} applies to a request that names
+     * none. Does nothing when the template has no such parameter.
+     */
+    @SuppressWarnings("unchecked")
+    protected void declareFilterLanguages(OpenAPI api, T service) {
+        Parameter filterLang = api.getComponents().getParameters().get("filter-lang");
+        if (filterLang == null) return;
+        List<String> languages = APIFilterParser.enabledLanguages(service);
+        Schema<String> schema = (Schema<String>) filterLang.getSchema();
+        schema.setEnum(languages);
+        if (!languages.isEmpty()) schema.setDefault(languages.get(0));
     }
 
     protected void declareGetResponseFormats(OpenAPI api, String path, Class<?> binding) {

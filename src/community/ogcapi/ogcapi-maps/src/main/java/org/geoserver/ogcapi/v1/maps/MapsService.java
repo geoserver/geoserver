@@ -123,6 +123,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/maps/v1")
 public class MapsService {
 
+    /** How many collections the HTML preview palette lists; a longer list is hard to use and uses too much memory. */
+    static final int PALETTE_COLLECTIONS = 500;
+
     static final Logger LOGGER = Logging.getLogger(MapsService.class);
 
     private static final String DISPLAY_NAME = "OGC API Maps";
@@ -191,7 +194,7 @@ public class MapsService {
     @ResponseBody
     @HTMLResponseBody(templateName = "landingPage.ftl", fileName = "landingPage.html")
     public MapsLandingPage landingPage() {
-        return new MapsLandingPage(getService(), getCatalog(), "ogc/maps/v1");
+        return new MapsLandingPage(getService(), getCatalog(), "ogc/maps/v1", serviceCRSList());
     }
 
     @GetMapping(
@@ -294,22 +297,64 @@ public class MapsService {
     }
 
     private PublishedInfo getPublished(String collectionId) {
-        // single collection
-        PublishedInfo p = getCatalog().getLayerByName(collectionId);
-        if (p == null) {
-            if (collectionId.contains(":")) {
-                String[] split = collectionId.split(":");
-                p = getCatalog().getLayerGroupByName(split[0], split[1]);
-            } else {
-                p = getCatalog().getLayerGroupByName(collectionId);
-            }
-        }
-
-        if (p == null)
+        // a collection the service does not offer is reported as unknown, it has no resource of its own here
+        PublishedInfo p = DatasetCollections.published(getCatalog(), collectionId);
+        if (p == null || !DatasetCollections.isMappable(p))
             throw new ServiceException(
                     "Unknown collection " + collectionId, ServiceException.INVALID_PARAMETER_VALUE, "collectionId");
 
         return p;
+    }
+
+    /**
+     * The collections a dataset map renders, failing with a 404 when the dataset map class is disabled: outside the
+     * standard the resource must not exist. The {@code collections} parameter of a disabled class is ignored, not
+     * rejected, as the OGC API convention asks.
+     */
+    private List<PublishedInfo> datasetCollections(MapQuery query) {
+        WMSInfo wmsInfo = getService();
+        MapsConformance conf = MapsConformance.configuration(wmsInfo);
+        if (!conf.datasetMap(wmsInfo)) {
+            throw new APIException(
+                    APIException.NOT_FOUND, "Dataset maps are not enabled on this server", HttpStatus.NOT_FOUND);
+        }
+        String selection = conf.collectionsSelection(wmsInfo) ? query.collections() : null;
+        return DatasetCollections.resolve(getCatalog(), selection, MapsSettings.defaultCollections(wmsInfo));
+    }
+
+    /**
+     * The dataset map: a single map of several collections, drawn in painter's order following the {@code collections}
+     * parameter when present, or in the order {@link DatasetCollections#mappable} picks otherwise.
+     */
+    @GetMapping(path = "map", name = "getDatasetMap")
+    @ResponseBody
+    @DefaultContentType(MediaType.IMAGE_PNG_VALUE)
+    public WebMap datasetMap(@RequestParam(name = "f", required = false) String format, @ModelAttribute MapQuery query)
+            throws IOException, FactoryException, ParseException {
+        List<PublishedInfo> collections = datasetCollections(query);
+        WebMap map = map(collections, null, format, query);
+        if (map instanceof HTMLMap html) addCollectionChooser(html, collections);
+        return map;
+    }
+
+    /**
+     * Offers the collections of the dataset for the preview to switch between, the ones being drawn marked as chosen
+     * and listed first. A catalog larger than {@link #PALETTE_COLLECTIONS} is cut, and the preview says so; the
+     * {@code collections} parameter reaches the ones left out.
+     */
+    private void addCollectionChooser(HTMLMap map, List<PublishedInfo> drawn) {
+        WMSInfo wmsInfo = getService();
+        MapsConformance conf = MapsConformance.configuration(wmsInfo);
+        if (!conf.collectionsSelection(wmsInfo)) return;
+        // selected vs available. Since available is also limited, start from selected and add from there
+        List<String> selected = drawn.stream().map(PublishedInfo::prefixedName).toList();
+        Set<String> available = new LinkedHashSet<>(selected);
+        DatasetCollections.pickable(getCatalog(), PALETTE_COLLECTIONS + 1).stream()
+                .map(PublishedInfo::prefixedName)
+                .forEach(available::add);
+        boolean cut = available.size() > PALETTE_COLLECTIONS;
+        map.setCollections(
+                available.stream().limit(PALETTE_COLLECTIONS).sorted().toList(), selected, cut);
     }
 
     @GetMapping(
@@ -326,9 +371,14 @@ public class MapsService {
             @RequestParam(name = "f", required = false) String format,
             @ModelAttribute MapQuery query)
             throws IOException, FactoryException, ParseException {
+        return map(List.of(getPublished(collectionId)), styleId, format, query);
+    }
+
+    private WebMap map(List<PublishedInfo> collections, String styleId, String format, MapQuery query)
+            throws IOException, FactoryException, ParseException {
         String encoding = mapFormat(format);
         checkFormatConformance(encoding);
-        GetMapRequest request = toGetMapRequest(collectionId, styleId, encoding, query);
+        GetMapRequest request = toGetMapRequest(collections, styleId, encoding, query);
 
         if ("text/html".equals(encoding) || "html".equals(encoding)) {
             DefaultWebMapService.autoSetBoundsAndSize(request);
@@ -437,10 +487,16 @@ public class MapsService {
      * aspect to report.
      */
     private Object getDefaultTime(GetMapRequest request) {
+        ResourceInfo timed = timeDimensionResource(request);
+        return timed != null ? wmsFacade.getDefaultTime(timed) : null;
+    }
+
+    /** The first requested layer having a time dimension enabled, null when none of them has one. */
+    private static ResourceInfo timeDimensionResource(GetMapRequest request) {
         for (MapLayerInfo layer : request.getLayers()) {
             ResourceInfo resource = layer.getResource();
-            DimensionInfo dimension = resource.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
-            if (dimension != null && dimension.isEnabled()) return wmsFacade.getDefaultTime(resource);
+            DimensionInfo time = resource.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+            if (time != null && time.isEnabled()) return resource;
         }
         return null;
     }
@@ -572,6 +628,7 @@ public class MapsService {
      * parameter names cannot be Java identifiers, hence the {@link BindParam} mapping.
      */
     record MapQuery(
+            String collections,
             String bbox,
             @BindParam("bbox-crs") String bboxCrs,
             String subset,
@@ -615,6 +672,7 @@ public class MapsService {
          */
         MapQuery forInfo() {
             return new MapQuery(
+                    collections,
                     bbox,
                     bboxCrs != null ? bboxCrs : crs,
                     subset,
@@ -645,6 +703,18 @@ public class MapsService {
                 APIException.NOT_FOUND, operation + " is not enabled on this server", HttpStatus.NOT_FOUND);
     }
 
+    @GetMapping(path = "map/info", name = "getDatasetInfo")
+    @ResponseBody
+    public FeatureInfoResponse datasetInfo(
+            @RequestParam(name = "f") String format,
+            @RequestParam(name = "i") int i,
+            @RequestParam(name = "j") int j,
+            @RequestParam(name = "limit", required = false, defaultValue = "1") int limit,
+            @ModelAttribute MapQuery query)
+            throws IOException, FactoryException, ParseException {
+        return info(datasetCollections(query), null, format, i, j, limit, query);
+    }
+
     @GetMapping(
             path = {"collections/{collectionId}/styles/{styleId}/map/info", "collections/{collectionId}/map/info"},
             name = "getCollectionInfo")
@@ -659,14 +729,22 @@ public class MapsService {
             @ModelAttribute MapQuery query
             // TODO: add all the vendor parameters we normally support in WMS
             ) throws IOException, FactoryException, ParseException {
+        return info(List.of(getPublished(collectionId)), styleId, format, i, j, limit, query);
+    }
+
+    private FeatureInfoResponse info(
+            List<PublishedInfo> collections, String styleId, String format, int i, int j, int limit, MapQuery query)
+            throws IOException, FactoryException, ParseException {
         WMSInfo wmsInfo = getService();
         checkEnabled(MapsConformance.configuration(wmsInfo).featureInfo(wmsInfo), "GetFeatureInfo");
         if (limit < 1) {
             throw new APIException(
                     INVALID_PARAMETER_VALUE, "limit must be greater than zero, got " + limit, HttpStatus.BAD_REQUEST);
         }
-        GetMapRequest getMapRequest = toGetMapRequest(collectionId, styleId, "image/png", query.forInfo());
-        DefaultWebMapService.autoSetBoundsAndSize(getMapRequest);
+        GetMapRequest getMapRequest = toGetMapRequest(collections, styleId, "image/png", query.forInfo());
+        // fills in the per layer default styles besides the bounds and the size: the identifiers render the map to
+        // find the features under the pixel, so they need a style for every layer
+        DefaultWebMapService.autoSetMissingProperties(getMapRequest);
 
         GetFeatureInfoRequest request = new GetFeatureInfoRequest();
         request.setGetMapRequest(getMapRequest);
@@ -799,7 +877,8 @@ public class MapsService {
         }
     }
 
-    private GetMapRequest toGetMapRequest(String collectionId, String styleId, String format, MapQuery query)
+    private GetMapRequest toGetMapRequest(
+            List<PublishedInfo> collections, String styleId, String format, MapQuery query)
             throws IOException, FactoryException, ParseException {
         MapsConformance conf = MapsConformance.configuration(getService());
         WMSInfo wmsInfo = getService();
@@ -824,19 +903,23 @@ public class MapsService {
             rejectCombination("scale-denominator with width/height requires the spatial subsetting conformance class");
         }
 
-        PublishedInfo p = getPublished(collectionId);
-        if (styleId != null) {
-            checkStyle(p, styleId);
-        } else if (p instanceof LayerInfo l) {
-            styleId = l.getDefaultStyle().prefixedName();
-        } else if (p instanceof LayerGroupInfo) {
-            styleId = StyleDocument.DEFAULT_STYLE_NAME;
+        // one collection resolves a style as the styled map resources do; several of them are drawn each in its own
+        // default style, which GetMapDefaults fills in, there being no single style covering unrelated schemas
+        PublishedInfo single = collections.size() == 1 ? collections.get(0) : null;
+        if (single != null) {
+            if (styleId != null) {
+                checkStyle(single, styleId);
+            } else if (single instanceof LayerInfo l) {
+                styleId = l.getDefaultStyle().prefixedName();
+            } else {
+                styleId = StyleDocument.DEFAULT_STYLE_NAME;
+            }
         }
         StyleInfo styleInfo = styleId != null ? getCatalog().getStyleByName(styleId) : null;
 
         GetMapRequest request = new GetMapRequest();
         request.setBaseUrl(APIRequestInfo.get().getBaseURL());
-        request.setLayers(getMapLayers(p));
+        request.setLayers(getMapLayers(collections));
         if (styleInfo != null) request.setStyles(Arrays.asList(styleInfo.getStyle()));
         request.setFormat(format);
 
@@ -934,7 +1017,7 @@ public class MapsService {
         applyBackground(q, request);
         applyDisplayResolution(q, request);
         if (datetime != null) {
-            setupTimeSubset(datetime, p, request);
+            setupTimeSubset(datetime, request);
         }
 
         Map<String, String> rawParamers = new LinkedHashMap<>();
@@ -946,8 +1029,11 @@ public class MapsService {
         if (datetime != null) rawParamers.put("time", datetime);
         rawParamers.put("width", String.valueOf(width));
         rawParamers.put("height", String.valueOf(height));
-        rawParamers.put("layers", collectionId);
-        rawParamers.put("styles", styleId);
+        rawParamers.put(
+                "layers", collections.stream().map(PublishedInfo::prefixedName).collect(Collectors.joining(",")));
+        if (styleId != null) rawParamers.put("styles", styleId);
+        // carried so that the HTML preview of a dataset map keeps rendering the collections that were asked for
+        if (q.collections() != null) rawParamers.put("collections", q.collections());
         if (datetime != null) rawParamers.put("datetime", datetime);
         // the attribute filter, combined with bbox, datetime and subset by AND (/req/filter/mixing-expressions):
         // the renderer applies it on top of the spatial and dimension restrictions already set above
@@ -959,7 +1045,7 @@ public class MapsService {
             if (q.filterLang() != null) rawParamers.put("filter-lang", q.filterLang());
         }
         if (subset != null && conf.generalSubsetting(wmsInfo)) {
-            applyExtraDimensions(subset, p, request, rawParamers);
+            applyExtraDimensions(subset, request, rawParamers);
         }
         request.setRawKvp(rawParamers);
         return request;
@@ -980,6 +1066,7 @@ public class MapsService {
         // the language is resolved here, so that the parser gets the same default the API document declares
         String filterLang = q.filter() != null ? filterLanguage(q.filterLang(), conf, wms) : null;
         return new MapQuery(
+                conf.collectionsSelection(wms) ? q.collections() : null,
                 subsetting ? q.bbox() : null,
                 subsetting ? q.bboxCrs() : null,
                 anySubset ? q.subset() : null,
@@ -1031,14 +1118,22 @@ public class MapsService {
         throw new APIException(APIException.INVALID_PARAMETER_VALUE, message, HttpStatus.BAD_REQUEST);
     }
 
-    private List<MapLayerInfo> getMapLayers(PublishedInfo p) {
-        if (p instanceof LayerGroupInfo info1) {
-            return info1.layers().stream().map(l -> new MapLayerInfo(l)).collect(Collectors.toList());
-        } else if (p instanceof LayerInfo info) {
-            return Arrays.asList(new MapLayerInfo(info));
-        } else {
-            throw new RuntimeException("Unexpected published object" + p);
+    /**
+     * The layers to render, bottom to top: the collections in the order they were given, each layer group unfolded into
+     * its own members, nested groups included.
+     */
+    private static List<MapLayerInfo> getMapLayers(List<PublishedInfo> collections) {
+        List<MapLayerInfo> layers = new ArrayList<>();
+        for (PublishedInfo p : collections) {
+            if (p instanceof LayerGroupInfo group) {
+                group.layers().forEach(l -> layers.add(new MapLayerInfo(l)));
+            } else if (p instanceof LayerInfo layer) {
+                layers.add(new MapLayerInfo(layer));
+            } else {
+                throw new IllegalStateException("Unexpected published object " + p);
+            }
         }
+        return layers;
     }
 
     private void checkStyle(PublishedInfo p, String styleId) {
@@ -1118,22 +1213,28 @@ public class MapsService {
         }
     }
 
+    /**
+     * The map extent the {@code bbox} parameter defines, as one envelope. {@link APIBBoxParser} rolls longitudes into
+     * [-180, 180] and splits the box in two when they then come out in the wrong order; a map is drawn on one
+     * continuous canvas instead, so the longitudes are taken from the parameter as written. GeoServer renders such an
+     * extent the way WMS does, 170..190 across the dateline and -185..185 as the whole world with its edges repeated.
+     */
     private ReferencedEnvelope parseSingleBBox(String bbox, String bboxCrs) throws FactoryException {
-        ReferencedEnvelope[] parsed = APIBBoxParser.parse(bbox, bboxCrs);
-        if (parsed.length == 1) {
-            return horizontal(parsed[0]);
-        }
-        // antimeridian crossing: the parser splits the box at +/-180 into [minx, 180] and [-180, maxx].
-        // Rebuild a single continuous envelope extending past 180 (e.g. 170..190), which GeoServer renders
-        // across the dateline; a low longitude greater than the high one is required by OGC API - Maps.
-        ReferencedEnvelope west = horizontal(parsed[0]);
-        ReferencedEnvelope east = parsed[1];
+        ReferencedEnvelope parsed = horizontal(APIBBoxParser.parse(bbox, bboxCrs)[0]);
+
+        String[] ordinates = bbox.split(",");
+        CoordinateReferenceSystem requestCrs = APIBBoxParser.parseCRS(bboxCrs);
+        // the ordinates follow the axis order the CRS authority declares, the default CRS84 being longitude first
+        int low = requestCrs != null && CRS.getAxisOrder(requestCrs) == CRS.AxisOrder.NORTH_EAST ? 1 : 0;
+        int high = (ordinates.length >= 6 ? 3 : 2) + low;
+        double minX = Double.parseDouble(ordinates[low].trim());
+        double maxX = Double.parseDouble(ordinates[high].trim());
+        // in degrees, a high longitude lower than the low one crosses the antimeridian, which OGC API - Maps writes
+        // that way (e.g. 170..-170); a continuous canvas needs it as 170..190. A projected box in that order never
+        // gets here, the parser refuses it
+        if (maxX < minX) maxX += 360;
         return new ReferencedEnvelope(
-                west.getMinX(),
-                east.getMaxX() + 360,
-                west.getMinY(),
-                west.getMaxY(),
-                west.getCoordinateReferenceSystem());
+                minX, maxX, parsed.getMinY(), parsed.getMaxY(), parsed.getCoordinateReferenceSystem());
     }
 
     /**
@@ -1476,19 +1577,16 @@ public class MapsService {
                 HttpStatus.NOT_FOUND);
     }
 
-    private void setupTimeSubset(String datetime, PublishedInfo p, GetMapRequest request)
-            throws ParseException, IOException {
-        if (!(p instanceof LayerInfo)) {
+    /**
+     * Applies the requested time to the map. Like WMS, a single time value drives every requested layer having a time
+     * dimension, the others being drawn whole, so the map needs one such layer and not all of them.
+     */
+    private void setupTimeSubset(String datetime, GetMapRequest request) throws ParseException {
+        if (timeDimensionResource(request) == null) {
             throw new APIException(
-                    APIException.INVALID_PARAMETER_VALUE,
-                    "Can only handle time subset on layers, not layer groups",
+                    INVALID_PARAMETER_VALUE,
+                    "The time dimension is not enabled on any of the requested collections",
                     HttpStatus.BAD_REQUEST);
-        }
-        LayerInfo layer = (LayerInfo) p;
-        DimensionInfo time = layer.getResource().getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
-        if (time == null || !time.isEnabled()) {
-            throw new APIException(
-                    INVALID_PARAMETER_VALUE, "Time dimension is not enabled in this coverage", HttpStatus.BAD_REQUEST);
         }
         // the datetime grammar has no list form, while the WMS time parser takes one and breaks on some of its values
         if (datetime.indexOf(',') >= 0) {
@@ -1536,18 +1634,22 @@ public class MapsService {
         return bound.isEmpty() || "..".equals(bound);
     }
 
-    /** Applies the subset's elevation and custom axes to the WMS request, rejecting any unknown axis with a 400. */
-    private void applyExtraDimensions(
-            SubsetResult subset, PublishedInfo p, GetMapRequest request, Map<String, String> rawKvp) {
+    /**
+     * Applies the subset's elevation and custom axes to the WMS request, rejecting an axis that none of the requested
+     * layers knows with a 400. As in WMS, one value drives every layer having that dimension: an axis is known when at
+     * least one of them has it.
+     */
+    private void applyExtraDimensions(SubsetResult subset, GetMapRequest request, Map<String, String> rawKvp) {
         if (subset.extraDimensions.isEmpty()) return;
 
-        // dimensions live on layers only; a layer group has none, so every axis will be unknown below
-        ResourceInfo resource = p instanceof LayerInfo layer ? layer.getResource() : null;
-        DimensionInfo elevation =
-                resource == null ? null : resource.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
-        Set<String> customNames = resource == null
-                ? Set.of()
-                : DimensionHelper.getCustomDimensions(resource).keySet();
+        boolean elevation = false;
+        Set<String> customNames = new LinkedHashSet<>();
+        for (MapLayerInfo layer : request.getLayers()) {
+            ResourceInfo resource = layer.getResource();
+            DimensionInfo dimension = resource.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
+            elevation |= dimension != null && dimension.isEnabled();
+            customNames.addAll(DimensionHelper.getCustomDimensions(resource).keySet());
+        }
 
         for (Map.Entry<String, String> e : subset.extraDimensions.entrySet()) {
             String axis = e.getKey();
@@ -1555,7 +1657,7 @@ public class MapsService {
             String value = e.getValue().replace(':', '/');
 
             // elevation is a first-class WMS dimension, set directly on the request
-            if (axis.equalsIgnoreCase("elevation") && elevation != null && elevation.isEnabled()) {
+            if (axis.equalsIgnoreCase("elevation") && elevation) {
                 request.setElevation(parseElevation(value));
                 continue;
             }

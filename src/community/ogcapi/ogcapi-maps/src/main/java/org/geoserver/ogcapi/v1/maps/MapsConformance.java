@@ -21,6 +21,10 @@ import org.geoserver.wms.WMSInfo;
 /**
  * OGC API - Maps 1.0.0 conformance configuration, persisted per server in {@link WMSInfo} metadata; the GetFeatureInfo
  * class is a GeoServer extension outside the standard.
+ *
+ * <p>Every class has three accessors: {@code isXyz()} and {@code setXyz(Boolean)} carry the configured flag, where
+ * {@code null} means the class default, while {@code xyz(WMSInfo)} resolves the flag against that default. Only the
+ * ones deciding more than that carry Javadoc of their own.
  */
 @SuppressWarnings("serial")
 public class MapsConformance extends ConformanceInfo<WMSInfo> {
@@ -44,6 +48,10 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
     public static final APIConformance SPATIAL_SUBSETTING = new APIConformance(
             BASE + "spatial-subsetting", STANDARD, APIConformance.Type.EXTENSION, CORE, "spatialSubsetting");
     public static final APIConformance SCALING = CORE.extend(BASE + "scaling");
+    public static final APIConformance DATASET_MAP =
+            new APIConformance(BASE + "dataset-map", STANDARD, APIConformance.Type.EXTENSION, CORE, "datasetMap");
+    public static final APIConformance COLLECTIONS_SELECTION = new APIConformance(
+            BASE + "collections-selection", STANDARD, APIConformance.Type.EXTENSION, CORE, "collectionsSelection");
     public static final APIConformance DISPLAY_RESOLUTION = new APIConformance(
             BASE + "display-resolution", STANDARD, APIConformance.Type.EXTENSION, CORE, "displayResolution");
     public static final APIConformance DATETIME = CORE.extend(BASE + "datetime");
@@ -91,6 +99,8 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
             "legend");
 
     private Boolean core = null;
+    private Boolean datasetMap = null;
+    private Boolean collectionsSelection = null;
     private Boolean spatialSubsetting = null;
     private Boolean scaling = null;
     private Boolean displayResolution = null;
@@ -132,6 +142,8 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
     @Override
     public List<APIConformance> configurableConformances() {
         return new ArrayList<>(List.of(
+                DATASET_MAP,
+                COLLECTIONS_SELECTION,
                 SPATIAL_SUBSETTING,
                 SCALING,
                 DISPLAY_RESOLUTION,
@@ -167,6 +179,10 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
         conformance.add(PNG);
         conformance.add(JPEG);
         // configurable classes
+        if (datasetMap(wmsInfo)) {
+            conformance.add(DATASET_MAP);
+            if (collectionsSelection(wmsInfo)) conformance.add(COLLECTIONS_SELECTION);
+        }
         if (spatialSubsetting(wmsInfo)) conformance.add(SPATIAL_SUBSETTING);
         if (scaling(wmsInfo)) conformance.add(SCALING);
         if (displayResolution(wmsInfo)) conformance.add(DISPLAY_RESOLUTION);
@@ -189,261 +205,190 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
         return conformance;
     }
 
-    /** @return the core conformance flag, or {@code null} for the class default. */
     public Boolean isCore() {
         return core;
     }
 
-    /**
-     * Sets the core conformance flag; {@code null} restores the class default.
-     *
-     * @param enabled the flag value, or {@code null} for the default
-     */
     public void setCore(Boolean enabled) {
         this.core = enabled;
     }
 
-    /** @return {@code true} if core conformance is enabled, resolving {@code null} to the class default */
     public boolean core(WMSInfo wmsInfo) {
         return isEnabled(wmsInfo, core, CORE);
     }
 
-    /** @return the spatial subsetting conformance flag, or {@code null} for the class default. */
+    public Boolean isDatasetMap() {
+        return datasetMap;
+    }
+
+    public void setDatasetMap(Boolean enabled) {
+        this.datasetMap = enabled;
+    }
+
+    public boolean datasetMap(WMSInfo wmsInfo) {
+        return isEnabled(wmsInfo, datasetMap, DATASET_MAP);
+    }
+
+    public Boolean isCollectionsSelection() {
+        return collectionsSelection;
+    }
+
+    public void setCollectionsSelection(Boolean enabled) {
+        this.collectionsSelection = enabled;
+    }
+
+    /** Selecting the collections of a map means nothing without the dataset map class it selects the contents of. */
+    public boolean collectionsSelection(WMSInfo wmsInfo) {
+        return datasetMap(wmsInfo) && isEnabled(wmsInfo, collectionsSelection, COLLECTIONS_SELECTION);
+    }
+
     public Boolean isSpatialSubsetting() {
         return spatialSubsetting;
     }
 
-    /**
-     * Sets the spatial subsetting conformance flag; {@code null} restores the class default.
-     *
-     * @param enabled the flag value, or {@code null} for the default
-     */
     public void setSpatialSubsetting(Boolean enabled) {
         this.spatialSubsetting = enabled;
     }
 
-    /**
-     * @return {@code true} if spatial subsetting conformance is enabled, resolving {@code null} to the class default
-     */
     public boolean spatialSubsetting(WMSInfo wmsInfo) {
         return isEnabled(wmsInfo, spatialSubsetting, SPATIAL_SUBSETTING);
     }
 
-    /** @return the scaling conformance flag, or {@code null} for the class default. */
     public Boolean isScaling() {
         return scaling;
     }
 
-    /**
-     * Sets the scaling conformance flag; {@code null} restores the class default.
-     *
-     * @param enabled the flag value, or {@code null} for the default
-     */
     public void setScaling(Boolean enabled) {
         this.scaling = enabled;
     }
 
-    /** @return {@code true} if scaling conformance is enabled, resolving {@code null} to the class default */
     public boolean scaling(WMSInfo wmsInfo) {
         return isEnabled(wmsInfo, scaling, SCALING);
     }
 
-    /** @return the display resolution conformance flag, or {@code null} for the class default. */
     public Boolean isDisplayResolution() {
         return displayResolution;
     }
 
-    /**
-     * Sets the display resolution conformance flag; {@code null} restores the class default.
-     *
-     * @param enabled the flag value, or {@code null} for the default
-     */
     public void setDisplayResolution(Boolean enabled) {
         this.displayResolution = enabled;
     }
 
-    /**
-     * @return {@code true} if display resolution conformance is enabled, resolving {@code null} to the class default
-     */
     public boolean displayResolution(WMSInfo wmsInfo) {
         return isEnabled(wmsInfo, displayResolution, DISPLAY_RESOLUTION);
     }
 
-    /** @return the date and time conformance flag, or {@code null} for the class default. */
     public Boolean isDatetime() {
         return datetime;
     }
 
-    /**
-     * Sets the date and time conformance flag; {@code null} restores the class default.
-     *
-     * @param enabled the flag value, or {@code null} for the default
-     */
     public void setDatetime(Boolean enabled) {
         this.datetime = enabled;
     }
 
-    /** @return {@code true} if date and time conformance is enabled, resolving {@code null} to the class default */
     public boolean datetime(WMSInfo wmsInfo) {
         return isEnabled(wmsInfo, datetime, DATETIME);
     }
 
-    /** @return the CRS conformance flag, or {@code null} for the class default. */
     public Boolean isCrs() {
         return crs;
     }
 
-    /**
-     * Sets the CRS conformance flag; {@code null} restores the class default.
-     *
-     * @param enabled the flag value, or {@code null} for the default
-     */
     public void setCrs(Boolean enabled) {
         this.crs = enabled;
     }
 
-    /** @return {@code true} if CRS conformance is enabled, resolving {@code null} to the class default */
     public boolean crs(WMSInfo wmsInfo) {
         return isEnabled(wmsInfo, crs, CRS);
     }
 
-    /** @return the background conformance flag, or {@code null} for the class default. */
     public Boolean isBackground() {
         return background;
     }
 
-    /**
-     * Sets the background conformance flag; {@code null} restores the class default.
-     *
-     * @param enabled the flag value, or {@code null} for the default
-     */
     public void setBackground(Boolean enabled) {
         this.background = enabled;
     }
 
-    /** @return {@code true} if background conformance is enabled, resolving {@code null} to the class default */
     public boolean background(WMSInfo wmsInfo) {
         return isEnabled(wmsInfo, background, BACKGROUND);
     }
 
-    /** @return the orientation conformance flag, or {@code null} for the class default. */
     public Boolean isOrientation() {
         return orientation;
     }
 
-    /**
-     * Sets the orientation conformance flag; {@code null} restores the class default.
-     *
-     * @param enabled the flag value, or {@code null} for the default
-     */
     public void setOrientation(Boolean enabled) {
         this.orientation = enabled;
     }
 
-    /** @return {@code true} if orientation conformance is enabled, resolving {@code null} to the class default */
     public boolean orientation(WMSInfo wmsInfo) {
         return isEnabled(wmsInfo, orientation, ORIENTATION);
     }
 
-    /** @return the TIFF conformance flag, or {@code null} for the class default. */
     public Boolean isTiff() {
         return tiff;
     }
 
-    /**
-     * Sets the TIFF conformance flag; {@code null} restores the class default.
-     *
-     * @param enabled the flag value, or {@code null} for the default
-     */
     public void setTiff(Boolean enabled) {
         this.tiff = enabled;
     }
 
-    /** @return {@code true} if TIFF conformance is enabled, resolving {@code null} to the class default */
     public boolean tiff(WMSInfo wmsInfo) {
         return isEnabled(wmsInfo, tiff, TIFF);
     }
 
-    /** @return the SVG conformance flag, or {@code null} for the class default. */
     public Boolean isSvg() {
         return svg;
     }
 
-    /**
-     * Sets the SVG conformance flag; {@code null} restores the class default.
-     *
-     * @param enabled the flag value, or {@code null} for the default
-     */
     public void setSvg(Boolean enabled) {
         this.svg = enabled;
     }
 
     /**
-     * @return {@code true} if SVG conformance is enabled. With no explicit setting the class follows the WMS SVG
-     *     renderer of this service: only the Batik one draws in a coordinate system running from 0,0 to the requested
-     *     width and height, as {@code /req/svg/content} demands, while the default streaming renderer writes the world
-     *     coordinates instead. Setting the flag turns the class on regardless, deviation included.
+     * With no explicit setting the class follows the WMS SVG renderer of this service: only the Batik one draws in a
+     * coordinate system running from 0,0 to the requested width and height, as {@code /req/svg/content} demands, while
+     * the default streaming renderer writes the world coordinates instead. Setting the flag turns the class on
+     * regardless, deviation included.
      */
     public boolean svg(WMSInfo wmsInfo) {
         if (svg == null) return WMS.SVG_BATIK.equals(wmsInfo.getMetadata().get(SVG_RENDERER_KEY));
         return isEnabled(wmsInfo, svg, SVG);
     }
 
-    /** @return the general subsetting conformance flag, or {@code null} for the class default. */
     public Boolean isGeneralSubsetting() {
         return generalSubsetting;
     }
 
-    /**
-     * Sets the general subsetting conformance flag; {@code null} restores the class default.
-     *
-     * @param enabled the flag value, or {@code null} for the default
-     */
     public void setGeneralSubsetting(Boolean enabled) {
         this.generalSubsetting = enabled;
     }
 
-    /**
-     * @return {@code true} if general subsetting conformance is enabled, resolving {@code null} to the class default
-     */
     public boolean generalSubsetting(WMSInfo wmsInfo) {
         return isEnabled(wmsInfo, generalSubsetting, GENERAL_SUBSETTING);
     }
 
-    /** @return the filter conformance flag, or {@code null} for the class default. */
     public Boolean isFilter() {
         return filter;
     }
 
-    /**
-     * Sets the filter conformance flag; {@code null} restores the class default.
-     *
-     * @param enabled the flag value, or {@code null} for the default
-     */
     public void setFilter(Boolean enabled) {
         this.filter = enabled;
     }
 
-    /** @return {@code true} if filter conformance is enabled, resolving {@code null} to the class default */
     public boolean filter(WMSInfo wmsInfo) {
         return isEnabled(wmsInfo, filter, FILTER);
     }
 
-    /** @return the queryables conformance flag, or {@code null} for the class default. */
     public Boolean isQueryables() {
         return queryables;
     }
 
-    /**
-     * Sets the queryables conformance flag; {@code null} restores the class default.
-     *
-     * @param enabled the flag value, or {@code null} for the default
-     */
     public void setQueryables(Boolean enabled) {
         this.queryables = enabled;
     }
 
-    /** @return {@code true} if queryables conformance is enabled, resolving {@code null} to the class default */
     public boolean queryables(WMSInfo wmsInfo) {
         return isEnabled(wmsInfo, queryables, QUERYABLES);
     }
@@ -467,40 +412,26 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
         return filtering(wmsInfo) && queryables(wmsInfo);
     }
 
-    /** @return the map filter conformance flag, or {@code null} for the class default. */
     public Boolean isMapFilter() {
         return mapFilter;
     }
 
-    /**
-     * Sets the map filter conformance flag; {@code null} restores the class default.
-     *
-     * @param enabled the flag value, or {@code null} for the default
-     */
     public void setMapFilter(Boolean enabled) {
         this.mapFilter = enabled;
     }
 
-    /** @return {@code true} if map filter conformance is enabled, resolving {@code null} to the class default */
     public boolean mapFilter(WMSInfo wmsInfo) {
         return isEnabled(wmsInfo, mapFilter, MAP_FILTER);
     }
 
-    /** @return the GetFeatureInfo conformance flag, or {@code null} for the class default. */
     public Boolean isFeatureInfo() {
         return featureInfo;
     }
 
-    /**
-     * Sets the GetFeatureInfo conformance flag; {@code null} restores the class default.
-     *
-     * @param enabled the flag value, or {@code null} for the default
-     */
     public void setFeatureInfo(Boolean enabled) {
         this.featureInfo = enabled;
     }
 
-    /** @return {@code true} if GetFeatureInfo conformance is enabled, resolving {@code null} to the class default */
     public boolean featureInfo(WMSInfo wmsInfo) {
         return isEnabled(wmsInfo, featureInfo, FEATURE_INFO);
     }

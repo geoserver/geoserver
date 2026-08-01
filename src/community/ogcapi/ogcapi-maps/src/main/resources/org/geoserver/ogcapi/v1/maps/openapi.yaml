@@ -110,6 +110,74 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
+  '/map':
+    get:
+      tags: [Maps]
+      summary: retrieve a map of this dataset, rendering several collections at once
+      operationId: maps.dataset.getMap
+      parameters:
+        - $ref: '#/components/parameters/f-map'
+        - $ref: '#/components/parameters/collections'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/bbox-crs'
+        - $ref: '#/components/parameters/subset'
+        - $ref: '#/components/parameters/subset-crs'
+        - $ref: '#/components/parameters/center'
+        - $ref: '#/components/parameters/center-crs'
+        - $ref: '#/components/parameters/crs'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/width'
+        - $ref: '#/components/parameters/height'
+        - $ref: '#/components/parameters/scale-denominator'
+        - $ref: '#/components/parameters/mm-per-pixel'
+        - $ref: '#/components/parameters/orientation'
+        - $ref: '#/components/parameters/bgcolor'
+        - $ref: '#/components/parameters/transparent'
+        - $ref: '#/components/parameters/void-color'
+        - $ref: '#/components/parameters/void-transparent'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/filter-lang'
+        - $ref: '#/components/parameters/filter-crs'
+      responses:
+        '200':
+          $ref: '#/components/responses/Map'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/map/info':
+    get:
+      tags: [Maps]
+      summary: GeoServer extension, query the dataset map at a pixel
+      operationId: getDatasetMapInfo
+      parameters:
+        - $ref: '#/components/parameters/f-info'
+        - $ref: '#/components/parameters/collections'
+        - $ref: '#/components/parameters/i'
+        - $ref: '#/components/parameters/j'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/bbox-crs'
+        - $ref: '#/components/parameters/subset'
+        - $ref: '#/components/parameters/subset-crs'
+        - $ref: '#/components/parameters/center'
+        - $ref: '#/components/parameters/center-crs'
+        - $ref: '#/components/parameters/crs'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/width'
+        - $ref: '#/components/parameters/height'
+        - $ref: '#/components/parameters/scale-denominator'
+        - $ref: '#/components/parameters/mm-per-pixel'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/filter-lang'
+        - $ref: '#/components/parameters/filter-crs'
+      responses:
+        '200':
+          description: the feature information at the queried pixel
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
   '/collections/{collectionId}/map':
     get:
       tags: [Maps]
@@ -302,6 +370,18 @@ components:
       in: path
       required: true
       schema: {type: string}
+    collections:
+      name: collections
+      in: query
+      description: |-
+        the collections to render, bottom to top, either by identifier or by the full URL of their
+        collection resource. Defaults to a selection of the contents of this service.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        items: {type: string}
     styleId:
       name: styleId
       in: path

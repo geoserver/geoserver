@@ -19,6 +19,15 @@
                 </span>
               </legend>
               <div wicket:id="mapsConformance"/>
+              <div class="gs-form-field">
+                <label for="defaultCollections">
+                  <wicket:message key="defaultCollections">Collections in a dataset map</wicket:message>
+                </label>
+                <input type="number" min="1" wicket:id="defaultCollections" id="defaultCollections"/>
+                <p class="gs-form-description">
+                  <wicket:message key="defaultCollections.description">How many collections a dataset map draws when the request selects none. Leave empty for the default.</wicket:message>
+                </p>
+              </div>
             </fieldset>
           </div>
         </div>

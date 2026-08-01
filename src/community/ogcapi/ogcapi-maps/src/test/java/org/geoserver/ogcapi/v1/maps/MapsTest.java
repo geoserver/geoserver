@@ -8,15 +8,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import javax.imageio.ImageIO;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -91,34 +88,6 @@ public class MapsTest extends MapsTestSupport {
         BufferedImage image = getAsImage("ogc/maps/v1/collections/cite:Lakes/styles/red/map?f=image/png", "image/png");
         File expectedImage = new File("src/test/resources/expected/mapsRed.png");
         ImageAssert.assertEquals(expectedImage, image, 0);
-    }
-
-    /**
-     * The map is transparent unless the parameter says otherwise, so a corner outside the lakes is opaque only then.
-     */
-    @Test
-    public void testTransparent() throws Exception {
-        String path = "ogc/maps/v1/collections/Lakes/map?f=image/png&width=100&height=100";
-        assertEquals(0, getAsImage(path, "image/png").getRGB(0, 0) >>> 24);
-        assertEquals(0, getAsImage(path + "&transparent=true", "image/png").getRGB(0, 0) >>> 24);
-        assertEquals(255, getAsImage(path + "&transparent=false", "image/png").getRGB(0, 0) >>> 24);
-    }
-
-    /**
-     * A background color with no explicit transparent means an opaque map, otherwise the color would never show
-     * (Background, transparent requirement D).
-     */
-    @Test
-    public void testBgColorImpliesOpaque() throws Exception {
-        String path = "ogc/maps/v1/collections/Lakes/map?f=image/png&width=100&height=100&bgcolor=0xFF0000";
-        assertEquals(0xFFFF0000, getAsImage(path, "image/png").getRGB(0, 0));
-        // an explicit transparent still wins
-        assertEquals(0, getAsImage(path + "&transparent=true", "image/png").getRGB(0, 0) >>> 24);
-        // with the background class off the color is ignored, so the transparent default comes back
-        withConformance(
-                MapsConformance::setBackground,
-                false,
-                () -> assertEquals(0, getAsImage(path, "image/png").getRGB(0, 0) >>> 24));
     }
 
     /** A numeric parameter that is not a number is a client error, not a server one. */
@@ -241,96 +210,6 @@ public class MapsTest extends MapsTestSupport {
     }
 
     @Test
-    public void testOrientation() throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(
-                "ogc/maps/v1/collections/Lakes/map?f=image/png&bbox=-1,-1,1,1&width=50&height=50&orientation=45");
-        assertEquals(200, response.getStatus());
-        assertEquals("45.0", response.getHeader("Content-Orientation"));
-        // the extent is the one before the rotation (/req/orientation/response-headers B)
-        assertEquals("-1.0,-1.0,1.0,1.0", response.getHeader("Content-Bbox"));
-        BufferedImage image = getAsImage(
-                "ogc/maps/v1/collections/Lakes/map?f=image/png&bbox=-1,-1,1,1&width=50&height=50&orientation=45",
-                "image/png");
-        assertEquals(50, image.getWidth());
-        assertEquals(50, image.getHeight());
-    }
-
-    @Test
-    public void testDisabledClassParameterIgnored() throws Exception {
-        // orientation off: the parameter is ignored, not rejected, and the map still renders
-        withConformance(MapsConformance::setOrientation, false, () -> {
-            MockHttpServletResponse response = getAsServletResponse(
-                    "ogc/maps/v1/collections/Lakes/map?f=image/png&bbox=-1,-1,1,1&width=50&height=50&orientation=45");
-            assertEquals(200, response.getStatus());
-            // no rotation was applied, so the header reports a north up map
-            assertEquals("0.0", response.getHeader("Content-Orientation"));
-        });
-    }
-
-    @Test
-    public void testWidthWorksWithScalingDisabled() throws Exception {
-        // width/height are provided by the spatial subsetting class too, so they survive with scaling off
-        withConformance(MapsConformance::setScaling, false, () -> {
-            BufferedImage image = getAsImage("ogc/maps/v1/collections/Lakes/map?f=image/png&width=100", "image/png");
-            assertEquals(100, image.getWidth());
-        });
-    }
-
-    /** A viewport of zero or negative pixels is meaningless (Scaling, width/height requirement C). */
-    @Test
-    public void testNonPositiveSizeRejected() throws Exception {
-        String base = "ogc/maps/v1/collections/Lakes/map?f=image/png";
-        for (String size : new String[] {"width=0", "width=-10", "height=0", "height=-10"}) {
-            DocumentContext json = getAsJSONPath(base + "&" + size, 400);
-            assertEquals(APIException.INVALID_PARAMETER_VALUE, json.read("type"));
-            assertThat(json.read("title"), containsString(size.split("=")[0] + " must be a positive number"));
-        }
-        // the size the map is actually rendered at stays acceptable
-        assertEquals(1, getAsImage(base + "&width=1&height=1", "image/png").getWidth());
-    }
-
-    /** Only one extent per request: bbox, center and the spatial axes of a subset are three ways to say it. */
-    @Test
-    public void testCombinedExtentsRejected() throws Exception {
-        String base = "ogc/maps/v1/collections/Lakes/map?f=image/png&width=50&height=50";
-        for (String extents : new String[] {
-            "&bbox=-1,-1,1,1&subset=Lon(0:2),Lat(0:2)",
-            "&bbox=-1,-1,1,1&center=0,0",
-            "&subset=Lon(0:2),Lat(0:2)&center=0,0"
-        }) {
-            DocumentContext json = getAsJSONPath(base + extents, 400);
-            assertEquals(APIException.INVALID_PARAMETER_VALUE, json.read("type"));
-            assertThat(json.read("title"), containsString("all define the map extent"));
-        }
-
-        // a subset on the time axis alone says nothing about the extent, so it combines with a bbox
-        setupStartEndTimeDimension(TIME_WITH_START_END, "time", "startTime", "endTime");
-        MockHttpServletResponse response =
-                getAsServletResponse("ogc/maps/v1/collections/sf:TimeWithStartEnd/map?f=image/png&width=50&height=50"
-                        + "&bbox=-1,-1,1,1&subset=time(\"2012-02-11T00:00:00Z\")");
-        assertEquals(200, response.getStatus());
-    }
-
-    @Test
-    public void testScaleDenominatorWithSizeAndBboxRejected() throws Exception {
-        // scale-denominator + explicit width/height + a spatial extent is over-constrained (Scaling req E)
-        assertBadRequestMentions(
-                "ogc/maps/v1/collections/Lakes/map?f=image/png&bbox=-1,-1,1,1&width=100&height=100&scale-denominator=1000",
-                "scale-denominator");
-    }
-
-    @Test
-    public void testScaleDenominatorWithSizeNoSubsettingRejected() throws Exception {
-        // scale-denominator + width/height without the spatial subsetting class (Scaling req D)
-        withConformance(
-                MapsConformance::setSpatialSubsetting,
-                false,
-                () -> assertBadRequestMentions(
-                        "ogc/maps/v1/collections/Lakes/map?f=image/png&width=100&scale-denominator=1000",
-                        "scale-denominator"));
-    }
-
-    @Test
     public void testUnsupportedCrsRejected() throws Exception {
         assertBadRequestMentions(
                 "ogc/maps/v1/collections/Lakes/map?f=image/png&bbox=-1,-1,1,1&width=50&height=50&crs=EPSG:299999",
@@ -369,6 +248,44 @@ public class MapsTest extends MapsTestSupport {
     }
 
     @Test
+    public void testBboxWiderThanTheWorldKeptWhole() throws Exception {
+        // an OpenLayers preview fitting the whole world asks for a bit more than a full turn; the longitudes must
+        // not be rolled into a sliver around the antimeridian, the extent is the one requested
+        String world =
+                "ogc/maps/v1/collections/" + getLayerId(MockData.WORLD) + "/map?f=image/png&width=370&height=190";
+        MockHttpServletResponse response = getAsServletResponse(world + "&bbox=-185,-95,185,95");
+        assertEquals(200, response.getStatus());
+        // delivered in EPSG:4326, so Content-Bbox follows its lat-first authority axis order
+        assertEquals("-95.0,-185.0,95.0,185.0", response.getHeader("Content-Bbox"));
+
+        // the same box written in the lat-first order of the CRS it names
+        response = getAsServletResponse(world + "&bbox=-95,-185,95,185&bbox-crs=%5BEPSG:4326%5D");
+        assertEquals(200, response.getStatus());
+        assertEquals("-95.0,-185.0,95.0,185.0", response.getHeader("Content-Bbox"));
+
+        // one degree per pixel either way, so the origin sits 185 pixels from the left and 95 from the top, where
+        // the plain world map has it in its own middle
+        BufferedImage wide = getAsImage(world + "&bbox=-185,-95,185,95", "image/png");
+        BufferedImage whole = getAsImage(
+                "ogc/maps/v1/collections/" + getLayerId(MockData.WORLD)
+                        + "/map?f=image/png&width=360&height=180&bbox=-180,-90,180,90",
+                "image/png");
+        assertEquals(whole.getRGB(180, 90), wide.getRGB(185, 95));
+        assertEquals(whole.getRGB(0, 0), wide.getRGB(5, 5));
+    }
+
+    /** A projected bbox names the same area as its geographic equivalent, whatever axis order its CRS declares. */
+    @Test
+    public void testProjectedBbox() throws Exception {
+        String map = "ogc/maps/v1/collections/Lakes/map?f=image/png&width=50&height=50&crs=CRS:84";
+        // roughly 0.001 degrees around the origin, in web mercator meters
+        BufferedImage projected =
+                getAsImage(map + "&bbox=-111.32,-111.32,111.32,111.32&bbox-crs=EPSG:3857", "image/png");
+        BufferedImage geographic = getAsImage(map + "&bbox=-0.001,-0.001,0.001,0.001", "image/png");
+        ImageAssert.assertEquals(geographic, projected, 100);
+    }
+
+    @Test
     public void testInvalidSubsetExpressionRejected() throws Exception {
         assertBadRequestMentions(
                 "ogc/maps/v1/collections/Lakes/map?f=image/png&subset=Lon10:20&width=50&height=50", "subset");
@@ -392,19 +309,20 @@ public class MapsTest extends MapsTestSupport {
                 "ogc/maps/v1/collections/cite:Lakes/styles/NotAStyle/map?f=image/png&width=50&height=50", "style");
     }
 
+    /** A group whose members all lack a time dimension has nothing to apply the time to, layer group or not. */
     @Test
-    public void testTimeSubsetOnLayerGroupRejected() throws Exception {
+    public void testDatetimeOnLayerGroupWithoutTimeDimensionRejected() throws Exception {
         assertBadRequestMentions(
                 "ogc/maps/v1/collections/" + NATURE_GROUP
                         + "/map?f=image/png&bbox=-1,-1,1,1&width=50&height=50&datetime=2012-01-01",
-                "layer group");
+                "time dimension");
     }
 
     @Test
     public void testDatetimeOnLayerWithoutTimeDimensionRejected() throws Exception {
         assertBadRequestMentions(
                 "ogc/maps/v1/collections/Lakes/map?f=image/png&width=50&height=50&datetime=2012-01-01",
-                "Time dimension");
+                "time dimension");
     }
 
     @Test
@@ -422,47 +340,6 @@ public class MapsTest extends MapsTestSupport {
                 getAsServletResponse("ogc/maps/v1/collections/ThisDoesNotExist/map?f=image/png&width=50&height=50");
         assertThat(response.getStatus(), greaterThanOrEqualTo(400));
         assertThat(response.getContentAsString(), containsString("ThisDoesNotExist"));
-    }
-
-    @Test
-    public void testTiffFormat() throws Exception {
-        // TIFF is a configurable class, enabled by default, so the request must succeed and decode to a real raster
-        MockHttpServletResponse response = getAsServletResponse(
-                "ogc/maps/v1/collections/Lakes/map?f=image/tiff&bbox=-1,-1,1,1&width=50&height=50");
-        assertEquals(200, response.getStatus());
-        assertEquals("image/tiff", response.getContentType());
-        BufferedImage tiff = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
-        assertNotNull("TIFF payload must decode", tiff);
-        assertEquals(50, tiff.getWidth());
-        assertEquals(50, tiff.getHeight());
-    }
-
-    @Test
-    public void testTiffDisabledNotAcceptable() throws Exception {
-        // a disabled format class means the encoding is not offered: content negotiation fails with 406
-        withConformance(MapsConformance::setTiff, false, () -> {
-            MockHttpServletResponse response = getAsServletResponse(
-                    "ogc/maps/v1/collections/Lakes/map?f=image/tiff&bbox=-1,-1,1,1&width=50&height=50");
-            assertEquals(406, response.getStatus());
-            assertThat(response.getContentAsString(), containsString("TIFF"));
-        });
-    }
-
-    @Test
-    public void testSvgDisabledNotAcceptable() throws Exception {
-        withConformance(MapsConformance::setSvg, false, () -> {
-            MockHttpServletResponse response = getAsServletResponse(
-                    "ogc/maps/v1/collections/Lakes/map?f=image/svg%2Bxml&bbox=-1,-1,1,1&width=50&height=50");
-            assertEquals(406, response.getStatus());
-            assertThat(response.getContentAsString(), containsString("SVG"));
-        });
-    }
-
-    /** Asserts the request returns a 400 whose error body names the offending parameter. */
-    private void assertBadRequestMentions(String url, String parameter) throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(url);
-        assertEquals(400, response.getStatus());
-        assertThat(response.getContentAsString(), containsString(parameter));
     }
 
     /**

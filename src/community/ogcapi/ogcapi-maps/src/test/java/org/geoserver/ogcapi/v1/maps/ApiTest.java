@@ -55,6 +55,12 @@ public class ApiTest extends MapsTestSupport {
         assertThat(enumOf(readApi(), "collectionId"), hasItems("cite:Lakes", NATURE_GROUP));
     }
 
+    /** The enum offers what the collections resource lists, so a layer no map can draw is not in it. */
+    @Test
+    public void testCollectionIdEnumExcludesUnmappable() throws Exception {
+        assertThat(enumOf(readApi(), "collectionId"), not(hasItem("cite:Geometryless")));
+    }
+
     @Test
     public void testApiJson() throws Exception {
         MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/maps/v1/openapi", 200);
@@ -79,11 +85,41 @@ public class ApiTest extends MapsTestSupport {
                         "/collections/{collectionId}/styles/{styleId}/map",
                         "/collections/{collectionId}/map/info",
                         "/collections/{collectionId}/legend",
-                        "/collections/{collectionId}/styles/{styleId}/legend"));
-        // dataset maps and tilesets are intentionally out of scope
-        assertThat(api.getPaths().keySet(), not(hasItems("/map", "/styles/{styleId}/map", "/map/tiles")));
+                        "/collections/{collectionId}/styles/{styleId}/legend",
+                        "/map",
+                        "/map/info"));
+        // styled dataset maps and map tilesets are intentionally out of scope
+        assertThat(api.getPaths().keySet(), not(hasItems("/styles/{styleId}/map", "/map/tiles")));
         assertThat(enumOf(api, "f-map"), hasItems("image/png", "image/jpeg", "image/tiff"));
         assertThat(enumOf(api, "collectionId"), hasItems("cite:Lakes", NATURE_GROUP));
+    }
+
+    /** The dataset map takes the collections parameter, and the collection maps, being single, do not. */
+    @Test
+    public void testCollectionsParameter() throws Exception {
+        OpenAPI api = readApi();
+        assertThat(parametersOf(api, "/map"), hasItem("collections"));
+        assertThat(parametersOf(api, "/map/info"), hasItem("collections"));
+        assertThat(parametersOf(api, "/collections/{collectionId}/map"), not(hasItem("collections")));
+    }
+
+    /** With the dataset map class disabled its paths are gone. */
+    @Test
+    public void testDatasetMapPathsDisabled() throws Exception {
+        withConformance(MapsConformance::setDatasetMap, false, () -> {
+            OpenAPI api = readApi();
+            assertThat(api.getPaths().keySet(), not(hasItems("/map", "/map/info")));
+        });
+    }
+
+    /**
+     * The names of the parameters an operation declares, resolved from their component references. Pre-condition, this
+     * method needs all parameters to be declared as references, or it will NPE.
+     */
+    private static List<String> parametersOf(OpenAPI api, String path) {
+        return api.getPaths().get(path).getGet().getParameters().stream()
+                .map(p -> p.get$ref().substring(p.get$ref().lastIndexOf('/') + 1))
+                .toList();
     }
 
     /**
@@ -102,6 +138,7 @@ public class ApiTest extends MapsTestSupport {
                         .get("/collections/{collectionId}/styles/{styleId}/map")
                         .getGet()
                         .getOperationId());
+        assertEquals("maps.dataset.getMap", api.getPaths().get("/map").getGet().getOperationId());
     }
 
     @Test

@@ -32,7 +32,7 @@ public class OrientationTest extends MapsTestSupport {
         assertEquals(200, plain.getStatus());
         assertEquals("0.0", plain.getHeader("Content-Orientation"));
         // and an explicit zero is the very same map
-        ImageAssert.assertEquals(getAsImage(map(""), "image/png"), getAsImage(map("&orientation=0"), "image/png"), 0);
+        ImageAssert.assertEquals(getAsPNG(map("")), getAsPNG(map("&orientation=0")), 0);
     }
 
     /**
@@ -41,14 +41,14 @@ public class OrientationTest extends MapsTestSupport {
      */
     @Test
     public void testHalfTurnAboutTheSubsetCentre() throws Exception {
-        BufferedImage north = getAsImage(map(""), "image/png");
-        BufferedImage turned = getAsImage(map("&orientation=180"), "image/png");
+        BufferedImage north = getAsPNG(map(""));
+        BufferedImage turned = getAsPNG(map("&orientation=180"));
         assertNotEquals(north.getRGB(20, 20), north.getRGB(59, 59));
         for (int[] p : new int[][] {{20, 20}, {10, 60}, {40, 25}}) {
             assertEquals("pixel " + p[0] + "," + p[1], north.getRGB(p[0], p[1]), turned.getRGB(79 - p[0], 79 - p[1]));
         }
         // a full turn is the identity, which confirms the direction is applied consistently
-        ImageAssert.assertEquals(north, getAsImage(map("&orientation=360"), "image/png"), 0);
+        ImageAssert.assertEquals(north, getAsPNG(map("&orientation=360")), 0);
     }
 
     /**
@@ -57,7 +57,7 @@ public class OrientationTest extends MapsTestSupport {
      */
     @Test
     public void testRotatedMapHasNoEmptyCorners() throws Exception {
-        BufferedImage turned = getAsImage(map("&orientation=45"), "image/png");
+        BufferedImage turned = getAsPNG(map("&orientation=45"));
         assertEquals(80, turned.getWidth());
         assertEquals(80, turned.getHeight());
         // the world coverage covers the whole extent, so every corner must carry data, not the background
@@ -77,5 +77,17 @@ public class OrientationTest extends MapsTestSupport {
         assertEquals("30.5", response.getHeader("Content-Orientation"));
         // EPSG:4326 is latitude first, and the extent is the requested one, unrotated
         assertEquals("-20.0,-20.0,20.0,20.0", response.getHeader("Content-Bbox"));
+    }
+
+    @Test
+    public void testOrientationClassDisabled() throws Exception {
+        // orientation off: the parameter is ignored, not rejected, and the map still renders
+        withConformance(MapsConformance::setOrientation, false, () -> {
+            MockHttpServletResponse response = getAsServletResponse(
+                    "ogc/maps/v1/collections/Lakes/map?f=image/png&bbox=-1,-1,1,1&width=50&height=50&orientation=45");
+            assertEquals(200, response.getStatus());
+            // no rotation was applied, so the header reports a north up map
+            assertEquals("0.0", response.getHeader("Content-Orientation"));
+        });
     }
 }

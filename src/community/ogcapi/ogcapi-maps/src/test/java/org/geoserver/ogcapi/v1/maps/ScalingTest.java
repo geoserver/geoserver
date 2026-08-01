@@ -42,7 +42,7 @@ public class ScalingTest extends MapsTestSupport {
     /** /conf/scaling/width-definition A and /conf/scaling/height-definition A: pixel counts of the viewport. */
     @Test
     public void testWidthAndHeightArePixelCounts() throws Exception {
-        BufferedImage image = getAsImage(MAP + "&bbox=-1,-1,1,1&width=123&height=45", "image/png");
+        BufferedImage image = getAsPNG(MAP + "&bbox=-1,-1,1,1&width=123&height=45");
         assertEquals(123, image.getWidth());
         assertEquals(45, image.getHeight());
     }
@@ -119,7 +119,7 @@ public class ScalingTest extends MapsTestSupport {
      */
     @Test
     public void testSizeFromScaleGeographic() throws Exception {
-        BufferedImage image = getAsImage(MAP + "&bbox=-0.1,-0.05,0.1,0.05&scale-denominator=100000", "image/png");
+        BufferedImage image = getAsPNG(MAP + "&bbox=-0.1,-0.05,0.1,0.05&scale-denominator=100000");
         assertEquals(795, image.getWidth());
         assertEquals(398, image.getHeight());
     }
@@ -127,8 +127,7 @@ public class ScalingTest extends MapsTestSupport {
     /** The same 1000 by 500 m ground extent in a metric projected CRS gives the same 28 m pixels. */
     @Test
     public void testSizeFromScaleProjected() throws Exception {
-        BufferedImage image =
-                getAsImage(MAP + "&bbox=0,0,1000,500&bbox-crs=EPSG:3857&scale-denominator=100000", "image/png");
+        BufferedImage image = getAsPNG(MAP + "&bbox=0,0,1000,500&bbox-crs=EPSG:3857&scale-denominator=100000");
         assertEquals(36, image.getWidth());
         assertEquals(18, image.getHeight());
     }
@@ -140,8 +139,8 @@ public class ScalingTest extends MapsTestSupport {
      */
     @Test
     public void testSizeFromScaleNonMetricUnits() throws Exception {
-        BufferedImage image = getAsImage(
-                MAP + "&bbox=0,0,3280.8333,1640.4167&bbox-crs=EPSG:2263&scale-denominator=100000", "image/png");
+        BufferedImage image =
+                getAsPNG(MAP + "&bbox=0,0,3280.8333,1640.4167&bbox-crs=EPSG:2263&scale-denominator=100000");
         assertEquals(36, image.getWidth());
         assertEquals(18, image.getHeight());
     }
@@ -185,10 +184,10 @@ public class ScalingTest extends MapsTestSupport {
                 + "/map?f=image/png&bbox=-10,-10,10,10&width=100&height=100";
         // same extent and same image size: only the declared display resolution changes, and the renderer is told
         // about it through the scale it computes, so the two requests are answered with the very same pixels here
-        BufferedImage coarse = getAsImage(base + "&mm-per-pixel=0.56", "image/png");
+        BufferedImage coarse = getAsPNG(base + "&mm-per-pixel=0.56");
         assertEquals(100, coarse.getWidth());
         // the parameter is accepted and does not disturb a map whose style has no scale dependent rule
-        BufferedImage fine = getAsImage(base + "&mm-per-pixel=0.14", "image/png");
+        BufferedImage fine = getAsPNG(base + "&mm-per-pixel=0.14");
         assertEquals(coarse.getRGB(50, 50), fine.getRGB(50, 50));
     }
 
@@ -206,5 +205,46 @@ public class ScalingTest extends MapsTestSupport {
                     getAsServletResponse(MAP + "&width=50&height=50&mm-per-pixel=-1")
                             .getStatus());
         });
+    }
+
+    @Test
+    public void testWidthWorksWithScalingDisabled() throws Exception {
+        // width/height are provided by the spatial subsetting class too, so they survive with scaling off
+        withConformance(MapsConformance::setScaling, false, () -> {
+            BufferedImage image = getAsPNG("ogc/maps/v1/collections/Lakes/map?f=image/png&width=100");
+            assertEquals(100, image.getWidth());
+        });
+    }
+
+    /** A viewport of zero or negative pixels is meaningless (Scaling, width/height requirement C). */
+    @Test
+    public void testNonPositiveSizeRejected() throws Exception {
+        String base = "ogc/maps/v1/collections/Lakes/map?f=image/png";
+        for (String size : new String[] {"width=0", "width=-10", "height=0", "height=-10"}) {
+            DocumentContext json = getAsJSONPath(base + "&" + size, 400);
+            assertEquals(APIException.INVALID_PARAMETER_VALUE, json.read("type"));
+            assertThat(json.read("title"), containsString(size.split("=")[0] + " must be a positive number"));
+        }
+        // the size the map is actually rendered at stays acceptable
+        assertEquals(1, getAsPNG(base + "&width=1&height=1").getWidth());
+    }
+
+    @Test
+    public void testScaleDenominatorWithSizeAndBboxRejected() throws Exception {
+        // scale-denominator + explicit width/height + a spatial extent is over-constrained (Scaling req E)
+        assertBadRequestMentions(
+                "ogc/maps/v1/collections/Lakes/map?f=image/png&bbox=-1,-1,1,1&width=100&height=100&scale-denominator=1000",
+                "scale-denominator");
+    }
+
+    @Test
+    public void testScaleDenominatorWithSizeNoSubsettingRejected() throws Exception {
+        // scale-denominator + width/height without the spatial subsetting class (Scaling req D)
+        withConformance(
+                MapsConformance::setSpatialSubsetting,
+                false,
+                () -> assertBadRequestMentions(
+                        "ogc/maps/v1/collections/Lakes/map?f=image/png&width=100&scale-denominator=1000",
+                        "scale-denominator"));
     }
 }

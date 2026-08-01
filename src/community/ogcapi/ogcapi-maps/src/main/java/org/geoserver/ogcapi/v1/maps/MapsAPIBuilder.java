@@ -30,12 +30,13 @@ import org.geoserver.ogcapi.Queryables;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
-import org.geotools.api.filter.Filter;
 
 /** Builds the OGC API - Maps 1.0.0 OpenAPI document, pruned to the conformance classes enabled on this server. */
 public class MapsAPIBuilder extends OpenAPIBuilder<WMSInfo> {
 
     private static final List<String> MAP_PATHS = List.of(
+            "/map",
+            "/map/info",
             "/collections/{collectionId}/map",
             "/collections/{collectionId}/styles/{styleId}/map",
             "/collections/{collectionId}/map/info",
@@ -53,10 +54,23 @@ public class MapsAPIBuilder extends OpenAPIBuilder<WMSInfo> {
         OpenAPI api = super.build(wms);
         MapsConformance maps = MapsConformance.configuration(wms);
 
+        // the dataset map resources exist only when their conformance class is enabled
+        if (!maps.datasetMap(wms)) {
+            api.getPaths().remove("/map");
+            api.getPaths().remove("/map/info");
+        }
+
+        // the collections parameter belongs to a class of its own, and only the dataset map takes it
+        if (!maps.collectionsSelection(wms)) {
+            api.getComponents().getParameters().remove("collections");
+            removeParameter(api, "collections");
+        }
+
         // GetFeatureInfo is a GeoServer extension, drop its paths when disabled
         if (!maps.featureInfo(wms)) {
             api.getPaths().remove("/collections/{collectionId}/map/info");
             api.getPaths().remove("/collections/{collectionId}/styles/{styleId}/map/info");
+            api.getPaths().remove("/map/info");
         }
 
         // GetLegendGraphic is a GeoServer extension, drop its paths when disabled
@@ -100,6 +114,7 @@ public class MapsAPIBuilder extends OpenAPIBuilder<WMSInfo> {
         if (maps.svg(wms)) mapFormats.add("image/svg+xml");
         Set<String> allowedMapFormats = wmsFacade.getAllowedMapFormatNames();
         mapFormats.removeIf(f -> !allowedMapFormats.contains(f));
+        declareFormats(api, "/map", "a rendered map", mapFormats);
         declareFormats(api, "/collections/{collectionId}/map", "a rendered map", mapFormats);
         declareFormats(api, "/collections/{collectionId}/styles/{styleId}/map", "a rendered map", mapFormats);
         setParameterEnum(api, "f-map", mapFormats);
@@ -112,19 +127,21 @@ public class MapsAPIBuilder extends OpenAPIBuilder<WMSInfo> {
             List<String> allowedInfo = wmsFacade.getAllowedFeatureInfoFormats();
             infoFormats.removeIf(f -> availableInfo.contains(f) && !allowedInfo.contains(f));
             String infoDescription = "the feature information at the queried pixel";
+            declareFormats(api, "/map/info", infoDescription, infoFormats);
             declareFormats(api, "/collections/{collectionId}/map/info", infoDescription, infoFormats);
             declareFormats(api, "/collections/{collectionId}/styles/{styleId}/map/info", infoDescription, infoFormats);
             setParameterEnum(api, "f-info", infoFormats);
         }
 
-        // valid collection identifiers: layers and layer groups, streamed from the catalog,
-        // matching the PublishedInfo listing used by the collections resource
+        // valid collection identifiers: the ones the collections resource lists, streamed from the catalog
         Parameter collectionId = api.getComponents().getParameters().get("collectionId");
         Catalog catalog = wms.getGeoServer().getCatalog();
         List<String> validCollectionIds = new ArrayList<>();
-        try (CloseableIterator<PublishedInfo> it = catalog.list(PublishedInfo.class, Filter.INCLUDE)) {
+        try (CloseableIterator<PublishedInfo> it =
+                catalog.list(PublishedInfo.class, DatasetCollections.catalogFilter(PublishedInfo.class))) {
             while (it.hasNext()) {
-                validCollectionIds.add(it.next().prefixedName());
+                PublishedInfo published = it.next();
+                if (DatasetCollections.isMappable(published)) validCollectionIds.add(published.prefixedName());
             }
         }
         collectionId.getSchema().setEnum(validCollectionIds);
@@ -153,13 +170,15 @@ public class MapsAPIBuilder extends OpenAPIBuilder<WMSInfo> {
         if (!filtering) disabled.addAll(FILTER_PARAMETERS);
         if (disabled.isEmpty()) return;
 
+        disabled.forEach(name -> removeParameter(api, name));
+    }
+
+    /** Removes one parameter reference from every map operation that declares it. */
+    private void removeParameter(OpenAPI api, String name) {
         for (String path : MAP_PATHS) {
             PathItem item = api.getPaths().get(path);
             if (item == null) continue;
-            List<Parameter> parameters = item.getGet().getParameters();
-            for (String name : disabled) {
-                parameters.removeIf(p -> ("#/components/parameters/" + name).equals(p.get$ref()));
-            }
+            item.getGet().getParameters().removeIf(p -> ("#/components/parameters/" + name).equals(p.get$ref()));
         }
     }
 

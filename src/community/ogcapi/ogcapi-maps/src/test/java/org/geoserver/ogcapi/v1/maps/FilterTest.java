@@ -9,7 +9,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.awt.image.BufferedImage;
@@ -103,7 +102,7 @@ public class FilterTest extends MapsTestSupport {
         // the northern half alone would show NW and NE, startElevation=1.0 alone NW and SW: together only NW
         String url = "ogc/maps/v1/collections/sf:TimeWithStartEnd/map?f=image/png&width=50&height=50"
                 + "&bbox=-180,0,180,90&filter=" + ResponseUtils.urlEncode("startElevation = 1.0");
-        BufferedImage image = getAsImage(url, "image/png");
+        BufferedImage image = getAsPNG(url);
         // in a map of the northern half the quadrants are the left and right halves of the image
         assertOpaque(image, new int[] {12, 25});
         assertTransparent(image, new int[] {37, 25});
@@ -149,6 +148,18 @@ public class FilterTest extends MapsTestSupport {
         String url = "ogc/maps/v1/collections/wcs:World/map?f=image/png&width=20&height=20&filter="
                 + ResponseUtils.urlEncode("startElevation = 2.0");
         DocumentContext json = getAsJSONPath(url, 400);
+        assertEquals("InvalidParameterValue", json.read("type"));
+    }
+
+    /** On a dataset map the queryables of all the collections are usable, each layer filtering by what it knows. */
+    @Test
+    public void testDatasetMapAcceptsAttributeOfOneCollection() throws Exception {
+        String base = "ogc/maps/v1/map?f=image/png&width=50&height=50&transparent=true"
+                + "&bbox=-180,-90,180,90&collections=sf:TimeWithStartEnd,cite:Lakes&filter=";
+        BufferedImage image = getAsPNG(base + ResponseUtils.urlEncode("startElevation = 2.0"));
+        assertOpaque(image, NE);
+
+        DocumentContext json = getAsJSONPath(base + ResponseUtils.urlEncode("notThere = 2.0"), 400);
         assertEquals("InvalidParameterValue", json.read("type"));
     }
 
@@ -254,11 +265,9 @@ public class FilterTest extends MapsTestSupport {
 
     private BufferedImage mosaicMap(String filter) throws Exception {
         // no bbox, the whole layer extent is rendered
-        return getAsImage(
-                "ogc/maps/v1/collections/" + getLayerId(WATER_TEMP)
-                        + "/map?f=image/png&width=20&height=20&transparent=true&filter="
-                        + ResponseUtils.urlEncode(filter),
-                "image/png");
+        return getAsPNG("ogc/maps/v1/collections/" + getLayerId(WATER_TEMP)
+                + "/map?f=image/png&width=20&height=20&transparent=true&filter="
+                + ResponseUtils.urlEncode(filter));
     }
 
     private static int[] pixels(BufferedImage image) {
@@ -291,7 +300,7 @@ public class FilterTest extends MapsTestSupport {
     }
 
     private BufferedImage filteredMap(String filter, String filterLang, String filterCrs) throws Exception {
-        return getAsImage(filteredMapUrl(filter, filterLang, filterCrs), "image/png");
+        return getAsPNG(filteredMapUrl(filter, filterLang, filterCrs));
     }
 
     private String filteredMapUrl(String filter, String filterLang, String filterCrs) {
@@ -309,13 +318,5 @@ public class FilterTest extends MapsTestSupport {
                 + "&bbox=-180,-90,180,90&width=50&height=50&i=" + NE[0] + "&j=" + NE[1] + "&filter="
                 + ResponseUtils.urlEncode(filter);
         return getAsJSONPath(url, 200);
-    }
-
-    private static void assertOpaque(BufferedImage image, int[] xy) {
-        assertNotEquals("expected rendered data at " + xy[0] + "," + xy[1], 0, image.getRGB(xy[0], xy[1]) >>> 24);
-    }
-
-    private static void assertTransparent(BufferedImage image, int[] xy) {
-        assertEquals("expected no data at " + xy[0] + "," + xy[1], 0, image.getRGB(xy[0], xy[1]) >>> 24);
     }
 }

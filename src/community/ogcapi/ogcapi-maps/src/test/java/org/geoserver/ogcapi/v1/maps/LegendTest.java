@@ -96,7 +96,7 @@ public class LegendTest extends MapsTestSupport {
 
     @Test
     public void testDefaultStyleLegend() throws Exception {
-        BufferedImage image = getAsImage("ogc/maps/v1/collections/cite:Lakes/legend?f=image/png", "image/png");
+        BufferedImage image = getAsPNG("ogc/maps/v1/collections/cite:Lakes/legend?f=image/png");
         assertNotNull(image);
         assertTrue(image.getWidth() > 0);
         assertTrue(image.getHeight() > 0);
@@ -105,8 +105,7 @@ public class LegendTest extends MapsTestSupport {
     @Test
     public void testNamedStyleLegend() throws Exception {
         // the red style fills polygons with #FF0000, so its legend swatch must actually contain red pixels
-        BufferedImage image =
-                getAsImage("ogc/maps/v1/collections/cite:Lakes/styles/red/legend?f=image/png", "image/png");
+        BufferedImage image = getAsPNG("ogc/maps/v1/collections/cite:Lakes/styles/red/legend?f=image/png");
         assertTrue("legend should contain the red swatch", containsColor(image, Color.RED));
     }
 
@@ -134,9 +133,9 @@ public class LegendTest extends MapsTestSupport {
     @Test
     public void testLegendOptionsApplied() throws Exception {
         // a larger label font must reach the legend renderer, giving an image at least as tall as the default
-        BufferedImage plain = getAsImage("ogc/maps/v1/collections/cite:Lakes/legend?f=image/png", "image/png");
-        BufferedImage larger = getAsImage(
-                "ogc/maps/v1/collections/cite:Lakes/legend?f=image/png&legend-options=fontSize:20", "image/png");
+        BufferedImage plain = getAsPNG("ogc/maps/v1/collections/cite:Lakes/legend?f=image/png");
+        BufferedImage larger =
+                getAsPNG("ogc/maps/v1/collections/cite:Lakes/legend?f=image/png&legend-options=fontSize:20");
         assertNotNull(plain);
         assertNotNull(larger);
         assertTrue(larger.getHeight() >= plain.getHeight());
@@ -146,7 +145,7 @@ public class LegendTest extends MapsTestSupport {
     public void testConfiguredLegendSize() throws Exception {
         // no size requested, so the 40x40 graphic configured on the layer is used as is
         withLakesLegend(40, () -> {
-            BufferedImage image = getAsImage("ogc/maps/v1/collections/cite:Lakes/legend?f=image/png", "image/png");
+            BufferedImage image = getAsPNG("ogc/maps/v1/collections/cite:Lakes/legend?f=image/png");
             assertEquals(255, alphaAt(image, 30, 30));
         });
     }
@@ -155,8 +154,7 @@ public class LegendTest extends MapsTestSupport {
     public void testRequestedSizeWinsOverConfiguredLegendSize() throws Exception {
         // the graphic is scaled down into the requested 20x20 box, leaving the rest of the canvas empty
         withLakesLegend(40, () -> {
-            BufferedImage image =
-                    getAsImage("ogc/maps/v1/collections/cite:Lakes/legend?f=image/png&width=20&height=20", "image/png");
+            BufferedImage image = getAsPNG("ogc/maps/v1/collections/cite:Lakes/legend?f=image/png&width=20&height=20");
             assertEquals(255, alphaAt(image, 5, 5));
             assertEquals(0, alphaAt(image, 30, 30));
         });

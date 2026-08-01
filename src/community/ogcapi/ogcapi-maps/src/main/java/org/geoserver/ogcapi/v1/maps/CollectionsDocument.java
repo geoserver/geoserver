@@ -21,7 +21,6 @@ import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.platform.ServiceException;
-import org.geotools.api.filter.Filter;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -64,7 +63,10 @@ public class CollectionsDocument extends AbstractDocument {
      */
     @SuppressWarnings("PMD.CloseResource")
     public CloseableIterator<CollectionDocument> getCollections() {
-        CloseableIterator<PublishedInfo> publisheds = geoServer.getCatalog().list(PublishedInfo.class, Filter.INCLUDE);
+        // the mappable ones only, and the query is narrowed before the catalog answers it
+        CloseableIterator<PublishedInfo> publisheds = filter(
+                geoServer.getCatalog().list(PublishedInfo.class, DatasetCollections.catalogFilter(PublishedInfo.class)),
+                DatasetCollections::isMappable);
 
         CloseableIterator<CollectionDocument> collections =
                 transform(publisheds, published -> getCollectionDocument(published, publisheds));

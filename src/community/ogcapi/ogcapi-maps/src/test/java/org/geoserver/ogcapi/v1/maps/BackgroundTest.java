@@ -56,12 +56,12 @@ public class BackgroundTest extends MapsTestSupport {
 
     /** The colour of the no data area under the given background query. */
     private int background(String query) throws Exception {
-        return getAsImage(EMPTY_MAP + query, "image/png").getRGB(10, 10);
+        return getAsPNG(EMPTY_MAP + query).getRGB(10, 10);
     }
 
     /** The same, in the style that declares a background colour of its own. */
     private int styledBackground(String query) throws Exception {
-        return getAsImage(STYLED_EMPTY_MAP + query, "image/png").getRGB(10, 10);
+        return getAsPNG(STYLED_EMPTY_MAP + query).getRGB(10, 10);
     }
 
     /** /conf/background/bgcolor-definition A: a six digit hexadecimal red-green-blue value. */

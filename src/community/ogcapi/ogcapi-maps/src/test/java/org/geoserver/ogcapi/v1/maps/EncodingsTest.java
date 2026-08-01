@@ -11,12 +11,12 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import javax.imageio.ImageIO;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
@@ -53,34 +53,25 @@ public class EncodingsTest extends MapsTestSupport {
     /** /conf/core/map-op: the media type is negotiated through the Accept header, the f parameter is not required. */
     @Test
     public void testAcceptHeaderNegotiation() throws Exception {
-        MockHttpServletResponse response = getAccepting("image/png,image/jpeg");
-        assertEquals(200, response.getStatus());
-        assertEquals("image/png", getBaseMimeType(response.getContentType()));
-        assertEquals(100, decode(response).getWidth());
+        assertEquals(
+                100,
+                readImage(getAccepting("image/png,image/jpeg"), "image/png", "png")
+                        .getWidth());
 
         // a client asking only for JPEG gets JPEG, so the header really drives the choice
-        response = getAccepting("image/jpeg");
-        assertEquals(200, response.getStatus());
-        assertEquals("image/jpeg", getBaseMimeType(response.getContentType()));
+        readImage(getAccepting("image/jpeg"), "image/jpeg", "jpeg");
 
         // a wildcard states no preference, and lands on the default encoding
-        response = getAccepting("*/*");
-        assertEquals(200, response.getStatus());
-        assertEquals("image/png", getBaseMimeType(response.getContentType()));
+        readImage(getAccepting("*/*"), "image/png", "png");
 
         // no Accept header at all behaves the same way
-        MockHttpServletResponse plain = getAsServletResponse(MAP);
-        assertEquals(200, plain.getStatus());
-        assertEquals("image/png", getBaseMimeType(plain.getContentType()));
+        readImage(getAsServletResponse(MAP), "image/png", "png");
     }
 
     /** /conf/png/content: one map per response, in colour, with an alpha channel carrying the transparency. */
     @Test
     public void testPngContent() throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(MAP + "&f=image/png");
-        assertEquals(200, response.getStatus());
-        assertEquals("image/png", getBaseMimeType(response.getContentType()));
-        BufferedImage image = decode(response);
+        BufferedImage image = getAsPNG(MAP + "&f=image/png");
         assertEquals(100, image.getWidth());
         assertEquals(100, image.getHeight());
         // an alpha channel is present and used: the corner has no data, the lake interior is opaque
@@ -93,10 +84,7 @@ public class EncodingsTest extends MapsTestSupport {
     /** /conf/jpeg/content: one opaque colour map per response, JPEG having no transparency to encode. */
     @Test
     public void testJpegContent() throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(MAP + "&f=image/jpeg");
-        assertEquals(200, response.getStatus());
-        assertEquals("image/jpeg", getBaseMimeType(response.getContentType()));
-        BufferedImage image = decode(response);
+        BufferedImage image = getAsJPEG(MAP + "&f=image/jpeg");
         assertEquals(100, image.getWidth());
         assertEquals(100, image.getHeight());
         assertEquals(3, image.getColorModel().getNumComponents());
@@ -188,9 +176,54 @@ public class EncodingsTest extends MapsTestSupport {
         assertThat(html, containsString("openlayers"));
     }
 
-    private static BufferedImage decode(MockHttpServletResponse response) throws Exception {
-        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
-        assertNotNull("the payload must decode to a single image", image);
-        return image;
+    @Test
+    public void testTiffFormat() throws Exception {
+        // TIFF is a configurable class, enabled by default, so the request must succeed and decode to a real raster
+        BufferedImage tiff =
+                getAsTIFF("ogc/maps/v1/collections/Lakes/map?f=image/tiff&bbox=-1,-1,1,1&width=50&height=50");
+        assertEquals(50, tiff.getWidth());
+        assertEquals(50, tiff.getHeight());
+    }
+
+    @Test
+    public void testTiffDisabledNotAcceptable() throws Exception {
+        // a disabled format class means the encoding is not offered: content negotiation fails with 406
+        withConformance(MapsConformance::setTiff, false, () -> {
+            MockHttpServletResponse response = getAsServletResponse(
+                    "ogc/maps/v1/collections/Lakes/map?f=image/tiff&bbox=-1,-1,1,1&width=50&height=50");
+            assertEquals(406, response.getStatus());
+            assertThat(response.getContentAsString(), containsString("TIFF"));
+        });
+    }
+
+    @Test
+    public void testSvgDisabledNotAcceptable() throws Exception {
+        withConformance(MapsConformance::setSvg, false, () -> {
+            MockHttpServletResponse response = getAsServletResponse(
+                    "ogc/maps/v1/collections/Lakes/map?f=image/svg%2Bxml&bbox=-1,-1,1,1&width=50&height=50");
+            assertEquals(406, response.getStatus());
+            assertThat(response.getContentAsString(), containsString("SVG"));
+        });
+    }
+
+    /** An f value naming an encoding the server cannot produce is a failed negotiation, not a server error. */
+    @Test
+    public void testUnknownFormatNotAcceptable() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(MAP + "&f=image/nosuchthing");
+        assertEquals(406, response.getStatus());
+        assertEquals("application/json", getBaseMimeType(response.getContentType()));
+        DocumentContext json = JsonPath.parse(response.getContentAsString());
+        assertEquals("NotAcceptable", json.read("type"));
+        assertThat(json.read("title"), containsString("image/nosuchthing"));
+    }
+
+    /** An f value that is not a media type at all is a bad parameter value, caught before the map is rendered. */
+    @Test
+    public void testMalformedFormatRejected() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(MAP + "&f=garbage");
+        assertEquals(400, response.getStatus());
+        DocumentContext json = JsonPath.parse(response.getContentAsString());
+        assertEquals("InvalidParameterValue", json.read("type"));
+        assertThat(json.read("title"), containsString("garbage"));
     }
 }

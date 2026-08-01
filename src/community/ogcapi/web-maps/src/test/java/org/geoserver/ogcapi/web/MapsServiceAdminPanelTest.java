@@ -4,14 +4,18 @@
  */
 package org.geoserver.ogcapi.web;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
+import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.visit.IVisitor;
+import org.geoserver.ogcapi.v1.maps.MapsSettings;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.web.WMSAdminPage;
 import org.junit.Test;
 
@@ -31,6 +35,9 @@ public class MapsServiceAdminPanelTest extends GeoServerWicketTestSupport {
         // the conformance table lists every configurable class, with its localized label
         String markup = tester.getLastResponseAsString();
         for (String label : new String[] {
+            "Dataset map",
+            "Collection selection",
+            "Collections in a dataset map",
             "Spatial subsetting",
             "Scaling",
             "Display resolution",
@@ -50,6 +57,28 @@ public class MapsServiceAdminPanelTest extends GeoServerWicketTestSupport {
             "ECQL Text"
         }) {
             assertTrue("Missing conformance class row: " + label, markup.contains(label));
+        }
+    }
+
+    /** The collection count of a default dataset map is edited on the page and stored in the WMS configuration. */
+    @Test
+    public void testDefaultCollectionsRoundTrip() {
+        login();
+        tester.startPage(WMSAdminPage.class);
+        tester.clickLink("form:tabs:tabs-container:tabs:" + mapsTabIndex() + ":link");
+
+        FormTester form = tester.newFormTester("form");
+        form.setValue("tabs:panel:extensions:0:content:defaultCollections", "4");
+        form.submit("submit");
+
+        WMSInfo wms = getGeoServer().getService(WMSInfo.class);
+        try {
+            assertEquals(
+                    Integer.valueOf(4), wms.getMetadata().get(MapsSettings.DEFAULT_COLLECTIONS_KEY, Integer.class));
+            assertEquals(4, MapsSettings.defaultCollections(wms));
+        } finally {
+            wms.getMetadata().remove(MapsSettings.DEFAULT_COLLECTIONS_KEY);
+            getGeoServer().save(wms);
         }
     }
 

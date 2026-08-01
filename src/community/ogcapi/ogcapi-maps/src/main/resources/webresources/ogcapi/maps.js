@@ -238,6 +238,44 @@ document.addEventListener("DOMContentLoaded", () => {
         updateParams({ f: imageFormat });
     });
 
+    // the collection palette of a dataset map: the selected list is drawn bottom to top, so its order is the
+    // collections parameter order. Only present on the dataset map preview, a collection map has nothing to choose.
+    const candidates = el("candidateCollections");
+    const selected = el("selectedCollections");
+    if (candidates && selected) {
+        const applyCollections = () => updateParams({
+            collections: Array.from(selected.options).map((option) => option.value).join(","),
+        });
+        const move = (from, to, moving) => {
+            // an empty selection would ask for the whole dataset rather than for an empty map, so keep one
+            if (from === selected && moving.length === selected.options.length) moving.pop();
+            moving.forEach((option) => to.add(option));
+            applyCollections();
+        };
+        const moveHighlighted = (from, to) => move(from, to, Array.from(from.selectedOptions));
+        // a double click moves the collection under the pointer across, the usual shortcut of a two list picker
+        const moveClicked = (event, from, to) =>
+            move(from, to, event.target instanceof HTMLOptionElement ? [event.target] : []);
+        // shifts every selected option by one position, in the direction the step points to
+        const shift = (step) => {
+            const options = Array.from(selected.options);
+            const order = step < 0 ? options : options.reverse();
+            order.forEach((option) => {
+                if (!option.selected) return;
+                const target = option.index + step;
+                if (target < 0 || target >= selected.options.length) return;
+                selected.insertBefore(option, selected.options[step < 0 ? target : target + 1]);
+            });
+            applyCollections();
+        };
+        el("addCollections").addEventListener("click", () => moveHighlighted(candidates, selected));
+        el("removeCollections").addEventListener("click", () => moveHighlighted(selected, candidates));
+        candidates.addEventListener("dblclick", (event) => moveClicked(event, candidates, selected));
+        selected.addEventListener("dblclick", (event) => moveClicked(event, selected, candidates));
+        el("collectionUp").addEventListener("click", () => shift(-1));
+        el("collectionDown").addEventListener("click", () => shift(1));
+    }
+
     // the OGC API - Features - Part 3 filter parameters, applied by the server on top of bbox and datetime
     const updateFilter = () => {
         const filterValue = el("filter").value.trim();

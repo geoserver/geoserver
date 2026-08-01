@@ -9,10 +9,12 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
 
+import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.ogcapi.APIException;
 import org.geoserver.wms.WMSInfo;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -203,6 +205,45 @@ public class SubsettingTest extends MapsTestSupport {
         }
     }
 
+    /**
+     * The out of range check belongs to the spatial subsetting class, so with that class off the interval is ignored
+     * and even a CITE compliant server cannot answer 404 for it.
+     */
+    @Test
+    public void testSubsetOutsideAxisRangeIgnoredWithoutSpatialSubsetting() throws Exception {
+        withCiteCompliance(
+                true,
+                () -> withConformance(
+                        MapsConformance::setSpatialSubsetting,
+                        false,
+                        () -> assertEquals(
+                                200,
+                                getAsServletResponse(MAP + "&subset=Lat(200:300)")
+                                        .getStatus())));
+    }
+
+    /** A subset whose three classes are all disabled is ignored, so it is never parsed and never rejected. */
+    @Test
+    public void testSubsetIgnoredWhenAllClassesDisabled() throws Exception {
+        String full = bbox("");
+        withoutSubsetting(() -> {
+            assertEquals(full, bbox("&subset=Lon(0:2),Lat(0:2)"));
+            // not even a value no class could parse, which is a 400 as soon as one of them is on
+            assertEquals(full, bbox("&subset=garbage"));
+        });
+    }
+
+    /** Runs the body with the three conformance classes that read the subset parameter all off. */
+    private void withoutSubsetting(ThrowingRunnable body) throws Exception {
+        withConformance(
+                MapsConformance::setSpatialSubsetting,
+                false,
+                () -> withConformance(
+                        MapsConformance::setDatetime,
+                        false,
+                        () -> withConformance(MapsConformance::setGeneralSubsetting, false, body)));
+    }
+
     /** Runs the body with the CITE compliance flag set, restoring the previous value afterwards. */
     private void withCiteCompliance(boolean citeCompliant, ThrowingRunnable body) throws Exception {
         GeoServer gs = getGeoServer();
@@ -259,5 +300,27 @@ public class SubsettingTest extends MapsTestSupport {
                     getAsServletResponse(MAP + "&crs=" + crs + "&subset=Lon(0:2),Lat(0:1)&subset-crs=" + crs)
                             .getStatus());
         }
+    }
+
+    /** Only one extent per request: bbox, center and the spatial axes of a subset are three ways to say it. */
+    @Test
+    public void testCombinedExtentsRejected() throws Exception {
+        String base = "ogc/maps/v1/collections/Lakes/map?f=image/png&width=50&height=50";
+        for (String extents : new String[] {
+            "&bbox=-1,-1,1,1&subset=Lon(0:2),Lat(0:2)",
+            "&bbox=-1,-1,1,1&center=0,0",
+            "&subset=Lon(0:2),Lat(0:2)&center=0,0"
+        }) {
+            DocumentContext json = getAsJSONPath(base + extents, 400);
+            assertEquals(APIException.INVALID_PARAMETER_VALUE, json.read("type"));
+            assertThat(json.read("title"), containsString("all define the map extent"));
+        }
+
+        // a subset on the time axis alone says nothing about the extent, so it combines with a bbox
+        setupStartEndTimeDimension(TIME_WITH_START_END, "time", "startTime", "endTime");
+        MockHttpServletResponse response =
+                getAsServletResponse("ogc/maps/v1/collections/sf:TimeWithStartEnd/map?f=image/png&width=50&height=50"
+                        + "&bbox=-1,-1,1,1&subset=time(\"2012-02-11T00:00:00Z\")");
+        assertEquals(200, response.getStatus());
     }
 }

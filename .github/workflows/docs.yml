@@ -33,7 +33,7 @@ jobs:
           fetch-depth: 0  # Full history for mike
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: '3.x'
           cache: 'pip'

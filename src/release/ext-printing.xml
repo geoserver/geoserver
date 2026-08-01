@@ -15,6 +15,9 @@
         <include>gs-printing-*.jar</include>
         <include>print-lib-*.jar</include>
         <include>xercesImpl-*.jar</include>
+        <include>jackson-dataformat-yaml-*.jar</include>
+        <include>commons-httpclient-*.jar</include>
+        <include>snakeyaml-*.jar</include>
       </includes>
     </fileSet>
     <fileSet>

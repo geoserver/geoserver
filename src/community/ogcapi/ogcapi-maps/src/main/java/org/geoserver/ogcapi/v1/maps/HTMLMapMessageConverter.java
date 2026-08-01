@@ -63,6 +63,10 @@ public class HTMLMapMessageConverter extends AbstractServiceHTMLMessageConverter
         HttpServletRequest httpRequest = ri.getRequest();
         model.put("url", httpRequest.getRequestURL());
         model.put("parameters", getLayerParameter(getMapRequest.getRawKvp()));
+        // the layer chooser of a dataset map preview, empty for the map of a single collection
+        model.put("collections", htmlMap.getCollections());
+        model.put("selectedCollections", htmlMap.getSelectedCollections());
+        model.put("collectionsCut", htmlMap.isCollectionsCut());
         Charset defaultCharset = getDefaultCharset();
         if (outputMessage != null && outputMessage.getBody() != null && defaultCharset != null) {
             templateSupport.processTemplate(

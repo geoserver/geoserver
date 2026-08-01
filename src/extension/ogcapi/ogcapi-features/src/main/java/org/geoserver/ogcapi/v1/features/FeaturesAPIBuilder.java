@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.ogcapi.APIFilterParser;
 import org.geoserver.ogcapi.CQL2Conformance;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.wfs.WFSInfo;
@@ -105,14 +104,7 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
                 .collect(Collectors.toList());
         collectionId.getSchema().setEnum(validCollectionIds);
 
-        // the enum and the default of filter-lang, both required by OGC API - Features - Part 3
-        // /req/filter/filter-lang-param
-        Parameter filterLang = parameters.get("filter-lang");
-        List<String> filterLangValues = APIFilterParser.enabledLanguages(wfs);
-        filterLang.getSchema().setEnum(filterLangValues);
-        if (!filterLangValues.isEmpty()) {
-            filterLang.getSchema().setDefault(filterLangValues.get(0));
-        }
+        declareFilterLanguages(api, wfs);
 
         // provide actual values for limit
         Parameter limit = parameters.get("limit");

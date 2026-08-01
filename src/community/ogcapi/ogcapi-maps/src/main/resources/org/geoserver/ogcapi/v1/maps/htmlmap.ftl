@@ -34,6 +34,38 @@
 
       <div id="sidebar-content">
         <div id="toolbar" class="preview-form">
+          <#if collections?size != 0>
+          <label for="selectedCollections">Collections:</label>
+          <div class="collection-palette">
+            <p class="collection-hint">The map draws the selected collections, the first one at the bottom. Double click a collection to move it across.</p>
+            <#if collectionsCut>
+            <p class="collection-warning" id="collectionsCutWarning">Too many collections to list them all: only the first ${collections?size} are shown. Use the collections parameter to draw any other one.</p>
+            </#if>
+            <div class="collection-lists">
+              <select id="candidateCollections" class="collection-list" multiple size="6" aria-label="Available collections">
+                <#list collections as collection>
+                <#if !selectedCollections?seq_contains(collection)>
+                <option value="${collection}">${collection}</option>
+                </#if>
+                </#list>
+              </select>
+              <div class="collection-buttons">
+                <button id="addCollections" type="button" title="Add to the map">&gt;</button>
+                <button id="removeCollections" type="button" title="Remove from the map">&lt;</button>
+              </div>
+              <select id="selectedCollections" class="collection-list" multiple size="6" aria-label="Collections drawn, bottom to top">
+                <#list selectedCollections as collection>
+                <option value="${collection}">${collection}</option>
+                </#list>
+              </select>
+              <div class="collection-buttons">
+                <button id="collectionUp" type="button" title="Move up, drawn below the others">&uarr;</button>
+                <button id="collectionDown" type="button" title="Move down, drawn above the others">&darr;</button>
+              </div>
+            </div>
+          </div>
+          </#if>
+
           <label for="tilingModeSelector">Tiling:</label>
           <select id="tilingModeSelector">
             <option value="untiled">Single tile</option>

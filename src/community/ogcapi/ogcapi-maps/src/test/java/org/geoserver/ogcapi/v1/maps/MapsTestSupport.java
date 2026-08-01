@@ -4,7 +4,10 @@
  */
 package org.geoserver.ogcapi.v1.maps;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
@@ -113,6 +116,53 @@ public class MapsTestSupport extends OGCApiTestSupport {
         }
     }
 
+    /** Asserts the request returns a 400 whose error body names the offending parameter. */
+    protected void assertBadRequestMentions(String url, String parameter) throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(url);
+        assertEquals(400, response.getStatus());
+        assertThat(response.getContentAsString(), containsString(parameter));
+    }
+
+    /** Reads a map or legend response as PNG, checking the media type and the encoded bytes. */
+    protected BufferedImage getAsPNG(String path) throws Exception {
+        return readImage(getAsServletResponse(path), "image/png", "png");
+    }
+
+    /** Reads a map response as JPEG, checking the media type and the encoded bytes. */
+    protected BufferedImage getAsJPEG(String path) throws Exception {
+        return readImage(getAsServletResponse(path), "image/jpeg", "jpeg");
+    }
+
+    /** Reads a map response as TIFF, checking the media type and the encoded bytes. */
+    protected BufferedImage getAsTIFF(String path) throws Exception {
+        // the imageio-ext reader names the format "tif", not "tiff"
+        return readImage(getAsServletResponse(path), "image/tiff", "tif");
+    }
+
+    /**
+     * Decodes an image response, checking both the declared media type and the format the bytes are actually in.
+     *
+     * @param format the ImageIO format name, matched ignoring case
+     */
+    protected BufferedImage readImage(MockHttpServletResponse response, String mediaType, String format)
+            throws Exception {
+        assertEquals(200, response.getStatus());
+        assertEquals(mediaType, getBaseMimeType(response.getContentType()));
+        try (ImageInputStream input =
+                ImageIO.createImageInputStream(new ByteArrayInputStream(response.getContentAsByteArray()))) {
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(input);
+            assertTrue("Response bytes are not a readable image", readers.hasNext());
+            ImageReader reader = readers.next();
+            try {
+                assertEquals(format.toLowerCase(), reader.getFormatName().toLowerCase());
+                reader.setInput(input);
+                return reader.read(0);
+            } finally {
+                reader.dispose();
+            }
+        }
+    }
+
     /**
      * Alpha of one pixel, 0 fully transparent and 255 fully opaque. {@link BufferedImage#getRGB} returns the pixel as
      * ARGB with alpha in the high byte.
@@ -146,6 +196,16 @@ public class MapsTestSupport extends OGCApiTestSupport {
         return argb & 0xFFFFFF;
     }
 
+    /** Asserts the pixel at the given x,y holds rendered data. */
+    protected static void assertOpaque(BufferedImage image, int[] xy) {
+        assertNotEquals("expected rendered data at " + xy[0] + "," + xy[1], 0, alpha(image, xy[0], xy[1]));
+    }
+
+    /** Asserts the pixel at the given x,y was left empty. */
+    protected static void assertTransparent(BufferedImage image, int[] xy) {
+        assertEquals("expected no data at " + xy[0] + "," + xy[1], 0, alpha(image, xy[0], xy[1]));
+    }
+
     protected void setupStartEndTimeDimension(QName typeName, String dimension, String start, String end) {
         FeatureTypeInfo info = getCatalog().getFeatureTypeByName(typeName.getLocalPart());
         DimensionInfo di = new DimensionInfoImpl();
@@ -155,34 +215,5 @@ public class MapsTestSupport extends OGCApiTestSupport {
         di.setPresentation(DimensionPresentation.LIST);
         info.getMetadata().put(dimension, di);
         getCatalog().save(info);
-    }
-
-    /** Reads a map or legend response as PNG, checking the media type and the encoded bytes. */
-    protected BufferedImage getAsPNG(String path) throws Exception {
-        return readImage(getAsServletResponse(path), "image/png", "png");
-    }
-
-    /**
-     * Decodes an image response, checking both the declared media type and the format the bytes are actually in.
-     *
-     * @param format the ImageIO format name, matched ignoring case
-     */
-    protected BufferedImage readImage(MockHttpServletResponse response, String mediaType, String format)
-            throws Exception {
-        assertEquals(200, response.getStatus());
-        assertEquals(mediaType, getBaseMimeType(response.getContentType()));
-        try (ImageInputStream input =
-                ImageIO.createImageInputStream(new ByteArrayInputStream(response.getContentAsByteArray()))) {
-            Iterator<ImageReader> readers = ImageIO.getImageReaders(input);
-            assertTrue("Response bytes are not a readable image", readers.hasNext());
-            ImageReader reader = readers.next();
-            try {
-                assertEquals(format.toLowerCase(), reader.getFormatName().toLowerCase());
-                reader.setInput(input);
-                return reader.read(0);
-            } finally {
-                reader.dispose();
-            }
-        }
     }
 }

@@ -29,6 +29,18 @@
       </div>
     </div>
 
+    <#assign mapLinks = model.getLinksFor('map')>
+    <#if mapLinks?size != 0>
+    <div class="col-6 col-xl-3 mb-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2>Dataset map</h2>
+          <p>The <a id="htmlDatasetMapLink" href="${mapLinks[0].href}?f=text%2Fhtml">dataset map</a> renders several collections of this service in a single image, choosing which ones and in what order.
+        </div>
+      </div>
+    </div>
+    </#if>
+
     ${htmlExtensions('landing')?no_esc}
 
     <div class="col-6 col-xl-3 mb-3">

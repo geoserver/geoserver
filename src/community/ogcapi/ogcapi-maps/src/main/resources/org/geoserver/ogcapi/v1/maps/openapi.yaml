@@ -110,6 +110,74 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
+  '/map':
+    get:
+      tags: [Maps]
+      summary: retrieve a map of this dataset, rendering several collections at once
+      operationId: maps.dataset.getMap
+      parameters:
+        - $ref: '#/components/parameters/f-map'
+        - $ref: '#/components/parameters/collections'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/bbox-crs'
+        - $ref: '#/components/parameters/subset'
+        - $ref: '#/components/parameters/subset-crs'
+        - $ref: '#/components/parameters/center'
+        - $ref: '#/components/parameters/center-crs'
+        - $ref: '#/components/parameters/crs'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/width'
+        - $ref: '#/components/parameters/height'
+        - $ref: '#/components/parameters/scale-denominator'
+        - $ref: '#/components/parameters/mm-per-pixel'
+        - $ref: '#/components/parameters/orientation'
+        - $ref: '#/components/parameters/bgcolor'
+        - $ref: '#/components/parameters/transparent'
+        - $ref: '#/components/parameters/void-color'
+        - $ref: '#/components/parameters/void-transparent'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/filter-lang'
+        - $ref: '#/components/parameters/filter-crs'
+      responses:
+        '200':
+          $ref: '#/components/responses/Map'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/map/info':
+    get:
+      tags: [Maps]
+      summary: GeoServer extension, query the dataset map at a pixel
+      operationId: getDatasetMapInfo
+      parameters:
+        - $ref: '#/components/parameters/f-info'
+        - $ref: '#/components/parameters/collections'
+        - $ref: '#/components/parameters/i'
+        - $ref: '#/components/parameters/j'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/bbox-crs'
+        - $ref: '#/components/parameters/subset'
+        - $ref: '#/components/parameters/subset-crs'
+        - $ref: '#/components/parameters/center'
+        - $ref: '#/components/parameters/center-crs'
+        - $ref: '#/components/parameters/crs'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/width'
+        - $ref: '#/components/parameters/height'
+        - $ref: '#/components/parameters/scale-denominator'
+        - $ref: '#/components/parameters/mm-per-pixel'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/filter-lang'
+        - $ref: '#/components/parameters/filter-crs'
+      responses:
+        '200':
+          description: the feature information at the queried pixel
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
   '/collections/{collectionId}/map':
     get:
       tags: [Maps]
@@ -302,6 +370,17 @@ components:
       in: path
       required: true
       schema: {type: string}
+    collections:
+      name: collections
+      in: query
+      description: |-
+        the collections to render, bottom to top, either by identifier or by the full URL of their
+        collection resource. Defaults to a selection of the contents of this service.
+      style: form
+      explode: false
+      schema:
+        type: array
+        items: {type: string}
     styleId:
       name: styleId
       in: path
@@ -310,147 +389,119 @@ components:
     f-map:
       name: f
       in: query
-      required: false
       schema: {type: string, enum: [image/png, image/jpeg]}
     f-info:
       name: f
       in: query
-      required: false
       schema: {type: string}
     limit:
       name: limit
       in: query
       description: maximum number of features to return, across all the layers of the collection
-      required: false
       schema: {type: integer, minimum: 1, default: 1}
     f-legend:
       name: f
       in: query
-      required: false
       schema: {type: string, enum: [image/png, image/jpeg, image/gif, application/json]}
     scale:
       name: scale
       in: query
-      required: false
       schema: {type: number, minimum: 0}
     rule:
       name: rule
       in: query
-      required: false
       schema: {type: string}
     lang:
       name: lang
       in: query
-      required: false
       schema: {type: string}
     legend-options:
       name: legend-options
       in: query
-      required: false
       schema: {type: string}
     bbox:
       name: bbox
       in: query
-      required: false
       schema: {type: array, minItems: 4, maxItems: 6, items: {type: number}}
     bbox-crs:
       name: bbox-crs
       in: query
-      required: false
       schema: {type: string, format: uri}
     subset:
       name: subset
       in: query
-      required: false
       explode: false
       schema: {type: array, items: {type: string}}
     subset-crs:
       name: subset-crs
       in: query
-      required: false
       schema: {type: string, format: uri}
     center:
       name: center
       in: query
-      required: false
       explode: false
       schema: {type: array, items: {type: number}}
     center-crs:
       name: center-crs
       in: query
-      required: false
       schema: {type: string, format: uri}
     crs:
       name: crs
       in: query
-      required: false
       schema: {type: string, format: uri}
     datetime:
       name: datetime
       in: query
-      required: false
       schema: {type: string}
     width:
       name: width
       in: query
-      required: false
       schema: {type: integer, minimum: 1}
     height:
       name: height
       in: query
-      required: false
       schema: {type: integer, minimum: 1}
     scale-denominator:
       name: scale-denominator
       in: query
-      required: false
       schema: {type: number}
     mm-per-pixel:
       name: mm-per-pixel
       in: query
-      required: false
       schema: {type: number, default: 0.28}
     orientation:
       name: orientation
       in: query
-      required: false
       schema: {type: number, default: 0}
     bgcolor:
       name: bgcolor
       in: query
-      required: false
       schema: {type: string}
     transparent:
       name: transparent
       in: query
-      required: false
       schema: {type: boolean, default: true}
     void-color:
       name: void-color
       in: query
-      required: false
       schema: {type: string}
     void-transparent:
       name: void-transparent
       in: query
-      required: false
       schema: {type: boolean, default: true}
     filter:
       name: filter
       in: query
       description: attribute filter, in the language declared by filter-lang
-      required: false
       schema: {type: string}
     filter-lang:
       name: filter-lang
       in: query
-      required: false
       schema: {type: string, enum: [cql2-text, cql2-json, ecql-text], default: cql2-text}
     filter-crs:
       name: filter-crs
       in: query
       description: CRS of the geometry literals in the filter, CRS84 when absent
-      required: false
       schema: {type: string, format: uri}
     i:
       name: i

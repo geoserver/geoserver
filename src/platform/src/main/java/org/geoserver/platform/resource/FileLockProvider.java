@@ -19,6 +19,7 @@ import java.nio.channels.OverlappingFileLockException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,6 +49,7 @@ public class FileLockProvider implements LockProvider, ServletContextAware {
 
     private static final class LockEntry {
         final ReentrantLock gate = new ReentrantLock();
+        final AtomicInteger counter = new AtomicInteger(0);
         FileOutputStream fos;
         FileLock lock;
     }
@@ -80,7 +82,11 @@ public class FileLockProvider implements LockProvider, ServletContextAware {
         // below won't do that on its own: FileLock is documented as unsuitable for excluding
         // threads within the same JVM) and, being a ReentrantLock, also lets the thread that
         // already holds it re-enter without blocking
-        final LockEntry entry = lockEntries.computeIfAbsent(lockKey, k -> new LockEntry());
+        final LockEntry entry = lockEntries.compute(lockKey, (k, e) -> {
+            if (e == null) e = new LockEntry();
+            e.counter.incrementAndGet();
+            return e;
+        });
         final ReentrantLock gate = entry.gate;
         acquireGate(lockKey, gate);
 
@@ -170,7 +176,7 @@ public class FileLockProvider implements LockProvider, ServletContextAware {
                 }
             }
             IOUtils.closeQuietly(currFos);
-            lockEntries.remove(lockKey, entry);
+            detach(lockKey, entry);
             gate.unlock();
             throw (e instanceof RuntimeException) ? (RuntimeException) e : new IllegalStateException(e);
         }
@@ -190,6 +196,8 @@ public class FileLockProvider implements LockProvider, ServletContextAware {
                         releaseFileLock(lockKey, entry, file);
                     }
                 } finally {
+                    // Call detach() on every release
+                    detach(lockKey, entry);
                     gate.unlock();
                 }
             }
@@ -215,12 +223,24 @@ public class FileLockProvider implements LockProvider, ServletContextAware {
                 // should not happen: by the time release() calls into here, entry.lock was always
                 // set by this same thread's earlier successful acquire. Logged rather than thrown
                 // since lock usage is only there to prevent duplication of work, not correctness.
-                LOGGER.warning("Lock key " + lockKey + " had no valid OS lock to release; this should not happen");
+                LOGGER.warning(("Lock %s has no valid OS lock to release, current thread is: %d. This means the "
+                                + "lock was never acquired, or was released twice. Are you running two instances "
+                                + "in the same JVM using NIO locks? This case is not supported and will generate "
+                                + "exactly this error message")
+                        .formatted(lockKey, Thread.currentThread().getId()));
             }
         } catch (IOException e) {
             throw new IllegalStateException("Failure releasing lock " + lockKey, e);
-        } finally {
-            lockEntries.remove(lockKey, entry);
+        }
+    }
+
+    /**
+     * Undoes one {@code acquire()} call. Removes {@code entry} from the map once no caller is still attached to it
+     * (mirrors {@code MemoryLockProvider.LockAndCounter}).
+     */
+    private void detach(String lockKey, LockEntry entry) {
+        if (entry.counter.decrementAndGet() == 0) {
+            lockEntries.compute(lockKey, (k, e) -> (e == null || e.counter.get() == 0) ? null : e);
         }
     }
 

@@ -8,6 +8,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -232,6 +233,43 @@ public class FileLockProviderTest {
         }
 
         assertEquals("hello", IOUtils.toString(resource.in(), StandardCharsets.UTF_8));
+    }
+
+    /**
+     * A thread wait for the lock, then get it right after the other thread releases it. This thread must then be able
+     * to acquire the same lock again, like any other thread that holds the lock.
+     */
+    @Test
+    public void testNestedAcquireAfterWait() throws Exception {
+        String key = "waiting-thread-key";
+        Resource.Lock outer = provider.acquire(key);
+
+        CountDownLatch waiterStarted = new CountDownLatch(1);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            Future<Throwable> future = executor.submit(() -> {
+                waiterStarted.countDown();
+                Resource.Lock locked = provider.acquire(key); // blocks until outer releases
+                try {
+                    Resource.Lock nested = provider.acquire(key); // must not hang or throw
+                    nested.release();
+                    return null;
+                } catch (Throwable t) {
+                    return t;
+                } finally {
+                    locked.release();
+                }
+            });
+
+            assertTrue("Waiter thread failed to start", waiterStarted.await(2, SECONDS));
+            Thread.sleep(300); // make sure the waiter is parked on the gate before releasing
+            outer.release();
+
+            Throwable failure = future.get(5, SECONDS);
+            assertNull("Nested acquire after handoff must not fail: " + failure, failure);
+        } finally {
+            executor.shutdownNow();
+        }
     }
 
     private File getLockFile(String key) {

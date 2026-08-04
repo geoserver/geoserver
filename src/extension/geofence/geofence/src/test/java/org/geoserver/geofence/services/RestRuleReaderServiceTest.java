@@ -11,16 +11,19 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
+import java.util.TreeSet;
 import org.geofence.core.services.dto.AccessInfo;
 import org.geofence.core.services.dto.AccessTypeDTO;
 import org.geofence.core.services.dto.CatalogModeDTO;
 import org.geofence.core.services.dto.GrantTypeDTO;
 import org.geofence.core.services.dto.LayerAttributeDTO;
+import org.geofence.core.services.dto.PermsResult;
 import org.geofence.core.services.dto.RuleFilter;
 import org.geofence.core.services.dto.ShortRule;
 import org.geofence.web.rest.api.interfaces.params.RESTRuleFilter;
 import org.geofence.web.rest.api.model.RESTAccessInfo;
 import org.geofence.web.rest.api.model.RESTLayerAttribute;
+import org.geofence.web.rest.api.model.RESTPermsResult;
 import org.geofence.web.rest.api.model.RESTShortRule;
 import org.geofence.web.rest.api.model.enums.RESTAccessType;
 import org.geofence.web.rest.api.model.enums.RESTCatalogMode;
@@ -122,6 +125,29 @@ public class RestRuleReaderServiceTest {
         assertEquals(GrantTypeDTO.DENY, out.getGrant());
         assertFalse(out.getAdminRights());
         assertNull(out.getAttributes());
+    }
+
+    @Test
+    public void testToPermsResult() {
+        RESTPermsResult in = new RESTPermsResult();
+        in.setCqlFilter("workspace = 'topp'");
+        in.setAccessibleResources(new TreeSet<>(Set.of("topp:states", "topp:roads")));
+
+        PermsResult out = RestRuleReaderService.toPermsResult(in);
+
+        assertEquals("workspace = 'topp'", out.getCqlFilter());
+        assertEquals(Set.of("topp:states", "topp:roads"), out.getAccessibleResources());
+    }
+
+    @Test
+    public void testToPermsResultWithNullResources() {
+        RESTPermsResult in = new RESTPermsResult();
+        in.setCqlFilter("EXCLUDE");
+
+        PermsResult out = RestRuleReaderService.toPermsResult(in);
+
+        assertEquals("EXCLUDE", out.getCqlFilter());
+        assertTrue(out.getAccessibleResources().isEmpty());
     }
 
     @Test

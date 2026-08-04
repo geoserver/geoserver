@@ -7,6 +7,7 @@ package org.geoserver.geofence.utils;
 import java.util.List;
 import org.geofence.core.services.RuleReaderService;
 import org.geofence.core.services.dto.AccessInfo;
+import org.geofence.core.services.dto.PermsResult;
 import org.geofence.core.services.dto.RuleFilter;
 import org.geofence.core.services.dto.ShortRule;
 
@@ -15,6 +16,11 @@ public class RuleReaderServiceAdapter implements RuleReaderService {
 
     @Override
     public AccessInfo getAccessInfo(RuleFilter filter) {
+        return null;
+    }
+
+    @Override
+    public PermsResult getPermissionFilter(RuleFilter filter) {
         return null;
     }
 

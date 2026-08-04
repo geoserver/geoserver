@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.geofence.core.services.RuleReaderService;
 import org.geofence.core.services.dto.AccessInfo;
 import org.geofence.core.services.dto.GrantTypeDTO;
+import org.geofence.core.services.dto.PermsResult;
 import org.geofence.core.services.dto.RuleFilter;
 import org.geofence.core.services.dto.ShortRule;
 import org.geotools.util.logging.Logging;
@@ -43,6 +44,14 @@ public class DenyAllRuleReaderService implements RuleReaderService {
     public List<ShortRule> getMatchingRules(RuleFilter filter) {
         warn("getMatchingRules", filter);
         return Collections.emptyList();
+    }
+
+    @Override
+    public PermsResult getPermissionFilter(RuleFilter filter) {
+        warn("getPermissionFilter", filter);
+        PermsResult ret = new PermsResult();
+        ret.setCqlFilter("EXCLUDE");
+        return ret;
     }
 
     private void warn(String method, RuleFilter filter) {

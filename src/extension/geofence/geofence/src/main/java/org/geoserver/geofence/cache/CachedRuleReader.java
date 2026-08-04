@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geofence.core.services.RuleReaderService;
 import org.geofence.core.services.dto.AccessInfo;
+import org.geofence.core.services.dto.PermsResult;
 import org.geofence.core.services.dto.RuleFilter;
 import org.geofence.core.services.dto.ShortRule;
 import org.geoserver.geofence.services.RuleReaderDecorator;
@@ -49,6 +50,16 @@ public class CachedRuleReader implements RuleReaderService, RuleReaderDecorator 
             throw new RuntimeException(ex); // fixme: handle me
         }
         return accessInfo;
+    }
+
+    @Override
+    public PermsResult getPermissionFilter(RuleFilter filter) {
+        if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Perms request for {0}", filter);
+        try {
+            return cacheManager.getPermCache().get(filter);
+        } catch (ExecutionException ex) {
+            throw new RuntimeException(ex); // fixme: handle me
+        }
     }
 
     @Override

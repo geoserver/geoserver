@@ -10,6 +10,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geofence.core.services.dto.AccessInfo;
+import org.geofence.core.services.dto.PermsResult;
 import org.geofence.core.services.dto.RuleFilter;
 import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geotools.util.logging.Logging;
@@ -31,6 +32,10 @@ public class RuleCacheLoaderFactory {
 
     public RuleLoader createRuleLoader() {
         return new RuleLoader();
+    }
+
+    public PermLoader createPermLoader() {
+        return new PermLoader();
     }
 
     public AuthLoader createAuthLoader() {
@@ -69,6 +74,29 @@ public class RuleCacheLoaderFactory {
             // return realRuleReaderService.getAccessInfo(filter);
             // }
             // });
+        }
+    }
+
+    class PermLoader extends CacheLoader<RuleFilter, PermsResult> {
+
+        private PermLoader() {}
+
+        @Override
+        public PermsResult load(RuleFilter filter) throws Exception {
+            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Loading perms for {0}", filter);
+            RuleFilter clone = filter.clone();
+            return rrsFactory.getService().getPermissionFilter(clone);
+        }
+
+        @Override
+        public ListenableFuture<PermsResult> reload(final RuleFilter filter, PermsResult perms) throws Exception {
+            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Reloading perms for {0}", filter);
+
+            RuleFilter clone = filter.clone();
+
+            // this is a sync implementation
+            PermsResult ret = rrsFactory.getService().getPermissionFilter(clone);
+            return Futures.immediateFuture(ret);
         }
     }
 

@@ -14,6 +14,7 @@ import org.geofence.core.services.dto.AccessTypeDTO;
 import org.geofence.core.services.dto.CatalogModeDTO;
 import org.geofence.core.services.dto.GrantTypeDTO;
 import org.geofence.core.services.dto.LayerAttributeDTO;
+import org.geofence.core.services.dto.PermsResult;
 import org.geofence.core.services.dto.RuleFilter;
 import org.geofence.core.services.dto.RuleFilter.FilterType;
 import org.geofence.core.services.dto.RuleFilter.IdNameFilter;
@@ -22,6 +23,7 @@ import org.geofence.core.services.dto.ShortRule;
 import org.geofence.web.rest.api.interfaces.params.RESTRuleFilter;
 import org.geofence.web.rest.api.model.RESTAccessInfo;
 import org.geofence.web.rest.api.model.RESTLayerAttribute;
+import org.geofence.web.rest.api.model.RESTPermsResult;
 import org.geofence.web.rest.api.model.RESTShortRule;
 import org.geofence.web.rest.api.model.enums.RESTAccessType;
 import org.geofence.web.rest.api.model.enums.RESTCatalogMode;
@@ -72,6 +74,12 @@ public class RestRuleReaderService implements RuleReaderService {
         List<ShortRule> rules = new ArrayList<>();
         ruleReaderClient().getMatchingRules(toRestFilter(filter)).forEach(restRule -> rules.add(toShortRule(restRule)));
         return rules;
+    }
+
+    @Override
+    public PermsResult getPermissionFilter(RuleFilter filter) {
+        RESTPermsResult restResult = ruleReaderClient().getPermissionFilter(toRestFilter(filter));
+        return toPermsResult(restResult);
     }
 
     public void setServiceUrl(String serviceUrl) {
@@ -181,6 +189,15 @@ public class RestRuleReaderService implements RuleReaderService {
             out.setAttributes(in.getAttributes().stream()
                     .map(RestRuleReaderService::map)
                     .collect(java.util.stream.Collectors.toSet()));
+        }
+        return out;
+    }
+
+    static PermsResult toPermsResult(RESTPermsResult in) {
+        PermsResult out = new PermsResult();
+        out.setCqlFilter(in.getCqlFilter());
+        if (in.getAccessibleResources() != null) {
+            out.setAccessibleResources(in.getAccessibleResources());
         }
         return out;
     }

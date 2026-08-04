@@ -28,6 +28,7 @@ import org.geofence.core.services.dto.AccessTypeDTO;
 import org.geofence.core.services.dto.CatalogModeDTO;
 import org.geofence.core.services.dto.GrantTypeDTO;
 import org.geofence.core.services.dto.LayerAttributeDTO;
+import org.geofence.core.services.dto.PermsResult;
 import org.geofence.core.services.dto.RuleFilter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
@@ -35,7 +36,6 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -49,6 +49,7 @@ import org.geoserver.geofence.containers.ContainerLimitResolver;
 import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geoserver.geofence.util.AccessInfoUtils;
 import org.geoserver.geofence.util.GeomHelper;
+import org.geoserver.geofence.util.PermissionCatalogFilterHelper;
 import org.geoserver.geofence.util.RuleFilterBuilder;
 import org.geoserver.geofence.wpscommon.WPSHelper;
 import org.geoserver.ows.Dispatcher;
@@ -977,7 +978,44 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
 
     @Override
     public Filter getSecurityFilter(Authentication user, Class<? extends CatalogInfo> clazz) {
-        return Predicates.acceptAll();
+        if (user != null && !(user instanceof AnonymousAuthenticationToken) && isAdmin(user)) {
+            return Filter.INCLUDE;
+        }
+
+        RuleFilter ruleFilter = buildPermissionRuleFilter(user);
+
+        PermsResult permsResult;
+        try {
+            permsResult = rulesServiceFactory.getService().getPermissionFilter(ruleFilter);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error retrieving permissions for filter " + ruleFilter + ", denying access", e);
+            return Filter.EXCLUDE;
+        }
+
+        if (permsResult == null) {
+            LOGGER.log(Level.SEVERE, "GeoFence returned null PermsResult for filter {0}, denying access", ruleFilter);
+            return Filter.EXCLUDE;
+        }
+        return PermissionCatalogFilterHelper.buildCatalogFilter(permsResult, clazz);
+    }
+
+    /**
+     * Builds the {@link RuleFilter} used with
+     * {@link RuleReaderServiceFactory#getService()}{@code .getPermissionFilter}.
+     *
+     * <p>All catalog-scoping fields (service/request/workspace/layer/subfield) are left {@code ANY} so the call acts as
+     * a discovery query. User, role, source address, and date are populated from the current authentication context.
+     */
+    private RuleFilter buildPermissionRuleFilter(Authentication user) {
+        RuleFilter ruleFilter = new RuleFilter(RuleFilter.SpecialFilterType.ANY);
+        ruleFilter.setInstance(configurationManager.getConfiguration().getInstanceName());
+        setRuleFilterUserAndRole(user, ruleFilter);
+        String sourceAddress = retrieveCallerIpAddress();
+        if (sourceAddress != null) {
+            ruleFilter.setSourceAddress(sourceAddress);
+        }
+        ruleFilter.setDate(DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDate.now()));
+        return ruleFilter;
     }
 
     @Override

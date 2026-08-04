@@ -36,8 +36,6 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
 
     private List<String> roles = new ArrayList<>();
 
-    private String gwcContextSuffix;
-
     private String defaultUserGroupServiceName;
 
     private String ruleReaderBackend;
@@ -149,16 +147,6 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
 
     public boolean isInternal() {
         return servicesUrl.startsWith(URL_INTERNAL);
-    }
-
-    /** @return */
-    public String getGwcContextSuffix() {
-        return gwcContextSuffix;
-    }
-
-    /** @param gwcContextSuffix the gwcContextSuffix to set */
-    public void setGwcContextSuffix(String gwcContextSuffix) {
-        this.gwcContextSuffix = gwcContextSuffix;
     }
 
     /** @param defaultUserGroupServiceName the defaultUserGroupServiceName to set */

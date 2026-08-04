@@ -24,6 +24,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * Java-based wiring for the {@code geofence-server} module's beans that need literal constructor arguments,
  * property-placeholder resolution, or MVC interceptor registration, replacing the module's former
  * {@code applicationContext.xml} bean definitions.
+ *
+ * <p>The embedded engine itself is registered lazily by the base {@code gs-geofence} module, not here.
  */
 @Configuration
 public class GeoFenceServerSpringConfig implements ApplicationContextAware, WebMvcConfigurer {

@@ -32,6 +32,7 @@ import org.geoserver.geofence.cache.CacheManager;
 import org.geoserver.geofence.config.GeoFenceConfiguration;
 import org.geoserver.geofence.config.GeoFenceConfigurationController;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
+import org.geoserver.geofence.services.DenyAllRuleReaderService;
 import org.geoserver.geofence.services.RestRuleReaderService;
 import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geoserver.platform.GeoServerExtensions;
@@ -76,6 +77,7 @@ public class GeofencePage extends GeoServerSecuredPage {
                 (RuleReaderServiceFactory) GeoServerExtensions.bean("ruleReaderBackendFactory");
         embeddedBackend =
                 RuleReaderServiceFactory.INTERNAL_RULE_READER_NAME.equals(backendFactory.getActiveServiceName());
+        boolean denyingAll = backendFactory.getService() instanceof DenyAllRuleReaderService;
 
         final IModel<GeoFenceConfiguration> configModel = getGeoFenceConfigModel();
         final IModel<CacheConfiguration> cacheModel = getCacheConfigModel();
@@ -84,6 +86,14 @@ public class GeofencePage extends GeoServerSecuredPage {
         form.setOutputMarkupId(true);
         add(form);
         form.add(new TextField<>("instanceName", new PropertyModel<>(configModel, "instanceName")).setRequired(true));
+
+        // read-only: which rule reader is active, shown before servicesUrl since that's only meaningful when remote.
+        String ruleReaderKey =
+                denyingAll ? "ruleReaderUnavailable" : (embeddedBackend ? "ruleReaderEmbedded" : "ruleReaderRemote");
+        IModel<String> ruleReaderModel =
+                new StringResourceModel(GeofencePage.class.getSimpleName() + "." + ruleReaderKey);
+        form.add(new Label("ruleReader", ruleReaderModel));
+
         IModel<String> servicesUrlModel = embeddedBackend
                 ? new StringResourceModel(GeofencePage.class.getSimpleName() + ".servicesUrlEmbedded")
                 : new ExtPropertyModel<>(configModel, "servicesUrl");
@@ -98,8 +108,12 @@ public class GeofencePage extends GeoServerSecuredPage {
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target) {
-                        ((FormComponent<?>) form.get("servicesUrl")).processInput();
-                        String servicesUrl = (String) ((FormComponent<?>) form.get("servicesUrl")).getConvertedInput();
+                        // servicesUrl is unused (and its model isn't writable) when embedded - skip reading it
+                        String servicesUrl = null;
+                        if (!embeddedBackend) {
+                            ((FormComponent<?>) form.get("servicesUrl")).processInput();
+                            servicesUrl = (String) ((FormComponent<?>) form.get("servicesUrl")).getConvertedInput();
+                        }
 
                         try {
                             RuleReaderService ruleReader = getRuleReaderService(servicesUrl);
@@ -123,9 +137,7 @@ public class GeofencePage extends GeoServerSecuredPage {
                                     (RuleReaderServiceFactory) GeoServerExtensions.bean("ruleReaderBackendFactory");
                             return backendFactory.getService();
                         } else {
-                            // RestRuleReaderService replaces the old HttpInvokerProxyFactoryBean-based remote
-                            // client (Spring no longer supports serialized RMI invocations). It's a stub for now
-                            // (see RestRuleReaderService) - it doesn't make real REST calls yet.
+                            // tests the URL currently typed in the form, not the (possibly different) saved one
                             RestRuleReaderService restReader = new RestRuleReaderService();
                             restReader.setServiceUrl(servicesUrl);
                             return restReader;

@@ -16,6 +16,8 @@
   -->
 
     <context:component-scan base-package="org.geoserver.geofence"/>
-    <context:component-scan base-package="org.geofence"/>
+    <!-- Embedded engine's @Configuration classes only (their own lazy @ComponentScan pulls in the rest);
+         kept here rather than in geofence-server to preserve @EnableTransactionManagement's processing order. -->
+    <context:component-scan base-package="org.geofence.core.services.config, org.geofence.core.db.config"/>
 
 </beans>

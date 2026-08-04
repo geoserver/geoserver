@@ -52,7 +52,7 @@ public class GeoFenceSpringConfig implements ApplicationContextAware {
         Properties props = new Properties();
         // other default values are set directly into the related config beans,
         // anyway this value is used at least twice, so it's better to define it here
-        props.setProperty("servicesUrl", "http://localhost:8081/geofence/remoting/RuleReader");
+        props.setProperty("servicesUrl", "http://localhost:9191/geofence/rest");
         // The frontend will be injected in the access manager.
         // You may replace the cachedRuleReader value with restRuleReaderService in order to disable the caching
         props.setProperty("ruleReaderFrontend", "cachedRuleReader");
@@ -71,7 +71,7 @@ public class GeoFenceSpringConfig implements ApplicationContextAware {
                     boolean grantWriteToWorkspacesToAuthenticatedUsers,
             @Value("${useRolesToFilter:False}") boolean useRolesToFilter,
             @Value("${acceptedRoles:}") String acceptedRoles,
-            @Value("${gwc.context.suffix:gwc}") String gwcContextSuffix,
+            //            @Value("${gwc.context.suffix:gwc}") String gwcContextSuffix,
             @Value("${org.geoserver.rest.DefaultUserGroupServiceName:default}") String defaultUserGroupServiceName,
             @Value("${ruleReaderBackend:}") String ruleReaderBackend,
             @Value("${ruleReaderFrontend}") String ruleReaderFrontend) {
@@ -82,7 +82,7 @@ public class GeoFenceSpringConfig implements ApplicationContextAware {
         cfg.setGrantWriteToWorkspacesToAuthenticatedUsers(grantWriteToWorkspacesToAuthenticatedUsers);
         cfg.setUseRolesToFilter(useRolesToFilter);
         cfg.setAcceptedRoles(acceptedRoles);
-        cfg.setGwcContextSuffix(gwcContextSuffix);
+        //        cfg.setGwcContextSuffix(gwcContextSuffix);
         cfg.setDefaultUserGroupServiceName(defaultUserGroupServiceName);
         cfg.setRuleReaderBackend(resolveRuleReaderBackend(ruleReaderBackend));
         cfg.setRuleReaderFrontend(ruleReaderFrontend);

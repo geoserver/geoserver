@@ -6,8 +6,11 @@
 package org.geoserver.geofence.services;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geofence.core.services.RuleReaderService;
+import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -45,6 +48,14 @@ public class RuleReaderServiceFactory implements ApplicationContextAware, SmartI
 
     /** Non-null only when built via {@link #of(RuleReaderService)}; bypasses context lookup entirely. */
     private final RuleReaderService fixedService;
+
+    private static final Logger LOGGER = Logging.getLogger(RuleReaderServiceFactory.class);
+
+    /** Fail-safe fallback served when the active backend can't be resolved (e.g. embedded engine failed to boot). */
+    private final RuleReaderService denyAll = new DenyAllRuleReaderService();
+
+    /** Throttles the "backend unavailable" warning to once per unavailable stretch. */
+    private volatile boolean backendUnavailableWarned = false;
 
     /**
      * @param defaultServiceName the initial bean name, resolved from a ruleReaderBackend/Frontend property
@@ -86,7 +97,28 @@ public class RuleReaderServiceFactory implements ApplicationContextAware, SmartI
     }
 
     public RuleReaderService getService() {
-        return fixedService != null ? fixedService : resolve(activeServiceName);
+        if (fixedService != null) {
+            return fixedService;
+        }
+        try {
+            RuleReaderService service = resolve(activeServiceName);
+            if (backendUnavailableWarned) {
+                LOGGER.log(Level.INFO, "GeoFence rule reader backend ''{0}'' is available again", activeServiceName);
+                backendUnavailableWarned = false;
+            }
+            return service;
+        } catch (RuntimeException e) {
+            // backend unavailable (e.g. no datasource configured) - deny rather than propagate; recovers automatically.
+            if (!backendUnavailableWarned) {
+                LOGGER.log(
+                        Level.WARNING,
+                        "GeoFence rule reader backend '" + activeServiceName
+                                + "' is unavailable; denying all access until it recovers",
+                        e);
+                backendUnavailableWarned = true;
+            }
+            return denyAll;
+        }
     }
 
     public String getActiveServiceName() {

@@ -26,11 +26,11 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.geofence.server.rest.xml.JaxbRule;
 import org.geoserver.geofence.server.rest.xml.JaxbRuleList;
 import org.geoserver.geofence.server.rest.xml.MultiPolygonAdapter;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.catalog.SequentialExecutionController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.util.MediaTypeExtensions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -53,11 +53,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/geofence")
 public class RulesRestController extends RestBaseController implements SequentialExecutionController {
 
-    private RuleAdminService adminService;
-
-    @Autowired
-    public RulesRestController(RuleAdminService adminService) {
-        this.adminService = adminService;
+    // Resolved per request, not injected, so this controller doesn't force the lazy engine to boot at startup.
+    private RuleAdminService adminService() {
+        return (RuleAdminService) GeoServerExtensions.bean("ruleAdminService");
     }
 
     @Override
@@ -152,7 +150,7 @@ public class RulesRestController extends RestBaseController implements Sequentia
                 layer,
                 layerDefault);
 
-        return new JaxbRuleList(adminService.getListFull(filter, page, entries));
+        return new JaxbRuleList(adminService().getListFull(filter, page, entries));
     }
 
     @RequestMapping(
@@ -160,7 +158,7 @@ public class RulesRestController extends RestBaseController implements Sequentia
             method = RequestMethod.GET,
             produces = {"application/xml", "application/json"})
     public JaxbRule get(@PathVariable("id") Long id) {
-        return new JaxbRule(adminService.get(id));
+        return new JaxbRule(adminService().get(id));
     }
 
     @RequestMapping(
@@ -212,7 +210,7 @@ public class RulesRestController extends RestBaseController implements Sequentia
                 layer,
                 layerDefault);
 
-        return new JaxbRuleList(adminService.count(filter));
+        return new JaxbRuleList(adminService().count(filter));
     }
 
     @RequestMapping(
@@ -228,17 +226,17 @@ public class RulesRestController extends RestBaseController implements Sequentia
     @ResponseStatus(HttpStatus.CREATED)
     public String insert(@RequestBody(required = true) JaxbRule rule) {
         long priority = rule.getPriority() == null ? 0 : rule.getPriority();
-        if (adminService.getRuleByPriority(priority) != null) {
-            adminService.shift(priority, 1);
+        if (adminService().getRuleByPriority(priority) != null) {
+            adminService().shift(priority, 1);
         }
 
-        Long id = adminService.insert(rule.toRule());
+        Long id = adminService().insert(rule.toRule());
 
         if (rule.getLimits() != null && rule.getAccess().equals("LIMIT")) {
-            adminService.setLimits(id, rule.getLimits().toRuleLimits(null));
+            adminService().setLimits(id, rule.getLimits().toRuleLimits(null));
         }
         if (rule.getLayerDetails() != null && !rule.getAccess().equals("LIMIT")) {
-            adminService.setDetails(id, rule.getLayerDetails().toLayerDetails(null));
+            adminService().setDetails(id, rule.getLayerDetails().toLayerDetails(null));
         }
 
         return String.valueOf(id);
@@ -247,47 +245,47 @@ public class RulesRestController extends RestBaseController implements Sequentia
     @RequestMapping(value = "/rules/id/{id}", method = RequestMethod.POST)
     public @ResponseStatus(HttpStatus.OK) void update(@PathVariable("id") Long id, @RequestBody JaxbRule rule) {
         if (rule.getPriority() != null) {
-            ShortRule priorityRule = adminService.getRuleByPriority(rule.getPriority());
+            ShortRule priorityRule = adminService().getRuleByPriority(rule.getPriority());
             if (priorityRule != null && !Objects.equals(priorityRule.getId(), id)) {
-                adminService.shift(rule.getPriority(), 1);
+                adminService().shift(rule.getPriority(), 1);
             }
         }
-        Rule theRule = adminService.get(id);
-        adminService.update(rule.toRule(theRule));
+        Rule theRule = adminService().get(id);
+        adminService().update(rule.toRule(theRule));
         if (rule.getLimits() != null) {
-            adminService.setLimits(id, rule.getLimits().toRuleLimits(null));
+            adminService().setLimits(id, rule.getLimits().toRuleLimits(null));
         }
         if (rule.getLayerDetails() != null) {
-            adminService.setDetails(id, rule.getLayerDetails().toLayerDetails(null));
+            adminService().setDetails(id, rule.getLayerDetails().toLayerDetails(null));
         }
     }
 
     @RequestMapping(value = "/rules/id/{id}", method = RequestMethod.PUT)
     public @ResponseStatus(HttpStatus.OK) void clearAndUpdate(@PathVariable("id") Long id, @RequestBody JaxbRule rule) {
         if (rule.getPriority() != null) {
-            ShortRule priorityRule = adminService.getRuleByPriority(rule.getPriority());
+            ShortRule priorityRule = adminService().getRuleByPriority(rule.getPriority());
             if (priorityRule != null && !Objects.equals(priorityRule.getId(), id)) {
-                adminService.shift(rule.getPriority(), 1);
+                adminService().shift(rule.getPriority(), 1);
             }
         }
         Rule theRule = new Rule();
         theRule.setId(id);
-        adminService.update(rule.toRule(theRule));
+        adminService().update(rule.toRule(theRule));
         if (rule.getLimits() != null) {
-            adminService.setLimits(id, rule.getLimits().toRuleLimits(null));
+            adminService().setLimits(id, rule.getLimits().toRuleLimits(null));
         } else {
-            adminService.setLimits(id, null);
+            adminService().setLimits(id, null);
         }
         if (rule.getLayerDetails() != null) {
-            adminService.setDetails(id, rule.getLayerDetails().toLayerDetails(null));
+            adminService().setDetails(id, rule.getLayerDetails().toLayerDetails(null));
         } else {
-            adminService.setDetails(id, null);
+            adminService().setDetails(id, null);
         }
     }
 
     @RequestMapping(value = "/rules/id/{id}", method = RequestMethod.DELETE)
     public @ResponseStatus(HttpStatus.OK) void delete(@PathVariable("id") Long id) {
-        adminService.delete(id);
+        adminService().delete(id);
     }
 
     protected RuleFilter buildFilter(
@@ -387,12 +385,12 @@ public class RulesRestController extends RestBaseController implements Sequentia
         }
         // shift priorities of rules with a priority equal or lower than the target
         // priority
-        adminService.shift(targetPriority, rules.size());
+        adminService().shift(targetPriority, rules.size());
         // update moved rules priority
         long priority = targetPriority;
         for (Rule rule : rules) {
             rule.setPriority(priority);
-            adminService.update(rule);
+            adminService().update(rule);
             priority++;
         }
         // return moved rules with their priority updated
@@ -413,7 +411,7 @@ public class RulesRestController extends RestBaseController implements Sequentia
                 })
                 .map(ruleId -> {
                     // search the rule by id
-                    return adminService.get(ruleId);
+                    return adminService().get(ruleId);
                 })
                 .filter(rule -> rule != null)
                 .sorted((ruleA, ruleB) -> Long.compare(ruleA.getPriority(), ruleB.getPriority()))

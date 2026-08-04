@@ -200,7 +200,6 @@ public class GeoFenceConfigurationManager implements InitializingBean {
         cfg.setGrantWriteToWorkspacesToAuthenticatedUsers(BooleanUtils.toBoolean(props.getProperty(PROP_GRANT_WRITE)));
         cfg.setUseRolesToFilter(BooleanUtils.toBoolean(props.getProperty(PROP_USE_ROLES)));
         cfg.setAcceptedRoles(props.getProperty(PROP_ACCEPTED_ROLES));
-        cfg.setGwcContextSuffix(props.getProperty(PROP_GWCCONTEXTSUFFIX));
         cfg.setRuleReaderBackend(props.getProperty(PROP_RULEREADER_BACKEND));
         cfg.setRuleReaderFrontend(props.getProperty(PROP_RULEREADER_FRONTEND));
     }
@@ -219,7 +218,6 @@ public class GeoFenceConfigurationManager implements InitializingBean {
         props.setProperty(PROP_GRANT_WRITE, format_prop(cfg.isGrantWriteToWorkspacesToAuthenticatedUsers()));
         props.setProperty(PROP_USE_ROLES, format_prop(cfg.isUseRolesToFilter()));
         props.setProperty(PROP_ACCEPTED_ROLES, format_prop(cfg.getAcceptedRoles()));
-        props.setProperty(PROP_GWCCONTEXTSUFFIX, format_prop(cfg.getGwcContextSuffix()));
         props.setProperty(PROP_ORGGEOSERVERREST, format_prop(cfg.getDefaultUserGroupServiceName()));
         props.setProperty(PROP_RULEREADER_BACKEND, format_prop(cfg.getRuleReaderBackend()));
         props.setProperty(PROP_RULEREADER_FRONTEND, format_prop(cfg.getRuleReaderFrontend()));

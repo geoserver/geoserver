@@ -13,7 +13,6 @@ import org.geofence.core.db.GeofenceTestDatabase;
 import org.geofence.core.services.RuleAdminService;
 import org.geofence.core.services.dto.ShortAdminRule;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.geofence.config.GeoFencePropertyPlaceholderConfigurer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -25,8 +24,6 @@ public class GeofenceServerPageTest extends GeoServerWicketTestSupport {
     static {
         GeofenceTestDatabase.configureAsDatasourceOverride();
     }
-
-    static GeoFencePropertyPlaceholderConfigurer configurer;
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {

@@ -4,8 +4,13 @@
  */
 package org.geoserver.geofence.config;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.GeoServerPropertyConfigurer;
 import org.geoserver.geofence.GeoFenceModuleStatus;
 import org.geoserver.geofence.cache.CacheConfiguration;
 import org.geoserver.geofence.cache.RuleCacheLoaderFactory;
@@ -13,23 +18,26 @@ import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geoserver.geofence.web.GeofencePage;
 import org.geoserver.web.Category;
 import org.geoserver.web.MenuPageInfo;
+import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Java-based wiring for the beans that need literal constructor arguments, property-placeholder resolution, or
- * externally-defined GeoServer beans, and therefore aren't plain {@code @Component}-scanned classes.
+ * Java-based wiring for beans needing literal constructor arguments, property-file values, or externally-defined
+ * GeoServer beans.
  *
- * <p>Implements {@link ApplicationContextAware} (rather than taking {@code ApplicationContext} as a {@code @Bean}
- * method parameter) so resolving the context doesn't go through Spring's type-based dependency scan, which walks every
- * bean definition in the (very large) aggregated GeoServer context.
+ * <p>{@code geofence.properties} is read directly ({@link #loadProperties}), not via a Spring
+ * {@code PropertySourcesPlaceholderConfigurer} bean - that resolves too early, before the data directory is set up.
  */
 @Configuration
 public class GeoFenceSpringConfig implements ApplicationContextAware {
+
+    private static final Logger LOGGER = Logging.getLogger(GeoFenceSpringConfig.class);
+
+    private static final String CONFIG_LOCATION = "file:geofence/geofence.properties";
 
     private ApplicationContext context;
 
@@ -38,54 +46,43 @@ public class GeoFenceSpringConfig implements ApplicationContextAware {
         this.context = context;
     }
 
-    @Bean(name = "geofence-configurer")
-    public GeoFencePropertyPlaceholderConfigurer geofenceConfigurer(GeoServerDataDirectory dataDirectory) {
-        GeoFencePropertyPlaceholderConfigurer configurer = new GeoFencePropertyPlaceholderConfigurer(dataDirectory);
-        configurer.setOrder(5);
-        configurer.setIgnoreResourceNotFound(true);
-        configurer.setIgnoreUnresolvablePlaceholders(true);
-
-        // This location is relative to the datadir
-        configurer.setLocation(context.getResource("file:geofence/geofence.properties"));
-
-        // default properties
+    /**
+     * Reads {@code geofence/geofence.properties} - same file {@link GeoFenceConfigurationManager} reads/saves through.
+     */
+    private Properties loadProperties(GeoServerDataDirectory dataDirectory) {
         Properties props = new Properties();
-        // other default values are set directly into the related config beans,
-        // anyway this value is used at least twice, so it's better to define it here
-        props.setProperty("servicesUrl", "http://localhost:9191/geofence/rest");
-        // The frontend will be injected in the access manager.
-        // You may replace the cachedRuleReader value with restRuleReaderService in order to disable the caching
-        props.setProperty("ruleReaderFrontend", "cachedRuleReader");
-        // ruleReaderBackend has no default here - see resolveRuleReaderBackend().
-        configurer.setProperties(props);
+        mergeFrom(props, dataDirectory, CONFIG_LOCATION);
+        return props;
+    }
 
-        return configurer;
+    private void mergeFrom(Properties target, GeoServerDataDirectory dataDirectory, String location) {
+        GeoServerPropertyConfigurer reader = new GeoServerPropertyConfigurer(dataDirectory);
+        reader.setLocation(context.getResource(location));
+        try (InputStream in = reader.getConfigFile().in()) {
+            target.load(in);
+        } catch (IllegalStateException e) {
+            // location does not exist, nothing to merge
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Could not read " + location, e);
+        }
     }
 
     @Bean
-    public GeoFenceConfiguration geoFenceConfiguration(
-            @Value("${instanceName:default-gs}") String instanceName,
-            @Value("${servicesUrl}") String servicesUrl,
-            @Value("${allowRemoteAndInlineLayers:False}") boolean allowRemoteAndInlineLayers,
-            @Value("${grantWriteToWorkspacesToAuthenticatedUsers:False}")
-                    boolean grantWriteToWorkspacesToAuthenticatedUsers,
-            @Value("${useRolesToFilter:False}") boolean useRolesToFilter,
-            @Value("${acceptedRoles:}") String acceptedRoles,
-            //            @Value("${gwc.context.suffix:gwc}") String gwcContextSuffix,
-            @Value("${org.geoserver.rest.DefaultUserGroupServiceName:default}") String defaultUserGroupServiceName,
-            @Value("${ruleReaderBackend:}") String ruleReaderBackend,
-            @Value("${ruleReaderFrontend}") String ruleReaderFrontend) {
+    public GeoFenceConfiguration geoFenceConfiguration(GeoServerDataDirectory dataDirectory) {
+        Properties props = loadProperties(dataDirectory);
         GeoFenceConfiguration cfg = new GeoFenceConfiguration();
-        cfg.setInstanceName(instanceName);
-        cfg.setServicesUrl(servicesUrl);
-        cfg.setAllowRemoteAndInlineLayers(allowRemoteAndInlineLayers);
-        cfg.setGrantWriteToWorkspacesToAuthenticatedUsers(grantWriteToWorkspacesToAuthenticatedUsers);
-        cfg.setUseRolesToFilter(useRolesToFilter);
-        cfg.setAcceptedRoles(acceptedRoles);
-        //        cfg.setGwcContextSuffix(gwcContextSuffix);
-        cfg.setDefaultUserGroupServiceName(defaultUserGroupServiceName);
-        cfg.setRuleReaderBackend(resolveRuleReaderBackend(ruleReaderBackend));
-        cfg.setRuleReaderFrontend(ruleReaderFrontend);
+        cfg.setInstanceName(props.getProperty("instanceName", "default-gs"));
+        cfg.setServicesUrl(props.getProperty("servicesUrl", "http://localhost:9191/geofence/rest"));
+        cfg.setAllowRemoteAndInlineLayers(
+                Boolean.parseBoolean(props.getProperty("allowRemoteAndInlineLayers", "False")));
+        cfg.setGrantWriteToWorkspacesToAuthenticatedUsers(
+                Boolean.parseBoolean(props.getProperty("grantWriteToWorkspacesToAuthenticatedUsers", "False")));
+        cfg.setUseRolesToFilter(Boolean.parseBoolean(props.getProperty("useRolesToFilter", "False")));
+        cfg.setAcceptedRoles(props.getProperty("acceptedRoles", ""));
+        cfg.setDefaultUserGroupServiceName(
+                props.getProperty("org.geoserver.rest.DefaultUserGroupServiceName", "default"));
+        cfg.setRuleReaderBackend(resolveRuleReaderBackend(props.getProperty("ruleReaderBackend", "")));
+        cfg.setRuleReaderFrontend(props.getProperty("ruleReaderFrontend", "cachedRuleReader"));
         return cfg;
     }
 
@@ -103,26 +100,24 @@ public class GeoFenceSpringConfig implements ApplicationContextAware {
     }
 
     @Bean
-    public CacheConfiguration cacheConfiguration(
-            @Value("${cacheSize:1000}") long size,
-            @Value("${cacheRefresh:30000}") long refreshMilliSec,
-            @Value("${cacheExpire:60000}") long expireMilliSec) {
+    public CacheConfiguration cacheConfiguration(GeoServerDataDirectory dataDirectory) {
+        Properties props = loadProperties(dataDirectory);
         CacheConfiguration cfg = new CacheConfiguration();
-        cfg.setSize(size);
-        cfg.setRefreshMilliSec(refreshMilliSec);
-        cfg.setExpireMilliSec(expireMilliSec);
+        cfg.setSize(Long.parseLong(props.getProperty("cacheSize", "1000")));
+        cfg.setRefreshMilliSec(Long.parseLong(props.getProperty("cacheRefresh", "30000")));
+        cfg.setExpireMilliSec(Long.parseLong(props.getProperty("cacheExpire", "60000")));
         return cfg;
     }
 
     @Bean(name = "geofenceConfigurationManager")
     public GeoFenceConfigurationManager geofenceConfigurationManager(
-            @Qualifier("geofence-configurer") GeoFencePropertyPlaceholderConfigurer configurer,
+            GeoServerDataDirectory dataDirectory,
             GeoFenceConfiguration geoFenceConfiguration,
             CacheConfiguration cacheConfiguration,
             @Qualifier("ruleReaderBackendFactory") RuleReaderServiceFactory ruleReaderBackendFactory,
             @Qualifier("ruleReaderFrontendFactory") RuleReaderServiceFactory ruleReaderFrontendFactory) {
         GeoFenceConfigurationManager manager = new GeoFenceConfigurationManager();
-        manager.setConfigurer(resolveConfigurer(configurer));
+        manager.setConfigurer(resolveManagerConfigurer(dataDirectory));
         manager.setConfiguration(geoFenceConfiguration);
         manager.setCacheConfiguration(cacheConfiguration);
         manager.setRuleReaderBackendFactory(ruleReaderBackendFactory);
@@ -130,20 +125,22 @@ public class GeoFenceSpringConfig implements ApplicationContextAware {
         return manager;
     }
 
-    /** Which properties file {@link GeoFenceConfigurationManager} reads/saves through: prefer geofence-server's. */
-    private GeoFencePropertyPlaceholderConfigurer resolveConfigurer(GeoFencePropertyPlaceholderConfigurer base) {
-        return context.containsBeanDefinition("geofence-server-configurer")
-                ? context.getBean("geofence-server-configurer", GeoFencePropertyPlaceholderConfigurer.class)
-                : base;
+    /** The properties file {@link GeoFenceConfigurationManager} reads/saves through. */
+    private GeoServerPropertyConfigurer resolveManagerConfigurer(GeoServerDataDirectory dataDirectory) {
+        GeoServerPropertyConfigurer configurer = new GeoServerPropertyConfigurer(dataDirectory);
+        configurer.setLocation(context.getResource(CONFIG_LOCATION));
+        return configurer;
     }
 
     @Bean
-    public RuleReaderServiceFactory ruleReaderBackendFactory(@Value("${ruleReaderBackend:}") String backendName) {
+    public RuleReaderServiceFactory ruleReaderBackendFactory(GeoServerDataDirectory dataDirectory) {
+        String backendName = loadProperties(dataDirectory).getProperty("ruleReaderBackend", "");
         return new RuleReaderServiceFactory(resolveRuleReaderBackend(backendName), false);
     }
 
     @Bean
-    public RuleReaderServiceFactory ruleReaderFrontendFactory(@Value("${ruleReaderFrontend}") String frontendName) {
+    public RuleReaderServiceFactory ruleReaderFrontendFactory(GeoServerDataDirectory dataDirectory) {
+        String frontendName = loadProperties(dataDirectory).getProperty("ruleReaderFrontend", "cachedRuleReader");
         return new RuleReaderServiceFactory(frontendName, true);
     }
 

@@ -16,8 +16,8 @@
 
     <!-- Overrides the component-scanned restRuleReaderService bean with one pointing at a fixed, well-known URL -
          a literal property value, no placeholder resolution involved, so it isn't affected by where/when
-         GeoFencePropertyPlaceholderConfigurer's own data-directory-relative properties file would otherwise be
-         read from. Tests need a specific set of rules, so this points at a dedicated geofence test instance
+         GeoFenceSpringConfig's own data-directory-relative properties file would otherwise be read from.
+         Tests need a specific set of rules, so this points at a dedicated geofence test instance
          (see web/rest/test in geofence_39) that's expected to be running on this same port. -->
     <bean id="restRuleReaderService" class="org.geoserver.geofence.services.RestRuleReaderService">
         <property name="serviceUrl" value="http://localhost:9191/geofence/rest"/>

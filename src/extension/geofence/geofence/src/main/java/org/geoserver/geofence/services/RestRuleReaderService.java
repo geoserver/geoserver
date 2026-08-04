@@ -5,6 +5,7 @@
 
 package org.geoserver.geofence.services;
 
+import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import org.geofence.core.services.RuleReaderService;
@@ -26,7 +27,8 @@ import org.geofence.web.rest.api.model.enums.RESTAccessType;
 import org.geofence.web.rest.api.model.enums.RESTCatalogMode;
 import org.geofence.web.rest.api.model.enums.RESTGrantType;
 import org.geofence.web.rest.client.GeoFenceClient;
-import org.springframework.beans.factory.annotation.Value;
+import org.geoserver.geofence.config.GeoFenceConfigurationManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -36,11 +38,22 @@ import org.springframework.stereotype.Component;
 @Component
 public class RestRuleReaderService implements RuleReaderService {
 
-    @Value("${servicesUrl}")
-    private String serviceUrl;
+    // null for throwaway instances (e.g. GeofencePage's test-connection button); seeds updatedUrl at startup,
+    // kept in sync by GeoFenceConfigurationController on save.
+    @Autowired(required = false)
+    private GeoFenceConfigurationManager configManager;
 
     private GeoFenceClient client;
-    private String clientUrl;
+
+    private String currentUrl;
+    private String updatedUrl;
+
+    @PostConstruct
+    void initServiceUrl() {
+        if (configManager != null) {
+            updatedUrl = configManager.getConfiguration().getServicesUrl();
+        }
+    }
 
     @Override
     public AccessInfo getAccessInfo(RuleFilter filter) {
@@ -62,15 +75,15 @@ public class RestRuleReaderService implements RuleReaderService {
     }
 
     public void setServiceUrl(String serviceUrl) {
-        this.serviceUrl = serviceUrl;
+        this.updatedUrl = serviceUrl;
     }
 
     private synchronized org.geofence.web.rest.api.interfaces.RESTRuleReaderService ruleReaderClient() {
-        if (client == null || !serviceUrl.equals(clientUrl)) {
+        if (client == null || !updatedUrl.equals(currentUrl)) {
             GeoFenceClient newClient = new GeoFenceClient();
-            newClient.setRestUrl(serviceUrl);
+            newClient.setRestUrl(updatedUrl);
             client = newClient;
-            clientUrl = serviceUrl;
+            currentUrl = updatedUrl;
         }
         return client.getRuleReaderService();
     }

@@ -15,12 +15,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geofence.core.services.dto.AccessInfo;
 import org.geofence.core.services.dto.RuleFilter;
+import org.geoserver.config.GeoServerPropertyConfigurer;
 import org.geoserver.geofence.cache.CacheConfiguration;
 import org.geoserver.geofence.cache.CacheManager;
 import org.geoserver.geofence.cache.CachedRuleReader;
 import org.geoserver.geofence.cache.RuleCacheLoaderFactory;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
-import org.geoserver.geofence.config.GeoFencePropertyPlaceholderConfigurer;
 import org.geoserver.geofence.containers.ContainerAccessCacheLoaderFactory;
 import org.geoserver.geofence.containers.DefaultContainerAccessResolver;
 import org.geoserver.geofence.services.RuleReaderServiceFactory;
@@ -40,11 +40,12 @@ public class CacheReaderTest extends GeofenceBaseTest {
     private CacheManager cacheManager;
     private CachedRuleReader cachedRuleReader;
 
-    private GeoFencePropertyPlaceholderConfigurer configurer;
+    private GeoServerPropertyConfigurer configurer;
 
     @Before
     public void onInitCachedReader() {
-        configurer = (GeoFencePropertyPlaceholderConfigurer) applicationContext.getBean("geofence-configurer");
+        configurer =
+                applicationContext.getBean(GeoFenceConfigurationManager.class).getConfigurer();
         configurer.setLocation(
                 new UrlResource(Objects.requireNonNull(this.getClass().getResource("/test-cache-config.properties"))));
 

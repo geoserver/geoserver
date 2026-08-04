@@ -17,9 +17,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.geoserver.config.GeoServerPropertyConfigurer;
 import org.geoserver.geofence.config.GeoFenceConfiguration;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
-import org.geoserver.geofence.config.GeoFencePropertyPlaceholderConfigurer;
 import org.geoserver.geofence.utils.GeofenceTestUtils;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.GeoServerTestSupport;
@@ -30,7 +30,7 @@ public class GeoFenceConfigurationManagerTest extends GeoServerTestSupport {
 
     // protected GeofenceAccessManager manager;
     // protected RuleReaderService geofenceService;
-    GeoFencePropertyPlaceholderConfigurer configurer;
+    GeoServerPropertyConfigurer configurer;
 
     GeoFenceConfigurationManager manager;
 
@@ -66,7 +66,7 @@ public class GeoFenceConfigurationManagerTest extends GeoServerTestSupport {
         // geofenceService = (RuleReaderService) applicationContext.getBean("ruleReaderServiceImpl");
         manager = (GeoFenceConfigurationManager) applicationContext.getBean("geofenceConfigurationManager");
 
-        configurer = (GeoFencePropertyPlaceholderConfigurer) applicationContext.getBean("geofence-configurer");
+        configurer = manager.getConfigurer();
         configurer.setLocation(new UrlResource(this.getClass().getResource("/test-config.properties")));
     }
 

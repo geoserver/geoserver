@@ -4,58 +4,26 @@
  */
 package org.geoserver.geofence.server.config;
 
-import java.util.Properties;
-import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.geofence.config.GeoFencePropertyPlaceholderConfigurer;
 import org.geoserver.geofence.server.rest.GeofenceSecurityInterceptor;
 import org.geoserver.geofence.server.web.GeofenceServerAdminPage;
 import org.geoserver.geofence.server.web.GeofenceServerPage;
 import org.geoserver.web.Category;
 import org.geoserver.web.MenuPageInfo;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Java-based wiring for the {@code geofence-server} module's beans that need literal constructor arguments,
- * property-placeholder resolution, or MVC interceptor registration, replacing the module's former
- * {@code applicationContext.xml} bean definitions.
+ * Java-based wiring for the {@code geofence-server} module's beans that need literal constructor arguments or MVC
+ * interceptor registration.
  *
- * <p>The embedded engine itself is registered lazily by the base {@code gs-geofence} module, not here.
+ * <p>The embedded engine and {@code geofence.properties} are both handled by the base {@code gs-geofence} module's
+ * {@code GeoFenceSpringConfig}, not here.
  */
 @Configuration
-public class GeoFenceServerSpringConfig implements ApplicationContextAware, WebMvcConfigurer {
-
-    private ApplicationContext context;
-
-    @Override
-    public void setApplicationContext(ApplicationContext context) {
-        this.context = context;
-    }
-
-    @Bean(name = "geofence-server-configurer")
-    public GeoFencePropertyPlaceholderConfigurer geofenceServerConfigurer(GeoServerDataDirectory dataDirectory) {
-        GeoFencePropertyPlaceholderConfigurer configurer = new GeoFencePropertyPlaceholderConfigurer(dataDirectory);
-        configurer.setOrder(99);
-        configurer.setIgnoreResourceNotFound(true);
-        configurer.setIgnoreUnresolvablePlaceholders(true);
-
-        // This location is relative to the datadir
-        configurer.setLocation(context.getResource("file:geofence/geofence-server.properties"));
-
-        Properties props = new Properties();
-        // ruleReaderBackend: no default here, see GeoFenceSpringConfig.resolveRuleReaderBackend()
-        // The frontend will be injected in the access manager.
-        // You may replace this value with ruleReaderServiceImpl in order to disable the caching
-        props.setProperty("ruleReaderFrontend", "cachedRuleReader");
-        configurer.setProperties(props);
-
-        return configurer;
-    }
+public class GeoFenceServerSpringConfig implements WebMvcConfigurer {
 
     @Bean
     public MenuPageInfo<GeofenceServerPage> geofenceServerPage(

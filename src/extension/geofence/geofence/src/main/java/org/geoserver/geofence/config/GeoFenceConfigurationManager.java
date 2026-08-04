@@ -13,6 +13,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.BooleanUtils;
+import org.geoserver.config.GeoServerPropertyConfigurer;
 import org.geoserver.geofence.GeofenceAccessManager;
 import org.geoserver.geofence.cache.CacheConfiguration;
 import org.geoserver.geofence.services.RuleReaderServiceFactory;
@@ -25,7 +26,7 @@ public class GeoFenceConfigurationManager implements InitializingBean {
 
     private static final Logger LOGGER = Logging.getLogger(GeofenceAccessManager.class);
 
-    private GeoFencePropertyPlaceholderConfigurer configurer;
+    private GeoServerPropertyConfigurer configurer;
 
     private GeoFenceConfiguration geofenceConfiguration;
 
@@ -42,7 +43,6 @@ public class GeoFenceConfigurationManager implements InitializingBean {
     private static final String PROP_GRANT_WRITE = "grantWriteToWorkspacesToAuthenticatedUsers";
     private static final String PROP_USE_ROLES = "useRolesToFilter";
     private static final String PROP_ACCEPTED_ROLES = "acceptedRoles";
-    private static final String PROP_GWCCONTEXTSUFFIX = "gwc.context.suffix";
     private static final String PROP_ORGGEOSERVERREST = "org.geoserver.rest.DefaultUserGroupServiceName";
     private static final String PROP_RULEREADER_BACKEND = "ruleReaderBackend";
     private static final String PROP_RULEREADER_FRONTEND = "ruleReaderFrontend";
@@ -57,7 +57,6 @@ public class GeoFenceConfigurationManager implements InitializingBean {
         PROP_GRANT_WRITE,
         PROP_USE_ROLES,
         PROP_ACCEPTED_ROLES,
-        PROP_GWCCONTEXTSUFFIX,
         PROP_ORGGEOSERVERREST,
         PROP_RULEREADER_BACKEND,
         PROP_RULEREADER_FRONTEND,
@@ -146,9 +145,13 @@ public class GeoFenceConfigurationManager implements InitializingBean {
         writer.write(name + "=" + String.valueOf(value) + "\n");
     }
 
-    /** Returns a copy of the configuration. */
-    public void setConfigurer(GeoFencePropertyPlaceholderConfigurer configurer) {
+    public void setConfigurer(GeoServerPropertyConfigurer configurer) {
         this.configurer = configurer;
+    }
+
+    /** The configurer this manager reads/writes through - tests use this to redirect the config file location. */
+    public GeoServerPropertyConfigurer getConfigurer() {
+        return configurer;
     }
 
     /**

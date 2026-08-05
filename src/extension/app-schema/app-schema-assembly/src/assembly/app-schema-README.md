@@ -10,7 +10,7 @@ Installation
 2. Copy the jar files into the WEB-INF/lib/ directory in your GeoServer installation.
    There should be five of these:
    - gt-app-schema-{something}.jar
-   - gt-app-schema-core-{something}.jar
+   - gs-app-schema-core-{something}.jar
    - gt-app-schema-resolver-{something}.jar
    - gt-complex-{something}.jar
    - commons-digester-{something}.jar

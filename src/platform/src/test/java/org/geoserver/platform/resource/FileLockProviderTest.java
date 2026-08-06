@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
@@ -20,6 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,12 +37,22 @@ public class FileLockProviderTest {
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
     private FileLockProvider provider;
+    // Long timeout, used where a test must interrupt a thread while it's still blocked
+    // acquiring the gate, without racing the short TEST_TIMEOUT_SECONDS timeout of "provider"
+    private FileLockProvider patientProvider;
     private File root;
 
     @Before
     public void setUp() throws Exception {
         root = tempFolder.newFolder("lockRoot");
         provider = new FileLockProvider(root, TEST_TIMEOUT_SECONDS);
+        patientProvider = new FileLockProvider(root, 60);
+    }
+
+    @After
+    public void assertNoLeakedEntries() {
+        assertEquals("Leaked lock entries", 0, provider.getTrackedKeyCount());
+        assertEquals("Leaked lock entries", 0, patientProvider.getTrackedKeyCount());
     }
 
     @Test
@@ -57,6 +69,19 @@ public class FileLockProviderTest {
         await().atMost(2, SECONDS).until(() -> !lockFile.exists());
     }
 
+    /** Calling {@code release()} a second time on an already-released lock must be a no-op. */
+    @Test
+    public void testReleaseIsIdempotent() throws Exception {
+        String key = "double-release-key";
+        Resource.Lock lock = provider.acquire(key);
+
+        File lockFile = getLockFile(key);
+        lock.release();
+        lock.release(); // must not throw, double-unlock the gate, or double-detach the entry
+
+        await().atMost(2, SECONDS).until(() -> !lockFile.exists());
+    }
+
     @Test
     public void testLockTimeoutThrowsException() throws Exception {
         String key = "timeout-key";
@@ -69,7 +94,7 @@ public class FileLockProviderTest {
             CountDownLatch threadAHold = new CountDownLatch(1);
             CountDownLatch releaseThreadA = new CountDownLatch(1);
 
-            executor.submit(() -> {
+            Future<?> threadA = executor.submit(() -> {
                 Resource.Lock lock = provider.acquire(key);
                 threadAHold.countDown();
                 try {
@@ -95,6 +120,7 @@ public class FileLockProviderTest {
             } finally {
                 releaseThreadA.countDown();
             }
+            threadA.get(2, SECONDS); // wait for thread A's lock.release() to actually complete
         } finally {
             executor.shutdownNow();
         }
@@ -232,7 +258,9 @@ public class FileLockProviderTest {
             lock.release();
         }
 
-        assertEquals("hello", IOUtils.toString(resource.in(), StandardCharsets.UTF_8));
+        try (InputStream in = resource.in()) {
+            assertEquals("hello", IOUtils.toString(in, StandardCharsets.UTF_8));
+        }
     }
 
     /**
@@ -242,16 +270,19 @@ public class FileLockProviderTest {
     @Test
     public void testNestedAcquireAfterWait() throws Exception {
         String key = "waiting-thread-key";
-        Resource.Lock outer = provider.acquire(key);
+        // Use patientProvider: this test waits on real thread scheduling (not on the gate
+        // timing out), and a busy CI runner could delay the release past a short timeout,
+        // failing the test for a reason unrelated to what it actually checks
+        Resource.Lock outer = patientProvider.acquire(key);
 
         CountDownLatch waiterStarted = new CountDownLatch(1);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         try {
             Future<Throwable> future = executor.submit(() -> {
                 waiterStarted.countDown();
-                Resource.Lock locked = provider.acquire(key); // blocks until outer releases
+                Resource.Lock locked = patientProvider.acquire(key); // blocks until outer releases
                 try {
-                    Resource.Lock nested = provider.acquire(key); // must not hang or throw
+                    Resource.Lock nested = patientProvider.acquire(key); // must not hang or throw
                     nested.release();
                     return null;
                 } catch (Throwable t) {
@@ -270,6 +301,80 @@ public class FileLockProviderTest {
         } finally {
             executor.shutdownNow();
         }
+    }
+
+    /**
+     * An {@code acquire()} call that times out waiting for the gate must not leak its {@link FileLockProvider} entry.
+     */
+    @Test
+    public void testNoEntryLeakOnAcquireTimeout() throws Exception {
+        String key = "timeout-leak-key";
+        Resource.Lock held = provider.acquire(key);
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            Future<Boolean> timedOut = executor.submit(() -> {
+                try {
+                    provider.acquire(key).release();
+                    return false;
+                } catch (IllegalStateException e) {
+                    return true;
+                }
+            });
+            assertTrue("Acquire should have timed out", timedOut.get(5, SECONDS));
+        } finally {
+            executor.shutdownNow();
+        }
+
+        held.release();
+    }
+
+    /**
+     * An {@code acquire()} call interrupted while waiting for the gate must not leak its {@link FileLockProvider}
+     * entry.
+     */
+    @Test
+    public void testNoEntryLeakOnInterruptedAcquire() throws Exception {
+        String key = "interrupt-leak-key";
+        Resource.Lock held = patientProvider.acquire(key);
+
+        Thread waiter = new Thread(() -> {
+            try {
+                patientProvider.acquire(key).release();
+            } catch (IllegalStateException expected) {
+                // interrupted while waiting on the gate
+            }
+        });
+        waiter.start();
+        waiter.interrupt();
+        waiter.join(5000);
+        assertFalse("Waiter did not terminate", waiter.isAlive());
+
+        held.release();
+    }
+
+    /** {@code release()} must only be called by the thread that acquired the lock. */
+    @Test
+    public void testReleaseFromDifferentThreadThrows() throws Exception {
+        String key = "wrong-thread-key";
+        Resource.Lock lock = provider.acquire(key);
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            Future<Boolean> releasedByOtherThread = executor.submit(() -> {
+                try {
+                    lock.release();
+                    return false;
+                } catch (IllegalStateException e) {
+                    return true;
+                }
+            });
+            assertTrue("Release from another thread must throw", releasedByOtherThread.get(2, SECONDS));
+        } finally {
+            executor.shutdownNow();
+        }
+
+        lock.release(); // release from the acquiring thread, so nothing leaks
     }
 
     private File getLockFile(String key) {

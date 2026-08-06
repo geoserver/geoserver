@@ -27,7 +27,7 @@ If you encounter a security vulnerability in GeoServer please take care to repor
    Be advised that GeoServer is a community project with a clear coordinated vulnerability disclosure
    policy allowing the members of our community to update prior to public disclosure.
 
-   Reports assuming a vendor relationship, or linking to their own disclosure policy, is not appropriate.
+   Reports assuming a vendor relationship, or linking to their own disclosure policy, are not appropriate.
 
 3. There are two options to report a security vulnerability:
 

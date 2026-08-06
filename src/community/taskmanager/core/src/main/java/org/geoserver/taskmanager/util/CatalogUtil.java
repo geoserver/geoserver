@@ -5,7 +5,7 @@
 
 package org.geoserver.taskmanager.util;
 
-import com.thoughtworks.xstream.io.xml.JDomWriter;
+import com.thoughtworks.xstream.io.xml.JDom2Writer;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder;
@@ -55,7 +55,7 @@ import org.geotools.api.style.Style;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.util.logging.Logging;
-import org.jdom.Element;
+import org.jdom2.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -134,7 +134,7 @@ public class CatalogUtil {
                 if (entry.getValue() instanceof String) {
                     re.addMetadataString(entry.getKey(), (String) entry.getValue());
                 } else if (entry.getValue() != null) {
-                    JDomWriter writer = new JDomWriter();
+                    JDom2Writer writer = new JDom2Writer();
                     persisterFactory.createXMLPersister().getXStream().marshal(entry.getValue(), writer);
                     re.addMetadata(
                             entry.getKey(), (Element) writer.getTopLevelNodes().get(0));

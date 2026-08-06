@@ -48,7 +48,13 @@ public class MemoryLockProvider implements LockProvider {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            // never got the lock, so undo the counter increment done above, or this key leaks
+            detach(lockKey, lockAndCounter);
             throw new RuntimeException("Interrupted while trying to acquire lock for key " + lockKey, e);
+        } catch (RuntimeException e) {
+            // same as above: the timeout case just thrown, never got the lock
+            detach(lockKey, lockAndCounter);
+            throw e;
         }
 
         if (LOGGER.isLoggable(Level.FINE)) LOGGER.fine("Acquired lock key " + lockKey);
@@ -61,27 +67,30 @@ public class MemoryLockProvider implements LockProvider {
             public void release() {
                 if (!released) {
                     released = true;
-
-                    LockAndCounter lockAndCounter = lockAndCounters.get(lockKey);
                     lockAndCounter.lock.unlock();
-
-                    // Attempt to remove lock if no other thread is waiting for it
-                    if (lockAndCounter.counter.decrementAndGet() == 0) {
-
-                        // Try to remove the lock, but we have to check the count AGAIN inside of "compute" so that we
-                        // know it hasn't been incremented since the if-statement above was evaluated
-                        lockAndCounters.compute(lockKey, (key, existingLockAndCounter) -> {
-                            if (existingLockAndCounter == null || existingLockAndCounter.counter.get() == 0) {
-                                return null;
-                            }
-                            return existingLockAndCounter;
-                        });
-                    }
-
+                    detach(lockKey, lockAndCounter);
                     if (LOGGER.isLoggable(Level.FINE)) LOGGER.fine("Released lock key " + lockKey);
                 }
             }
         };
+    }
+
+    /**
+     * Undoes one {@code acquire()} call. Removes {@code lockAndCounter} from the map once no caller is still attached
+     * to it.
+     */
+    private void detach(String lockKey, LockAndCounter lockAndCounter) {
+        // Attempt to remove the lock if no other thread is waiting for it
+        if (lockAndCounter.counter.decrementAndGet() == 0) {
+            // Check the count again inside "compute" so we know it hasn't been incremented since the
+            // if-statement above was evaluated
+            lockAndCounters.compute(lockKey, (key, existingLockAndCounter) -> {
+                if (existingLockAndCounter == null || existingLockAndCounter.counter.get() == 0) {
+                    return null;
+                }
+                return existingLockAndCounter;
+            });
+        }
     }
 
     @Override

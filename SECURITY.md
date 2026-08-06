@@ -24,6 +24,11 @@ If you encounter a security vulnerability in GeoServer please take care to repor
 
 2. AI assistance to locate issues is allowed. Please read the [AI policy](https://geoserver.org/ai/) and make sure to follow it.
 
+   Be advised that GeoServer is a community project with a clear coordinated vulnerability disclosure
+   policy allowing the members of our community to update prior to public disclosure.
+
+   Reports assuming a vendor relationship, or linking to their own disclosure policy, is not appropriate.
+
 3. There are two options to report a security vulnerability:
 
    * To report via email:

@@ -88,7 +88,14 @@ public class FileLockProvider implements LockProvider, ServletContextAware {
             return e;
         });
         final ReentrantLock gate = entry.gate;
-        acquireGate(lockKey, gate);
+        try {
+            acquireGate(lockKey, gate);
+        } catch (RuntimeException e) {
+            // never got the gate, so this call never touches entry.lock/entry.fos; only undo
+            // the counter increment done above, so the entry doesn't leak in the map forever
+            detach(lockKey, entry);
+            throw e;
+        }
 
         final File file = getFile(lockKey);
         if (gate.getHoldCount() > 1) {
@@ -182,7 +189,7 @@ public class FileLockProvider implements LockProvider, ServletContextAware {
         }
     }
 
-    /** No finally block deleting the file here, it's done in the returned lock's {@code release()}. */
+    /** The file removal is done in returned lock's {@code release()}. */
     private Resource.Lock newLock(String lockKey, LockEntry entry, File file, ReentrantLock gate) {
         return new Resource.Lock() {
             boolean released;
@@ -190,6 +197,9 @@ public class FileLockProvider implements LockProvider, ServletContextAware {
             @Override
             public void release() {
                 if (released) return;
+                if (!gate.isHeldByCurrentThread()) {
+                    throw new IllegalStateException("Lock " + lockKey + " must be released by the acquiring thread");
+                }
                 released = true;
                 try {
                     if (gate.getHoldCount() == 1) {
@@ -252,6 +262,11 @@ public class FileLockProvider implements LockProvider, ServletContextAware {
         // to defend against asteroids levelling your data center instead of worrying about lock collisions
         String sha1 = DigestUtils.sha256Hex(lockKey);
         return new File(locks, sha1 + ".lock");
+    }
+
+    /** Number of keys currently tracked, zero when every acquisition has been released. For tests. */
+    int getTrackedKeyCount() {
+        return lockEntries.size();
     }
 
     @Override

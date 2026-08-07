@@ -48,6 +48,16 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
 
     static GeoServerDataDirectory dd;
 
+    /** Matches {@code applicationContext.xml}'s {@code restRuleReaderService} bean's {@code serviceUrl}. */
+    private static final String GEOFENCE_REST_URL = "http://localhost:9191/geofence/rest";
+
+    /**
+     * Guards {@link GeofenceRestTestDataSeeder} so it only re-seeds once per JVM/test run, not once per test method -
+     * {@code onSetUp} runs before every {@code @Test}, but the rule fixture only needs (re)creating once for the whole
+     * run against a given live server.
+     */
+    private static boolean rulesSeeded = false;
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -100,6 +110,10 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
         if (isGeoFenceAvailable()) {
             IS_GEOFENCE_AVAILABLE = true;
             System.setProperty("IS_GEOFENCE_AVAILABLE", "True");
+            if (!rulesSeeded) {
+                new GeofenceRestTestDataSeeder(GEOFENCE_REST_URL).seed();
+                rulesSeeded = true;
+            }
         } else {
             LOGGER.warning("Skipping test in "
                     + getClass().getSimpleName()
@@ -132,21 +146,22 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
         }
     }
 
+    /**
+     * In order to run live tests, start {@code geofence-web-app} (geofence_39's {@code web/app} module) via
+     * {@code jetty:run} on port 9191 first - {@link GeofenceRestTestDataSeeder} takes care of (re)creating the rule
+     * fixture these tests expect, once per JVM/test run, the first time this check succeeds.
+     */
     protected boolean isGeoFenceAvailable() {
         geofenceService = applicationContext
                 .getBean("ruleReaderBackendFactory", RuleReaderServiceFactory.class)
                 .getService();
         try {
-            /**
-             * In order to run live tests, you will need to run an instance of GeoFence on port 9191 and create two
-             * rules:
-             *
-             * <p>1) User: admin - grant ALLOW ALL 2) User: * - grant Service: "WMS" ALLOW 3) * - DENY
-             */
+            // a successful call (even with zero matches, e.g. before the fixture is seeded) proves the server is
+            // reachable - only a thrown exception means it isn't
             final RuleFilter ruleFilter = new RuleFilter();
             ruleFilter.setService("WMS");
             final List<ShortRule> matchingRules = geofenceService.getMatchingRules(ruleFilter);
-            if (geofenceService != null && matchingRules != null && !matchingRules.isEmpty()) {
+            if (geofenceService != null && matchingRules != null) {
                 LOGGER.log(Level.WARNING, "GeoFence is active");
                 return true;
             }

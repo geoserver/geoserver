@@ -200,6 +200,15 @@
         <version>4.0.5</version>
         <scope>compile</scope>
       </dependency>
+      <!-- GeoTools' gt-platform-dependencies BOM (imported below) still pins jaxb-runtime to the older
+           4.0.4, matching its own older jakarta.xml.bind-api pin - override it here too, to stay paired
+           with the jakarta.xml.bind-api bump above rather than mixing a 4.0.5 API with a 4.0.4 runtime. -->
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+        <version>4.0.5</version>
+        <scope>compile</scope>
+      </dependency>
       <dependency>
         <groupId>org.geotools</groupId>
         <artifactId>gt-platform-dependencies</artifactId>

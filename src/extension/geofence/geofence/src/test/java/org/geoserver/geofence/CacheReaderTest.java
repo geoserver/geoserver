@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.springframework.core.io.UrlResource;
 
 /** @author ETj (etj at geo-solutions.it) */
-public class CacheReaderTest extends GeofenceBaseTest {
+public class CacheReaderTest extends GeofenceRestBaseTest {
 
     static final Logger LOGGER = Logging.getLogger(CacheReaderTest.class);
 

@@ -10,18 +10,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
-import org.geofence.core.services.RuleReaderService;
-import org.geofence.core.services.dto.RuleFilter;
-import org.geofence.core.services.dto.ShortRule;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
-import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.After;
@@ -32,31 +27,27 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.w3c.dom.Document;
 
+/**
+ * Shared GeoServer test scaffolding for GeoFence extension tests - namespace registration, test users, catalog/data
+ * directory setup, and the {@code geofenceRuleAccessManager}/{@code geofenceConfigurationManager} beans.
+ *
+ * <p>Deliberately has no opinion about which {@code RuleReaderService} backend is active or whether a standalone
+ * GeoFence REST server is reachable - subclasses that specifically need a live REST server (and its rule fixture)
+ * should extend {@link GeofenceRestBaseTest} instead. Subclasses that exercise the embedded engine directly (e.g.
+ * {@code gs-geofence-server}'s REST-controller tests, which seed their own local test database) or that stub out
+ * {@code accessManager.rulesServiceFactory} entirely have no use for that and should extend this class directly.
+ */
 public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
 
     protected static Catalog catalog;
 
     protected static XpathEngine xp;
 
-    protected static Boolean IS_GEOFENCE_AVAILABLE = false;
-
     protected static GeofenceAccessManager accessManager;
 
     protected static GeoFenceConfigurationManager configManager;
 
-    protected static RuleReaderService geofenceService;
-
     static GeoServerDataDirectory dd;
-
-    /** Matches {@code applicationContext.xml}'s {@code restRuleReaderService} bean's {@code serviceUrl}. */
-    private static final String GEOFENCE_REST_URL = "http://localhost:9191/geofence/rest";
-
-    /**
-     * Guards {@link GeofenceRestTestDataSeeder} so it only re-seeds once per JVM/test run, not once per test method -
-     * {@code onSetUp} runs before every {@code @Test}, but the rule fixture only needs (re)creating once for the whole
-     * run against a given live server.
-     */
-    private static boolean rulesSeeded = false;
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -106,20 +97,6 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
 
         Assert.assertNotNull(accessManager);
         Assert.assertNotNull(configManager);
-
-        if (isGeoFenceAvailable()) {
-            IS_GEOFENCE_AVAILABLE = true;
-            System.setProperty("IS_GEOFENCE_AVAILABLE", "True");
-            if (!rulesSeeded) {
-                new GeofenceRestTestDataSeeder(GEOFENCE_REST_URL).seed();
-                rulesSeeded = true;
-            }
-        } else {
-            LOGGER.warning("Skipping test in "
-                    + getClass().getSimpleName()
-                    + " as GeoFence service is down: "
-                    + "in order to run this test you need the services to be running on port 9191");
-        }
     }
 
     /** subclass hook to register additional namespaces. */
@@ -133,45 +110,6 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
         // used by getAsDOM etc
         this.username = null;
         this.password = null;
-    }
-
-    @Override
-    protected void onTearDown(SystemTestData testData) throws Exception {
-        try {
-            if (System.getProperty("IS_GEOFENCE_AVAILABLE") != null) {
-                System.clearProperty("IS_GEOFENCE_AVAILABLE");
-            }
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Could not remove System ENV variable {IS_GEOFENCE_AVAILABLE}", e);
-        }
-    }
-
-    /**
-     * In order to run live tests, start {@code geofence-web-app} (geofence_39's {@code web/app} module) via
-     * {@code jetty:run} on port 9191 first - {@link GeofenceRestTestDataSeeder} takes care of (re)creating the rule
-     * fixture these tests expect, once per JVM/test run, the first time this check succeeds.
-     */
-    protected boolean isGeoFenceAvailable() {
-        geofenceService = applicationContext
-                .getBean("ruleReaderBackendFactory", RuleReaderServiceFactory.class)
-                .getService();
-        try {
-            // a successful call (even with zero matches, e.g. before the fixture is seeded) proves the server is
-            // reachable - only a thrown exception means it isn't
-            final RuleFilter ruleFilter = new RuleFilter();
-            ruleFilter.setService("WMS");
-            final List<ShortRule> matchingRules = geofenceService.getMatchingRules(ruleFilter);
-            if (geofenceService != null && matchingRules != null) {
-                LOGGER.log(Level.WARNING, "GeoFence is active");
-                return true;
-            }
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error connecting to GeoFence", e);
-            geofenceService = null;
-        }
-
-        LOGGER.log(Level.WARNING, "Not connecting to GeoFence");
-        return false;
     }
 
     protected Authentication getUser(String username, String password, String... roles) {

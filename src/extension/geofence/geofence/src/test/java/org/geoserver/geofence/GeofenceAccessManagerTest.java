@@ -39,7 +39,7 @@ import org.locationtech.jts.io.WKTReader;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.core.Authentication;
 
-public class GeofenceAccessManagerTest extends GeofenceBaseTest {
+public class GeofenceAccessManagerTest extends GeofenceRestBaseTest {
 
     @Test
     public void testAdmin() {

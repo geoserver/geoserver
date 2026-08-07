@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-public class ServicesTest extends GeofenceBaseTest {
+public class ServicesTest extends GeofenceRestBaseTest {
 
     void loginAsCite() {
         login("cite", "cite", "ROLE_CITE_ADMIN");

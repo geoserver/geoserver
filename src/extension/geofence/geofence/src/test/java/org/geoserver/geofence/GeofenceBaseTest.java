@@ -30,6 +30,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.w3c.dom.Document;
 
 public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
 
@@ -71,6 +72,7 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
         xp = XMLUnit.newXpathEngine();
 
         testData.setUp();
+        //        testData.setUpDefault();
 
         addUser("area", "area", Collections.singletonList("USERS"), Collections.singletonList("ROLE_AUTHENTICATED"));
         addUser("cite", "cite", Collections.singletonList("USERS"), Collections.singletonList("ROLE_AUTHENTICATED"));
@@ -165,5 +167,24 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
         }
 
         return new UsernamePasswordAuthenticationToken(username, password, l);
+    }
+
+    /**
+     * Fails, logging the raw response first, if {@code dom} is an OWS/WMS exception report.
+     *
+     * <p>An XPath {@code count(...)} assertion evaluates to 0 on any document lacking matching nodes, exception reports
+     * included - so a request that actually failed (e.g. "No service") can silently masquerade as "0 results" further
+     * down the test, with no indication of the real cause. Call this right after {@code getAsDOM(...)} before running
+     * further assertions on the response.
+     */
+    protected void assertNotExceptionReport(Document dom) throws Exception {
+        String rootName = dom.getDocumentElement().getNodeName();
+        if (rootName.contains("ExceptionReport")) {
+            java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+            print(dom, out);
+            String xml = out.toString(java.nio.charset.StandardCharsets.UTF_8);
+            LOGGER.severe("Expected a valid response but got an exception report:\n" + xml);
+            Assert.fail("Expected a valid response, got " + rootName + ":\n" + xml);
+        }
     }
 }

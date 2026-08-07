@@ -205,6 +205,7 @@ public class GeofenceAccessManager_WMTSLayerTest extends GeofenceBaseTest {
 
         Document dom = getAsDOM("wms?request=GetCapabilities");
         print(dom);
+        assertNotExceptionReport(dom);
         assertEquals("WMS_Capabilities", dom.getDocumentElement().getNodeName());
 
         assertXpathEvaluatesTo("30", "count(//*[local-name()='Layer'])", dom);

@@ -36,36 +36,40 @@ public class MapsServiceTest {
         CoordinateReferenceSystem custom = CRS.parseWKT(CUSTOM_WKT);
         assertNull("premise: the custom CRS has no identifier", ResourcePool.lookupIdentifier(custom, false));
 
-        String[] headers = MapsService.contentCrsAndBbox(new ReferencedEnvelope(1, 2, 3, 4, custom), null);
-        assertNull("Content-Crs must be omitted, not <null>", headers[0]);
-        assertEquals("1.0,3.0,2.0,4.0", headers[1]);
+        MapsService.ContentCrsBbox headers =
+                MapsService.contentCrsAndBbox(new ReferencedEnvelope(1, 2, 3, 4, custom), null);
+        assertNull("Content-Crs must be omitted, not <null>", headers.crs());
+        assertEquals("1.0,3.0,2.0,4.0", headers.bbox());
     }
 
     /** A longitude-first WGS84 map is CRS84, which /req/core/map-response keeps out of the Content-Crs header. */
     @Test
     public void testContentHeadersCRS84() throws Exception {
         CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326", true);
-        String[] headers = MapsService.contentCrsAndBbox(new ReferencedEnvelope(1, 2, 3, 4, wgs84), null);
-        assertNull("CRS84 carries no Content-Crs", headers[0]);
-        assertEquals("1.0,3.0,2.0,4.0", headers[1]);
+        MapsService.ContentCrsBbox headers =
+                MapsService.contentCrsAndBbox(new ReferencedEnvelope(1, 2, 3, 4, wgs84), null);
+        assertNull("CRS84 carries no Content-Crs", headers.crs());
+        assertEquals("1.0,3.0,2.0,4.0", headers.bbox());
     }
 
     /** The SafeCURIE names the latitude-first authority CRS, so the header is emitted and the ordinates flip. */
     @Test
     public void testContentHeadersLatLonAxisOrder() throws Exception {
         CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326", true);
-        String[] headers = MapsService.contentCrsAndBbox(new ReferencedEnvelope(1, 2, 3, 4, wgs84), "[EPSG:4326]");
-        assertEquals("<http://www.opengis.net/def/crs/EPSG/0/4326>", headers[0]);
+        MapsService.ContentCrsBbox headers =
+                MapsService.contentCrsAndBbox(new ReferencedEnvelope(1, 2, 3, 4, wgs84), "[EPSG:4326]");
+        assertEquals("<http://www.opengis.net/def/crs/EPSG/0/4326>", headers.crs());
         // EPSG:4326 is latitude first, so the delivered order is minY,minX,maxY,maxX
-        assertEquals("3.0,1.0,4.0,2.0", headers[1]);
+        assertEquals("3.0,1.0,4.0,2.0", headers.bbox());
     }
 
     /** A projected CRS keeps its header, and its ordinates stay easting first. */
     @Test
     public void testContentHeadersProjected() throws Exception {
         CoordinateReferenceSystem webMercator = CRS.decode("EPSG:3857", true);
-        String[] headers = MapsService.contentCrsAndBbox(new ReferencedEnvelope(1, 2, 3, 4, webMercator), null);
-        assertEquals("<http://www.opengis.net/def/crs/EPSG/0/3857>", headers[0]);
-        assertEquals("1.0,3.0,2.0,4.0", headers[1]);
+        MapsService.ContentCrsBbox headers =
+                MapsService.contentCrsAndBbox(new ReferencedEnvelope(1, 2, 3, 4, webMercator), null);
+        assertEquals("<http://www.opengis.net/def/crs/EPSG/0/3857>", headers.crs());
+        assertEquals("1.0,3.0,2.0,4.0", headers.bbox());
     }
 }

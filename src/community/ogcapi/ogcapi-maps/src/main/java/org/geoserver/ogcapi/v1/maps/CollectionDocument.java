@@ -30,6 +30,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractCollectionDocument;
+import org.geoserver.ogcapi.CRSURIs;
 import org.geoserver.ogcapi.CollectionExtents;
 import org.geoserver.ogcapi.DimensionExtent;
 import org.geoserver.ogcapi.DimensionExtent.Grid;
@@ -160,7 +161,7 @@ public class CollectionDocument extends AbstractCollectionDocument<PublishedInfo
         if (crs == null || CRS.equalsIgnoreMetadata(crs, DefaultGeographicCRS.WGS84)) return null;
         try {
             String identifier = ResourcePool.lookupIdentifier(crs, false);
-            return identifier == null ? null : MapsService.crsUri(identifier);
+            return identifier == null ? null : CRSURIs.uri(identifier);
         } catch (FactoryException e) {
             LOGGER.log(Level.FINER, "Could not look up the authority code of the storage CRS", e);
             return null;
@@ -292,7 +293,7 @@ public class CollectionDocument extends AbstractCollectionDocument<PublishedInfo
         if (units == null) return null;
         if (unitIsUri) return units;
         // only EPSG codes can be expanded reliably, the OGC "CRS:88" family has no matching URI in the same form
-        return units.matches("(?i)EPSG:\\d+") ? MapsService.crsUri(units) : null;
+        return units.matches("(?i)EPSG:\\d+") ? CRSURIs.uri(units) : null;
     }
 
     /** Whether a configured unit is itself a URI, rather than a unit of measure name. */

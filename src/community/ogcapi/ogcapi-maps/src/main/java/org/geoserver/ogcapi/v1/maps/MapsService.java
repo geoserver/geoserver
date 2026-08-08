@@ -5,7 +5,6 @@
 package org.geoserver.ogcapi.v1.maps;
 
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
-import static java.util.stream.Collectors.toCollection;
 import static org.geoserver.ogcapi.APIException.INVALID_PARAMETER_VALUE;
 import static org.geoserver.ogcapi.SwaggerJSONAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_YAML_VALUE;
@@ -45,7 +44,6 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.crs.CapabilitiesCRSProvider;
 import org.geoserver.ogcapi.APIBBoxParser;
 import org.geoserver.ogcapi.APIConformance;
 import org.geoserver.ogcapi.APIDispatcher;
@@ -53,7 +51,7 @@ import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.APIFilterParser;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.APIService;
-import org.geoserver.ogcapi.CollectionExtents;
+import org.geoserver.ogcapi.CRSURIs;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.DefaultContentType;
 import org.geoserver.ogcapi.HTMLResponseBody;
@@ -123,7 +121,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/maps/v1")
 public class MapsService {
 
-    /** How many collections the HTML preview palette lists; a longer list is hard to use and uses too much memory. */
+    /**
+     * How many collections the HTML preview offers in its layer chooser; a longer list is unusable and bloats the page.
+     * A larger catalog is truncated, and the preview says so. The cap is the chooser's alone: the {@code collections}
+     * parameter still accepts a collection left out of it.
+     */
     static final int PALETTE_COLLECTIONS = 500;
 
     static final Logger LOGGER = Logging.getLogger(MapsService.class);
@@ -168,26 +170,11 @@ public class MapsService {
     }
 
     /**
-     * The CRSs a collection can be delivered in, as URIs, CRS84 first: the SRS list configured on the WMS service, or
-     * every code the referencing database knows when that list is empty, matching what OGC API - Features advertises
-     * (see {@code /req/collection-map/desc-crs}).
+     * The CRSs a collection can be delivered in, as URIs, CRS84 first, matching what OGC API - Features advertises (see
+     * {@code /req/collection-map/desc-crs}).
      */
     List<String> serviceCRSList() {
-        List<String> configured = getService().getSRS();
-        List<String> result;
-        if (configured == null || configured.isEmpty()) {
-            CapabilitiesCRSProvider provider = new CapabilitiesCRSProvider();
-            provider.getAuthorityExclusions().add("CRS");
-            provider.setCodeMapper((authority, code) -> crsUri(authority + ":" + code));
-            result = new ArrayList<>(provider.getCodes());
-        } else {
-            // mutable on purpose, CRS84 is moved to the front below
-            result = configured.stream().map(MapsService::crsUri).collect(toCollection(ArrayList::new));
-        }
-        // CRS84 is always supported, and cannot be found in the list above, which is EPSG based
-        result.remove(CollectionExtents.WGS84);
-        result.add(0, CollectionExtents.WGS84);
-        return result;
+        return CRSURIs.serviceList(getService().getSRS());
     }
 
     @GetMapping(name = "getLandingPage")
@@ -229,10 +216,7 @@ public class MapsService {
     @ResponseBody
     @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
     public CollectionDocument collection(@PathVariable(name = "collectionId") String collectionId) throws IOException {
-        PublishedInfo p = getPublished(collectionId);
-        CollectionDocument collection = new CollectionDocument(geoServer, p, serviceCRSList());
-
-        return collection;
+        return new CollectionDocument(geoServer, getPublished(collectionId), serviceCRSList());
     }
 
     @GetMapping(path = "collections/{collectionId}/styles", name = "getStyles")
@@ -339,8 +323,7 @@ public class MapsService {
 
     /**
      * Offers the collections of the dataset for the preview to switch between, the ones being drawn marked as chosen
-     * and listed first. A catalog larger than {@link #PALETTE_COLLECTIONS} is cut, and the preview says so; the
-     * {@code collections} parameter reaches the ones left out.
+     * and listed first, at most {@link #PALETTE_COLLECTIONS} of them.
      */
     private void addCollectionChooser(HTMLMap map, List<PublishedInfo> drawn) {
         WMSInfo wmsInfo = getService();
@@ -428,6 +411,14 @@ public class MapsService {
                 e);
     }
 
+    /**
+     * The {@code Content-Crs} and {@code Content-Bbox} header values, the bbox in the axis order of the delivered CRS.
+     *
+     * @param crs null for CRS84, which {@code /req/core/map-response} keeps out of the header, and for a CRS with no
+     *     authority identifier
+     */
+    record ContentCrsBbox(String crs, String bbox) {}
+
     /** Sets the OGC API - Maps content headers describing the delivered CRS, extent, orientation and time. */
     private void addContentHeaders(GetMapRequest request) throws FactoryException {
         HttpServletResponse response = APIRequestInfo.get().getResponse();
@@ -438,11 +429,11 @@ public class MapsService {
             response.setHeader("Content-Orientation", String.valueOf(request.getAngle()));
         }
         if (request.getBbox() != null) {
-            String[] headers = contentCrsAndBbox(
+            ContentCrsBbox headers = contentCrsAndBbox(
                     new ReferencedEnvelope(request.getBbox(), request.getCrs()),
                     request.getRawKvp().get("crs"));
-            if (headers[0] != null) response.setHeader("Content-Crs", headers[0]);
-            response.setHeader("Content-Bbox", headers[1]);
+            if (headers.crs() != null) response.setHeader("Content-Crs", headers.crs());
+            response.setHeader("Content-Bbox", headers.bbox());
         }
         String datetime = contentDatetime(request);
         if (datetime != null) response.setHeader("Content-Datetime", datetime);
@@ -515,13 +506,11 @@ public class MapsService {
     }
 
     /**
-     * Content-Crs and Content-Bbox header values for an east-first delivered envelope: element 0 is the Content-Crs
-     * (null for CRS84, which {@code /req/core/map-response} keeps out of the header, and for a CRS with no authority
-     * identifier), element 1 the Content-Bbox in the axis order of the delivered CRS.
+     * Builds the content headers for an east-first delivered envelope.
      *
      * @param requestedCrs the raw {@code crs} parameter, null when the client did not ask for one
      */
-    static String[] contentCrsAndBbox(ReferencedEnvelope bbox, String requestedCrs) throws FactoryException {
+    static ContentCrsBbox contentCrsAndBbox(ReferencedEnvelope bbox, String requestedCrs) throws FactoryException {
         // the rendering pipeline works east first, so the spelling the client used is the only thing left that
         // carries the authority axis order; with no crs parameter the map comes out in the CRS of its extent
         CoordinateReferenceSystem delivered =
@@ -531,15 +520,16 @@ public class MapsService {
         if (delivered == null
                 || (CRS.getAxisOrder(delivered) != CRS.AxisOrder.NORTH_EAST
                         && CRS.equalsIgnoreMetadata(delivered, DefaultGeographicCRS.WGS84))) {
-            return new String[] {null, eastNorth};
+            return new ContentCrsBbox(null, eastNorth);
         }
         CoordinateReferenceSystem authority = authorityOrder(delivered);
         String identifier = ResourcePool.lookupIdentifier(authority, false);
-        if (identifier == null) return new String[] {null, eastNorth};
+        if (identifier == null) return new ContentCrsBbox(null, eastNorth);
         String contentBbox = CRS.getAxisOrder(authority) == CRS.AxisOrder.NORTH_EAST
                 ? bbox.getMinY() + "," + bbox.getMinX() + "," + bbox.getMaxY() + "," + bbox.getMaxX()
-                : bbox.getMinX() + "," + bbox.getMinY() + "," + bbox.getMaxX() + "," + bbox.getMaxY();
-        return new String[] {identifier != null ? "<" + crsUri(identifier) + ">" : null, contentBbox};
+                : eastNorth;
+        // the Content-Crs header wraps the URI in angle brackets, as the examples of /req/core/map-response show
+        return new ContentCrsBbox("<" + CRSURIs.uri(identifier) + ">", contentBbox);
     }
 
     /** The same CRS in its authority axis order, unchanged when it carries no authority code. */
@@ -548,16 +538,6 @@ public class MapsService {
         if (identifier == null) return crs;
         // decode via the WMS 1.3.0 SRS so forceXY does not flatten it back to EAST_NORTH (see APIBBoxParser#parseCRS)
         return CRS.decode(WMS.toInternalSRS(identifier, WMS.version("1.3.0")));
-    }
-
-    /**
-     * The CRS URI of an authority identifier, e.g. {@code http://www.opengis.net/def/crs/EPSG/0/4326} for
-     * {@code EPSG:4326}. The {@code Content-Crs} header wraps it in angle brackets, as the examples of
-     * {@code /req/core/map-response} show.
-     */
-    static String crsUri(String identifier) {
-        String[] parts = identifier.split(":");
-        return "http://www.opengis.net/def/crs/" + parts[0] + "/0/" + parts[parts.length - 1];
     }
 
     /**
@@ -663,12 +643,9 @@ public class MapsService {
         }
 
         /**
-         * The query as the feature info resource uses it: the pixel is picked from the very same map, so every
-         * parameter shaping it is kept, with two adjustments. The output crs applies to the bbox as well unless a
-         * bbox-crs is given, and the orientation is dropped for now: the wms-core identifiers invert an unrotated world
-         * to screen transform (see {@code WMS#pixelToWorld} and {@code VectorRenderingLayerIdentifier}), while
-         * {@code WMSMapContent#getRenderingTransform} rotates when rendering, so a rotated map would answer for the
-         * pixel rotated back around the image centre. Teaching those identifiers the angle would lift the limitation.
+         * The query the feature info resource uses. The pixel comes from the same map, so every parameter shaping it is
+         * kept, with two exceptions: the output crs applies to the bbox too when no bbox-crs is given, and the
+         * orientation is dropped, the wms-core identifiers not being able to query a rotated map.
          */
         MapQuery forInfo() {
             return new MapQuery(
@@ -880,8 +857,8 @@ public class MapsService {
     private GetMapRequest toGetMapRequest(
             List<PublishedInfo> collections, String styleId, String format, MapQuery query)
             throws IOException, FactoryException, ParseException {
-        MapsConformance conf = MapsConformance.configuration(getService());
         WMSInfo wmsInfo = getService();
+        MapsConformance conf = MapsConformance.configuration(wmsInfo);
         MapQuery q = ignoreDisabled(query, conf, wmsInfo);
 
         // a viewport has at least one pixel per side (OGC API - Maps, Scaling, width/height requirement C)

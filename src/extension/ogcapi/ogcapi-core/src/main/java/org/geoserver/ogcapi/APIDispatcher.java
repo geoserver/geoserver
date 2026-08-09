@@ -44,11 +44,14 @@ import org.geotools.util.Version;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.MethodParameter;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractJacksonHttpMessageConverter;
 import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.validation.Validator;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -238,8 +241,7 @@ public class APIDispatcher extends AbstractController {
             // initialize the request and allow callbacks to override it
             // store it in the thread local used by the
             dr = init(dr);
-            requestInfo.setRequestedMediaTypes(
-                    contentNegotiationManager.resolveMediaTypes(new ServletWebRequest(dr.getHttpRequest())));
+            requestInfo.setRequestedMediaTypes(resolveMediaTypes(dr));
 
             // lookup the handler adapter (same as service and operation)
             HandlerMethod handler = getHandlerMethod(httpRequest, dr);
@@ -293,6 +295,21 @@ public class APIDispatcher extends AbstractController {
         }
 
         return null;
+    }
+
+    /**
+     * The media types the client asked for. A {@code f} parameter that is not a media type at all is a bad parameter
+     * value, not a server failure, so it is reported as such instead of escaping as an internal error.
+     */
+    private List<MediaType> resolveMediaTypes(Request dr) throws HttpMediaTypeNotAcceptableException {
+        try {
+            return contentNegotiationManager.resolveMediaTypes(new ServletWebRequest(dr.getHttpRequest()));
+        } catch (InvalidMediaTypeException e) {
+            throw new APIException(
+                    APIException.INVALID_PARAMETER_VALUE,
+                    "Invalid format requested: " + e.getMediaType(),
+                    HttpStatus.BAD_REQUEST);
+        }
     }
 
     private void addServiceVersionHeader(HandlerMethod handler, HttpServletResponse httpResponse) {

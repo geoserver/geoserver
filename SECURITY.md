@@ -64,4 +64,5 @@ This represents a balance between transparency and participation that does not o
 Those seeking greater visibility are encouraged to volunteer with the geoserver-security list;
 or work with one of the [commercial support providers](https://geoserver.org/support/) who participate on behalf of their customers.
 
-We advise security researchers and national agencies that linking to or attempting to enforce their own disclosure policies or timelines is unwelcome and inappropriate conduct. The recommended course of action is to direct your clients to collaborating on, providing, or resource a fix.
+We advise security researchers and national agencies that linking to or attempting to enforce their own disclosure policies or timelines is unwelcome and inappropriate conduct.
+The recommended course of action is to direct your clients to collaborate on, provide, or resource a fix.

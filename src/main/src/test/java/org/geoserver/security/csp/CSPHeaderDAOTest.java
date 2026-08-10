@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.net.HttpHeaders;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -34,12 +35,15 @@ import org.geoserver.ows.ProxifyingURLMangler;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.platform.GeoServerExtensionsHelper;
+import org.geoserver.platform.resource.FileLockProvider;
+import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Resource;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -50,6 +54,9 @@ public class CSPHeaderDAOTest {
 
     @ClassRule
     public static TemporaryFolder folder = new TemporaryFolder();
+
+    @Rule
+    public TemporaryFolder lockTestFolder = new TemporaryFolder();
 
     private static XStreamPersisterFactory xpf = null;
 
@@ -159,6 +166,35 @@ public class CSPHeaderDAOTest {
                 "csp_default.xml was not updated",
                 defaultLastModified,
                 defaultFile().lastmodified());
+    }
+
+    /**
+     * Updating an outdated csp.xml re-enters the resource lock: {@code configurationAction()} holds
+     * {@code resource.lock()} while {@code doSetConfig()} calls {@code resource.out()}, whose stream re-acquires the
+     * same lock key on {@code close()} to move the temp file into place. With a {@link FileLockProvider} configured,
+     * that nested acquire must not block for the full lock timeout.
+     */
+    @Test
+    public void testUpdateWithFileLockProvider() throws Exception {
+        File root = lockTestFolder.getRoot();
+        GeoServerDataDirectory lockDD = new GeoServerDataDirectory(root);
+
+        // seed an outdated csp.xml + csp_default.xml so the next construction takes the
+        // "Updating csp.xml" branch
+        new CSPHeaderDAO(null, lockDD, xpf);
+        Files.write(lockDD.getSecurity(CSPHeaderDAO.CONFIG_FILE_NAME).file().toPath(), "<config></config>".getBytes());
+        Files.write(
+                lockDD.getSecurity(CSPHeaderDAO.DEFAULT_CONFIG_FILE_NAME).file().toPath(),
+                "<config></config>".getBytes());
+
+        ((FileSystemResourceStore) lockDD.getResourceStore()).setLockProvider(new FileLockProvider(root));
+
+        long start = System.currentTimeMillis();
+        new CSPHeaderDAO(null, lockDD, xpf);
+        long duration = System.currentTimeMillis() - start;
+        assertTrue(
+                "CSPHeaderDAO init with FileLockProvider took too long (" + duration + "ms), nested lock likely hung",
+                duration < 5000);
     }
 
     @Test

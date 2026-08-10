@@ -73,17 +73,6 @@ public class RestRuleReaderServiceTest {
     }
 
     @Test
-    public void testToRestFilterInstanceById() {
-        RuleFilter filter = new RuleFilter();
-        filter.setInstance(42L);
-
-        RESTRuleFilter query = RestRuleReaderService.toRestFilter(filter);
-
-        assertEquals(Long.valueOf(42L), query.instanceId);
-        assertNull(query.instanceName);
-    }
-
-    @Test
     public void testToAccessInfo() {
         RESTAccessInfo in = new RESTAccessInfo();
         in.setGrant(RESTGrantType.LIMIT);

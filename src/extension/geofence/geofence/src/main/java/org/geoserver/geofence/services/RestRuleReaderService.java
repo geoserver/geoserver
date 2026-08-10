@@ -111,7 +111,6 @@ public class RestRuleReaderService implements RuleReaderService {
         query.groupDefault = role.includeDefault();
 
         IdNameQuery instance = toQuery(filter.getInstance());
-        query.instanceId = instance.id();
         query.instanceName = instance.name();
         query.instanceDefault = instance.includeDefault();
 

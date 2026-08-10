@@ -88,11 +88,16 @@ public class RuleReaderServiceFactory implements ApplicationContextAware, SmartI
         this.context = context;
     }
 
-    /** Fails startup fast if the configured active service name doesn't match any registered RuleReaderService. */
+    /**
+     * Fails startup fast if the configured active service name doesn't match any registered bean definition.
+     * Deliberately checks only bean-definition existence, not {@link #setActiveServiceName}'s fuller type/eligibility
+     * check - that check can force Spring to actually construct the bean to determine its type, defeating this
+     * factory's whole point of keeping backends lazy until first real use.
+     */
     @Override
     public void afterSingletonsInstantiated() {
-        if (fixedService == null) {
-            setActiveServiceName(activeServiceName);
+        if (fixedService == null && !context.containsBean(activeServiceName)) {
+            throw new IllegalArgumentException("No such RuleReaderService bean: " + activeServiceName);
         }
     }
 

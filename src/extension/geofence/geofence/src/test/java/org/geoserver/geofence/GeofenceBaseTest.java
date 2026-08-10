@@ -28,14 +28,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.w3c.dom.Document;
 
 /**
- * Shared GeoServer test scaffolding for GeoFence extension tests - namespace registration, test users, catalog/data
- * directory setup, and the {@code geofenceRuleAccessManager}/{@code geofenceConfigurationManager} beans.
- *
- * <p>Deliberately has no opinion about which {@code RuleReaderService} backend is active or whether a standalone
- * GeoFence REST server is reachable - subclasses that specifically need a live REST server (and its rule fixture)
- * should extend {@link GeofenceRestBaseTest} instead. Subclasses that exercise the embedded engine directly (e.g.
- * {@code gs-geofence-server}'s REST-controller tests, which seed their own local test database) or that stub out
- * {@code accessManager.rulesServiceFactory} entirely have no use for that and should extend this class directly.
+ * Shared GeoServer test scaffolding for GeoFence tests. No opinion on the active {@code RuleReaderService} backend -
+ * see {@link GeofenceRestBaseTest} for that.
  */
 public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
 

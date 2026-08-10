@@ -65,7 +65,7 @@ public class GeofenceAccessManagerSecurityFilterTest extends GeofenceBaseTest {
     // -----------------------------------------------------------------------
 
     @Test
-    public void testNullPermsResultReturnsNull() {
+    public void testNullPermsResultReturnsExclude() {
         // Inject a stub that always returns null from getPermissionFilter
         accessManager.rulesServiceFactory = RuleReaderServiceFactory.of(new RuleReaderServiceAdapter() {
             @Override
@@ -76,9 +76,9 @@ public class GeofenceAccessManagerSecurityFilterTest extends GeofenceBaseTest {
 
         Authentication user = getUser("testuser", "password", "ROLE_AUTHENTICATED");
         assertEquals(
-                "Null PermsResult from GeoFence should return null, deferring to per-object checks"
-                        + " (ResourceAccessManager#getSecurityFilter contract), not force-deny access",
-                null,
+                "Null PermsResult from GeoFence should block access, not fall back to a per-object check that would"
+                        + " hit the same broken backend for every catalog object",
+                Filter.EXCLUDE,
                 accessManager.getSecurityFilter(user, LayerInfo.class));
     }
 

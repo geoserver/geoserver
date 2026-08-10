@@ -988,19 +988,13 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
         try {
             permsResult = rulesServiceFactory.getService().getPermissionFilter(ruleFilter);
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Error retrieving permissions for filter " + ruleFilter + ", falling back to per-object checks",
-                    e);
-            return null;
+            LOGGER.log(Level.SEVERE, "Error retrieving permissions for filter " + ruleFilter + ", blocking access", e);
+            return Filter.EXCLUDE;
         }
 
         if (permsResult == null) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "GeoFence returned null PermsResult for filter {0}, falling back to per-object checks",
-                    ruleFilter);
-            return null;
+            LOGGER.log(Level.SEVERE, "Unexpected null PermsResult for filter {0}, blocking access", ruleFilter);
+            return Filter.EXCLUDE;
         }
         return PermissionCatalogFilterHelper.buildCatalogFilter(permsResult, clazz);
     }

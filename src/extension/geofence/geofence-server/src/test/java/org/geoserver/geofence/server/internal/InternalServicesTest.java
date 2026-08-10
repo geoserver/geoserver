@@ -13,12 +13,13 @@ import org.geofence.core.model.RuleLimits;
 import org.geofence.core.model.enums.CatalogMode;
 import org.geofence.core.model.enums.GrantType;
 import org.geofence.core.services.RuleAdminService;
+import org.geofence.core.services.RuleReaderService;
 import org.geofence.core.services.RuleReaderServiceImpl;
 import org.geofence.core.services.dto.AccessInfo;
 import org.geofence.core.services.dto.RuleFilter;
 import org.geofence.core.services.dto.ShortRule;
-import org.geoserver.geofence.ServicesTest;
-import org.geoserver.geofence.server.rest.RulesRestController;
+import org.geoserver.geofence.GeofenceBaseTest;
+import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.MultiPolygon;
@@ -26,21 +27,23 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
 /** @author Niels Charlier */
-public class InternalServicesTest extends ServicesTest {
+public class InternalServicesTest extends GeofenceBaseTest {
 
     static {
         // Must run before the Spring context builds, so a static initializer.
         GeofenceTestDatabase.configureAsDatasourceOverride();
     }
 
-    protected RulesRestController controller;
-
     protected RuleAdminService adminService;
+
+    protected RuleReaderService geofenceService;
 
     @Before
     public void initGeoFenceControllers() {
-        controller = (RulesRestController) applicationContext.getBean("rulesRestController");
         adminService = (RuleAdminService) applicationContext.getBean("ruleAdminService");
+        geofenceService = applicationContext
+                .getBean("ruleReaderBackendFactory", RuleReaderServiceFactory.class)
+                .getService();
 
         if (adminService.getCountAll() > 0) {
             for (ShortRule r : adminService.getAll()) {

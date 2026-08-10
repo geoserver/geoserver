@@ -132,11 +132,11 @@
     </dependency>
     <dependency>
       <groupId>org.eclipse.imagen</groupId>
-      <artifactId>concurrent-tile-cache</artifactId>
+      <artifactId>imagen-concurrent-tile-cache</artifactId>
     </dependency>
     <dependency>
       <groupId>org.eclipse.imagen</groupId>
-      <artifactId>jiffle-op</artifactId>
+      <artifactId>imagen-jiffle-op</artifactId>
     </dependency>
     <dependency>
       <groupId>jakarta.activation</groupId>

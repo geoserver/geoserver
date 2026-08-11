@@ -41,7 +41,7 @@
     <dependency>
       <groupId>org.apereo.cas.client</groupId>
       <artifactId>cas-client-core</artifactId>
-      <version>4.0.4</version>
+      <version>4.1.1</version>
       <exclusions>
         <exclusion>
           <artifactId>bcpkix-jdk15on</artifactId>

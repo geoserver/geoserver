@@ -34,6 +34,9 @@ updates:
       # JUnit 6 dropped junit-vintage-engine; all GeoServer tests are JUnit 4.
       - dependency-name: "org.junit:junit-bom"
         versions: [ "[6.0.0,)" ]
+      # dependency requires Java 21
+      - dependency-name: "org.apereo.cas.client:cas-client-core"
+        versions: [ "[4.1.0,)" ]
 
   - package-ecosystem: 'github-actions'
     directory: '/'

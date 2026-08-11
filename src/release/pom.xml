@@ -249,6 +249,7 @@
           </execution>
         </executions>
         <configuration>
+          <inputEncoding>UTF-8</inputEncoding>
           <recursiveInput>false</recursiveInput>
           <transformRelativeMarkdownLinks>true</transformRelativeMarkdownLinks>
           <headerHtmlFile>${project.basedir}/target/html-template/header.html</headerHtmlFile>

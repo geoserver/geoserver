@@ -203,8 +203,8 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputDirectory>${project.basedir}/../../licenses</inputDirectory>
-              <outputDirectory>${project.build.directory}/html/licenses</outputDirectory>
+              <inputDirectory>${project.basedir}/../../licenses/</inputDirectory>
+              <outputDirectory>${project.build.directory}/html/licenses/</outputDirectory>
             </configuration>
           </execution>
           <execution>
@@ -214,8 +214,8 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputDirectory>${project.basedir}/src/markdown</inputDirectory>
-              <outputDirectory>${project.build.directory}/html/release</outputDirectory>
+              <inputDirectory>${project.basedir}/src/markdown/</inputDirectory>
+              <outputDirectory>${project.build.directory}/html/release/</outputDirectory>
             </configuration>
           </execution>
           <execution>
@@ -228,9 +228,8 @@
               <!-- Renders the shared README.md / LICENSE*.md at src/release/extensions/ root.
                    Per-extension docs are now rendered locally by each module's assembly profile;
                    recursion would re-render any stray file accidentally left behind. -->
-              <inputDirectory>${project.basedir}/extensions</inputDirectory>
-              <outputDirectory>${project.build.directory}/html/extensions</outputDirectory>
-              <recursiveInput>false</recursiveInput>
+              <inputDirectory>${project.basedir}/extensions/</inputDirectory>
+              <outputDirectory>${project.build.directory}/html/extensions/</outputDirectory>
             </configuration>
           </execution>
         </executions>

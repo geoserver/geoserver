@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,18 +20,21 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import javax.imageio.ImageIO;
+import javax.xml.namespace.QName;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.geofence.cache.CacheManager;
 import org.geoserver.geofence.config.GeoFenceConfiguration;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.core.model.enums.CatalogMode;
 import org.geoserver.geofence.core.model.enums.GrantType;
 import org.geoserver.geofence.core.model.enums.LayerType;
 import org.geoserver.geofence.core.model.enums.SpatialFilterType;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.WMSInfo;
 import org.geotools.image.test.ImageAssert;
 import org.junit.Test;
@@ -515,6 +519,202 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
             logout();
             removeLayerGroup(group);
         }
+    }
+
+    @Test
+    public void testLayerGroupBogusStyleNameNamedModeIsIgnored() throws Exception {
+        // NAMED (like CONTAINER/EO) does not support alternate layer-group styles
+        // (LayerGroupHelper.isSingleOrOpaque is false), so core WMS silently ignores any
+        // style name that isn't a real style on the layers and falls back to the defaults;
+        // GeoFence must not attempt to resolve it as a named group style either
+        Long ruleId1 = null;
+        LayerGroupInfo group = null;
+        try {
+            ruleId1 = addRule(GrantType.ALLOW, null, null, null, null, null, null, 1, ruleService);
+
+            group = addLakesPlacesLayerGroup(NAMED, "lakes_and_places_bogus_style_named");
+
+            login("anonymousUser", "", "ROLE_ANONYMOUS");
+            String url = "wms?request=getmap&service=wms"
+                    + "&layers="
+                    + group.getName()
+                    + "&styles=totally_bogus_style_name"
+                    + "&width=100&height=100&format=image/png"
+                    + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002";
+            MockHttpServletResponse response = getAsServletResponse(url);
+            assertEquals("image/png", response.getContentType());
+        } finally {
+            deleteRules(ruleService, ruleId1);
+            logout();
+            removeLayerGroup(group);
+        }
+    }
+
+    @Test
+    public void testDefaultStyleNameStyleRuleDeniedSingle() throws Exception {
+        checkDefaultStyleNameStyleRuleDenied(SINGLE, "lakes_and_places_style_denied_single");
+    }
+
+    @Test
+    public void testDefaultStyleNameStyleRuleDeniedOpaque() throws Exception {
+        checkDefaultStyleNameStyleRuleDenied(OPAQUE_CONTAINER, "lakes_and_places_style_denied_opaque");
+    }
+
+    @Test
+    public void testDefaultStyleNameStyleRuleDeniedNamedWithSetting() throws Exception {
+        WMSInfo wmsInfo = getWMS().getServiceInfo();
+        boolean original = wmsInfo.isDefaultGroupStyleEnabled();
+        wmsInfo.setDefaultGroupStyleEnabled(true);
+        getGeoServer().save(wmsInfo);
+        try {
+            checkDefaultStyleNameStyleRuleDenied(NAMED, "lakes_and_places_style_denied_named");
+        } finally {
+            wmsInfo.setDefaultGroupStyleEnabled(original);
+            getGeoServer().save(wmsInfo);
+        }
+    }
+
+    @Test
+    public void testDefaultStyleNameStyleRuleAllowedSingle() throws Exception {
+        checkDefaultStyleNameStyleRuleAllowed(SINGLE, "lakes_and_places_style_allowed_single");
+    }
+
+    @Test
+    public void testDefaultStyleNameStyleRuleAllowedOpaque() throws Exception {
+        checkDefaultStyleNameStyleRuleAllowed(OPAQUE_CONTAINER, "lakes_and_places_style_allowed_opaque");
+    }
+
+    @Test
+    public void testDefaultStyleNameStyleRuleAllowedNamedWithSetting() throws Exception {
+        WMSInfo wmsInfo = getWMS().getServiceInfo();
+        boolean original = wmsInfo.isDefaultGroupStyleEnabled();
+        wmsInfo.setDefaultGroupStyleEnabled(true);
+        getGeoServer().save(wmsInfo);
+        try {
+            checkDefaultStyleNameStyleRuleAllowed(NAMED, "lakes_and_places_style_allowed_named");
+        } finally {
+            wmsInfo.setDefaultGroupStyleEnabled(original);
+            getGeoServer().save(wmsInfo);
+        }
+    }
+
+    /**
+     * Requests a layer group using its auto-generated default style name, where one of the group's layers is styled
+     * with "polygon", a style the GeoFence rule does not allow. The request must still be denied: using the
+     * auto-generated name must not skip GeoFence's style check.
+     */
+    private void checkDefaultStyleNameStyleRuleDenied(LayerGroupInfo.Mode mode, String layerGroupName)
+            throws Exception {
+        Long r1 = null;
+        Long r2 = null;
+        LayerGroupInfo group = null;
+        try {
+            r1 = addRule(GrantType.ALLOW, null, null, null, null, null, null, 1, ruleService);
+            // "polygon", the style the group uses for cite:Lakes, is not among the allowed ones
+            r2 = addRule(GrantType.ALLOW, null, "ROLE_ANONYMOUS", "WMS", null, "cite", "Lakes", 0, ruleService);
+            addLayerDetails(
+                    ruleService,
+                    r2,
+                    new HashSet<>(Arrays.asList("Lakes")),
+                    Collections.emptySet(),
+                    CatalogMode.HIDE,
+                    null,
+                    null,
+                    LayerType.VECTOR);
+            // the GeoFence rule cache is keyed by filter fields (workspace/layer/role/etc), not by
+            // rule content, so an equivalent filter queried by an earlier test could return a stale
+            // AccessInfo unless the cache is invalidated after these rule changes
+            GeoServerExtensions.bean(CacheManager.class).invalidateAll();
+
+            group = addPolygonStyledLakesPlacesGroup(mode, layerGroupName);
+
+            login("anonymousUser", "", "ROLE_ANONYMOUS");
+            MockHttpServletResponse response = getAsServletResponse(defaultStyleNameGetMap(group));
+            assertEquals("text/xml", getBaseMimeType(response.getContentType()));
+            assertTrue(response.getContentAsString().contains("style is not available on this layer"));
+        } finally {
+            deleteRules(ruleService, r1, r2);
+            logout();
+            removeLayerGroup(group);
+        }
+    }
+
+    /**
+     * Same setup as {@link #checkDefaultStyleNameStyleRuleDenied}, but this time the "polygon" style is allowed for
+     * both layers, so the request must succeed.
+     */
+    private void checkDefaultStyleNameStyleRuleAllowed(LayerGroupInfo.Mode mode, String layerGroupName)
+            throws Exception {
+        Long r1 = null;
+        Long r2 = null;
+        Long r3 = null;
+        LayerGroupInfo group = null;
+        try {
+            r1 = addRule(GrantType.ALLOW, null, null, null, null, null, null, 2, ruleService);
+            r2 = addRule(GrantType.ALLOW, null, "ROLE_ANONYMOUS", "WMS", null, "cite", "Lakes", 0, ruleService);
+            addLayerDetails(
+                    ruleService,
+                    r2,
+                    new HashSet<>(Arrays.asList("Lakes", "polygon")),
+                    Collections.emptySet(),
+                    CatalogMode.HIDE,
+                    null,
+                    null,
+                    LayerType.VECTOR);
+            r3 = addRule(GrantType.ALLOW, null, "ROLE_ANONYMOUS", "WMS", null, "cite", "NamedPlaces", 1, ruleService);
+            addLayerDetails(
+                    ruleService,
+                    r3,
+                    new HashSet<>(Arrays.asList("NamedPlaces", "polygon")),
+                    Collections.emptySet(),
+                    CatalogMode.HIDE,
+                    null,
+                    null,
+                    LayerType.VECTOR);
+            GeoServerExtensions.bean(CacheManager.class).invalidateAll();
+
+            group = addPolygonStyledLakesPlacesGroup(mode, layerGroupName);
+
+            login("anonymousUser", "", "ROLE_ANONYMOUS");
+            MockHttpServletResponse response = getAsServletResponse(defaultStyleNameGetMap(group));
+            assertEquals("image/png", response.getContentType());
+            BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+            assertEquals(100, image.getWidth());
+        } finally {
+            deleteRules(ruleService, r1, r2, r3);
+            logout();
+            removeLayerGroup(group);
+        }
+    }
+
+    /**
+     * Lakes and places group where both layers are rendered with the "polygon" style, so that the style is subject to
+     * the GeoFence allowed styles check.
+     */
+    private LayerGroupInfo addPolygonStyledLakesPlacesGroup(LayerGroupInfo.Mode mode, String name) throws Exception {
+        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+        try {
+            StyleInfo polygon = getCatalog().getStyleByName("polygon");
+            for (QName layerName : Arrays.asList(MockData.LAKES, MockData.NAMED_PLACES)) {
+                LayerInfo layer = getCatalog().getLayerByName(getLayerId(layerName));
+                if (!layer.getStyles().contains(polygon)) {
+                    layer.getStyles().add(polygon);
+                    getCatalog().save(layer);
+                }
+            }
+            return createLakesPlacesLayerGroup(getCatalog(), name, null, mode, null, Arrays.asList(polygon, polygon));
+        } finally {
+            logout();
+        }
+    }
+
+    private String defaultStyleNameGetMap(LayerGroupInfo group) {
+        return "wms?request=getmap&service=wms&layers="
+                + group.getName()
+                + "&styles=default-style-"
+                + group.getName()
+                + "&width=100&height=100&format=image/png"
+                + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002";
     }
 
     @Test

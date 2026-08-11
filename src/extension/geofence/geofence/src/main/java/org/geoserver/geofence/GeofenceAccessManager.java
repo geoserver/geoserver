@@ -27,6 +27,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -838,7 +839,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
         if (candidateLayer == null) {
             LayerGroupInfo layerGroup = catalog.getLayerGroupByName(layerName);
             if (layerGroup != null) {
-                boolean useNamedGroupStyle = !CapabilityUtil.isDefaultGroupStyleName(WMS.get(), layerGroup, reqStyle);
+                boolean useNamedGroupStyle = isNamedGroupStyle(layerGroup, reqStyle);
                 layers.addAll(useNamedGroupStyle ? layerGroup.layers(reqStyle) : layerGroup.layers());
                 addGroupStyles(layerGroup, styles, reqStyle);
             }
@@ -1052,12 +1053,21 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
     }
 
     private void addGroupStyles(LayerGroupInfo groupInfo, List<String> requestedStyles, String styleName) {
-        boolean useNamedGroupStyle = !CapabilityUtil.isDefaultGroupStyleName(WMS.get(), groupInfo, styleName);
+        boolean useNamedGroupStyle = isNamedGroupStyle(groupInfo, styleName);
         List<StyleInfo> groupStyles = useNamedGroupStyle ? groupInfo.styles(styleName) : groupInfo.styles();
 
         requestedStyles.addAll(groupStyles.stream()
                 .map(s -> s != null ? s.prefixedName() : null)
                 .collect(Collectors.toList()));
+    }
+
+    /**
+     * Returns true if {@code styleName} refers to an actual named layer group style (as opposed to being empty, or the
+     * group's own auto-generated default style name), and the group mode supports named group styles at all.
+     */
+    private boolean isNamedGroupStyle(LayerGroupInfo groupInfo, String styleName) {
+        return !CapabilityUtil.isDefaultGroupStyleName(WMS.get(), groupInfo, styleName)
+                && LayerGroupHelper.isSingleOrOpaque(groupInfo);
     }
 
     private List<Object> parseLayersParameter(Request gsRequest, GetMapRequest getMap) {

@@ -706,8 +706,9 @@
                   <goal>generate</goal>
                 </goals>
                 <configuration>
-                  <inputDirectory>${project.basedir}/src/assembly</inputDirectory>
-                  <outputDirectory>${project.build.directory}/html</outputDirectory>
+                  <inputEncoding>UTF-8</inputEncoding>
+                  <inputDirectory>${project.basedir}/src/assembly/</inputDirectory>
+                  <outputDirectory>${project.build.directory}/html/</outputDirectory>
                   <recursiveInput>false</recursiveInput>
                   <transformRelativeMarkdownLinks>true</transformRelativeMarkdownLinks>
                   <headerHtmlFile>${project.build.directory}/html-template/header.html</headerHtmlFile>
@@ -731,8 +732,9 @@
                   <goal>generate</goal>
                 </goals>
                 <configuration>
-                  <inputDirectory>${geoserverBaseDir}/release/extensions</inputDirectory>
-                  <outputDirectory>${geoserverBaseDir}/release/target/html/extensions</outputDirectory>
+                  <inputEncoding>UTF-8</inputEncoding>
+                  <inputDirectory>${geoserverBaseDir}/release/extensions/</inputDirectory>
+                  <outputDirectory>${geoserverBaseDir}/release/target/html/extensions/</outputDirectory>
                   <recursiveInput>false</recursiveInput>
                   <transformRelativeMarkdownLinks>true</transformRelativeMarkdownLinks>
                   <headerHtmlFile>${project.build.directory}/html-template/header.html</headerHtmlFile>
@@ -753,8 +755,9 @@
                   <goal>generate</goal>
                 </goals>
                 <configuration>
-                  <inputDirectory>${geoserverBaseDir}/../licenses</inputDirectory>
-                  <outputDirectory>${geoserverBaseDir}/release/target/html/licenses</outputDirectory>
+                  <inputEncoding>UTF-8</inputEncoding>
+                  <inputDirectory>${geoserverBaseDir}/../licenses/</inputDirectory>
+                  <outputDirectory>${geoserverBaseDir}/release/target/html/licenses/</outputDirectory>
                   <recursiveInput>false</recursiveInput>
                   <transformRelativeMarkdownLinks>true</transformRelativeMarkdownLinks>
                   <headerHtmlFile>${project.build.directory}/html-template/header.html</headerHtmlFile>

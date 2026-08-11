@@ -656,13 +656,14 @@
                   <goal>generate</goal>
                 </goals>
                 <configuration>
-                  <inputDirectory>${project.basedir}/../../licenses</inputDirectory>
-                  <outputDirectory>${project.build.directory}/html/licenses</outputDirectory>
+                  <inputDirectory>${project.basedir}/../../licenses/</inputDirectory>
+                  <outputDirectory>${project.build.directory}/html/licenses/</outputDirectory>
                 </configuration>
               </execution>
             </executions>
             <inherited>false</inherited>
             <configuration>
+              <inputEncoding>UTF-8</inputEncoding>
               <recursiveInput>false</recursiveInput>
               <transformRelativeMarkdownLinks>true</transformRelativeMarkdownLinks>
               <headerHtmlFile>${project.build.directory}/html-template/header.html</headerHtmlFile>

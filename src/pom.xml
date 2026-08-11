@@ -1078,7 +1078,7 @@
       <dependency>
         <groupId>org.wiremock</groupId>
         <artifactId>wiremock-standalone</artifactId>
-        <version>3.11.0</version>
+        <version>3.13.2</version>
       </dependency>
       <dependency>
         <!-- used for tests that require environment variables -->

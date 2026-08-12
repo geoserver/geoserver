@@ -28,7 +28,9 @@ public class PostGISTestResource extends ExternalResource {
 
         DockerImageName image =
                 DockerImageName.parse("postgis/postgis:18-3.6-alpine").asCompatibleSubstituteFor("postgres");
-        postgisContainer = new PostgreSQLContainer(image);
+        // SCRAM authentication derives the key with PBKDF2, and a FIPS provider in approved-only
+        // mode refuses a password shorter than 112 bits, which the testcontainers default is
+        postgisContainer = new PostgreSQLContainer(image).withPassword("geoserver-postgis-test");
         postgisContainer.start();
     }
 

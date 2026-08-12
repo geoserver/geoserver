@@ -2032,7 +2032,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         MockHttpServletResponse response = getAsServletResponse(url);
         assertEquals(200, response.getStatus());
         assertContentType("text/html", response);
-        LOGGER.log(Level.INFO, "Last request returned\n:" + response.getContentAsString());
+        LOGGER.fine("Last request returned\n:" + response.getContentAsString());
 
         // parse the HTML
         org.jsoup.nodes.Document document = Jsoup.parse(response.getContentAsString());

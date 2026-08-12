@@ -36,6 +36,6 @@ public class LegendControllerTest extends ControllerTest {
         Object contentType = l.get("contentType");
         assertNotNull(contentType);
 
-        System.out.println(result.toString());
+        //        System.out.println(result.toString());
     }
 }

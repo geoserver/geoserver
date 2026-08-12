@@ -49,13 +49,12 @@ public class CompositeBuilderTest extends DataTestCase {
         DynamicValueBuilder p1 = new DynamicValueBuilder("k1", "${id}", ns);
         DynamicValueBuilder p2 = new DynamicValueBuilder("k2", "$${strToUpperCase(name)}", ns);
         JSONObject json = buildComposite(ns, p1, p2);
-        System.out.println(json.toString());
 
         assertFalse(json.isEmpty());
         assertEquals(1, json.size());
         JSONObject composite = json.getJSONObject("composite");
-        assertEquals(Integer.valueOf(1), composite.get("k1"));
-        assertEquals("R1", composite.get("k2"));
+        assertEquals(1, composite.getInt("k1"));
+        assertEquals("R1", composite.getString("k2"));
     }
 
     private JSONObject buildComposite(NamespaceSupport ns, DynamicValueBuilder p1, DynamicValueBuilder p2)
@@ -75,7 +74,7 @@ public class CompositeBuilderTest extends DataTestCase {
         writer.close();
 
         // nothing has been encoded
-        String jsonString = new String(baos.toByteArray());
+        String jsonString = baos.toString();
         return (JSONObject) JSONSerializer.toJSON(jsonString);
     }
 }

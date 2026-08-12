@@ -16,12 +16,16 @@ import java.security.KeyStoreException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Enumeration;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.security.SecurityDefaults;
 import org.geoserver.security.password.RandomPasswordProvider;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.BeanNameAware;
@@ -51,6 +55,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
     protected Resource keyStoreResource;
     protected KeyStore ks;
 
+    /** Type used unless a deployment overrides it through {@link SecurityDefaults}. */
     public static final String KEYSTORETYPE = "JCEKS";
 
     /**
@@ -60,7 +65,26 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
      */
     static final String KEY_ALGORITHM = "HmacSHA256";
 
+    /**
+     * Keys made from the stored secrets, see {@link KeyStoreProvider#getDerivedKey}. Cleared whenever the keystore
+     * contents change, so an entry can never outlive the secret it was made from. Changing the master password is not
+     * such a change: it locks the entries again, but the secrets stay the same.
+     */
+    private final Map<String, SecretKey> derivedKeys = new ConcurrentHashMap<>();
+
     GeoServerSecurityManager securityManager;
+
+    static {
+        // the keystore type can be one only the deployment's crypto provider implements, so it has
+        // to be registered before the type is asked for. A servlet deployment gets there through
+        // GeoserverInitStartupListener, but nothing else does.
+        CryptoProviders.getProvider();
+    }
+
+    /** Not cached: a deployment may install the override after this provider is constructed. */
+    static String keyStoreType() {
+        return SecurityDefaults.get(SecurityDefaults.Setting.KEYSTORE_TYPE, KEYSTORETYPE);
+    }
 
     public KeyStoreProviderImpl() {}
 
@@ -98,6 +122,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
      */
     @Override
     public void reloadKeyStore() throws IOException {
+        derivedKeys.clear();
         ks = null;
         assertActivatedKeyStore();
     }
@@ -222,7 +247,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
 
         char[] passwd = securityManager.getMasterPassword();
         try {
-            ks = KeyStore.getInstance(KEYSTORETYPE);
+            ks = KeyStore.getInstance(keyStoreType());
             if (getResource().getType() == Type.UNDEFINED) { // create an empy one
                 ks.load(null, passwd);
                 addInitialKeys();
@@ -253,7 +278,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
 
         KeyStore testStore = null;
         try {
-            testStore = KeyStore.getInstance(KEYSTORETYPE);
+            testStore = KeyStore.getInstance(keyStoreType());
         } catch (KeyStoreException e1) {
             // should not happen, see assertActivatedKeyStore
             throw new RuntimeException(e1);
@@ -274,7 +299,19 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
      * @see org.geoserver.security.password.KeystoreProvider#setSecretKey(java.lang.String, java.lang.String)
      */
     @Override
+    public SecretKey getDerivedKey(String alias, Function<char[], SecretKey> derivation) throws IOException {
+        SecretKey cached = derivedKeys.get(alias);
+        if (cached != null) {
+            return cached;
+        }
+        SecretKey derived = KeyStoreProvider.super.getDerivedKey(alias, derivation);
+        derivedKeys.put(alias, derived);
+        return derived;
+    }
+
+    @Override
     public void setSecretKey(String alias, char[] key) throws IOException {
+        derivedKeys.clear();
         assertActivatedKeyStore();
         SecretKey mySecretKey = new SecretKeySpec(toBytes(key), KEY_ALGORITHM);
         KeyStore.SecretKeyEntry skEntry = new KeyStore.SecretKeyEntry(mySecretKey);
@@ -302,6 +339,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
      */
     @Override
     public void removeKey(String alias) throws IOException {
+        derivedKeys.clear();
         assertActivatedKeyStore();
         try {
             ks.deleteEntry(alias);
@@ -352,12 +390,12 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
         }
 
         try {
-            KeyStore oldKS = KeyStore.getInstance(KEYSTORETYPE);
+            KeyStore oldKS = KeyStore.getInstance(keyStoreType());
             try (InputStream fin = getResource().in()) {
                 oldKS.load(fin, oldPassword);
             }
 
-            KeyStore newKS = KeyStore.getInstance(KEYSTORETYPE);
+            KeyStore newKS = KeyStore.getInstance(keyStoreType());
             newKS.load(null, newPassword);
             KeyStore.PasswordProtection protectionparam = new KeyStore.PasswordProtection(newPassword);
 
@@ -415,7 +453,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
         char[] passwd = securityManager.getMasterPassword();
         try {
             try (InputStream fin = newKSFile.in()) {
-                KeyStore newKS = KeyStore.getInstance(KEYSTORETYPE);
+                KeyStore newKS = KeyStore.getInstance(keyStoreType());
                 newKS.load(fin, passwd);
 
                 // to be sure, decrypt all keys

@@ -117,6 +117,10 @@
     <gf.version>3.8.2</gf.version>
     <hazelcast.version>5.3.8</hazelcast.version>
     <cors.version>3.1</cors.version>
+    <!-- Coordinates of the FIPS-validated line, needed outside the fips profile too: the
+         community fips modules depend on it whichever way the build is run. -->
+    <bc.fips.prov.version>2.1.2</bc.fips.prov.version>
+    <bc.fips.pkix.version>2.1.10</bc.fips.pkix.version>
     <hibernate-version>7.4.5.Final</hibernate-version>
     <httpcore.version>4.4.16</httpcore.version>
     <httpclient.version>5.4.4</httpclient.version>

@@ -582,7 +582,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         return true;
     }
 
-    protected final void sendTileRequestedEvent(ConveyorTile tile) {
+    /** Notifies listeners (e.g. disk quota LFU tracking) that {@code tile} was requested. */
+    public final void sendTileRequestedEvent(ConveyorTile tile) {
         if (listeners != null) {
             listeners.sendTileRequested(this, tile);
         }
@@ -1044,13 +1045,35 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
     }
 
     private boolean tryCacheFetch(ConveyorTile tile) {
+        return cacheFetch(tile, true);
+    }
+
+    /**
+     * Cache-only read for {@code tile}: same key and security derivation as {@link #getTile}, but never renders on a
+     * miss, never takes the per-tile lock, and leaves no trace on {@code tile} when the read itself fails, so it is
+     * safe to call speculatively and concurrently across members from a shared pool. On a hit, {@code tile}'s blob is
+     * populated exactly as {@link #getTile} would leave it.
+     *
+     * @return {@code true} if the tile was found in cache, {@code false} on a cache miss or a failed read
+     */
+    public boolean peekCache(ConveyorTile tile) {
+        return cacheFetch(tile, false);
+    }
+
+    /**
+     * @param recordError whether a failed read marks {@code tile} as errored; a speculative peek must not, since the
+     *     caller falls back to a normal render and {@link #finalizeTile} would otherwise refuse to set status 200
+     */
+    private boolean cacheFetch(ConveyorTile tile, boolean recordError) {
         int expireCache = this.getExpireCache((int) tile.getTileIndex()[2]);
         if (expireCache != GWCVars.CACHE_DISABLE_CACHE) {
             try {
                 return tile.retrieve(expireCache * 1000L);
             } catch (GeoWebCacheException gwce) {
                 LOGGER.info(gwce.getMessage());
-                tile.setErrorMsg(gwce.getMessage());
+                if (recordError) {
+                    tile.setErrorMsg(gwce.getMessage());
+                }
                 return false;
             }
         }

@@ -6,15 +6,10 @@
 package org.geoserver.wms;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -260,19 +255,9 @@ public class GetMap {
 
         fireMapContentInit(mapContent);
 
-        // track the external caching strategy for any map layers
-        boolean cachingPossible = request.isGet();
         final String featureVersion = request.getFeatureVersion();
-        int maxAge = Integer.MAX_VALUE;
         for (int i = 0; i < layers.size(); i++) {
             final MapLayerInfo mapLayerInfo = layers.get(i);
-
-            cachingPossible &= mapLayerInfo.isCachingEnabled();
-            if (cachingPossible) {
-                maxAge = Math.min(maxAge, mapLayerInfo.getCacheMaxAge());
-            } else {
-                cachingPossible = false;
-            }
 
             final Style layerStyle = styles[i];
             final Filter layerFilter = SimplifyingFilterVisitor.simplify(filters[i]);
@@ -326,15 +311,8 @@ public class GetMap {
         mapContent = fireBeforeRender(mapContent);
         WebMap map = delegate.produceMap(mapContent);
 
-        if (cachingPossible) {
-            map.setResponseHeader("Cache-Control", "max-age=" + maxAge + ", must-revalidate");
-
-            final GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-            calendar.add(Calendar.SECOND, maxAge);
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
-            format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            map.setResponseHeader("Expires", format.format(calendar.getTime()));
-        }
+        WMS.cacheMaxAge(request.isGet(), layers)
+                .ifPresent(maxAge -> WMS.cacheControlHeaders(maxAge).forEach(map::setResponseHeader));
 
         return map;
     }

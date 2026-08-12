@@ -57,6 +57,9 @@ public class CachingOptionsPanel extends Panel {
         final CheckBox autoCacheLayers = new CheckBox("cacheLayersByDefault", autoCacheLayersModel);
         add(autoCacheLayers);
 
+        final IModel<Boolean> multiLayerCachingModel = new PropertyModel<>(gwcConfigModel, "multiLayerCachingEnabled");
+        add(new CheckBox("multiLayerCachingEnabled", multiLayerCachingModel));
+
         final WebMarkupContainer container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
         add(container);

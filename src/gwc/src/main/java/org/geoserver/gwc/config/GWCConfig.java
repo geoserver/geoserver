@@ -43,6 +43,9 @@ public class GWCConfig implements Cloneable, Serializable {
     /** Whether to cache any non default Style associated to the layer */
     private boolean cacheNonDefaultStyles;
 
+    /** Whether a tiled, transparent-PNG multi-layer GetMap is served by stacking per-layer cached tiles */
+    private boolean multiLayerCachingEnabled;
+
     /** Default meta-tiling factor for the X axis */
     private int metaTilingX;
 
@@ -173,6 +176,14 @@ public class GWCConfig implements Cloneable, Serializable {
 
     public void setCacheNonDefaultStyles(boolean cacheNonDefaultStyles) {
         this.cacheNonDefaultStyles = cacheNonDefaultStyles;
+    }
+
+    public boolean isMultiLayerCachingEnabled() {
+        return multiLayerCachingEnabled;
+    }
+
+    public void setMultiLayerCachingEnabled(boolean multiLayerCachingEnabled) {
+        this.multiLayerCachingEnabled = multiLayerCachingEnabled;
     }
 
     public Set<String> getDefaultCachingGridSetIds() {
@@ -361,6 +372,7 @@ public class GWCConfig implements Cloneable, Serializable {
                 && securityEnabled == gwcConfig.securityEnabled
                 && cacheLayersByDefault == gwcConfig.cacheLayersByDefault
                 && cacheNonDefaultStyles == gwcConfig.cacheNonDefaultStyles
+                && multiLayerCachingEnabled == gwcConfig.multiLayerCachingEnabled
                 && metaTilingX == gwcConfig.metaTilingX
                 && metaTilingY == gwcConfig.metaTilingY
                 && Objects.equals(metaTilingThreads, gwcConfig.metaTilingThreads)
@@ -387,6 +399,7 @@ public class GWCConfig implements Cloneable, Serializable {
                 securityEnabled,
                 cacheLayersByDefault,
                 cacheNonDefaultStyles,
+                multiLayerCachingEnabled,
                 metaTilingX,
                 metaTilingY,
                 metaTilingThreads,

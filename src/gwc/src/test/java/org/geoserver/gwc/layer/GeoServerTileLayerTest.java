@@ -856,6 +856,52 @@ public class GeoServerTileLayerTest {
         }
     }
 
+    @Test
+    public void testPeekCacheHitNeverRenders() throws Exception {
+        StorageBroker storageBroker = mock(StorageBroker.class);
+        when(storageBroker.get(any())).thenReturn(true);
+
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        ConveyorTile tile = new ConveyorTile(
+                storageBroker,
+                layerInfoTileLayer.getName(),
+                "EPSG:4326",
+                new long[] {0, 0, 0},
+                MimeType.createFromFormat("image/png"),
+                null,
+                null,
+                null);
+
+        assertTrue(layerInfoTileLayer.peekCache(tile));
+        assertEquals(CacheResult.HIT, tile.getCacheResult());
+        // proves the peek is read-only: no render-and-save side effect, unlike getTile() on a miss
+        verify(storageBroker, never()).put(any());
+        verify(storageBroker, never()).putTransient(any());
+    }
+
+    @Test
+    public void testPeekCacheMissNeverRenders() throws Exception {
+        StorageBroker storageBroker = mock(StorageBroker.class);
+        when(storageBroker.get(any())).thenReturn(false);
+
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        ConveyorTile tile = new ConveyorTile(
+                storageBroker,
+                layerInfoTileLayer.getName(),
+                "EPSG:4326",
+                new long[] {0, 0, 0},
+                MimeType.createFromFormat("image/png"),
+                null,
+                null,
+                null);
+
+        assertFalse(layerInfoTileLayer.peekCache(tile));
+        assertEquals(CacheResult.MISS, tile.getCacheResult());
+        // a miss must stay a miss here: no fallback render, that's the render loop's job, not the peek's
+        verify(storageBroker, never()).put(any());
+        verify(storageBroker, never()).putTransient(any());
+    }
+
     @SuppressWarnings("unchecked")
     protected class GetTileMockTester {
 

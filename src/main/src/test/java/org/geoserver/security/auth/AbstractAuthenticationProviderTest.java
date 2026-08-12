@@ -147,7 +147,7 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
 
     @Override
     public GeoServerUserGroupService createUserGroupService(String name) throws Exception {
-        return createUserGroupService(name, getPBEPasswordEncoder().getName());
+        return createUserGroupService(name, getReversiblePasswordEncoder().getName());
     }
 
     public GeoServerUserGroupService createUserGroupService(String name, String passwordEncoderName) throws Exception {

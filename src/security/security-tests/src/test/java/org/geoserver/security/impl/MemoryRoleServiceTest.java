@@ -89,7 +89,7 @@ public class MemoryRoleServiceTest extends AbstractRoleServiceTest {
         MemoryUserGroupServiceConfigImpl ugconfig = new MemoryUserGroupServiceConfigImpl();
         ugconfig.setName("testAdminRole");
         ugconfig.setClassName(MemoryUserGroupService.class.getName());
-        ugconfig.setPasswordEncoderName(getPBEPasswordEncoder().getName());
+        ugconfig.setPasswordEncoderName(getReversiblePasswordEncoder().getName());
         ugconfig.setPasswordPolicyName(PasswordValidator.DEFAULT_NAME);
         GeoServerUserGroupService ugService = new MemoryUserGroupService();
         ugService.setSecurityManager(GeoServerExtensions.bean(GeoServerSecurityManager.class));

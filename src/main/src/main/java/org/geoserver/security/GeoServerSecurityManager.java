@@ -1283,6 +1283,13 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
+     * The reversible encoder a user group service gets when nothing else is configured.
+     */
+    public GeoServerPasswordEncoder loadDefaultUserGroupPasswordEncoder() {
+        return loadPasswordEncoder(GeoServerPBEPasswordEncoder.class, null, false);
+    }
+
+    /**
      * Loads a password encoder with the specified name.
      *
      * @return The password encoder, or {@code null} if non found matching the name.
@@ -2420,8 +2427,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             ugConfig.setFileName(XMLConstants.FILE_UR);
             ugConfig.setValidating(true);
             // start with weak encryption, plain passwords can be restored
-            ugConfig.setPasswordEncoderName(loadPasswordEncoder(GeoServerPBEPasswordEncoder.class, null, false)
-                    .getName());
+            ugConfig.setPasswordEncoderName(
+                    loadDefaultUserGroupPasswordEncoder().getName());
             ugConfig.setPasswordPolicyName(PasswordValidator.DEFAULT_NAME);
             saveUserGroupService(ugConfig);
             userGroupService = loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);

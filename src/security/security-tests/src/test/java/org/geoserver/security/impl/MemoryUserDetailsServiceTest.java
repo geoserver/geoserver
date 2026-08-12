@@ -68,7 +68,7 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
 
     @Override
     public GeoServerUserGroupService createUserGroupService(String name) throws Exception {
-        return createUserGroupService(name, getPBEPasswordEncoder().getName());
+        return createUserGroupService(name, getReversiblePasswordEncoder().getName());
     }
 
     public GeoServerUserGroupService createUserGroupService(String name, String passwordEncoderName) throws Exception {
@@ -163,7 +163,7 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         getSecurityManager().saveSecurityConfig(config);
 
         String serviceName = "testEncrypt";
-        String cryptprefix = getPBEPasswordEncoder().getPrefix() + GeoServerPasswordEncoder.PREFIX_DELIMTER;
+        String cryptprefix = getReversiblePasswordEncoder().getPrefix() + GeoServerPasswordEncoder.PREFIX_DELIMTER;
 
         MemoryRoleServiceConfigImpl roleConfig = getRoleConfig(serviceName);
         MemoryUserGroupServiceConfigImpl ugConfig =
@@ -201,7 +201,7 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
 
         // SWITCH TO ENCRYPTION
         config = getSecurityManager().getSecurityConfig();
-        config.setConfigPasswordEncrypterName(getPBEPasswordEncoder().getName());
+        config.setConfigPasswordEncrypterName(getReversiblePasswordEncoder().getName());
         getSecurityManager().saveSecurityConfig(config);
         getSecurityManager().updateConfigurationFilesWithEncryptedFields();
 
@@ -226,10 +226,10 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
     @Test
     public void testEncryption2() throws Exception {
         SecurityManagerConfig config = getSecurityManager().getSecurityConfig();
-        config.setConfigPasswordEncrypterName(getPBEPasswordEncoder().getName());
+        config.setConfigPasswordEncrypterName(getReversiblePasswordEncoder().getName());
         getSecurityManager().saveSecurityConfig(config);
         String serviceName = "testEncrypt2";
-        String prefix = getPBEPasswordEncoder().getPrefix() + GeoServerPasswordEncoder.PREFIX_DELIMTER;
+        String prefix = getReversiblePasswordEncoder().getPrefix() + GeoServerPasswordEncoder.PREFIX_DELIMTER;
 
         MemoryRoleServiceConfigImpl roleConfig = getRoleConfig(serviceName);
         MemoryUserGroupServiceConfigImpl ugConfig =
@@ -342,7 +342,7 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         assertEquals("secret", load.getConnectionParameters().get("passwd"));
 
         // now encrypt
-        config.setConfigPasswordEncrypterName(getPBEPasswordEncoder().getName());
+        config.setConfigPasswordEncrypterName(getReversiblePasswordEncoder().getName());
         getSecurityManager().saveSecurityConfig(config);
         getSecurityManager().updateConfigurationFilesWithEncryptedFields();
 

@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.io.Serializable;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.wicket.Component;
@@ -28,6 +28,7 @@ import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.serialize.ISerializer;
 import org.apache.wicket.util.tester.TagTester;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.ModuleStatus;
@@ -142,16 +143,20 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
         tester.assertContains("gs-main");
         Component component = tester.getComponentFromLastRenderedPage("tabs:panel:listViewContainer:modules");
         assertThat(component, instanceOf(ListView.class));
-        List<String> modules = ((ListView<ModuleStatus>) component)
-                .getList().stream().map(ModuleStatus::getModule).collect(Collectors.toList());
+        List<ModuleStatus> statuses = ((ListView<ModuleStatus>) component).getList();
+        List<String> modules = statuses.stream().map(ModuleStatus::getModule).collect(Collectors.toList());
 
         // verify that the expected modules are present
         assertThat(modules, hasItem("gs-main"));
         assertThat(modules, hasItem("gs-web-core"));
         assertThat(modules, hasItem("jvm"));
 
-        // verify that the modules are sorted
-        List<String> sorted = modules.stream().sorted().collect(Collectors.toList());
+        // check the modules are sorted the way the panel sorts them, by category and then by name.
+        // Sorting by module id looks the same only while every module is in the same category
+        Comparator<ModuleStatus> order = Comparator.comparing(ModuleStatus::getCategory)
+                .thenComparing(ModuleStatus::getName, String::compareToIgnoreCase);
+        List<String> sorted =
+                statuses.stream().sorted(order).map(ModuleStatus::getModule).collect(Collectors.toList());
         assertEquals(sorted, modules);
     }
 
@@ -233,9 +238,19 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
         assertThat(label.getDefaultModel().getObject(), is("extra"));
     }
 
+    @Test
+    public void testExtraTabPageSerializes() {
+        tester.assertRenderedPage(StatusPage.class);
+        tester.clickLink("tabs:tabs-container:tabs:4:link", true);
+        // the tab holds the definition, so a definition that cannot be serialized makes the whole
+        // page impossible to store, and Wicket returns null instead of bytes
+        ISerializer serializer = tester.getApplication().getFrameworkSettings().getSerializer();
+        assertNotNull(serializer.serialize(tester.getLastRenderedPage()));
+    }
+
     /** Extra tab definition that will be added to GeoServer status page. */
     @SuppressWarnings("serial")
-    public static final class ExtraTabDefinition implements StatusPage.TabDefinition, Serializable {
+    public static final class ExtraTabDefinition implements StatusPage.TabDefinition {
 
         @Override
         public String getTitleKey() {

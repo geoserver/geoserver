@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.geoserver</groupId>
+    <artifactId>community</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>gs-fips-container</artifactId>
+  <packaging>pom</packaging>
+
+  <name>GeoServer FIPS 140-3 support modules</name>
+
+  <!-- gs-fips-provider must be usable from gs-main, so it cannot depend on it. Everything that
+       needs gs-main lives in gs-fips-tests; see that pom for why the tests are a module. -->
+  <modules>
+    <module>fips-provider</module>
+    <module>fips-tests</module>
+    <module>web-fips</module>
+  </modules>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <executions>
+          <execution>
+            <!-- the one test that needs both the regular and the FIPS BouncyCastle jars, since that is what it is about -->
+            <id>mixed-bouncycastle</id>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <classpathDependencyExcludes combine.self="override"></classpathDependencyExcludes>
+              <excludes combine.self="override"></excludes>
+              <includes>
+                <include>**/FipsWithoutFipsJarsTest.java</include>
+              </includes>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <!-- Without the fips profile the regular BouncyCastle jars come along too, and the two lines cannot
+               share a classpath: they use the same package names, so no crypto works at all. Dropping the regular
+               jars here gives the tests the classpath of a FIPS deployment, however the build was started.
+               With -Pfips these jars are not in the build and the exclusion does nothing. -->
+          <classpathDependencyExcludes>
+            <classpathDependencyExclude>org.bouncycastle:bcprov-lts8on</classpathDependencyExclude>
+            <classpathDependencyExclude>org.bouncycastle:bcpkix-lts8on</classpathDependencyExclude>
+          </classpathDependencyExcludes>
+          <excludes>
+            <exclude>**/FipsWithoutFipsJarsTest.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

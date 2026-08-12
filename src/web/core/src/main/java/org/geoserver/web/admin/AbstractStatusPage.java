@@ -5,6 +5,7 @@
 package org.geoserver.web.admin;
 
 import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.Component;
@@ -139,8 +140,10 @@ public abstract class AbstractStatusPage extends ServerAdminPage {
     /**
      * Extensions that implement this interface will be able to contribute a new tabs to GeoServer status page,
      * interface {@link org.geoserver.platform.ExtensionPriority} should be used to define the tab priority.
+     *
+     * <p>Serializable because the tab holds on to the definition, and Wicket stores the page in the session.
      */
-    public interface TabDefinition {
+    public interface TabDefinition extends Serializable {
 
         // title of the tab
         String getTitleKey();

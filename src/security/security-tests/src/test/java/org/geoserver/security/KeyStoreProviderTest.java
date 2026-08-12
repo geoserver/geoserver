@@ -11,13 +11,35 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import javax.crypto.SecretKey;
+import org.geoserver.security.password.AesGcmCipher;
 import org.geoserver.security.password.RandomPasswordProvider;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 
 public class KeyStoreProviderTest extends GeoServerSystemTestSupport {
+
+    @Test
+    public void testDerivedKeyFollowsTheStoredSecret() throws Exception {
+        KeyStoreProvider ksp = getSecurityManager().getKeyStoreProvider();
+        String alias = "derivation-test-key";
+        ksp.setSecretKey(alias, "a key long enough for derivation".toCharArray());
+        ksp.storeKeyStore();
+
+        SecretKey first = ksp.getDerivedKey(alias, AesGcmCipher::deriveKey);
+        // making a key takes hundreds of milliseconds, so the same secret has to give the same object back
+        assertSame(first, ksp.getDerivedKey(alias, AesGcmCipher::deriveKey));
+
+        // a new secret under the same alias must not keep serving the key derived from the old one
+        ksp.setSecretKey(alias, "a different key, also long enough".toCharArray());
+        ksp.storeKeyStore();
+        SecretKey afterKeyChange = ksp.getDerivedKey(alias, AesGcmCipher::deriveKey);
+        assertFalse(Arrays.equals(first.getEncoded(), afterKeyChange.getEncoded()));
+    }
 
     @Test
     public void testKeyStoreProvider() throws Exception {

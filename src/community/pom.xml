@@ -82,12 +82,6 @@
       </modules>
     </profile>
     <profile>
-      <id>rest</id>
-      <modules>
-        <module>rest</module>
-      </modules>
-    </profile>
-    <profile>
       <id>dds</id>
       <modules>
         <module>dds</module>

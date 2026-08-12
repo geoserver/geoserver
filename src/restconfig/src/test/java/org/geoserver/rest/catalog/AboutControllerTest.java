@@ -128,10 +128,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
     }
 
     private void checkJSONModel(JSONObject json) {
-        // StringWriter sw = new StringWriter();
-        // json.write(sw);
-        // System.out.println(sw.toString());
-        LOGGER.info("JSON model: " + json.toString(2));
+        LOGGER.fine("JSON model: " + json.toString(2));
 
         // make assertions
         assertNotNull(json);
@@ -142,15 +139,11 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
 
         obj = about.get("resource");
         assertTrue(obj instanceof JSONArray);
-
-        // JSONArray resources = (JSONArray) obj;
     }
 
     private void checkXMLModel(Document dom) {
         // make assertions
         Node resource = getFirstElementByTagName(dom, "resource");
-
-        // serializeXML(dom);
 
         assertNotNull(resource);
         assertFalse(((Element) resource).getAttribute("name").isEmpty());
@@ -178,8 +171,6 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
             sr = new StreamResult(sw);
 
             txformer.transform(domSrc, sr);
-
-            // System.out.println(sw.toString());
         } catch (TransformerFactoryConfigurationError | TransformerException ex) {
             LOGGER.log(Level.WARNING, "", ex);
             throw ex;

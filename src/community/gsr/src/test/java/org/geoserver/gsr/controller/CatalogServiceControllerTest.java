@@ -10,6 +10,7 @@
 package org.geoserver.gsr.controller;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.jsoup.nodes.Document;
@@ -27,13 +28,13 @@ public class CatalogServiceControllerTest extends ControllerTest {
             assertTrue(json instanceof JSONObject);
             JSONObject jsonObject = (JSONObject) json;
             JSONObject error = (JSONObject) jsonObject.get("error");
-            assertTrue(error instanceof JSONObject);
+            assertNotNull(error);
             int code = (Integer) error.get("code");
             assertEquals(400, code);
             String message = (String) error.get("message");
             assertEquals("Output format not supported", message);
             JSONArray details = (JSONArray) error.get("details");
-            assertTrue(details instanceof JSONArray);
+            assertNotNull(details);
             assertEquals("Format xxx is not supported", details.getString(0));
         }
     }
@@ -68,6 +69,7 @@ public class CatalogServiceControllerTest extends ControllerTest {
     @Test
     public void testHtmlCatalogResponse() throws Exception {
         Document doc = getAsJSoup(getBaseURL() + "?f=html");
+        assertNotNull(doc);
     }
 
     @Test
@@ -75,7 +77,6 @@ public class CatalogServiceControllerTest extends ControllerTest {
         JSON json = getAsJSON(getBaseURL() + "?f=json");
         assertTrue(json instanceof JSONObject);
         String jsonString = json.toString();
-        System.out.println(jsonString);
         assertTrue(validateJSON(jsonString, "gsr-cs/1.0/catalog.json"));
     }
 

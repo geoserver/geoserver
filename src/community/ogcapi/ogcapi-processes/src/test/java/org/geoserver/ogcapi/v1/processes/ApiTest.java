@@ -23,10 +23,8 @@ import io.swagger.v3.oas.models.servers.Server;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.logging.Level;
 import org.geoserver.ogcapi.OGCApiTestSupport;
 import org.geoserver.ogcapi.SwaggerJSONAPIMessageConverter;
-import org.geoserver.test.GeoServerBaseTestSupport;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
@@ -48,7 +46,7 @@ public class ApiTest extends OGCApiTestSupport {
                 response.getContentType(),
                 CoreMatchers.startsWith(SwaggerJSONAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE));
         String json = response.getContentAsString();
-        LOGGER.log(Level.INFO, json);
+        LOGGER.fine(json);
 
         OpenAPI api = Json.mapper().readValue(json, OpenAPI.class);
         validateApi(api);
@@ -59,7 +57,7 @@ public class ApiTest extends OGCApiTestSupport {
         MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/processes/v1?f=text/html", 200);
         assertEquals("text/html", response.getContentType());
         String html = response.getContentAsString();
-        GeoServerBaseTestSupport.LOGGER.info(html);
+        LOGGER.fine(html);
         assertThat(html, containsString("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">"));
     }
 
@@ -68,7 +66,7 @@ public class ApiTest extends OGCApiTestSupport {
         MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/processes/v1/openapi?f=text/html", 200);
         assertEquals("text/html", response.getContentType());
         String html = response.getContentAsString();
-        LOGGER.info(html);
+        LOGGER.fine(html);
 
         // check template expansion worked properly
         assertThat(
@@ -102,7 +100,7 @@ public class ApiTest extends OGCApiTestSupport {
     }
 
     private void validateYAMLApi(String yaml) throws JacksonException, JsonProcessingException {
-        GeoServerBaseTestSupport.LOGGER.log(Level.INFO, yaml);
+        LOGGER.fine(yaml);
 
         OpenAPI api = Yaml.mapper().readValue(yaml, OpenAPI.class);
         validateApi(api);

@@ -11,9 +11,11 @@ import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mockStatic;
 
 import java.security.NoSuchAlgorithmException;
+import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Arrays;
+import org.geoserver.security.CryptoProviders;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
@@ -41,6 +43,23 @@ class WicketSecureRandomSupplierTest {
             WicketSecureRandomSupplier.createSecureRandom().nextBytes(bytes);
 
             assertFalse(Arrays.equals(new byte[16], bytes));
+        }
+    }
+
+    /** The registered provider wins over the {@code DRBG} name: a FIPS one only takes keys from its own generator. */
+    @Test
+    void testPrefersTheRegisteredCryptoProvider() {
+        SecureRandom unnamed = new SecureRandom();
+        assumeTrue(Security.getProviders("SecureRandom.DRBG") != null);
+        assumeTrue(!"DRBG".equals(unnamed.getAlgorithm()));
+
+        Provider provider = unnamed.getProvider();
+        try (MockedStatic<CryptoProviders> mocked = mockStatic(CryptoProviders.class)) {
+            mocked.when(CryptoProviders::getProvider).thenReturn(provider);
+
+            assertEquals(
+                    unnamed.getAlgorithm(),
+                    WicketSecureRandomSupplier.createSecureRandom().getAlgorithm());
         }
     }
 

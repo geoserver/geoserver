@@ -4,30 +4,52 @@
  */
 package org.geoserver.web.wicket;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mockStatic;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.Security;
+import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 class WicketSecureRandomSupplierTest {
 
+    /** On a normal JDK an unnamed instance would be SHA1PRNG, so the name has to be asked for. */
     @Test
-    void testGetSecureRandom() {
-        WicketSecureRandomSupplier supplier = new WicketSecureRandomSupplier();
+    void testPrefersDrbgWhereTheJvmOffersIt() {
+        assumeTrue(Security.getProviders("SecureRandom.DRBG") != null);
 
-        assertNotNull(supplier.getRandom());
+        assertEquals("DRBG", WicketSecureRandomSupplier.createSecureRandom().getAlgorithm());
+    }
+
+    /**
+     * A FIPS system has no {@code DRBG}. Only the SUN provider offers that name, and a FIPS system takes the random
+     * generators out of it, as Rocky Linux 9 does when booted with {@code fips=1}. An unnamed instance then comes from
+     * the validated provider itself, so the fallback has to be quiet, not an error.
+     */
+    @Test
+    void testFallsBackWhenDrbgIsMissing() {
+        try (MockedStatic<SecureRandom> mocked = mockStatic(SecureRandom.class, CALLS_REAL_METHODS)) {
+            mocked.when(() -> SecureRandom.getInstance("DRBG")).thenThrow(new NoSuchAlgorithmException("no DRBG here"));
+
+            byte[] bytes = new byte[16];
+            WicketSecureRandomSupplier.createSecureRandom().nextBytes(bytes);
+
+            assertFalse(Arrays.equals(new byte[16], bytes));
+        }
     }
 
     @Test
-    void shouldFallbackWhenDRBGNotAvailable() {
-        try (MockedStatic<SecureRandom> mocked = mockStatic(SecureRandom.class)) {
-            mocked.when(() -> SecureRandom.getInstance("DRBG"))
-                    .thenThrow(new NoSuchAlgorithmException("DRBG not available"));
+    void testRandomProducesBytes() {
+        byte[] bytes = new byte[16];
 
-            assertNotNull(WicketSecureRandomSupplier.createSecureRandom());
-        }
+        new WicketSecureRandomSupplier().getRandom().nextBytes(bytes);
+
+        assertFalse(Arrays.equals(new byte[16], bytes));
     }
 }

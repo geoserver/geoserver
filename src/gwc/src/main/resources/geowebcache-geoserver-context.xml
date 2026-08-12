@@ -32,6 +32,13 @@
     <constructor-arg ref="gwcJdbcConfigurationStorage"/>
     <constructor-arg ref="gwcBlobStoreAggregator"/>
     <constructor-arg ref="gwcSynchEnv"/>
+    <constructor-arg ref="coalescedRequestSplitter"/>
+  </bean>
+
+  <bean id="coalescedRequestSplitter" class="org.geoserver.gwc.CoalescedRequestSplitter">
+    <constructor-arg ref="decoderContainer"/>
+    <constructor-arg ref="encoderContainer"/>
+    <constructor-arg ref="wmsGetMap"/>
   </bean>
 
   <bean id="gwcSynchEnv" class="org.geoserver.gwc.GWCSynchEnv" depends-on="geoWebCacheExtensions" lazy-init="false">

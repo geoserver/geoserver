@@ -182,7 +182,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     /** @see #getResponseEncoder(MimeType, RenderedImageMap) */
     private Map<String, Response> cachedTileEncoders = new HashMap<>();
 
-    private final TileLayerDispatcher tld;
+    final TileLayerDispatcher tld;
 
     private final StorageBroker storageBroker;
 
@@ -228,6 +228,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     private ExecutorService metaTilingExecutor;
 
+    private final CoalescedRequestSplitter coalescedRequestSplitter;
+
     /**
      * Constructor for the GWC mediator
      *
@@ -243,6 +245,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * @param jdbcConfigurationStorage GeoServer integrator for GeoWebCache DiskQuota {@link JDBCConfiguration}
      * @param blobStoreAggregator GeoWebCache BlobStore Aggregator
      * @param gwcSynchEnv GeoServer integrator for GeoWebCache environment synchronization
+     * @param coalescedRequestSplitter splits and assembles multi-layer coalesced tile requests
      */
     public GWC(
             final GWCConfigPersister gwcConfigPersister,
@@ -257,7 +260,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             final DefaultStorageFinder storageFinder,
             final JDBCConfigurationStorage jdbcConfigurationStorage,
             final BlobStoreAggregator blobStoreAggregator,
-            final GWCSynchEnv gwcSynchEnv) {
+            final GWCSynchEnv gwcSynchEnv,
+            final CoalescedRequestSplitter coalescedRequestSplitter) {
 
         this.gwcConfigPersister = gwcConfigPersister;
         this.tld = tld;
@@ -280,6 +284,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         this.jdbcConfigurationStorage = jdbcConfigurationStorage;
         this.blobStoreAggregator = blobStoreAggregator;
         this.gwcSynchEnv = gwcSynchEnv;
+        this.coalescedRequestSplitter = coalescedRequestSplitter;
 
         this.metaTilingExecutor = buildMetaTilingExecutor(getConfig().getMetaTilingThreads());
     }
@@ -721,6 +726,16 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     }
 
     /**
+     * Whether {@code request}'s {@code LAYERS} KVP names more than one layer, the single condition both
+     * {@link #dispatch} and {@code CachingWebMapService} use to decide whether a request is a coalesced multi-layer
+     * one.
+     */
+    public static boolean isCoalescedLayers(GetMapRequest request) {
+        String layerName = request.getRawKvp().get("LAYERS");
+        return layerName != null && layerName.indexOf(',') != -1;
+    }
+
+    /**
      * Tries to dispatch a tile request represented by a GeoServer WMS {@link GetMapRequest} through GeoWebCache, and
      * returns the {@link ConveyorTile} if succeeded or {@code null} if it wasn't possible.
      *
@@ -742,9 +757,12 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
          * use request.getLayers() because in the event that a layerGroup was requested, the request
          * parser turned it into a list of actual Layers
          */
-        if (layerName.indexOf(',') != -1) {
-            requestMistmatchTarget.append("more than one layer requested");
-            return null;
+        if (isCoalescedLayers(request)) {
+            if (!getConfig().isMultiLayerCachingEnabled()) {
+                requestMistmatchTarget.append("more than one layer requested");
+                return null;
+            }
+            return coalescedRequestSplitter.dispatchCoalesced(this, request, requestMistmatchTarget);
         }
 
         // GEOS-9431 acquire prefixed name if not prefixed already
@@ -767,23 +785,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
 
         if (getConfig().isSecurityEnabled()) {
-            String bboxstr = request.getRawKvp().get("BBOX");
-            String srs = request.getRawKvp().get("SRS");
-            ReferencedEnvelope bbox = null;
             try {
-                bbox = (ReferencedEnvelope) new BBoxKvpParser().parse(bboxstr);
-            } catch (Exception e) {
-                throw new RuntimeException("Invalid bbox for layer '" + layerName + "': " + bboxstr);
-            }
-            if (srs != null) {
-                try {
-                    bbox = new ReferencedEnvelope(bbox, CRS.decode(srs));
-                } catch (Exception e) {
-                    throw new RuntimeException("Can't decode SRS for layer '" + layerName + "': " + srs);
-                }
-            }
-            try {
-                verifyAccessLayer(layerName, bbox);
+                verifyAccessLayer(layerName, parseRequestBbox(request, layerName));
             } catch (ServiceException | SecurityException e) {
                 return null;
             }
@@ -805,6 +808,38 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
         return tileResp;
     }
+
+    /**
+     * Parses the request-wide {@code BBOX}/{@code SRS} KVP into a {@link ReferencedEnvelope} for
+     * {@link #verifyAccessLayer}.
+     */
+    ReferencedEnvelope parseRequestBbox(GetMapRequest request, String layerNameForErrors) {
+        String bboxstr = request.getRawKvp().get("BBOX");
+        String srs = request.getRawKvp().get("SRS");
+        ReferencedEnvelope bbox;
+        try {
+            bbox = (ReferencedEnvelope) new BBoxKvpParser().parse(bboxstr);
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid bbox for layer '" + layerNameForErrors + "': " + bboxstr);
+        }
+        if (srs != null) {
+            try {
+                bbox = new ReferencedEnvelope(bbox, CRS.decode(srs));
+            } catch (Exception e) {
+                throw new RuntimeException("Can't decode SRS for layer '" + layerNameForErrors + "': " + srs);
+            }
+        }
+        return bbox;
+    }
+
+    /**
+     * Internal signaling channel from {@link CoalescedRequestSplitter#dispatchCoalesced} to
+     * {@link org.geoserver.gwc.wms.CachingWebMapService}: the assembled {@code ConveyorTile}'s
+     * {@code geowebcache-cache-result} value, computed per member ({@code HIT}, {@code MISS}, or {@code PARTIAL n/N}),
+     * since {@link Conveyor.CacheResult} has no such value. Piggybacks on the unused filtering-parameters map of a tile
+     * that is never itself persisted or looked up.
+     */
+    public static final String COALESCED_CACHE_RESULT_KEY = "gwc.coalesced.cacheResult";
 
     private String getPrefixedName(String layerName) {
         PublishedInfo info = catalog.getLayerByName(layerName);

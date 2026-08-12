@@ -67,6 +67,7 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.security.SecurityDefaults;
 import org.geoserver.security.auth.AuthenticationCache;
 import org.geoserver.security.auth.GeoServerRootAuthenticationProvider;
 import org.geoserver.security.auth.GuavaAuthenticationCacheImpl;
@@ -1283,10 +1284,14 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * The reversible encoder a user group service gets when nothing else is configured.
+     * The reversible encoder a user group service gets when nothing else is configured. Which one that is depends on
+     * what the crypto provider offers.
      */
     public GeoServerPasswordEncoder loadDefaultUserGroupPasswordEncoder() {
-        return loadPasswordEncoder(GeoServerPBEPasswordEncoder.class, null, false);
+        String name = SecurityDefaults.get(SecurityDefaults.Setting.USER_GROUP_PASSWORD_ENCODER, null);
+        return name != null
+                ? loadPasswordEncoder(name)
+                : loadPasswordEncoder(GeoServerPBEPasswordEncoder.class, null, false);
     }
 
     /**
@@ -2360,7 +2365,9 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         if (mpProviderConfig == null) {
             mpProviderConfig = new URLMasterPasswordProviderConfig();
             mpProviderConfig.setName("default");
-            mpProviderConfig.setClassName(URLMasterPasswordProvider.class.getCanonicalName());
+            mpProviderConfig.setClassName(SecurityDefaults.get(
+                    SecurityDefaults.Setting.MASTER_PASSWORD_PROVIDER,
+                    URLMasterPasswordProvider.class.getCanonicalName()));
             mpProviderConfig.setReadOnly(false);
 
             ((URLMasterPasswordProviderConfig) mpProviderConfig).setURL(new URL("file:passwd"));
@@ -2582,8 +2589,10 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         config.setEncryptingUrlParams(false);
 
         // start with weak encryption
-        config.setConfigPasswordEncrypterName(loadPasswordEncoder(GeoServerPBEPasswordEncoder.class, true, false)
-                .getName());
+        config.setConfigPasswordEncrypterName(SecurityDefaults.get(
+                SecurityDefaults.Setting.CONFIG_PASSWORD_ENCODER,
+                loadPasswordEncoder(GeoServerPBEPasswordEncoder.class, true, false)
+                        .getName()));
 
         // setup the default remember me service
         RememberMeServicesConfig rememberMeConfig = new RememberMeServicesConfig();

@@ -53,6 +53,13 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
 
     public static final String KEYSTORETYPE = "JCEKS";
 
+    /**
+     * Keys are stored under this label. The entries hold random passwords of any length, not cipher keys, and BCFKS
+     * would reject a length that does not fit the label: {@code AES} only accepts 16, 24 or 32 bytes. This label
+     * accepts any length in both JCEKS and BCFKS. The label is never read back, only the bytes.
+     */
+    static final String KEY_ALGORITHM = "HmacSHA256";
+
     GeoServerSecurityManager securityManager;
 
     public KeyStoreProviderImpl() {}
@@ -269,7 +276,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
     @Override
     public void setSecretKey(String alias, char[] key) throws IOException {
         assertActivatedKeyStore();
-        SecretKey mySecretKey = new SecretKeySpec(toBytes(key), "PBE");
+        SecretKey mySecretKey = new SecretKeySpec(toBytes(key), KEY_ALGORITHM);
         KeyStore.SecretKeyEntry skEntry = new KeyStore.SecretKeyEntry(mySecretKey);
         char[] passwd = securityManager.getMasterPassword();
         try {

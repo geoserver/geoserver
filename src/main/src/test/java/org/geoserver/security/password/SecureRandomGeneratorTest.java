@@ -6,10 +6,11 @@ package org.geoserver.security.password;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.Assume.assumeNoException;
 
 import java.nio.charset.StandardCharsets;
-import java.security.Security;
+import java.security.GeneralSecurityException;
+import javax.crypto.Cipher;
 import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
 import org.jasypt.salt.RandomSaltGenerator;
 import org.jasypt.salt.SaltGenerator;
@@ -54,10 +55,16 @@ public class SecureRandomGeneratorTest {
     }
 
     /**
-     * The old format uses algorithms no FIPS provider has, so this comparison only means something in a regular build.
-     * That is also the only place where the upgrade path has to work.
+     * These tests run the old code, which needs two things no FIPS provider has: SHA1PRNG for the salt generator, and a
+     * password based {@link Cipher} for the encryption. They only mean something in a regular build, which is also the
+     * only place where the old format has to be readable.
      */
     private static void assumeAlgorithmAvailable() {
-        assumeTrue(Security.getProviders("SecretKeyFactory." + ALGORITHM) != null);
+        JasyptDefaults.assumeUsable();
+        try {
+            Cipher.getInstance(ALGORITHM);
+        } catch (GeneralSecurityException e) {
+            assumeNoException("this crypto provider does not offer a " + ALGORITHM + " cipher", e);
+        }
     }
 }

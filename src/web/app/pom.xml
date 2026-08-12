@@ -247,8 +247,7 @@
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcpkix-lts8on</artifactId>
-      <version>2.73.10</version>
+      <artifactId>${bc.pkix.artifactId}</artifactId>
     </dependency>
     <dependency>
       <groupId>jakarta.servlet</groupId>

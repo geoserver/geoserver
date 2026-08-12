@@ -76,6 +76,7 @@ import org.geoserver.security.password.GeoServerDigestPasswordEncoder;
 import org.geoserver.security.password.GeoServerEmptyPasswordEncoder;
 import org.geoserver.security.password.GeoServerPBEPasswordEncoder;
 import org.geoserver.security.password.GeoServerPlainTextPasswordEncoder;
+import org.geoserver.security.password.JasyptDefaults;
 import org.geoserver.security.password.PasswordValidator;
 import org.geoserver.security.validation.PasswordValidatorImpl;
 import org.geoserver.security.xml.XMLRoleService;
@@ -427,7 +428,7 @@ public class MockCreator implements Callback {
         GeoServerPBEPasswordEncoder strongPbePwe = new GeoServerPBEPasswordEncoder();
         strongPbePwe.setBeanName("strongPbePasswordEncoder");
         strongPbePwe.setPrefix("crypt2");
-        strongPbePwe.setProviderName("BC");
+        strongPbePwe.setProviderName(JasyptDefaults.BOUNCY_CASTLE);
         strongPbePwe.setAvailableWithoutStrongCryptogaphy(false);
         strongPbePwe.initialize(secMgr);
         return strongPbePwe;

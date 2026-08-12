@@ -57,7 +57,7 @@
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-lts8on</artifactId>
+      <artifactId>${bc.prov.artifactId}</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -128,6 +128,33 @@
           <scope>test</scope>
         </dependency>
       </dependencies>
+    </profile>
+    <profile>
+      <!-- same as gs-sec-ldap: ApacheDS, the LDAP server these tests embed, asks for the regular
+           BouncyCastle provider by class name, and the FIPS jars have no such class. Without
+           this the enforcer ban stops the module, and with it gs-web-app, so no war can be built at
+           all under this profile. -->
+      <id>fips</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <!-- Only this rule has to go: ApacheDS drags the regular BouncyCastle in. The
+                     Maven version and the encoding rules still apply to this module. -->
+                <id>ban-regular-bouncycastle</id>
+                <configuration>
+                  <skip>true</skip>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <properties>
+        <skipTests>true</skipTests>
+      </properties>
     </profile>
   </profiles>
 

@@ -8,6 +8,7 @@ package org.geoserver.security;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -60,5 +61,22 @@ public class KeyStoreProviderTest extends GeoServerSystemTestSupport {
 
         assertTrue(ksp.isKeyStorePassword(getSecurityManager().getMasterPassword()));
         assertFalse(ksp.isKeyStorePassword("blabla".toCharArray()));
+    }
+
+    /** The stored keys are random passwords, so the keystore must accept a key of any length. */
+    @Test
+    public void testRandomLengthKeyRoundTrips() throws Exception {
+        KeyStoreProvider ksp = getSecurityManager().getKeyStoreProvider();
+        char[] key = getSecurityManager().getRandomPassworddProvider().getRandomPasswordWithDefaultLength();
+
+        ksp.setSecretKey("randomLengthKey", key);
+        ksp.storeKeyStore();
+        ksp.reloadKeyStore();
+
+        assertEquals(
+                KeyStoreProviderImpl.KEY_ALGORITHM,
+                ksp.getSecretKey("randomLengthKey").getAlgorithm());
+        assertArrayEquals(
+                key, SecurityUtils.toChars(ksp.getSecretKey("randomLengthKey").getEncoded()));
     }
 }

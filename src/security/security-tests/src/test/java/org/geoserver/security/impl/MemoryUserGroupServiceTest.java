@@ -39,7 +39,7 @@ public class MemoryUserGroupServiceTest extends AbstractUserGroupServiceTest {
         MemoryUserGroupServiceConfigImpl config = new MemoryUserGroupServiceConfigImpl();
         config.setClassName(MemoryUserGroupService.class.getName());
         config.setName(name);
-        config.setPasswordEncoderName(getPBEPasswordEncoder().getName());
+        config.setPasswordEncoderName(getReversiblePasswordEncoder().getName());
         config.setPasswordPolicyName(PasswordValidator.DEFAULT_NAME);
         return config;
     }

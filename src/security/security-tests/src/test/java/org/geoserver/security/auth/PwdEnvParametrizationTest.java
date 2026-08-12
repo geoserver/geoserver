@@ -50,7 +50,7 @@ public class PwdEnvParametrizationTest extends AbstractAuthenticationProviderTes
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         createUserGroupService(PLAIN_UG_SRV, getPlainTextPasswordEncoder().getName());
-        createUserGroupService(PBE_UG_SRV, getPBEPasswordEncoder().getName());
+        createUserGroupService(PBE_UG_SRV, getReversiblePasswordEncoder().getName());
         createUserGroupService(STRONG_PBE_UG_SRV, getStrongPBEPasswordEncoder().getName());
         UsernamePasswordAuthenticationProviderConfig plainTxt = new UsernamePasswordAuthenticationProviderConfig();
         plainTxt.setUserGroupServiceName(PLAIN_UG_SRV);

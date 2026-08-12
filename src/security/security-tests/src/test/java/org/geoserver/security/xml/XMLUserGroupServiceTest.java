@@ -50,7 +50,7 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
     protected XMLUserGroupServiceConfig createConfigObject(String name) {
         XMLUserGroupServiceConfig config = new XMLUserGroupServiceConfig();
         config.setName(name);
-        config.setPasswordEncoderName(getPBEPasswordEncoder().getName());
+        config.setPasswordEncoderName(getReversiblePasswordEncoder().getName());
         config.setPasswordPolicyName(PasswordValidator.DEFAULT_NAME);
         config.setClassName(XMLUserGroupService.class.getName());
         config.setCheckInterval(1000);

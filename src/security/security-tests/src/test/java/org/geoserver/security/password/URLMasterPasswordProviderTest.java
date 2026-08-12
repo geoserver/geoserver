@@ -23,6 +23,7 @@ public class URLMasterPasswordProviderTest extends GeoServerSecurityTestSupport 
 
     @Test
     public void testEncryption() throws Exception {
+        JasyptDefaults.assumePbeUsable();
         File tmp = File.createTempFile("passwd", "tmp", new File("target"));
         tmp = tmp.getCanonicalFile();
 

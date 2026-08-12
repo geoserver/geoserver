@@ -38,7 +38,10 @@ public class GeoServerCustomAuthTest extends GeoServerSystemTestSupport {
     public void testInactive() throws Exception {
         UsernamePasswordAuthenticationToken upAuth = new UsernamePasswordAuthenticationToken("foo", "bar");
         try {
-            getSecurityManager().authenticationManager().authenticate(upAuth);
+            // no request behind this authentication, so the brute force listener has no address to
+            // check against its whitelist, same as any other internal check
+            BruteForceListener.withThrottlingDisabled(
+                    () -> getSecurityManager().authenticationManager().authenticate(upAuth));
         } catch (BadCredentialsException | ProviderNotFoundException e) {
         }
     }
@@ -56,8 +59,9 @@ public class GeoServerCustomAuthTest extends GeoServerSystemTestSupport {
         mgrConfig.setConfigPasswordEncrypterName(getPlainTextPasswordEncoder().getName());
         secMgr.saveSecurityConfig(mgrConfig);
 
-        Authentication auth = new UsernamePasswordAuthenticationToken("foo", "bar");
-        auth = getSecurityManager().authenticationManager().authenticate(auth);
+        Authentication token = new UsernamePasswordAuthenticationToken("foo", "bar");
+        Authentication auth = BruteForceListener.withThrottlingDisabled(
+                () -> getSecurityManager().authenticationManager().authenticate(token));
         assertTrue(auth.isAuthenticated());
     }
 

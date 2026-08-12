@@ -7,12 +7,19 @@ package org.geoserver.security.web;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import org.apache.wicket.protocol.http.mock.MockServletContext;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.SecurityConfigDiagnostics;
 import org.geoserver.security.SecurityConfigDiagnostics.ComponentType;
 import org.geoserver.security.SecurityConfigDiagnostics.DisabledComponent;
+import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.security.password.MasterPasswordConfig;
 import org.geoserver.security.password.MasterPasswordProviderConfig;
+import org.geoserver.security.password.URLMasterPasswordProvider;
+import org.geoserver.security.password.URLMasterPasswordProviderConfig;
 import org.geoserver.web.GeoServerApplication;
+import org.geotools.util.URLs;
 import org.junit.Test;
 
 public class SecurityHomePageContentProviderTest extends AbstractSecurityWicketTestSupport {
@@ -45,7 +52,32 @@ public class SecurityHomePageContentProviderTest extends AbstractSecurityWicketT
         checkMasterPasswordMessage(true);
     }
 
+    /** Resets the master password to the well-known default, if it isn't already. */
+    private void setMasterPasswordToDefault() throws Exception {
+        GeoServerSecurityManager manager = getSecurityManager();
+        if (manager.checkMasterPassword(GeoServerUser.DEFAULT_ADMIN_PASSWD.toCharArray(), false)) {
+            return;
+        }
+        URLMasterPasswordProviderConfig config = new URLMasterPasswordProviderConfig();
+        config.setName("defaultPasswordForTest");
+        config.setClassName(URLMasterPasswordProvider.class.getCanonicalName());
+        config.setURL(URLs.fileToUrl(new File(manager.get("security").dir(), "mpw-default.properties")));
+        manager.saveMasterPasswordProviderConfig(config);
+
+        MasterPasswordConfig masterPasswordConfig = manager.getMasterPasswordConfig();
+        masterPasswordConfig.setProviderName(config.getName());
+        manager.saveMasterPasswordConfig(
+                masterPasswordConfig,
+                getMasterPassword().toCharArray(),
+                GeoServerUser.DEFAULT_ADMIN_PASSWD.toCharArray(),
+                GeoServerUser.DEFAULT_ADMIN_PASSWD.toCharArray());
+    }
+
     private void checkMasterPasswordMessage(boolean loginEnabled) throws Exception {
+        // The canned test data directory ships with the default master password;
+        // a real GeoServer-generated one gets a random password instead.
+        setMasterPasswordToDefault();
+
         MasterPasswordProviderConfig masterPasswordConfig = getSecurityManager()
                 .loadMasterPassswordProviderConfig(
                         getSecurityManager().getMasterPasswordConfig().getProviderName());

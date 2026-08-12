@@ -45,7 +45,7 @@ public class QueryControllerTest extends ControllerTest {
     }
 
     private static void validateStreamsQueryResult(JSON json, JSONObject jsonObject) {
-        System.out.println(json.toString());
+        LOGGER.fine("Streams query result: " + json.toString());
         //        assertTrue("objectIdFieldName is not present",
         // jsonObject.containsKey("objectIdFieldName"));
         //        assertTrue("globalIdFieldName is not present",
@@ -149,9 +149,9 @@ public class QueryControllerTest extends ControllerTest {
                 JsonSchemaTest.validateJSON(result, "/gsr/1.0/featureSet.json"));
         JSONObject json = JSONObject.fromObject(result);
         assertTrue(
-                "Request with short envelope; returend " + result,
+                "Request with short envelope; returned " + result,
                 json.containsKey("features") && json.getJSONArray("features").size() == 2);
-        System.out.println(result);
+        LOGGER.fine("Streams query result: " + result);
 
         result = getAsString(query("cite", 11, "?f=json&geometryType=esriGeometryPoint&geometry=-0.0001,0.0012"));
         assertTrue(
@@ -347,7 +347,7 @@ public class QueryControllerTest extends ControllerTest {
     public void testSpatialRel() throws Exception {
         String result = getAsString(query(
                 "cite", 11, "?f=json&geometryType=esriGeometryPolyline&geometry={paths:[[[-0.001,0],[0,0.0015]]]}"));
-        System.out.println(result);
+        LOGGER.fine(result);
         assertTrue(
                 "Request with implicit spatialRel; returned " + result,
                 JsonSchemaTest.validateJSON(result, "/gsr/1.0/featureSet.json"));
@@ -377,7 +377,7 @@ public class QueryControllerTest extends ControllerTest {
                 + "/query"
                 + "?f=json&where=objectid=objectid&returnIdsOnly=true";
         JSONObject obj = (JSONObject) getAsJSON(query);
-        System.out.println(obj.toString());
+        LOGGER.fine(obj.toString());
         assertFalse(obj.has("error"));
     }
 }

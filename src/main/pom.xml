@@ -21,6 +21,13 @@
   <dependencies>
 
     <dependency>
+      <!-- surefire has it at run time already; declared so RestrictedJdkProvidersListener compiles -->
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-core</artifactId>
     </dependency>
@@ -241,7 +248,7 @@
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-lts8on</artifactId>
+      <artifactId>${bc.prov.artifactId}</artifactId>
     </dependency>
 
     <dependency>

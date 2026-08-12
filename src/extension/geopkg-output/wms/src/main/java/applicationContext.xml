@@ -4,8 +4,10 @@
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+
 
     <bean id="FileBackedRawResponse" class="org.geoserver.tiles.FileBackedRawMapResponse">
     </bean>

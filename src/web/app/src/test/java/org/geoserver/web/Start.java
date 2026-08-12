@@ -15,7 +15,6 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.SecureRandom;
-import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Date;
@@ -29,7 +28,6 @@ import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.eclipse.jetty.ee10.webapp.WebAppContext;
@@ -185,7 +183,6 @@ public class Start {
         String sslHost = System.getProperty("ssl.hostname");
         ServerConnector https = null;
         if (sslHost != null && !sslHost.isEmpty()) {
-            Security.addProvider(new BouncyCastleProvider());
             SslContextFactory.Server ssl = createSSLContextFactory(sslHost);
 
             HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
@@ -252,10 +249,10 @@ public class Start {
             privateKS.load(null);
         }
 
-        // create a RSA key pair generator using 1024 bits
+        // 2048 bits is the smallest RSA key a FIPS provider in approved-only mode accepts
 
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(1024);
+        keyPairGenerator.initialize(2048);
         KeyPair KPair = keyPairGenerator.generateKeyPair();
 
         // create a X509 certificate

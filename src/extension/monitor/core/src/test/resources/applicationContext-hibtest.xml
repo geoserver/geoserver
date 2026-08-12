@@ -1,5 +1,6 @@
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
   <bean id="geoServerLoader" class="java.lang.Object"/>
   <bean id="dataDirectory" class="org.geoserver.config.GeoServerDataDirectory">
     <constructor-arg>

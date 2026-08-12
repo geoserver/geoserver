@@ -805,6 +805,10 @@ nav:
         - en/user/community/features-templating/querying.md
         - en/user/community/features-templating/rest.md
         - en/user/community/features-templating/schemas.md
+      - FIPS 140-3 support:
+        - en/user/community/fips/index.md
+        - en/user/community/fips/installing.md
+        - en/user/community/fips/running.md
       - WFS FlatGeobuf input and output format:
         - en/user/community/flatgeobuf/index.md
         - en/user/community/flatgeobuf/installing.md

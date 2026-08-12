@@ -59,7 +59,13 @@
     <property name="algorithm" value="PBEWITHSHA256AND256BITAES-CBC-BC" />
     <property name="availableWithoutStrongCryptogaphy" value="false" />
   </bean>  
-  <bean id="digestPasswordEncoder"    
+  <!-- Reversible, and the only one of these usable in a FIPS installation. Not a default:
+       existing data directories keep whatever encoder wrote their passwords. -->
+  <bean id="aesGcmPasswordEncoder"
+    class="org.geoserver.security.password.GeoServerAesGcmPasswordEncoder" scope="prototype">
+    <property name="prefix" value="crypt3" />
+  </bean>
+  <bean id="digestPasswordEncoder"
     class="org.geoserver.security.password.GeoServerDigestPasswordEncoder" scope="prototype">
     <property name="prefix" value="digest1" />    
   </bean>
@@ -133,9 +139,15 @@
 
 
 
-  <bean id="urlMasterPasswordProvider" 
+  <bean id="urlMasterPasswordProvider"
     class="org.geoserver.security.password.URLMasterPasswordProvider$SecurityProvider"/>
-  
+
+  <!-- Stores the password at a url like the provider above, but encrypts it with algorithms every
+       crypto provider offers. Not a default: existing data directories keep the provider they were
+       set up with. -->
+  <bean id="aesGcmMasterPasswordProvider"
+    class="org.geoserver.security.password.AesGcmMasterPasswordProvider$SecurityProvider"/>
+
   <!-- The dao used to deal with layer level security -->
   <bean id="accessRulesDao" class="org.geoserver.security.impl.DataAccessRuleDAO">
   	<constructor-arg ref="dataDirectory"/>

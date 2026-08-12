@@ -412,6 +412,19 @@
     </profile>
 
     <profile>
+      <!-- Same id as the fips profile in the root pom, so a single -Pfips also puts the status page
+           tab in the war. gs-fips-provider needs no entry here: the fips profile of gs-main pulls
+           it in and every module inherits it, which a web module cannot rely on. -->
+      <id>fips</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-fips</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>graticule</id>
       <dependencies>
         <dependency>

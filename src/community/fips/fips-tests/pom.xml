@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>gs-fips-container</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>gs-fips-tests</artifactId>
+  <packaging>jar</packaging>
+
+  <name>GeoServer FIPS support tests</name>
+
+  <!-- A module with tests and no main code, on purpose. gs-fips-provider registers the FIPS
+       provider, so gs-main depends on it under the fips profile (see main/pom.xml). These tests
+       need the gs-main test jar, so they cannot live in gs-fips-provider: that would make
+       gs-main depend on a module that depends on gs-main. Maven refuses such a cycle in any
+       scope, so the tests get a module of their own. -->
+
+  <properties>
+    <!-- The jar is empty, nobody should consume it. -->
+    <maven.deploy.skip>true</maven.deploy.skip>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-fips-provider</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-main</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-main</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

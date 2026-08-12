@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-FipsStatusPanel">
+        <h3><wicket:message key="factsTitle">Cryptography in use</wicket:message></h3>
+        <table class="alternating-rows">
+          <thead>
+            <tr>
+              <th><wicket:message key="fact">Item</wicket:message></th>
+              <th><wicket:message key="factValue">Value</wicket:message></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr wicket:id="facts">
+              <td><span wicket:id="label"/></td>
+              <td><span wicket:id="value"/></td>
+            </tr>
+          </tbody>
+        </table>
+        <h3><wicket:message key="algorithmsTitle">Algorithms GeoServer needs</wicket:message></h3>
+        <table class="alternating-rows">
+          <thead>
+            <tr>
+              <th><wicket:message key="algorithmUse">Used for</wicket:message></th>
+              <th><wicket:message key="algorithmType">Java service</wicket:message></th>
+              <th><wicket:message key="algorithmName">Algorithm</wicket:message></th>
+              <th><wicket:message key="algorithmAvailable">Available</wicket:message></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr wicket:id="algorithms">
+              <td><span wicket:id="use"/></td>
+              <td><span wicket:id="type"/></td>
+              <td><span wicket:id="algorithm"/></td>
+              <td><span wicket:id="available"/></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </wicket:panel>
+  </body>
+</html>

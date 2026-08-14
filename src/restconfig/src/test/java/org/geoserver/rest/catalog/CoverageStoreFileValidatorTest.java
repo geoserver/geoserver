@@ -6,7 +6,7 @@ package org.geoserver.rest.catalog;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -19,7 +19,7 @@ import org.geotools.coverage.grid.io.UnknownFormat;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.image.WorldImageFormat;
 import org.geotools.util.URLs;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 public class CoverageStoreFileValidatorTest {
 

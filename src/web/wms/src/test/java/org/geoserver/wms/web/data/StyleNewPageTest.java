@@ -17,10 +17,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -50,7 +50,6 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     // 8, 2026).
     private String tinyPngHex =
             "89504E470D0A1A0A0000000D49484452000000010000000108000000003A7E01050000000A49444154789C6360000000020001737501F80000000049454E44AE426082";
-    private byte[] tinyPng = HexFormat.of().parseHex(tinyPngHex);
 
     // this is a linux: ELF header (not an image header)
     private byte[] nonImage = {0x7F, 0x45, 0x4C, 0x46}; // <DEL>, E, L, F
@@ -565,6 +564,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
                 dd.getStyles().get("');foo('.png").file().getPath());
 
         // we need a real png or the upload will be rejected
+        byte[] tinyPng = Hex.decodeHex(tinyPngHex);
         FileUtils.writeByteArrayToFile(file, tinyPng);
 
         formTester.setFile("userPanel:upload", file, "image/png");

@@ -105,7 +105,7 @@
     <!-- WicketStuff provides additional components and extensions for the Wicket framework,
     such as select2 integration, which is used in GeoServer's admin interface.
     This version should match the Wicket version, but may differ in patch versions. -->
-    <wicketstuff.version>10.9.2</wicketstuff.version>
+    <wicketstuff.version>10.10.0</wicketstuff.version>
     <!-- ================================ -->
     <!-- Dependency version management    -->
     <!-- ================================ -->

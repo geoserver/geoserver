@@ -174,7 +174,8 @@
     <profile>
       <id>pending</id>
       <modules>
-        <module>oseo</module>
+        <!-- Depends on features-templating-core which is not in pending, blocks releases -->
+        <!--module>oseo</module-->
       </modules>
     </profile>
     <profile>

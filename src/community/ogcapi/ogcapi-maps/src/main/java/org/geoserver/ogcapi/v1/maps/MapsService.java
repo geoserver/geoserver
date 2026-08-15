@@ -58,7 +58,6 @@ import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.QueryablesBuilder;
 import org.geoserver.ogcapi.StyleDocument;
 import org.geoserver.ogcapi.SwaggerJSONSchemaMessageConverter;
-import org.geoserver.ogcapi.TimeExtentCalculator;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.kvp.ElevationParser;
 import org.geoserver.ows.kvp.FormatOptionsKvpParser;
@@ -418,7 +417,8 @@ public class MapsService {
      * The {@code Content-Datetime} value: the time as the client asked for it (the parser widens an instant to a range
      * of its own precision, and the spec also accepts the shortened {@code yyyy} and {@code yyyy-mm} forms). An open
      * bound is not a datetime, so those requests, and the ones with no time at all, report the instants actually
-     * rendered. Null when the map has no temporal aspect.
+     * rendered, an open side showing as the far away instant that stands for it. Null when the map has no temporal
+     * aspect.
      */
     private String contentDatetime(GetMapRequest request) {
         String requested = request.getRawKvp().get("time");
@@ -1391,20 +1391,17 @@ public class MapsService {
 
     /**
      * Applies the requested time to the map. Like WMS, a single time value drives every requested layer having a time
-     * dimension, the others being drawn whole, so the map needs one such layer and not all of them. An open ended
-     * interval is closed with the extent of the first of those layers, the only one whose extent can be read without
-     * scanning the others.
+     * dimension, the others being drawn whole, so the map needs one such layer and not all of them.
      */
-    private void setupTimeSubset(String datetime, GetMapRequest request) throws ParseException, IOException {
-        ResourceInfo timed = timeDimensionResource(request);
-        if (timed == null) {
+    private void setupTimeSubset(String datetime, GetMapRequest request) throws ParseException {
+        if (timeDimensionResource(request) == null) {
             throw new APIException(
                     INVALID_PARAMETER_VALUE,
                     "The time dimension is not enabled on any of the requested collections",
                     HttpStatus.BAD_REQUEST);
         }
         @SuppressWarnings("unchecked")
-        Collection<Object> times = timeParser.parse(closeOpenBounds(datetime, timed));
+        Collection<Object> times = timeParser.parse(closeOpenBounds(datetime));
         if (times.size() != 1) {
             throw new APIException(
                     INVALID_PARAMETER_VALUE,
@@ -1415,29 +1412,23 @@ public class MapsService {
     }
 
     /**
-     * Replaces the open bounds of a datetime interval, written {@code ..} or left empty, with the ends of the layer own
-     * time extent, which the time parser needs as explicit instants. Returns the value unchanged when both bounds are
-     * given.
+     * Rewrites an open bound of a {@code datetime} interval, written {@code ..} or left empty, as an instant far enough
+     * away to leave that side unconstrained. The WMS time syntax has no open interval, so the parser needs both ends.
+     * Returns the value unchanged when it is a single instant, or an interval with both bounds given.
      */
-    private static String closeOpenBounds(String datetime, ResourceInfo resource) throws IOException {
+    private static String closeOpenBounds(String datetime) {
         int separator = datetime.indexOf('/');
         if (separator < 0) return datetime;
         String low = datetime.substring(0, separator);
         String high = datetime.substring(separator + 1);
-        boolean openLow = low.isEmpty() || "..".equals(low);
-        boolean openHigh = high.isEmpty() || "..".equals(high);
-        if (!openLow && !openHigh) return datetime;
+        if (!isOpen(low) && !isOpen(high)) return datetime;
+        // year one and year 9999, not the extremes of Date: a range is turned into a filter, and databases reject a
+        // timestamp outside the years they can store
+        return (isOpen(low) ? "0001-01-01T00:00:00Z" : low) + "/" + (isOpen(high) ? "9999-12-31T23:59:59Z" : high);
+    }
 
-        DateRange extent = TimeExtentCalculator.getTimeExtent(resource);
-        if (extent == null) {
-            throw new APIException(
-                    INVALID_PARAMETER_VALUE,
-                    "Cannot resolve an open ended time interval, the layer has no known time extent",
-                    HttpStatus.BAD_REQUEST);
-        }
-        if (openLow) low = ISO_INSTANT.format(extent.getMinValue().toInstant());
-        if (openHigh) high = ISO_INSTANT.format(extent.getMaxValue().toInstant());
-        return low + "/" + high;
+    private static boolean isOpen(String bound) {
+        return bound.isEmpty() || "..".equals(bound);
     }
 
     /**

@@ -56,21 +56,21 @@ public class MapsTest extends MapsTestSupport {
 
     @Test
     public void testDefaultMap() throws Exception {
-        BufferedImage image = getAsImage("ogc/maps/v1/collections/Lakes/map?f=image/png", "image/png");
+        BufferedImage image = getAsPNG("ogc/maps/v1/collections/Lakes/map?f=image/png");
         File expectedImage = new File("src/test/resources/expected/mapsDefault.png");
         ImageAssert.assertEquals(expectedImage, image, 0);
     }
 
     @Test
     public void testDefaultMapWidth() throws Exception {
-        BufferedImage image = getAsImage("ogc/maps/v1/collections/Lakes/map?f=image/png&width=100", "image/png");
+        BufferedImage image = getAsPNG("ogc/maps/v1/collections/Lakes/map?f=image/png&width=100");
         File expectedImage = new File("src/test/resources/expected/mapsDefaultW100.png");
         ImageAssert.assertEquals(expectedImage, image, 0);
     }
 
     @Test
     public void testDefaultMapHeight() throws Exception {
-        BufferedImage image = getAsImage("ogc/maps/v1/collections/Lakes/map?f=image/png&height=50", "image/png");
+        BufferedImage image = getAsPNG("ogc/maps/v1/collections/Lakes/map?f=image/png&height=50");
         File expectedImage = new File("src/test/resources/expected/mapsDefaultH50.png");
         ImageAssert.assertEquals(expectedImage, image, 0);
     }
@@ -78,14 +78,14 @@ public class MapsTest extends MapsTestSupport {
     @Test
     public void testDefaultMapLayerGroup() throws Exception {
         // default map on a layer group goes through the null-styleInfo branch: it must still render
-        BufferedImage image = getAsImage("ogc/maps/v1/collections/" + NATURE_GROUP + "/map?f=image/png", "image/png");
+        BufferedImage image = getAsPNG("ogc/maps/v1/collections/" + NATURE_GROUP + "/map?f=image/png");
         File expectedImage = new File("src/test/resources/expected/mapsGroup.png");
         ImageAssert.assertEquals(expectedImage, image, 0);
     }
 
     @Test
     public void testDefaultStyledMap() throws Exception {
-        BufferedImage image = getAsImage("ogc/maps/v1/collections/cite:Lakes/styles/red/map?f=image/png", "image/png");
+        BufferedImage image = getAsPNG("ogc/maps/v1/collections/cite:Lakes/styles/red/map?f=image/png");
         File expectedImage = new File("src/test/resources/expected/mapsRed.png");
         ImageAssert.assertEquals(expectedImage, image, 0);
     }
@@ -197,16 +197,13 @@ public class MapsTest extends MapsTestSupport {
     @Test
     public void testBBox3D() throws Exception {
         String base = "ogc/maps/v1/collections/Lakes/map?f=image/png&width=50&height=50&bbox=";
-        BufferedImage flat = getAsImage(base + "-1,-1,1,1", "image/png");
-        assertEquals(
-                flat.getRGB(25, 25),
-                getAsImage(base + "-1,-1,0,1,1,100", "image/png").getRGB(25, 25));
+        BufferedImage flat = getAsPNG(base + "-1,-1,1,1");
+        assertEquals(flat.getRGB(25, 25), getAsPNG(base + "-1,-1,0,1,1,100").getRGB(25, 25));
 
         // a 3-dimensional bbox-crs is accepted too, and renders its horizontal part
         assertEquals(
                 flat.getRGB(25, 25),
-                getAsImage(base + "-1,-1,0,1,1,100&bbox-crs=EPSG:4979", "image/png")
-                        .getRGB(25, 25));
+                getAsPNG(base + "-1,-1,0,1,1,100&bbox-crs=EPSG:4979").getRGB(25, 25));
     }
 
     @Test
@@ -232,17 +229,17 @@ public class MapsTest extends MapsTestSupport {
         // a subset whose low longitude is greater than the high one crosses the antimeridian too, just like the
         // bbox form: the extent is 170..190, not the whole world minus that strip
         String base = "ogc/maps/v1/collections/" + getLayerId(MockData.WORLD) + "/map?f=image/png&width=50&height=50&";
-        BufferedImage wrapping = getAsImage(base + "subset=Lon(170:-170),Lat(-5:5)", "image/png");
+        BufferedImage wrapping = getAsPNG(base + "subset=Lon(170:-170),Lat(-5:5)");
         // pinned against the same area written without the inversion, which does not take the wrapping branch
-        ImageAssert.assertEquals(getAsImage(base + "subset=Lon(170:190),Lat(-5:5)", "image/png"), wrapping, 0);
-        ImageAssert.assertEquals(getAsImage(base + "bbox=170,-5,-170,5", "image/png"), wrapping, 0);
+        ImageAssert.assertEquals(getAsPNG(base + "subset=Lon(170:190),Lat(-5:5)"), wrapping, 0);
+        ImageAssert.assertEquals(getAsPNG(base + "bbox=170,-5,-170,5"), wrapping, 0);
     }
 
     @Test
     public void testWideCartesianBboxTolerated() throws Exception {
         // silly clients send world-spanning cartesian boxes; these are a single envelope and must not error
-        BufferedImage image = getAsImage(
-                "ogc/maps/v1/collections/Lakes/map?f=image/png&bbox=-520,-80,520,80&width=50&height=50", "image/png");
+        BufferedImage image =
+                getAsPNG("ogc/maps/v1/collections/Lakes/map?f=image/png&bbox=-520,-80,520,80&width=50&height=50");
         assertEquals(50, image.getWidth());
         assertEquals(50, image.getHeight());
     }
@@ -265,11 +262,9 @@ public class MapsTest extends MapsTestSupport {
 
         // one degree per pixel either way, so the origin sits 185 pixels from the left and 95 from the top, where
         // the plain world map has it in its own middle
-        BufferedImage wide = getAsImage(world + "&bbox=-185,-95,185,95", "image/png");
-        BufferedImage whole = getAsImage(
-                "ogc/maps/v1/collections/" + getLayerId(MockData.WORLD)
-                        + "/map?f=image/png&width=360&height=180&bbox=-180,-90,180,90",
-                "image/png");
+        BufferedImage wide = getAsPNG(world + "&bbox=-185,-95,185,95");
+        BufferedImage whole = getAsPNG("ogc/maps/v1/collections/" + getLayerId(MockData.WORLD)
+                + "/map?f=image/png&width=360&height=180&bbox=-180,-90,180,90");
         assertEquals(whole.getRGB(180, 90), wide.getRGB(185, 95));
         assertEquals(whole.getRGB(0, 0), wide.getRGB(5, 5));
     }
@@ -279,9 +274,8 @@ public class MapsTest extends MapsTestSupport {
     public void testProjectedBbox() throws Exception {
         String map = "ogc/maps/v1/collections/Lakes/map?f=image/png&width=50&height=50&crs=CRS:84";
         // roughly 0.001 degrees around the origin, in web mercator meters
-        BufferedImage projected =
-                getAsImage(map + "&bbox=-111.32,-111.32,111.32,111.32&bbox-crs=EPSG:3857", "image/png");
-        BufferedImage geographic = getAsImage(map + "&bbox=-0.001,-0.001,0.001,0.001", "image/png");
+        BufferedImage projected = getAsPNG(map + "&bbox=-111.32,-111.32,111.32,111.32&bbox-crs=EPSG:3857");
+        BufferedImage geographic = getAsPNG(map + "&bbox=-0.001,-0.001,0.001,0.001");
         ImageAssert.assertEquals(geographic, projected, 100);
     }
 
@@ -380,9 +374,10 @@ public class MapsTest extends MapsTestSupport {
                         .getHeader("Content-Datetime"));
         // the shortened forms the spec allows are reported as given too
         assertEquals("2012-02", getAsServletResponse(base + "&datetime=2012-02").getHeader("Content-Datetime"));
-        // an open bound is not a datetime, so the end of the layer extent it resolved to is reported instead
+        // an open bound is not a datetime, so the instants actually rendered are reported instead, the open side being
+        // the far away instant that leaves it unconstrained
         assertEquals(
-                "2012-02-11T00:00:00Z/2012-02-14T00:00:00.999Z",
+                "2012-02-11T00:00:00Z/9999-12-31T23:59:59.999Z",
                 getAsServletResponse(base + "&datetime=2012-02-11T00:00:00Z/..").getHeader("Content-Datetime"));
         // no datetime: the dimension default the renderer used, here the latest time of the layer
         assertEquals("2012-02-12T00:00:00Z", getAsServletResponse(base).getHeader("Content-Datetime"));
@@ -435,7 +430,7 @@ public class MapsTest extends MapsTestSupport {
     private int northEastPixel(String timeQuery) throws Exception {
         String path = "ogc/maps/v1/collections/sf:TimeWithStartEnd/map?f=image/png&width=40&height=40"
                 + "&bbox=-180,-90,180,90&transparent=true&" + timeQuery.replace("\"", "%22");
-        return getAsImage(path, "image/png").getRGB(30, 10);
+        return getAsPNG(path).getRGB(30, 10);
     }
 
     @Test

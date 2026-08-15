@@ -4,10 +4,18 @@
  */
 package org.geoserver.ogcapi.v1.maps;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.TimeZone;
 import java.util.function.BiConsumer;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -23,6 +31,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.OGCApiTestSupport;
 import org.geoserver.wms.WMSInfo;
 import org.junit.BeforeClass;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class MapsTestSupport extends OGCApiTestSupport {
     protected static final QName TIMESERIES = new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
@@ -138,5 +147,34 @@ public class MapsTestSupport extends OGCApiTestSupport {
         di.setPresentation(DimensionPresentation.LIST);
         info.getMetadata().put(dimension, di);
         getCatalog().save(info);
+    }
+
+    /** Reads a map or legend response as PNG, checking the media type and the encoded bytes. */
+    protected BufferedImage getAsPNG(String path) throws Exception {
+        return readImage(getAsServletResponse(path), "image/png", "png");
+    }
+
+    /**
+     * Decodes an image response, checking both the declared media type and the format the bytes are actually in.
+     *
+     * @param format the ImageIO format name, matched ignoring case
+     */
+    protected BufferedImage readImage(MockHttpServletResponse response, String mediaType, String format)
+            throws Exception {
+        assertEquals(200, response.getStatus());
+        assertEquals(mediaType, getBaseMimeType(response.getContentType()));
+        try (ImageInputStream input =
+                ImageIO.createImageInputStream(new ByteArrayInputStream(response.getContentAsByteArray()))) {
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(input);
+            assertTrue("Response bytes are not a readable image", readers.hasNext());
+            ImageReader reader = readers.next();
+            try {
+                assertEquals(format.toLowerCase(), reader.getFormatName().toLowerCase());
+                reader.setInput(input);
+                return reader.read(0);
+            } finally {
+                reader.dispose();
+            }
+        }
     }
 }

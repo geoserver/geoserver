@@ -4,6 +4,9 @@
  */
 package org.geoserver.wms.vector;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -124,8 +127,28 @@ public class VectorTileMetatilingTest extends GeoServerSystemTestSupport {
         int z = 9, x = 510, y = 254;
         VectorTileDecoder decoder = new VectorTileDecoder();
 
+        // Issue the first request — this triggers the metatile render which seeds sibling tiles.
+        MockHttpServletResponse firstResp = getTile(z, x, y);
+        assertEquals(200, firstResp.getStatus());
+        byte[] firstData = firstResp.getContentAsByteArray();
+        assertCacheResult(firstResp, cacheResults[0][0]);
+        assertTrue(firstData.length > 0);
+        assertFeature(decoder, firstData, 0, 0);
+
+        // When metatiling is enabled, sibling tiles are stored asynchronously after the first
+        // request completes. Wait for the cache to be populated before asserting HIT on them.
+        if (cacheResults[0][1] == CacheResult.HIT) {
+            await().atMost(5, SECONDS).pollInterval(100, MILLISECONDS).untilAsserted(() -> {
+                MockHttpServletResponse probe = getTile(z, x + 1, y);
+                assertEquals(200, probe.getStatus());
+                assertCacheResult(probe, CacheResult.HIT);
+            });
+        }
+
+        // Now assert the remaining tiles
         for (int j = 0; j < 2; j++) {
             for (int i = 0; i < 2; i++) {
+                if (j == 0 && i == 0) continue; // already asserted above
                 MockHttpServletResponse resp = getTile(z, x + i, y + j);
                 assertEquals(200, resp.getStatus());
                 byte[] data = resp.getContentAsByteArray();

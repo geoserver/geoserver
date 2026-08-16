@@ -136,8 +136,7 @@
         <module>oseo</module>
         <module>s3-geotiff</module>
         <module>netcdf-ghrsst</module>
-        <!-- Taskmanager removed as it did go well through the GeoServer upgrade, the plugin is not starting up -->
-        <!--module>taskmanager</module-->
+        <module>taskmanager</module>
         <module>web-ogr</module>
         <module>ogcapi</module>
         <module>importer-jdbc</module>

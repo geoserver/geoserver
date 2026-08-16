@@ -436,6 +436,7 @@ public class AssemblyTest {
                     if (!process.waitFor(SHUTDOWN_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
                         process.destroyForcibly();
                     }
+                    tester.cleanupTestDirectory(testWorkDir);
                 }
             } finally {
                 FileUtils.deleteDirectory(testWorkDir.toFile());

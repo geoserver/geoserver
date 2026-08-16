@@ -23,13 +23,19 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.geofence.core.services.dto.AccessInfo;
+import org.geofence.core.services.dto.AccessTypeDTO;
+import org.geofence.core.services.dto.CatalogModeDTO;
+import org.geofence.core.services.dto.GrantTypeDTO;
+import org.geofence.core.services.dto.LayerAttributeDTO;
+import org.geofence.core.services.dto.PermsResult;
+import org.geofence.core.services.dto.RuleFilter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -40,15 +46,11 @@ import org.geoserver.geofence.config.GeoFenceConfiguration;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.containers.ContainerAccessResolver;
 import org.geoserver.geofence.containers.ContainerLimitResolver;
-import org.geoserver.geofence.core.model.LayerAttribute;
-import org.geoserver.geofence.core.model.enums.AccessType;
-import org.geoserver.geofence.core.model.enums.GrantType;
-import org.geoserver.geofence.services.RuleReaderService;
-import org.geoserver.geofence.services.dto.AccessInfo;
-import org.geoserver.geofence.services.dto.CatalogModeDTO;
-import org.geoserver.geofence.services.dto.RuleFilter;
+import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geoserver.geofence.util.AccessInfoUtils;
 import org.geoserver.geofence.util.GeomHelper;
+import org.geoserver.geofence.util.PermissionCatalogFilterHelper;
+import org.geoserver.geofence.util.RuleFilterBuilder;
 import org.geoserver.geofence.wpscommon.WPSHelper;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
@@ -90,10 +92,13 @@ import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -103,6 +108,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  * @author Andrea Aime - GeoSolutions
  * @author Emanuele Tajariol- GeoSolutions
  */
+@Component("geofenceRuleAccessManager")
 public class GeofenceAccessManager implements ResourceAccessManager, DispatcherCallback, ExtensionPriority {
 
     private static final Logger LOGGER = Logging.getLogger(GeofenceAccessManager.class);
@@ -119,7 +125,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
 
     static final CatalogMode DEFAULT_CATALOG_MODE = CatalogMode.HIDE;
 
-    RuleReaderService rulesService;
+    RuleReaderServiceFactory rulesServiceFactory;
 
     Catalog catalog;
 
@@ -130,14 +136,15 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
 
     private WPSHelper wpsHelper;
 
+    @Autowired
     public GeofenceAccessManager(
-            RuleReaderService rulesService,
-            Catalog catalog,
+            @Qualifier("ruleReaderFrontendFactory") RuleReaderServiceFactory rulesServiceFactory,
+            @Qualifier("rawCatalog") Catalog catalog,
             GeoFenceConfigurationManager configurationManager,
-            ContainerAccessResolver containerAccessResolver,
+            @Qualifier("cachedContainerAccessResolver") ContainerAccessResolver containerAccessResolver,
             WPSHelper wpsHelper) {
 
-        this.rulesService = rulesService;
+        this.rulesServiceFactory = rulesServiceFactory;
         this.catalog = new LocalWorkspaceCatalog(catalog);
         this.configurationManager = configurationManager;
         this.groupsCache = new LayerGroupContainmentCache(catalog);
@@ -214,7 +221,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
             LOGGER.log(Level.FINE, "AdminAuth filter: {0}", ruleFilter);
         }
 
-        AccessInfo auth = rulesService.getAdminAuthorization(ruleFilter);
+        AccessInfo auth = rulesServiceFactory.getService().getAdminAuthorization(ruleFilter);
 
         LOGGER.log(Level.FINE, "Admin auth for User:{0} Workspace:{1}: {2}", new Object[] {
             user.getName(), workspaceName, auth.getAdminRights()
@@ -387,7 +394,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
         String ipAddress = retrieveCallerIpAddress();
         String date = DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDate.now());
         RuleFilter ruleFilter = buildRuleFilter(workspace, layer, user, ipAddress, date);
-        AccessInfo accessInfo = rulesService.getAccessInfo(ruleFilter);
+        AccessInfo accessInfo = rulesServiceFactory.getService().getAccessInfo(ruleFilter);
 
         if (accessInfo == null) {
             accessInfo = AccessInfo.DENY_ALL;
@@ -405,7 +412,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
             if (summaries != null && !summaries.isEmpty()) {
                 boolean allOpaque = allOpaque(summaries);
                 // all opaque we deny and don't perform any resolution of group limits.
-                if (allOpaque) accessInfo.setGrant(GrantType.DENY);
+                if (allOpaque) accessInfo.setGrant(GrantTypeDTO.DENY);
                 boolean anySingle =
                         summaries.stream().anyMatch(gs -> gs.getMode().equals(LayerGroupInfo.Mode.SINGLE));
                 // if a single group is present we don't apply any limit from containers.
@@ -575,8 +582,8 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
     AccessLimits buildResourceAccessLimits(
             ResourceInfo info, AccessInfo accessInfo, ContainerLimitResolver.ProcessingResult resultLimits) {
 
-        GrantType actualGrant = accessInfo.getGrant();
-        boolean includeFilter = actualGrant == GrantType.ALLOW || actualGrant == GrantType.LIMIT;
+        GrantTypeDTO actualGrant = accessInfo.getGrant();
+        boolean includeFilter = actualGrant == GrantTypeDTO.ALLOW || actualGrant == GrantTypeDTO.LIMIT;
         Filter readFilter = includeFilter ? Filter.INCLUDE : Filter.EXCLUDE;
         Filter writeFilter = includeFilter ? Filter.INCLUDE : Filter.EXCLUDE;
         try {
@@ -659,10 +666,10 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
      * @return the AccessLimits of the LayerGroup
      */
     AccessLimits buildLayerGroupAccessLimits(AccessInfo accessInfo) {
-        GrantType grant = accessInfo.getGrant();
+        GrantTypeDTO grant = accessInfo.getGrant();
         // the SecureCatalog will grant access  to the layerGroup
         // if AccessLimits are null
-        if (grant.equals(GrantType.ALLOW) || grant.equals(GrantType.LIMIT)) return null;
+        if (grant.equals(GrantTypeDTO.ALLOW) || grant.equals(GrantTypeDTO.LIMIT)) return null;
         else return new LayerGroupAccessLimits(convert(accessInfo.getCatalogMode()));
     }
 
@@ -749,7 +756,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
     }
 
     /** Builds the equivalent {@link PropertyName} list for the specified access mode */
-    private List<PropertyName> toPropertyNames(Set<LayerAttribute> attributes, PropertyAccessMode mode) {
+    private List<PropertyName> toPropertyNames(Set<LayerAttributeDTO> attributes, PropertyAccessMode mode) {
         // handle simple case
         if (attributes == null || attributes.isEmpty()) {
             return null;
@@ -757,9 +764,9 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
 
         // filter and translate
         List<PropertyName> result = new ArrayList<>();
-        for (LayerAttribute attribute : attributes) {
-            if ((attribute.getAccess() == AccessType.READWRITE)
-                    || ((mode == PropertyAccessMode.READ) && (attribute.getAccess() == AccessType.READONLY))) {
+        for (LayerAttributeDTO attribute : attributes) {
+            if ((attribute.getAccess() == AccessTypeDTO.READWRITE)
+                    || ((mode == PropertyAccessMode.READ) && (attribute.getAccess() == AccessTypeDTO.READONLY))) {
                 PropertyName property = FF.property(attribute.getName());
                 result.add(property);
             }
@@ -861,7 +868,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
             ruleFilter.setLayer(resource.getName());
 
             LOGGER.log(Level.FINE, "Getting access limits for getLegendGraphic", ruleFilter);
-            AccessInfo rule = rulesService.getAccessInfo(ruleFilter);
+            AccessInfo rule = rulesServiceFactory.getService().getAccessInfo(ruleFilter);
 
             // get the requested style
             String styleName = styles.get(i);
@@ -928,7 +935,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
 
             LOGGER.log(Level.FINE, "Getting access limits for getMap", ruleFilter);
 
-            AccessInfo rule = rulesService.getAccessInfo(ruleFilter);
+            AccessInfo rule = rulesServiceFactory.getService().getAccessInfo(ruleFilter);
 
             // get the requested style name
             String styleName = styleNameList.get(i);
@@ -971,7 +978,44 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
 
     @Override
     public Filter getSecurityFilter(Authentication user, Class<? extends CatalogInfo> clazz) {
-        return Predicates.acceptAll();
+        if (user != null && !(user instanceof AnonymousAuthenticationToken) && isAdmin(user)) {
+            return Filter.INCLUDE;
+        }
+
+        RuleFilter ruleFilter = buildPermissionRuleFilter(user);
+
+        PermsResult permsResult;
+        try {
+            permsResult = rulesServiceFactory.getService().getPermissionFilter(ruleFilter);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error retrieving permissions for filter " + ruleFilter + ", blocking access", e);
+            return Filter.EXCLUDE;
+        }
+
+        if (permsResult == null) {
+            LOGGER.log(Level.SEVERE, "Unexpected null PermsResult for filter {0}, blocking access", ruleFilter);
+            return Filter.EXCLUDE;
+        }
+        return PermissionCatalogFilterHelper.buildCatalogFilter(permsResult, clazz);
+    }
+
+    /**
+     * Builds the {@link RuleFilter} used with
+     * {@link RuleReaderServiceFactory#getService()}{@code .getPermissionFilter}.
+     *
+     * <p>All catalog-scoping fields (service/request/workspace/layer/subfield) are left {@code ANY} so the call acts as
+     * a discovery query. User, role, source address, and date are populated from the current authentication context.
+     */
+    private RuleFilter buildPermissionRuleFilter(Authentication user) {
+        RuleFilter ruleFilter = new RuleFilter(RuleFilter.SpecialFilterType.ANY);
+        ruleFilter.setInstance(configurationManager.getConfiguration().getInstanceName());
+        setRuleFilterUserAndRole(user, ruleFilter);
+        String sourceAddress = retrieveCallerIpAddress();
+        if (sourceAddress != null) {
+            ruleFilter.setSourceAddress(sourceAddress);
+        }
+        ruleFilter.setDate(DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDate.now()));
+        return ruleFilter;
     }
 
     @Override

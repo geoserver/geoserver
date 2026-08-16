@@ -4,10 +4,10 @@
  */
 package org.geoserver.geofence.server.integration;
 
+import static org.geofence.core.model.enums.AdminGrantType.ADMIN;
+import static org.geofence.core.model.enums.AdminGrantType.USER;
 import static org.geoserver.catalog.LayerGroupInfo.Mode.NAMED;
 import static org.geoserver.catalog.LayerGroupInfo.Mode.SINGLE;
-import static org.geoserver.geofence.core.model.enums.AdminGrantType.ADMIN;
-import static org.geoserver.geofence.core.model.enums.AdminGrantType.USER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -16,6 +16,11 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.geofence.core.db.GeofenceTestDatabase;
+import org.geofence.core.model.enums.CatalogMode;
+import org.geofence.core.model.enums.GrantType;
+import org.geofence.core.model.enums.SpatialFilterType;
+import org.geofence.core.services.RuleAdminService;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -26,10 +31,6 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.geofence.GeofenceAccessManager;
 import org.geoserver.geofence.config.GeoFenceConfiguration;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
-import org.geoserver.geofence.core.model.enums.CatalogMode;
-import org.geoserver.geofence.core.model.enums.GrantType;
-import org.geoserver.geofence.core.model.enums.SpatialFilterType;
-import org.geoserver.geofence.services.RuleAdminService;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.security.VectorAccessLimits;
@@ -61,6 +62,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSupport {
+
+    static {
+        GeofenceTestDatabase.configureAsDatasourceOverride();
+    }
 
     public GeofenceIntegrationTestSupport support;
 
@@ -150,8 +155,8 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
 
             VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, places);
 
-            assertEquals(vl.getReadFilter(), Filter.INCLUDE);
-            assertEquals(vl.getWriteFilter(), Filter.INCLUDE);
+            assertEquals(Filter.INCLUDE, vl.getReadFilter());
+            assertEquals(Filter.INCLUDE, vl.getWriteFilter());
             logout();
         } finally {
             removeLayerGroup(group1, group2);
@@ -620,8 +625,8 @@ public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSup
 
             VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, places);
 
-            assertEquals(vl.getReadFilter(), Filter.INCLUDE);
-            assertEquals(vl.getWriteFilter(), Filter.INCLUDE);
+            assertEquals(Filter.INCLUDE, vl.getReadFilter());
+            assertEquals(Filter.INCLUDE, vl.getWriteFilter());
             logout();
         } finally {
             removeLayerGroup(group1, group2);

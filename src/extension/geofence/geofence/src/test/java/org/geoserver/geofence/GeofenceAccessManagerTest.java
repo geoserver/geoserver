@@ -9,6 +9,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import org.geofence.core.services.dto.AccessInfo;
+import org.geofence.core.services.dto.GrantTypeDTO;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StoreInfo;
@@ -20,8 +22,6 @@ import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.data.test.MockData;
-import org.geoserver.geofence.core.model.enums.GrantType;
-import org.geoserver.geofence.services.dto.AccessInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.security.CoverageAccessLimits;
@@ -39,7 +39,7 @@ import org.locationtech.jts.io.WKTReader;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.core.Authentication;
 
-public class GeofenceAccessManagerTest extends GeofenceBaseTest {
+public class GeofenceAccessManagerTest extends GeofenceRestBaseTest {
 
     @Test
     public void testAdmin() {
@@ -240,7 +240,7 @@ public class GeofenceAccessManagerTest extends GeofenceBaseTest {
         FeatureTypeInfo resource = (FeatureTypeInfo)
                 catalog.getLayerByName(getLayerId(MockData.GENERICENTITY)).getResource();
 
-        AccessInfo accessInfo = new AccessInfo(GrantType.LIMIT);
+        AccessInfo accessInfo = new AccessInfo(GrantTypeDTO.LIMIT);
         accessInfo.setClipAreaWkt("MULTIPOLYGON(((48 62, 48 63, 49 63, 49 62, 48 62)))");
 
         VectorAccessLimits vl =

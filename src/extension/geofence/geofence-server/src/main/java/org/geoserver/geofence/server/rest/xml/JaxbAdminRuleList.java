@@ -9,7 +9,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
-import org.geoserver.geofence.core.model.AdminRule;
+import org.geofence.core.model.AdminRule;
 
 @XmlRootElement(name = "AdminRules")
 public class JaxbAdminRuleList {

@@ -6,19 +6,20 @@ package org.geoserver.geofence.cache;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
+import jakarta.annotation.PostConstruct;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
-import org.geoserver.geofence.cache.RuleCacheLoaderFactory.NamePw;
+import org.geofence.core.services.dto.AccessInfo;
+import org.geofence.core.services.dto.PermsResult;
+import org.geofence.core.services.dto.RuleFilter;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.containers.ContainerAccessCacheLoaderFactory;
 import org.geoserver.geofence.containers.ContainerLimitResolver;
-import org.geoserver.geofence.services.dto.AccessInfo;
-import org.geoserver.geofence.services.dto.AuthUser;
-import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geotools.util.logging.Logging;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * A centralized point of cache control for GeoFence auth calls
@@ -30,6 +31,7 @@ import org.geotools.util.logging.Logging;
  *
  * @author Emanuele Tajariol (etj at geo-solutions.it)
  */
+@Component
 public class CacheManager {
 
     static final Logger LOGGER = Logging.getLogger(CacheManager.class);
@@ -38,7 +40,7 @@ public class CacheManager {
     private ContainerAccessCacheLoaderFactory containerAccessCacheLoaderFactory;
 
     private LoadingCache<RuleFilter, AccessInfo> ruleCache;
-    private LoadingCache<NamePw, AuthUser> userCache;
+    private LoadingCache<RuleFilter, PermsResult> permCache;
     private LoadingCache<RuleFilter, AccessInfo> authCache;
     private LoadingCache<ContainerAccessCacheLoaderFactory.ResolveParams, ContainerLimitResolver.ProcessingResult>
             contCache;
@@ -48,17 +50,15 @@ public class CacheManager {
     /** Latest configuration used */
     private CacheConfiguration cacheConfiguration = new CacheConfiguration();
 
-    /**
-     * This is a do-it-all constructor, that also calls the init() method. Useful whien testing. You may want to use the
-     * simpler constructor + setters in a running environment, in order to avoid circular bean dependencies.
-     */
+    /** This is a do-it-all constructor, that also calls the init() method. */
+    @Autowired
     public CacheManager(
             GeoFenceConfigurationManager configurationManager,
             RuleCacheLoaderFactory cachedRuleLoaders,
             ContainerAccessCacheLoaderFactory containerAccessCacheLoaderFactory) {
 
         this(configurationManager);
-        setRuleServiceLoaderFactory(ruleServiceLoaderFactory);
+        setRuleServiceLoaderFactory(cachedRuleLoaders);
         setContainerAccessCacheLoaderFactory(containerAccessCacheLoaderFactory);
         init();
     }
@@ -89,7 +89,7 @@ public class CacheManager {
         cacheConfiguration = configurationManager.getCacheConfiguration();
 
         ruleCache = getCacheBuilder().build(ruleServiceLoaderFactory.createRuleLoader());
-        userCache = getCacheBuilder().build(ruleServiceLoaderFactory.createUserLoader());
+        permCache = getCacheBuilder().build(ruleServiceLoaderFactory.createPermLoader());
         authCache = getCacheBuilder().build(ruleServiceLoaderFactory.createAuthLoader());
         contCache = getCacheBuilder().build(containerAccessCacheLoaderFactory.createProcessingResultLoader());
     }
@@ -118,7 +118,7 @@ public class CacheManager {
     public void invalidateAll() {
         if (LOGGER.isLoggable(Level.WARNING)) LOGGER.log(Level.WARNING, "Forcing cache invalidation");
         ruleCache.invalidateAll();
-        userCache.invalidateAll();
+        permCache.invalidateAll();
         authCache.invalidateAll();
         contCache.invalidateAll();
     }
@@ -130,7 +130,7 @@ public class CacheManager {
         if (LOGGER.isLoggable(Level.INFO))
             if (dumpCnt.incrementAndGet() % 10 == 0) {
                 LOGGER.info("Rules  :" + ruleCache.stats());
-                LOGGER.info("Users  :" + userCache.stats());
+                LOGGER.info("Perms  :" + permCache.stats());
                 LOGGER.info("Auth   :" + authCache.stats());
                 LOGGER.info("Cont   :" + contCache.stats());
                 LOGGER.fine("params :" + cacheConfiguration);
@@ -149,10 +149,10 @@ public class CacheManager {
         return ruleCache;
     }
 
-    public LoadingCache<NamePw, AuthUser> getUserCache() {
-        if (userCache == null) throw new IllegalStateException("CacheManager is not properly inizialized");
+    public LoadingCache<RuleFilter, PermsResult> getPermCache() {
+        if (permCache == null) throw new IllegalStateException("CacheManager is not properly inizialized");
         logStats();
-        return userCache;
+        return permCache;
     }
 
     public LoadingCache<RuleFilter, AccessInfo> getAuthCache() {
@@ -173,8 +173,8 @@ public class CacheManager {
                 + "["
                 + "Rule:"
                 + ruleCache.stats()
-                + " User:"
-                + userCache.stats()
+                + " Perm:"
+                + permCache.stats()
                 + " Auth:"
                 + authCache.stats()
                 + " Cont:"

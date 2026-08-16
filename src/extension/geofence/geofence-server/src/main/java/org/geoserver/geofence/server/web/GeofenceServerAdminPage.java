@@ -13,7 +13,7 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.geoserver.geofence.services.dto.ShortAdminRule;
+import org.geofence.core.services.dto.ShortAdminRule;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDNDBehavior;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;

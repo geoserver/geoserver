@@ -42,10 +42,13 @@ final class PluginRegistry {
         DEPENDENCIES.put("wps-remote", List.of("wps"));
         DEPENDENCIES.put("ogr-wps", List.of("wps", "ogr-wfs"));
         DEPENDENCIES.put("features-templating", List.of("ogcapi-features"));
+        DEPENDENCIES.put("geofence-wps", List.of("geofence-server", "wps"));
 
         // custom testers
         TESTERS.put("wps-jdbc", new WPSJDBCTester());
         TESTERS.put("acl", new GeoServerAclTester());
+        TESTERS.put("geofence", new GeofenceTester());
+        TESTERS.put("geofence-server", new GeofenceServerTester());
     }
 
     private PluginRegistry() {}

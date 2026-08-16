@@ -25,13 +25,16 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.geofence.core.services.RuleReaderService;
+import org.geofence.core.services.dto.RuleFilter;
 import org.geoserver.geofence.cache.CacheConfiguration;
 import org.geoserver.geofence.cache.CacheManager;
 import org.geoserver.geofence.config.GeoFenceConfiguration;
 import org.geoserver.geofence.config.GeoFenceConfigurationController;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
-import org.geoserver.geofence.services.RuleReaderService;
-import org.geoserver.geofence.services.dto.RuleFilter;
+import org.geoserver.geofence.services.DenyAllRuleReaderService;
+import org.geoserver.geofence.services.RestRuleReaderService;
+import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -54,12 +57,27 @@ public class GeofencePage extends GeoServerSecuredPage {
 
     private CacheConfiguration cacheParams;
 
+    /**
+     * Whether the currently active backend is the embedded engine, determined from the active bean name rather than
+     * {@link GeoFenceConfiguration#isInternal()} - that legacy check parses a magic {@code "internal:/"} prefix out of
+     * {@code servicesUrl}, a convention no longer kept in sync with the {@code ruleReaderBackend}-based selection (see
+     * {@code RuleReaderServiceFactory}). Checked by bean name rather than type since {@code RuleReaderServiceImpl} (the
+     * embedded engine's actual class, provided by geofence-server) isn't necessarily on this module's own classpath.
+     */
+    private final boolean embeddedBackend;
+
     public GeofencePage() {
         // extracts cfg object from the registered probe instance
         GeoFenceConfigurationManager configManager = GeoServerExtensions.bean(GeoFenceConfigurationManager.class);
 
         config = configManager.getConfiguration().clone();
         cacheParams = configManager.getCacheConfiguration().clone();
+
+        RuleReaderServiceFactory backendFactory =
+                (RuleReaderServiceFactory) GeoServerExtensions.bean("ruleReaderBackendFactory");
+        embeddedBackend =
+                RuleReaderServiceFactory.INTERNAL_RULE_READER_NAME.equals(backendFactory.getActiveServiceName());
+        boolean denyingAll = backendFactory.getService() instanceof DenyAllRuleReaderService;
 
         final IModel<GeoFenceConfiguration> configModel = getGeoFenceConfigModel();
         final IModel<CacheConfiguration> cacheModel = getCacheConfigModel();
@@ -68,12 +86,20 @@ public class GeofencePage extends GeoServerSecuredPage {
         form.setOutputMarkupId(true);
         add(form);
         form.add(new TextField<>("instanceName", new PropertyModel<>(configModel, "instanceName")).setRequired(true));
-        // .setVisible(!config.isInternal());
-        form.add(new TextField<>(
-                        "servicesUrl",
-                        new ExtPropertyModel<String>(configModel, "servicesUrl").setReadOnly(config.isInternal()))
-                .setRequired(true)
-                .setEnabled(!config.isInternal()));
+
+        // read-only: which rule reader is active, shown before servicesUrl since that's only meaningful when remote.
+        String ruleReaderKey =
+                denyingAll ? "ruleReaderUnavailable" : (embeddedBackend ? "ruleReaderEmbedded" : "ruleReaderRemote");
+        IModel<String> ruleReaderModel =
+                new StringResourceModel(GeofencePage.class.getSimpleName() + "." + ruleReaderKey);
+        form.add(new Label("ruleReader", ruleReaderModel));
+
+        IModel<String> servicesUrlModel = embeddedBackend
+                ? new StringResourceModel(GeofencePage.class.getSimpleName() + ".servicesUrlEmbedded")
+                : new ExtPropertyModel<>(configModel, "servicesUrl");
+        form.add(new TextField<>("servicesUrl", servicesUrlModel)
+                .setRequired(!embeddedBackend)
+                .setEnabled(!embeddedBackend));
 
         form.add(
                 new AjaxSubmitLink("test") {
@@ -82,8 +108,12 @@ public class GeofencePage extends GeoServerSecuredPage {
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target) {
-                        ((FormComponent<?>) form.get("servicesUrl")).processInput();
-                        String servicesUrl = (String) ((FormComponent<?>) form.get("servicesUrl")).getConvertedInput();
+                        // servicesUrl is unused (and its model isn't writable) when embedded - skip reading it
+                        String servicesUrl = null;
+                        if (!embeddedBackend) {
+                            ((FormComponent<?>) form.get("servicesUrl")).processInput();
+                            servicesUrl = (String) ((FormComponent<?>) form.get("servicesUrl")).getConvertedInput();
+                        }
 
                         try {
                             RuleReaderService ruleReader = getRuleReaderService(servicesUrl);
@@ -100,21 +130,17 @@ public class GeofencePage extends GeoServerSecuredPage {
                             ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
                         }
                     }
-                    // HttpInvokerProxyFactoryBean is deprecated because
-                    // Spring no longer supports serialized RMI invocations
-                    @SuppressWarnings("deprecation")
-                    private RuleReaderService getRuleReaderService(String servicesUrl) throws IOException {
-                        if (config.isInternal()) {
-                            return (RuleReaderService) GeoServerExtensions.bean("ruleReaderService");
-                        } else {
-                            /*org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean invoker =
-                                    new org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean();
-                            invoker.setServiceUrl(servicesUrl);
-                            invoker.setServiceInterface(RuleReaderService.class);
-                            invoker.afterPropertiesSet();
-                            return (RuleReaderService) invoker.getObject();*/
 
-                            return (RuleReaderService) null;
+                    private RuleReaderService getRuleReaderService(String servicesUrl) throws IOException {
+                        if (embeddedBackend) {
+                            RuleReaderServiceFactory backendFactory =
+                                    (RuleReaderServiceFactory) GeoServerExtensions.bean("ruleReaderBackendFactory");
+                            return backendFactory.getService();
+                        } else {
+                            // tests the URL currently typed in the form, not the (possibly different) saved one
+                            RestRuleReaderService restReader = new RestRuleReaderService();
+                            restReader.setServiceUrl(servicesUrl);
+                            return restReader;
                         }
                     }
                 }.setDefaultFormProcessing(false));
@@ -210,6 +236,14 @@ public class GeofencePage extends GeoServerSecuredPage {
     private static final String KEY_RULE_LOADTIME = "rule.loadtime";
     private static final String KEY_RULE_EVICTION = "rule.evict";
 
+    private static final String KEY_PERM_SIZE = "perm.size";
+    private static final String KEY_PERM_HIT = "perm.hit";
+    private static final String KEY_PERM_MISS = "perm.miss";
+    private static final String KEY_PERM_LOADOK = "perm.loadok";
+    private static final String KEY_PERM_LOADKO = "perm.loadko";
+    private static final String KEY_PERM_LOADTIME = "perm.loadtime";
+    private static final String KEY_PERM_EVICTION = "perm.evict";
+
     private static final String KEY_ADMIN_SIZE = "admin.size";
     private static final String KEY_ADMIN_HIT = "admin.hit";
     private static final String KEY_ADMIN_MISS = "admin.miss";
@@ -217,14 +251,6 @@ public class GeofencePage extends GeoServerSecuredPage {
     private static final String KEY_ADMIN_LOADKO = "admin.loadko";
     private static final String KEY_ADMIN_LOADTIME = "admin.loadtime";
     private static final String KEY_ADMIN_EVICTION = "admin.evict";
-
-    private static final String KEY_USER_SIZE = "user.size";
-    private static final String KEY_USER_HIT = "user.hit";
-    private static final String KEY_USER_MISS = "user.miss";
-    private static final String KEY_USER_LOADOK = "user.loadok";
-    private static final String KEY_USER_LOADKO = "user.loadko";
-    private static final String KEY_USER_LOADTIME = "user.loadtime";
-    private static final String KEY_USER_EVICTION = "user.evict";
 
     private static final String KEY_CONT_SIZE = "cont.size";
     private static final String KEY_CONT_HIT = "cont.hit";
@@ -245,6 +271,15 @@ public class GeofencePage extends GeoServerSecuredPage {
         statsValues.put(KEY_RULE_LOADTIME, "" + cache.stats().totalLoadTime());
         statsValues.put(KEY_RULE_EVICTION, "" + cache.stats().evictionCount());
 
+        cache = cacheManager.getPermCache();
+        statsValues.put(KEY_PERM_SIZE, "" + cache.size());
+        statsValues.put(KEY_PERM_HIT, "" + cache.stats().hitCount());
+        statsValues.put(KEY_PERM_MISS, "" + cache.stats().missCount());
+        statsValues.put(KEY_PERM_LOADOK, "" + cache.stats().loadSuccessCount());
+        statsValues.put(KEY_PERM_LOADKO, "" + cache.stats().loadExceptionCount());
+        statsValues.put(KEY_PERM_LOADTIME, "" + cache.stats().totalLoadTime());
+        statsValues.put(KEY_PERM_EVICTION, "" + cache.stats().evictionCount());
+
         cache = cacheManager.getAuthCache();
         statsValues.put(KEY_ADMIN_SIZE, "" + cache.size());
         statsValues.put(KEY_ADMIN_HIT, "" + cache.stats().hitCount());
@@ -253,15 +288,6 @@ public class GeofencePage extends GeoServerSecuredPage {
         statsValues.put(KEY_ADMIN_LOADKO, "" + cache.stats().loadExceptionCount());
         statsValues.put(KEY_ADMIN_LOADTIME, "" + cache.stats().totalLoadTime());
         statsValues.put(KEY_ADMIN_EVICTION, "" + cache.stats().evictionCount());
-
-        cache = cacheManager.getUserCache();
-        statsValues.put(KEY_USER_SIZE, "" + cache.size());
-        statsValues.put(KEY_USER_HIT, "" + cache.stats().hitCount());
-        statsValues.put(KEY_USER_MISS, "" + cache.stats().missCount());
-        statsValues.put(KEY_USER_LOADOK, "" + cache.stats().loadSuccessCount());
-        statsValues.put(KEY_USER_LOADKO, "" + cache.stats().loadExceptionCount());
-        statsValues.put(KEY_USER_LOADTIME, "" + cache.stats().totalLoadTime());
-        statsValues.put(KEY_USER_EVICTION, "" + cache.stats().evictionCount());
 
         cache = cacheManager.getContainerCache();
         statsValues.put(KEY_CONT_SIZE, "" + cache.size());

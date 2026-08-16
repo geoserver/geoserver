@@ -124,6 +124,12 @@ The bounding box determines the extent of the data within a layer.
 
 *Bounding Boxes of a layer*
 
+!!! note
+
+    Layers with the generic CRS **EPSG:404000** (a wildcard "CRS not found" placeholder) have no defined spatial extent. This CRS is used for floor plans, engineering grids, and other non-geographic data, as well as for data with an unidentified coordinate system. When **Compute from SRS bounds** is used for such layers, a warning is displayed because no meaningful bounds can be derived from the CRS definition. Use **Compute from data** instead to calculate bounds from the actual data extent.
+
+    ![](img/data_layers_404.png)
+
 ### Coverage Parameters (Raster)
 
 Optional coverage parameters are possible for certain types of raster data. For example, WorldImage formats request a valid range of grid coordinates in two dimensions known as a **ReadGridGeometry2D.** For ImageMosaic, you can use **InputImageThresholdValue**, **InputTransparentColor**, and **OutputTransparentColor** to control the rendering of the mosaic in terms of thresholding and transparency.

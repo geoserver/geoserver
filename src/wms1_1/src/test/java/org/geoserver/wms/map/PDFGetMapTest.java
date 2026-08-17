@@ -117,7 +117,7 @@ public class PDFGetMapTest extends WMSTestSupport {
                         + "CRS=EPSG:4326&WIDTH=1273&HEIGHT=300&BBOX=24.873046875,-151.7431640625,51.240234375,-39.8583984375");
 
         if (!"application/pdf".equalsIgnoreCase(response.getContentType())) {
-            LOGGER.info(response.getContentAsString());
+            LOGGER.fine(response.getContentAsString());
         }
 
         assertEquals("application/pdf", response.getContentType());

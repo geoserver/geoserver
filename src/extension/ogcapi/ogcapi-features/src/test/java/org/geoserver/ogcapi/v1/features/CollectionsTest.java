@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minidev.json.JSONArray;
@@ -243,7 +242,7 @@ public class CollectionsTest extends FeaturesTestSupport {
             MockHttpServletResponse response = dispatch(request, null);
             assertEquals(200, response.getStatus());
             assertEquals("text/html", response.getContentType());
-            LOGGER.log(Level.INFO, "Last request returned\n:" + response.getContentAsString());
+            LOGGER.fine("Last request returned\n:" + response.getContentAsString());
 
             // parse the HTML
             org.jsoup.nodes.Document document = Jsoup.parse(response.getContentAsString());

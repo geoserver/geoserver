@@ -92,7 +92,7 @@ public class UTFGridIntegrationTest extends WMSTestSupport {
     private UTFGridTester getAsGridTester(String request, int width, int height, int resolution) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(request);
         if (!response.getContentType().startsWith("application/json")) {
-            LOGGER.info(response.getContentAsString());
+            LOGGER.fine(response.getContentAsString());
             fail("Expected json but got " + response.getContentType());
         }
         JSON json = json(response);

@@ -30757,7 +30757,7 @@
 <h3 id="condition">condition<a class="headerlink" href="#condition" title="Permanent link">&para;</a></h3>
 <p>Conditional attributes are attributes that are only visible for some layers. A typical example are attributes only present for raster or vector layers. The condition is specified in <a href="../../../tutorials/cql/cql_tutorial/">CQL</a> which is evaluated against the layer's <a href="../../../services/csw/features/">ResourceInfo</a> object.</p>
 <p>For example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">equalTo(typeOf(&quot;.&quot;), &#39;FeatureTypeInfo&#39;)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">equalTo(typeOf("."), 'FeatureTypeInfo')</span>
 </code></pre></div>
 <h3 id="tab">tab<a class="headerlink" href="#tab" title="Permanent link">&para;</a></h3>
 <p>Optionally, attributes may be displayed on separate tabs. All tabs must be listed under <code>tabs</code> in the main configuration. Then this property is used to assign each attribute to one or more tab (separated by comma), so that the custom metadata panel is divided in tabs:</p>

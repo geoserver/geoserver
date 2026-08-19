@@ -30398,7 +30398,7 @@
 <ol>
 <li>
 <p>Setting the variable can be achieved with the following command (in the terminal):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="go">export GEOSERVER_DATA_DIR=&quot;~/Library/Application Support/GeoServer/data_dir&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="go">export GEOSERVER_DATA_DIR="~/Library/Application Support/GeoServer/data_dir"</span>
 </code></pre></div>
 </li>
 <li>
@@ -30415,9 +30415,9 @@
 <ol>
 <li>
 <p>Tomcat: Use your application server to configure the GeoServer web application via <strong><code>conf/Catalina/localhost/geoserver.xml</code></strong> file:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&lt;Context</span><span class="w"> </span><span class="na">docBase=</span><span class="s">&quot;geoserver.war&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&lt;Parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;GEOSERVER_DATA_DIR&quot;</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">             </span><span class="na">value=</span><span class="s">&quot;/var/opt/geoserver/data&quot;</span><span class="w"> </span><span class="na">override=</span><span class="s">&quot;false&quot;</span><span class="nt">/&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&lt;Context</span><span class="w"> </span><span class="na">docBase=</span><span class="s">"geoserver.war"</span><span class="nt">&gt;</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&lt;Parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">"GEOSERVER_DATA_DIR"</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">             </span><span class="na">value=</span><span class="s">"/var/opt/geoserver/data"</span><span class="w"> </span><span class="na">override=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="nt">&lt;/Context&gt;</span>
 </code></pre></div>
 </li>
@@ -30446,7 +30446,7 @@
 <li>For <strong>Tomcat</strong> on Linux, edit the file <strong><code>bin/setenv.sh</code></strong> under the root of the Tomcat installation. Specify the <code>GEOSERVER_DATA_DIR</code> system property by setting the <code>CATALINA_OPTS</code> variable:</li>
 </ul>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="gp"># </span>Append<span class="w"> </span>system<span class="w"> </span>properties
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="go">CATALINA_OPTS=&quot;${CATALINA_OPTS} -DGEOSERVER_DATA_DIR=/var/lib/geoserver_data&quot;</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="go">CATALINA_OPTS="${CATALINA_OPTS} -DGEOSERVER_DATA_DIR=/var/lib/geoserver_data"</span>
 </code></pre></div>
 <ul>
 <li>For <strong>Tomcat</strong> on Windows use Apache Tomcat Properties application, navigating to the <strong>Java</strong> tab to edit <strong>Java Options</strong>:</li>
@@ -30479,7 +30479,7 @@
 <a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="nt">&lt;/web-app&gt;</span>
 </code></pre></div>
 <p>Java system property:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="go">CATALINA_OPTS=&quot;${CATALINA_OPTS} -DGEOSERVER_REQUIRE_FILE=/mnt/server/geoserver_data/global.xml&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="go">CATALINA_OPTS="${CATALINA_OPTS} -DGEOSERVER_REQUIRE_FILE=/mnt/server/geoserver_data/global.xml"</span>
 </code></pre></div>
 <h3 id="multiple-files">Multiple files<a class="headerlink" href="#multiple-files" title="Permanent link">&para;</a></h3>
 <p>To specify multiple files or directories that must exist, separate them with the path separator (<code>:</code> on Linux, <code>;</code> on Windows):</p>
@@ -30497,7 +30497,7 @@
 <a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="nt">&lt;/web-app&gt;</span>
 </code></pre></div>
 <p>Java system property:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="go">CATALINA_OPTS=&quot;${CATALINA_OPTS} -DGEOSERVER_REQUIRE_FILE=/mnt/server/geoserver_data/global.xml:/mnt/server/data&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="go">CATALINA_OPTS="${CATALINA_OPTS} -DGEOSERVER_REQUIRE_FILE=/mnt/server/geoserver_data/global.xml:/mnt/server/data"</span>
 </code></pre></div>
 <h2 id="datadir-loader">Data directory loader<a class="headerlink" href="#datadir-loader" title="Permanent link">&para;</a></h2>
 <p>GeoServer includes a data directory loader that is designed to efficiently load configuration files, especially for deployments with large data directories. This loader is enabled by default.</p>
@@ -30539,7 +30539,7 @@
 </code></pre></div>
 <p>Example usage with system properties:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># Start GeoServer with customized loader settings</span>
-<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">CATALINA_OPTS</span><span class="si">}</span><span class="s2"> -DGEOSERVER_DATA_DIR_LOADER_ENABLED=true -DGEOSERVER_DATA_DIR_LOADER_THREADS=4&quot;</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="si">${</span><span class="nv">CATALINA_OPTS</span><span class="si">}</span><span class="s2"> -DGEOSERVER_DATA_DIR_LOADER_ENABLED=true -DGEOSERVER_DATA_DIR_LOADER_THREADS=4"</span>
 </code></pre></div>
 
 

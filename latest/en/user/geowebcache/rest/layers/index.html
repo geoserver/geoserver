@@ -30254,20 +30254,20 @@
 </tbody>
 </table>
 <p>The following example will request a full list of layers:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span>&quot;http://localhost:8080/geoserver/gwc/rest/layers&quot;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span>"http://localhost:8080/geoserver/gwc/rest/layers"
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;layers&gt;</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&lt;layer&gt;</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">&lt;name&gt;</span>img<span class="w"> </span>states<span class="nt">&lt;/name&gt;</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="nt">&lt;atom:link</span><span class="w"> </span><span class="na">xmlns:atom=</span><span class="s">&quot;http://www.w3.org/2005/Atom&quot;</span><span class="w"> </span><span class="na">rel=</span><span class="s">&quot;alternate&quot;</span><span class="w"> </span><span class="na">href=</span><span class="s">&quot;http://localhost:8080/geoserver/gwc/rest/layers/img+states.xml&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;text/xml&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="nt">&lt;atom:link</span><span class="w"> </span><span class="na">xmlns:atom=</span><span class="s">"http://www.w3.org/2005/Atom"</span><span class="w"> </span><span class="na">rel=</span><span class="s">"alternate"</span><span class="w"> </span><span class="na">href=</span><span class="s">"http://localhost:8080/geoserver/gwc/rest/layers/img+states.xml"</span><span class="w"> </span><span class="na">type=</span><span class="s">"text/xml"</span><span class="nt">/&gt;</span>
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">&lt;/layer&gt;</span>
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="nt">&lt;layer&gt;</span>
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="nt">&lt;name&gt;</span>raster<span class="w"> </span>test<span class="w"> </span>layer<span class="nt">&lt;/name&gt;</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="nt">&lt;atom:link</span><span class="w"> </span><span class="na">xmlns:atom=</span><span class="s">&quot;http://www.w3.org/2005/Atom&quot;</span><span class="w"> </span><span class="na">rel=</span><span class="s">&quot;alternate&quot;</span><span class="w"> </span><span class="na">href=</span><span class="s">&quot;http://localhost:8080/geoserver/gwc/rest/layers/raster+test+layer.xml&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;text/xml&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="nt">&lt;atom:link</span><span class="w"> </span><span class="na">xmlns:atom=</span><span class="s">"http://www.w3.org/2005/Atom"</span><span class="w"> </span><span class="na">rel=</span><span class="s">"alternate"</span><span class="w"> </span><span class="na">href=</span><span class="s">"http://localhost:8080/geoserver/gwc/rest/layers/raster+test+layer.xml"</span><span class="w"> </span><span class="na">type=</span><span class="s">"text/xml"</span><span class="nt">/&gt;</span>
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">  </span><span class="nt">&lt;/layer&gt;</span>
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span><span class="nt">&lt;layer&gt;</span>
 <a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="nt">&lt;name&gt;</span>topp:states<span class="nt">&lt;/name&gt;</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="nt">&lt;atom:link</span><span class="w"> </span><span class="na">xmlns:atom=</span><span class="s">&quot;http://www.w3.org/2005/Atom&quot;</span><span class="w"> </span><span class="na">rel=</span><span class="s">&quot;alternate&quot;</span><span class="w"> </span><span class="na">href=</span><span class="s">&quot;http://localhost:8080/geoserver/gwc/rest/layers/topp%3Astates.xml&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;text/xml&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="nt">&lt;atom:link</span><span class="w"> </span><span class="na">xmlns:atom=</span><span class="s">"http://www.w3.org/2005/Atom"</span><span class="w"> </span><span class="na">rel=</span><span class="s">"alternate"</span><span class="w"> </span><span class="na">href=</span><span class="s">"http://localhost:8080/geoserver/gwc/rest/layers/topp%3Astates.xml"</span><span class="w"> </span><span class="na">type=</span><span class="s">"text/xml"</span><span class="nt">/&gt;</span>
 <a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">  </span><span class="nt">&lt;/layer&gt;</span>
 <a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w"> </span><span class="nt">&lt;/layers&gt;</span>
 </code></pre></div>
@@ -30325,7 +30325,7 @@
 <p>The examples below use the <a href="http://curl.haxx.se/">cURL</a> tool, though the examples apply to any HTTP-capable tool or library.</p>
 <h3 id="adding-a-geowebcache-layer">Adding a GeoWebCache layer<a class="headerlink" href="#adding-a-geowebcache-layer" title="Permanent link">&para;</a></h3>
 <p>The following example will add a new layer to GeoWebCache:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="go">curl -v -u admin:geoserver -XPUT -H &quot;Content-type: text/xml&quot; -d @layer.xml  &quot;http://localhost:8080/geoserver/gwc/rest/layers/newlayer.xml&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="go">curl -v -u admin:geoserver -XPUT -H "Content-type: text/xml" -d @layer.xml  "http://localhost:8080/geoserver/gwc/rest/layers/newlayer.xml"</span>
 </code></pre></div>
 <p>The <strong><code>layer.xml</code></strong> file is defined as the following:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">&lt;wmsLayer&gt;</span>
@@ -30350,7 +30350,7 @@
 </div>
 <h3 id="adding-a-geoserver-layer">Adding a GeoServer layer<a class="headerlink" href="#adding-a-geoserver-layer" title="Permanent link">&para;</a></h3>
 <p>The following example will add a new layer to both GeoServer and GeoWebCache:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="go">curl -v -u admin:geoserver -XPUT -H &quot;Content-type: text/xml&quot; -d @poi.xml  &quot;http://localhost:8080/geoserver/gwc/rest/layers/tiger:poi.xml&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="go">curl -v -u admin:geoserver -XPUT -H "Content-type: text/xml" -d @poi.xml  "http://localhost:8080/geoserver/gwc/rest/layers/tiger:poi.xml"</span>
 </code></pre></div>
 <p>The <strong><code>poi.xml</code></strong> file is defined as the following:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">&lt;GeoServerLayer&gt;</span>
@@ -30432,12 +30432,12 @@
 <a id="__codelineno-6-47" name="__codelineno-6-47" href="#__codelineno-6-47"></a><span class="nt">&lt;/GeoServerLayer&gt;</span>
 </code></pre></div>
 <p>Instead of PUT, use the HTTP POST method instead:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="go">curl -v -u admin:geoserver -XPOST -H &quot;Content-type: text/xml&quot; -d @poi.xml  &quot;http://localhost:8080/geoserver/gwc/rest/layers/tiger:poi.xml&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="go">curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d @poi.xml  "http://localhost:8080/geoserver/gwc/rest/layers/tiger:poi.xml"</span>
 </code></pre></div>
 <h3 id="deleting-a-layer">Deleting a layer<a class="headerlink" href="#deleting-a-layer" title="Permanent link">&para;</a></h3>
 <p>Deleting a GeoWebCache tile layer deletes the layer configuration <em>as well as the layer's disk cache</em>. No tile images will remain in the cache directory after deleting a tile layer.</p>
 <p>To delete a layer, use the HTTP DELETE method against the layer resource:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="go">curl -v -u admin:geoserver -XDELETE &quot;http://localhost:8080/geoserver/gwc/rest/layers/newlayer.xml&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="go">curl -v -u admin:geoserver -XDELETE "http://localhost:8080/geoserver/gwc/rest/layers/newlayer.xml"</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

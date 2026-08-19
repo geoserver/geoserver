@@ -30305,8 +30305,8 @@
 </code></pre></div>
 <p>Will send down to SOLR a query looking like:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>omitHeader=true&amp;fl=geo,id&amp;q=*:*&amp;rows=2147483647&amp;sort=id asc
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>&amp;fq=status_s:active AND geo:&quot;Intersects(POLYGON ((-0.125 -0.5333333333333333, -0.125 44.53333333333333, 
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>24.125 44.53333333333333, 24.125 -0.5333333333333333, -0.125 -0.5333333333333333)))&quot;
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>&amp;fq=status_s:active AND geo:"Intersects(POLYGON ((-0.125 -0.5333333333333333, -0.125 44.53333333333333, 
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>24.125 44.53333333333333, 24.125 -0.5333333333333333, -0.125 -0.5333333333333333)))"
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>&amp;fq=security_ss:WEP&amp;cursorMark=*
 </code></pre></div>
 <p>You can notice that:</p>

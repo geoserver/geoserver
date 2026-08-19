@@ -30375,7 +30375,7 @@
    SRID INTEGER NOT NULL, 
    TYPE VARCHAR(30) NOT NULL,
    UNIQUE(F_TABLE_SCHEMA, F_TABLE_NAME, F_GEOMETRY_COLUMN),
-   CHECK(TYPE IN (&#39;POINT&#39;,&#39;LINE&#39;, &#39;POLYGON&#39;, &#39;COLLECTION&#39;, &#39;MULTIPOINT&#39;, &#39;MULTILINE&#39;, &#39;MULTIPOLYGON&#39;, &#39;GEOMETRY&#39;) ));
+   CHECK(TYPE IN ('POINT','LINE', 'POLYGON', 'COLLECTION', 'MULTIPOINT', 'MULTILINE', 'MULTIPOLYGON', 'GEOMETRY') ));
 </code></pre></div>
 <p>When the table is present the store first searches it for information about each geometry column to be classified, and falls back on the MDSYS views only if the table does not contain any information.</p>
 <h2 id="configuring-an-oracle-database-with-jndi">Configuring an Oracle database with JNDI<a class="headerlink" href="#configuring-an-oracle-database-with-jndi" title="Permanent link">&para;</a></h2>

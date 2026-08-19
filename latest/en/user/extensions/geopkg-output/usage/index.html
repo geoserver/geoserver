@@ -30225,7 +30225,7 @@
 <p>The GeoPackage Output Extension adds support to WFS and WMS to request <code>GetFeature</code> and <code>GetMap</code> results in GeoPackage Format.</p>
 <h2 id="wfs">WFS<a class="headerlink" href="#wfs" title="Permanent link">&para;</a></h2>
 <p>Add <code>&amp;outputFormat=geopkg</code> to your request. The result will be a GeoPackage (MIME type <code>application/geopackage+sqlite3</code>) containing the requested features.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span><span class="s2">&quot;http://localhost:8080/geoserver/wfs?service=wfs&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=ws:layername&amp;outputFormat=geopkg&quot;</span><span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span><span class="s2">"http://localhost:8080/geoserver/wfs?service=wfs&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=ws:layername&amp;outputFormat=geopkg"</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>-o<span class="w"> </span>wfs.gpkg
 </code></pre></div>
 <p>You can use <code>geopkg</code>, <code>geopackage</code>, or <code>gpkg</code> as the output format in the request. Use <code>1.0.0</code>, <code>1.1.0</code>, or <code>2.0.0</code> as <code>version=</code> to specify which WFS version to use.</p>
@@ -30245,11 +30245,11 @@
 <h2 id="wms">WMS<a class="headerlink" href="#wms" title="Permanent link">&para;</a></h2>
 <p>Add <code>&amp;format=geopkg</code> to your request. The result will be a GeoPackage (MIME type <code>application/geopackage+sqlite3</code>) containing the requested tiles.</p>
 <p>Using WMS 1.1.0 to access tiled image geopkg:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>curl<span class="w"> </span><span class="s2">&quot;http://localhost:8080/geoserver/wms?service=WMS&amp;version=1.1.0&amp;request=GetMap&amp;layers=ws:layername&amp;bbox=-123.43670607166865%2C48.3956835%2C-123.2539813%2C48.5128362547052&amp;width=1536&amp;height=984&amp;srs=EPSG%3A4326&amp;styles=&amp;format=geopkg&quot;</span><span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>curl<span class="w"> </span><span class="s2">"http://localhost:8080/geoserver/wms?service=WMS&amp;version=1.1.0&amp;request=GetMap&amp;layers=ws:layername&amp;bbox=-123.43670607166865%2C48.3956835%2C-123.2539813%2C48.5128362547052&amp;width=1536&amp;height=984&amp;srs=EPSG%3A4326&amp;styles=&amp;format=geopkg"</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>-o<span class="w"> </span>wms.gpkg
 </code></pre></div>
 <p>Using WMS 1.3.0 to access tiled image geopkg:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl<span class="w"> </span><span class="s2">&quot;http://localhost:8080/geoserver/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap&amp;layers=ws:layername&amp;bbox=48.3956835,-123.43670607166865,48.5128362547052,-123.2539813&amp;width=768&amp;height=492&amp;srs=EPSG%3A4326&amp;styles=&amp;format=geopkg&quot;</span><span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl<span class="w"> </span><span class="s2">"http://localhost:8080/geoserver/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap&amp;layers=ws:layername&amp;bbox=48.3956835,-123.43670607166865,48.5128362547052,-123.2539813&amp;width=768&amp;height=492&amp;srs=EPSG%3A4326&amp;styles=&amp;format=geopkg"</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>-o<span class="w"> </span>wms.gpkg
 </code></pre></div>
 <p>You can use <code>format=geopkg</code>, <code>format=geopackage</code>, or <code>format=gpkg</code> as the output format in the request. Use WMS <code>version=1.1.0</code>, or <code>version=1.3.0</code> to specify which WMS version to use, keeping in mind axis order for <code>bbox</code> differences.</p>

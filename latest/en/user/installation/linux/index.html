@@ -30128,11 +30128,11 @@
 </ul>
 <p>The developer tool <a href="https://sdkman.io/">SDKMan</a> may be used to manage several versions:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># list to determine latest Temurin JDK 17</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>sdk<span class="w"> </span>list<span class="w"> </span>java<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;17.*-tem&quot;</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>sdk<span class="w"> </span>list<span class="w"> </span>java<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">"17.*-tem"</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>sdk<span class="w"> </span>install<span class="w"> </span>java<span class="w"> </span><span class="m">21</span>.0.8-tem
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1"># list to determine latest Temurin JDK 21</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>sdk<span class="w"> </span>list<span class="w"> </span>java<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;21.*-tem&quot;</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>sdk<span class="w"> </span>list<span class="w"> </span>java<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">"21.*-tem"</span>
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>sdk<span class="w"> </span>install<span class="w"> </span>java<span class="w"> </span><span class="m">17</span>.0.16-tem
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="c1"># change between versions 17.0.16-tem and 21.0.8-tem locally</span>
@@ -30173,13 +30173,13 @@
 </li>
 <li>
 <p>Add an environment variable to save the location of GeoServer by typing the following command:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;export GEOSERVER_HOME=/usr/share/geoserver&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.profile
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">"export GEOSERVER_HOME=/usr/share/geoserver"</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.profile
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>.<span class="w"> </span>~/.profile
 </code></pre></div>
 </li>
 <li>
 <p>Optionally, set the environment variable <code>JETTY_OPTS</code> to tweak the jetty configuration upfront:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;export JETTY_OPTS=&#39;jetty.http.port=1234&#39;&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.profile
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">"export JETTY_OPTS='jetty.http.port=1234'"</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.profile
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>.<span class="w"> </span>~/.profile
 </code></pre></div>
 </li>

@@ -30459,16 +30459,16 @@
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="nt">&lt;/Rule&gt;</span>
 </code></pre></div>
 <p>Encoding of a rule in JSON:</p>
-<div class="highlight"><pre><span></span><code>{&quot;Rule&quot;: {&quot;ruleId&quot;:..,&quot;priority&quot;:..,&quot;templateName&quot;:&quot;..&quot;,&quot;outputFormat&quot;:&quot;..&quot;,&quot;cqlFilter&quot;:&quot;..&quot;,&quot;profileFilter&quot;:&quot;..&quot;}}
+<div class="highlight"><pre><span></span><code>{"Rule": {"ruleId":..,"priority":..,"templateName":"..","outputFormat":"..","cqlFilter":"..","profileFilter":".."}}
 </code></pre></div>
 <p>When applying partial updates missing attributes/element in incoming object are left unchanged. Properties can be set to null. E.g. the following example will allow to set the profileFilter to null:</p>
 <p>XML:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;Rule&gt;</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&lt;profileFilter</span><span class="w"> </span><span class="na">xsi:nil=</span><span class="s">&quot;true&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&lt;profileFilter</span><span class="w"> </span><span class="na">xsi:nil=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nt">&lt;/Rule&gt;</span>
 </code></pre></div>
 <p>JSON:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span><span class="nt">&quot;Rule&quot;</span><span class="p">:{</span><span class="nt">&quot;profileFilter&quot;</span><span class="p">:</span><span class="kc">null</span><span class="p">}}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span><span class="nt">"Rule"</span><span class="p">:{</span><span class="nt">"profileFilter"</span><span class="p">:</span><span class="kc">null</span><span class="p">}}</span>
 </code></pre></div>
 
 

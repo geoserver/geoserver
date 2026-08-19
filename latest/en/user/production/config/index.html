@@ -30895,7 +30895,7 @@
 <p class="admonition-title">Note</p>
 <p>Linux</p>
 <p>Linux administrators can get a list of all environment variables set at GeoServer startup with:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>tr<span class="w"> </span><span class="s1">&#39;\0&#39;</span><span class="w"> </span><span class="s1">&#39;\n&#39;</span><span class="w"> </span>&lt;<span class="w"> </span>/proc/<span class="si">${</span><span class="nv">GEOSERVER_PID</span><span class="si">}</span>/environ
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>tr<span class="w"> </span><span class="s1">'\0'</span><span class="w"> </span><span class="s1">'\n'</span><span class="w"> </span>&lt;<span class="w"> </span>/proc/<span class="si">${</span><span class="nv">GEOSERVER_PID</span><span class="si">}</span>/environ
 </code></pre></div>
 </div>
 </li>
@@ -30906,8 +30906,8 @@
 <p>A service strategy is the method in which output is served to the client. This is a balance between proper form (being absolutely sure of reporting errors with the proper OGC codes, etc.) and speed (serving output as quickly as possible). This is a decision to be made based on the function that GeoServer is providing.</p>
 <p>In Apache Tomcat you can provide system property by creating <strong><code>conf/Catalina/localhost/geoserver.xml</code></strong>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;Context&gt;</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&lt;Parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;serviceStrategy&quot;</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">             </span><span class="na">value=</span><span class="s">&quot;PARTIAL-BUFFER2&quot;</span><span class="w"> </span><span class="na">override=</span><span class="s">&quot;false&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&lt;Parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">"serviceStrategy"</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">             </span><span class="na">value=</span><span class="s">"PARTIAL-BUFFER2"</span><span class="w"> </span><span class="na">override=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nt">&lt;/Context&gt;</span>
 </code></pre></div>
 <p>You can configure the default service strategy by modifying the <strong><code>web.xml</code></strong> file of your GeoServer instance:</p>

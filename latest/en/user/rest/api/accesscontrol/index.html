@@ -30329,7 +30329,7 @@
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nt">&lt;/catalog&gt;</span>
 </code></pre></div>
 <h3 id="json">JSON<a class="headerlink" href="#json" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span><span class="nt">&quot;mode&quot;</span><span class="p">:</span><span class="s2">&quot;HIDE&quot;</span><span class="w"> </span><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span><span class="nt">"mode"</span><span class="p">:</span><span class="s2">"HIDE"</span><span class="w"> </span><span class="p">}</span>
 </code></pre></div>
 <h3 id="exceptions">Exceptions<a class="headerlink" href="#exceptions" title="Permanent link">&para;</a></h3>
 <table>
@@ -30414,16 +30414,16 @@
 </div>
 <p>Formats for GET,POST and PUT:</p>
 <h3 id="xml_1">XML<a class="headerlink" href="#xml_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nt">&lt;rules&gt;</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">   </span><span class="nt">&lt;rule</span><span class="w"> </span><span class="na">resource=</span><span class="s">&quot;*.*.r&quot;</span><span class="nt">&gt;</span>*<span class="nt">&lt;/rule&gt;</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">   </span><span class="nt">&lt;rule</span><span class="w"> </span><span class="na">resource=</span><span class="s">&quot;myworkspace.*.w&quot;</span><span class="nt">&gt;</span>ROLE_1,ROLE_2<span class="nt">&lt;/rule&gt;</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">   </span><span class="nt">&lt;rule</span><span class="w"> </span><span class="na">resource=</span><span class="s">"*.*.r"</span><span class="nt">&gt;</span>*<span class="nt">&lt;/rule&gt;</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">   </span><span class="nt">&lt;rule</span><span class="w"> </span><span class="na">resource=</span><span class="s">"myworkspace.*.w"</span><span class="nt">&gt;</span>ROLE_1,ROLE_2<span class="nt">&lt;/rule&gt;</span>
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="nt">&lt;/rules&gt;</span><span class="w"> </span>
 </code></pre></div>
 <p><strong>JSON</strong> :</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nt">&quot;*.*.r&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="s2">&quot;myworkspace&quot;</span><span class="err">.*.w</span><span class="s2">&quot;: &quot;</span><span class="err">ROLE_</span><span class="mi">1</span><span class="p">,</span><span class="err">ROLE_</span><span class="mi">2</span><span class="err">&quot;</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nt">"*.*.r"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*"</span><span class="p">,</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="s2">"myworkspace"</span><span class="err">.*.w</span><span class="s2">": "</span><span class="err">ROLE_</span><span class="mi">1</span><span class="p">,</span><span class="err">ROLE_</span><span class="mi">2</span><span class="err">"</span>
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="err">}</span>
 </code></pre></div>
 <p>The resource attribute specifies a rule. There are three different formats.</p>

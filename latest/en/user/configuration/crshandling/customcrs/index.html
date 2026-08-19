@@ -30137,26 +30137,26 @@
 <ol>
 <li>
 <p>The projection parameters need to be provided as a WKT (well known text) definition. The code sample below is just an example:</p>
-<div class="highlight"><pre><span></span><code>PROJCS[&quot;NAD83 / Austin&quot;,
-  GEOGCS[&quot;NAD83&quot;,
-    DATUM[&quot;North_American_Datum_1983&quot;,
-      SPHEROID[&quot;GRS 1980&quot;, 6378137.0, 298.257222101],
+<div class="highlight"><pre><span></span><code>PROJCS["NAD83 / Austin",
+  GEOGCS["NAD83",
+    DATUM["North_American_Datum_1983",
+      SPHEROID["GRS 1980", 6378137.0, 298.257222101],
       TOWGS84[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-    PRIMEM[&quot;Greenwich&quot;, 0.0],
-    UNIT[&quot;degree&quot;, 0.017453292519943295],
-    AXIS[&quot;Lon&quot;, EAST],
-    AXIS[&quot;Lat&quot;, NORTH]],
-  PROJECTION[&quot;Lambert_Conformal_Conic_2SP&quot;],
-  PARAMETER[&quot;central_meridian&quot;, -100.333333333333],
-  PARAMETER[&quot;latitude_of_origin&quot;, 29.6666666666667],
-  PARAMETER[&quot;standard_parallel_1&quot;, 31.883333333333297],
-  PARAMETER[&quot;false_easting&quot;, 2296583.333333],
-  PARAMETER[&quot;false_northing&quot;, 9842500.0],
-  PARAMETER[&quot;standard_parallel_2&quot;, 30.1166666666667],
-  UNIT[&quot;m&quot;, 1.0],
-  AXIS[&quot;x&quot;, EAST],
-  AXIS[&quot;y&quot;, NORTH],
-  AUTHORITY[&quot;EPSG&quot;,&quot;100002&quot;]]
+    PRIMEM["Greenwich", 0.0],
+    UNIT["degree", 0.017453292519943295],
+    AXIS["Lon", EAST],
+    AXIS["Lat", NORTH]],
+  PROJECTION["Lambert_Conformal_Conic_2SP"],
+  PARAMETER["central_meridian", -100.333333333333],
+  PARAMETER["latitude_of_origin", 29.6666666666667],
+  PARAMETER["standard_parallel_1", 31.883333333333297],
+  PARAMETER["false_easting", 2296583.333333],
+  PARAMETER["false_northing", 9842500.0],
+  PARAMETER["standard_parallel_2", 30.1166666666667],
+  UNIT["m", 1.0],
+  AXIS["x", EAST],
+  AXIS["y", NORTH],
+  AUTHORITY["EPSG","100002"]]
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -30168,26 +30168,26 @@
 </li>
 <li>
 <p>Insert the code WKT for the projection at the end of the file (on a single line or with backslash characters):</p>
-<div class="highlight"><pre><span></span><code>100002=PROJCS[&quot;NAD83 / Austin&quot;, \
-  GEOGCS[&quot;NAD83&quot;, \
-    DATUM[&quot;North_American_Datum_1983&quot;, \
-      SPHEROID[&quot;GRS 1980&quot;, 6378137.0, 298.257222101], \
+<div class="highlight"><pre><span></span><code>100002=PROJCS["NAD83 / Austin", \
+  GEOGCS["NAD83", \
+    DATUM["North_American_Datum_1983", \
+      SPHEROID["GRS 1980", 6378137.0, 298.257222101], \
       TOWGS84[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]], \
-    PRIMEM[&quot;Greenwich&quot;, 0.0], \
-    UNIT[&quot;degree&quot;, 0.017453292519943295], \
-    AXIS[&quot;Lon&quot;, EAST], \
-    AXIS[&quot;Lat&quot;, NORTH]], \
-  PROJECTION[&quot;Lambert_Conformal_Conic_2SP&quot;], \
-  PARAMETER[&quot;central_meridian&quot;, -100.333333333333], \
-  PARAMETER[&quot;latitude_of_origin&quot;, 29.6666666666667], \
-  PARAMETER[&quot;standard_parallel_1&quot;, 31.883333333333297], \
-  PARAMETER[&quot;false_easting&quot;, 2296583.333333], \
-  PARAMETER[&quot;false_northing&quot;, 9842500.0], \
-  PARAMETER[&quot;standard_parallel_2&quot;, 30.1166666666667], \
-  UNIT[&quot;m&quot;, 1.0], \
-  AXIS[&quot;x&quot;, EAST], \
-  AXIS[&quot;y&quot;, NORTH], \
-  AUTHORITY[&quot;EPSG&quot;,&quot;100002&quot;]]
+    PRIMEM["Greenwich", 0.0], \
+    UNIT["degree", 0.017453292519943295], \
+    AXIS["Lon", EAST], \
+    AXIS["Lat", NORTH]], \
+  PROJECTION["Lambert_Conformal_Conic_2SP"], \
+  PARAMETER["central_meridian", -100.333333333333], \
+  PARAMETER["latitude_of_origin", 29.6666666666667], \
+  PARAMETER["standard_parallel_1", 31.883333333333297], \
+  PARAMETER["false_easting", 2296583.333333], \
+  PARAMETER["false_northing", 9842500.0], \
+  PARAMETER["standard_parallel_2", 30.1166666666667], \
+  UNIT["m", 1.0], \
+  AXIS["x", EAST], \
+  AXIS["y", NORTH], \
+  AUTHORITY["EPSG","100002"]]
 </code></pre></div>
 </li>
 </ol>
@@ -30206,50 +30206,50 @@
 <p>The GeoServer referencing subsystem checks the existence of another property file, <strong><code>epsg_overrides.properties</code></strong>, whose format is the same as <strong><code>epsg.properties</code></strong>. Any definition contained in <strong><code>epsg_overrides.properties</code></strong> will <strong>override</strong> the EPSG code, while definitions stored in <strong><code>epsg.properties</code></strong> can only <strong>add</strong> to the database.</p>
 <p>Special care must be taken when overriding the Datum parameters, in particular the <strong>TOWGS84</strong> parameters. To make sure the override parameters are actually used the code of the Datum must be removed, otherwise the referencing subsystem will keep on reading the official database in search of the best Datum shift method (grid, 7 or 5 parameters transformation, plain affine transform).</p>
 <p>For example, if you need to override the official <strong>TOWGS84</strong> parameters of EPSG:23031:</p>
-<div class="highlight"><pre><span></span><code>PROJCS[&quot;ED50 / UTM zone 31N&quot;, 
-  GEOGCS[&quot;ED50&quot;, 
-    DATUM[&quot;European Datum 1950&quot;, 
-      SPHEROID[&quot;International 1924&quot;, 6378388.0, 297.0, AUTHORITY[&quot;EPSG&quot;,&quot;7022&quot;]], 
+<div class="highlight"><pre><span></span><code>PROJCS["ED50 / UTM zone 31N", 
+  GEOGCS["ED50", 
+    DATUM["European Datum 1950", 
+      SPHEROID["International 1924", 6378388.0, 297.0, AUTHORITY["EPSG","7022"]], 
       TOWGS84[-157.89, -17.16, -78.41, 2.118, 2.697, -1.434, -1.1097046576093785],
-      AUTHORITY[&quot;EPSG&quot;,&quot;6230&quot;]], 
-    PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
-    UNIT[&quot;degree&quot;, 0.017453292519943295], 
-    AXIS[&quot;Geodetic longitude&quot;, EAST], 
-    AXIS[&quot;Geodetic latitude&quot;, NORTH], 
-    AUTHORITY[&quot;EPSG&quot;,&quot;4230&quot;]], 
- PROJECTION[&quot;Transverse_Mercator&quot;], 
-  PARAMETER[&quot;central_meridian&quot;, 3.0], 
-  PARAMETER[&quot;latitude_of_origin&quot;, 0.0], 
-  PARAMETER[&quot;scale_factor&quot;, 0.9996], 
-  PARAMETER[&quot;false_easting&quot;, 500000.0], 
-  PARAMETER[&quot;false_northing&quot;, 0.0], 
-  UNIT[&quot;m&quot;, 1.0], 
-  AXIS[&quot;Easting&quot;, EAST], 
-  AXIS[&quot;Northing&quot;, NORTH], 
-  AUTHORITY[&quot;EPSG&quot;,&quot;23031&quot;]]
+      AUTHORITY["EPSG","6230"]], 
+    PRIMEM["Greenwich", 0.0, AUTHORITY["EPSG","8901"]], 
+    UNIT["degree", 0.017453292519943295], 
+    AXIS["Geodetic longitude", EAST], 
+    AXIS["Geodetic latitude", NORTH], 
+    AUTHORITY["EPSG","4230"]], 
+ PROJECTION["Transverse_Mercator"], 
+  PARAMETER["central_meridian", 3.0], 
+  PARAMETER["latitude_of_origin", 0.0], 
+  PARAMETER["scale_factor", 0.9996], 
+  PARAMETER["false_easting", 500000.0], 
+  PARAMETER["false_northing", 0.0], 
+  UNIT["m", 1.0], 
+  AXIS["Easting", EAST], 
+  AXIS["Northing", NORTH], 
+  AUTHORITY["EPSG","23031"]]
 </code></pre></div>
 <p>You should write the following (in a single line, here it's reported formatted over multiple lines for readability):</p>
 <div class="highlight"><pre><span></span><code>23031=
- PROJCS[&quot;ED50 / UTM zone 31N&quot;, 
-   GEOGCS[&quot;ED50&quot;, 
-     DATUM[&quot;European Datum 1950&quot;, 
-       SPHEROID[&quot;International 1924&quot;, 6378388.0, 297.0, AUTHORITY[&quot;EPSG&quot;,&quot;7022&quot;]], 
+ PROJCS["ED50 / UTM zone 31N", 
+   GEOGCS["ED50", 
+     DATUM["European Datum 1950", 
+       SPHEROID["International 1924", 6378388.0, 297.0, AUTHORITY["EPSG","7022"]], 
        TOWGS84[-136.65549, -141.4658, -167.29848, 2.093088, 0.001405, 0.107709, 11.54611], 
-       AUTHORITY[&quot;EPSG&quot;,&quot;6230&quot;]], 
-     PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
-     UNIT[&quot;degree&quot;, 0.017453292519943295], 
-     AXIS[&quot;Geodetic longitude&quot;, EAST], 
-     AXIS[&quot;Geodetic latitude&quot;, NORTH]], 
-  PROJECTION[&quot;Transverse_Mercator&quot;], 
-   PARAMETER[&quot;central_meridian&quot;, 3.0], 
-   PARAMETER[&quot;latitude_of_origin&quot;, 0.0], 
-   PARAMETER[&quot;scale_factor&quot;, 0.9996], 
-   PARAMETER[&quot;false_easting&quot;, 500000.0], 
-   PARAMETER[&quot;false_northing&quot;, 0.0], 
-   UNIT[&quot;m&quot;, 1.0], 
-   AXIS[&quot;Easting&quot;, EAST], 
-   AXIS[&quot;Northing&quot;, NORTH], 
-   AUTHORITY[&quot;EPSG&quot;,&quot;23031&quot;]]
+       AUTHORITY["EPSG","6230"]], 
+     PRIMEM["Greenwich", 0.0, AUTHORITY["EPSG","8901"]], 
+     UNIT["degree", 0.017453292519943295], 
+     AXIS["Geodetic longitude", EAST], 
+     AXIS["Geodetic latitude", NORTH]], 
+  PROJECTION["Transverse_Mercator"], 
+   PARAMETER["central_meridian", 3.0], 
+   PARAMETER["latitude_of_origin", 0.0], 
+   PARAMETER["scale_factor", 0.9996], 
+   PARAMETER["false_easting", 500000.0], 
+   PARAMETER["false_northing", 0.0], 
+   UNIT["m", 1.0], 
+   AXIS["Easting", EAST], 
+   AXIS["Northing", NORTH], 
+   AUTHORITY["EPSG","23031"]]
 </code></pre></div>
 <p>The definition has been changed in two places, the <strong>TOWGS84</strong> parameters, and the Datum code, <code>AUTHORITY["EPSG","4230"]</code>, has been removed.</p>
 <h2 id="configuring-a-custom-crs-authority">Configuring a custom CRS authority<a class="headerlink" href="#configuring-a-custom-crs-authority" title="Permanent link">&para;</a></h2>
@@ -30272,8 +30272,8 @@
 <p>Mind the capitalization of the file name, it must match the authority prefix declared in the <code>authorities.properties</code> file.</p>
 </div>
 <p>The WKT definitions are still using a simple <code>code=WKT</code> pattern, for example <code>MyCustomAuthority.properties</code> will contain something like this:</p>
-<div class="highlight"><pre><span></span><code>1=PROJCS[&quot;My Custom Projection&quot;, ... ]
-2=GEOGCS[&quot;My Custom Geographic CRS&quot;, ... ]
+<div class="highlight"><pre><span></span><code>1=PROJCS["My Custom Projection", ... ]
+2=GEOGCS["My Custom Geographic CRS", ... ]
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

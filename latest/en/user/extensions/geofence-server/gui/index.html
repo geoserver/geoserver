@@ -30165,7 +30165,7 @@
 <div class="highlight"><pre><span></span><code>time between 2020-01-01 and 2020-12-31
 </code></pre></div>
 <p>A CQL filter limiting access to data older than a week (dynamic time range) would look like this instead:</p>
-<div class="highlight"><pre><span></span><code>dateDifference(now(), time, &#39;d&#39;) &gt; 7
+<div class="highlight"><pre><span></span><code>dateDifference(now(), time, 'd') &gt; 7
 </code></pre></div>
 <p>(see <a href="../../../filter/function_reference/#temporal-functions">temporal-functions</a> for more details on the date difference function)</p>
 <p>Allowed area can be defined in whatever SRID. GeoServer will automatically reproject it to the resource CRS when needed.</p>

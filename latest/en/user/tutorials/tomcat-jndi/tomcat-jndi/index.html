@@ -30265,25 +30265,25 @@
 <p>Once that is done, the Tomcat configuration file <strong><code>{TOMCAT_HOME}/conf/context.xml</code></strong> needs to be edited in order to setup the connection pool. In the case of a local Oracle XE the setup might look like:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">&lt;Context&gt;</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">   </span>...
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">   </span><span class="nt">&lt;Resource</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;jdbc/oralocal&quot;</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">      </span><span class="na">auth=</span><span class="s">&quot;Container&quot;</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">      </span><span class="na">type=</span><span class="s">&quot;javax.sql.DataSource&quot;</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">      </span><span class="na">driverClassName=</span><span class="s">&quot;oracle.jdbc.driver.OracleDriver&quot;</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">      </span><span class="na">url=</span><span class="s">&quot;jdbc:oracle:thin:@localhost:1521:xe&quot;</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">      </span><span class="na">username=</span><span class="s">&quot;xxxxx&quot;</span><span class="w"> </span><span class="na">password=</span><span class="s">&quot;xxxxxx&quot;</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">      </span><span class="na">maxTotal=</span><span class="s">&quot;20&quot;</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">      </span><span class="na">initialSize=</span><span class="s">&quot;0&quot;</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">      </span><span class="na">minIdle=</span><span class="s">&quot;0&quot;</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">      </span><span class="na">maxIdle=</span><span class="s">&quot;8&quot;</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">      </span><span class="na">maxWait=</span><span class="s">&quot;10000&quot;</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">      </span><span class="na">timeBetweenEvictionRunsMillis=</span><span class="s">&quot;30000&quot;</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">      </span><span class="na">minEvictableIdleTimeMillis=</span><span class="s">&quot;60000&quot;</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">      </span><span class="na">testWhileIdle=</span><span class="s">&quot;true&quot;</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">      </span><span class="na">poolPreparedStatements=</span><span class="s">&quot;true&quot;</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">      </span><span class="na">maxOpenPreparedStatements=</span><span class="s">&quot;100&quot;</span>
-<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">      </span><span class="na">validationQuery=</span><span class="s">&quot;SELECT SYSDATE FROM DUAL&quot;</span>
-<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">      </span><span class="na">maxAge=</span><span class="s">&quot;600000&quot;</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">      </span><span class="na">rollbackOnReturn=</span><span class="s">&quot;true&quot;</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">   </span><span class="nt">&lt;Resource</span><span class="w"> </span><span class="na">name=</span><span class="s">"jdbc/oralocal"</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">      </span><span class="na">auth=</span><span class="s">"Container"</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">      </span><span class="na">type=</span><span class="s">"javax.sql.DataSource"</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">      </span><span class="na">driverClassName=</span><span class="s">"oracle.jdbc.driver.OracleDriver"</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">      </span><span class="na">url=</span><span class="s">"jdbc:oracle:thin:@localhost:1521:xe"</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">      </span><span class="na">username=</span><span class="s">"xxxxx"</span><span class="w"> </span><span class="na">password=</span><span class="s">"xxxxxx"</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">      </span><span class="na">maxTotal=</span><span class="s">"20"</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">      </span><span class="na">initialSize=</span><span class="s">"0"</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">      </span><span class="na">minIdle=</span><span class="s">"0"</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">      </span><span class="na">maxIdle=</span><span class="s">"8"</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">      </span><span class="na">maxWait=</span><span class="s">"10000"</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">      </span><span class="na">timeBetweenEvictionRunsMillis=</span><span class="s">"30000"</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">      </span><span class="na">minEvictableIdleTimeMillis=</span><span class="s">"60000"</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">      </span><span class="na">testWhileIdle=</span><span class="s">"true"</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">      </span><span class="na">poolPreparedStatements=</span><span class="s">"true"</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">      </span><span class="na">maxOpenPreparedStatements=</span><span class="s">"100"</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">      </span><span class="na">validationQuery=</span><span class="s">"SELECT SYSDATE FROM DUAL"</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">      </span><span class="na">maxAge=</span><span class="s">"600000"</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">      </span><span class="na">rollbackOnReturn=</span><span class="s">"true"</span>
 <a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="w">      </span><span class="nt">/&gt;</span>
 <a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="w"> </span><span class="nt">&lt;/Context&gt;</span>
 </code></pre></div>
@@ -30329,23 +30329,23 @@
 <p>For configuring the JNDI pool you need to move the Postgres JDBC driver (it should be named <strong><code>postgresql-XX.X.X.jar</code></strong>) from the GeoServer <strong><code>WEB-INF/lib</code></strong> folder and put it into the <strong><code>{TOMCAT_HOME}/lib</code></strong> folder.</p>
 <p>Then the following code must be added to the Tomcat configuration file <strong><code>{TOMCAT_HOME}/conf/context.xml</code></strong> inside a Context tag.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;Context&gt;</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">   </span><span class="nt">&lt;Resource</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;jdbc/postgres&quot;</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">      </span><span class="na">auth=</span><span class="s">&quot;Container&quot;</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">      </span><span class="na">type=</span><span class="s">&quot;javax.sql.DataSource&quot;</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="na">driverClassName=</span><span class="s">&quot;org.postgresql.Driver&quot;</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">      </span><span class="na">url=</span><span class="s">&quot;jdbc:postgresql://localhost:5432/test&quot;</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">      </span><span class="na">username=</span><span class="s">&quot;xxxxx&quot;</span><span class="w"> </span><span class="na">password=</span><span class="s">&quot;xxxxxx&quot;</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">      </span><span class="na">maxTotal=</span><span class="s">&quot;20&quot;</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">      </span><span class="na">initialSize=</span><span class="s">&quot;0&quot;</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">      </span><span class="na">minIdle=</span><span class="s">&quot;0&quot;</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">      </span><span class="na">maxIdle=</span><span class="s">&quot;8&quot;</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">      </span><span class="na">maxWait=</span><span class="s">&quot;10000&quot;</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">      </span><span class="na">timeBetweenEvictionRunsMillis=</span><span class="s">&quot;30000&quot;</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">      </span><span class="na">minEvictableIdleTimeMillis=</span><span class="s">&quot;60000&quot;</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">      </span><span class="na">testWhileIdle=</span><span class="s">&quot;true&quot;</span>
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">      </span><span class="na">validationQuery=</span><span class="s">&quot;SELECT 1&quot;</span>
-<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">      </span><span class="na">maxAge=</span><span class="s">&quot;600000&quot;</span>
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">      </span><span class="na">rollbackOnReturn=</span><span class="s">&quot;true&quot;</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">   </span><span class="nt">&lt;Resource</span><span class="w"> </span><span class="na">name=</span><span class="s">"jdbc/postgres"</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">      </span><span class="na">auth=</span><span class="s">"Container"</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">      </span><span class="na">type=</span><span class="s">"javax.sql.DataSource"</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="na">driverClassName=</span><span class="s">"org.postgresql.Driver"</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">      </span><span class="na">url=</span><span class="s">"jdbc:postgresql://localhost:5432/test"</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">      </span><span class="na">username=</span><span class="s">"xxxxx"</span><span class="w"> </span><span class="na">password=</span><span class="s">"xxxxxx"</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">      </span><span class="na">maxTotal=</span><span class="s">"20"</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">      </span><span class="na">initialSize=</span><span class="s">"0"</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">      </span><span class="na">minIdle=</span><span class="s">"0"</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">      </span><span class="na">maxIdle=</span><span class="s">"8"</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">      </span><span class="na">maxWait=</span><span class="s">"10000"</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">      </span><span class="na">timeBetweenEvictionRunsMillis=</span><span class="s">"30000"</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">      </span><span class="na">minEvictableIdleTimeMillis=</span><span class="s">"60000"</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">      </span><span class="na">testWhileIdle=</span><span class="s">"true"</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">      </span><span class="na">validationQuery=</span><span class="s">"SELECT 1"</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">      </span><span class="na">maxAge=</span><span class="s">"600000"</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">      </span><span class="na">rollbackOnReturn=</span><span class="s">"true"</span>
 <a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">    </span><span class="nt">/&gt;</span>
 <a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="nt">&lt;/Context&gt;</span>
 </code></pre></div>
@@ -30360,25 +30360,25 @@
 <p>Then the following code must be written in the Tomcat configuration file <strong><code>{TOMCAT_HOME}/conf/context.xml</code></strong></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&lt;Context&gt;</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">   </span>...
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">      </span><span class="nt">&lt;Resource</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;jdbc/sqlserver&quot;</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">      </span><span class="na">auth=</span><span class="s">&quot;Container&quot;</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">      </span><span class="na">type=</span><span class="s">&quot;javax.sql.DataSource&quot;</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">      </span><span class="na">driverClassName=</span><span class="s">&quot;com.microsoft.sqlserver.jdbc.SQLServerDriver&quot;</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">      </span><span class="na">url=</span><span class="s">&quot;jdbc:sqlserver://localhost:1433;databaseName=test;user=admin;password=admin;&quot;</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">      </span><span class="na">username=</span><span class="s">&quot;admin&quot;</span><span class="w"> </span><span class="na">password=</span><span class="s">&quot;admin&quot;</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">      </span><span class="na">maxTotal=</span><span class="s">&quot;20&quot;</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">      </span><span class="na">initialSize=</span><span class="s">&quot;0&quot;</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">      </span><span class="na">minIdle=</span><span class="s">&quot;0&quot;</span>
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">      </span><span class="na">maxIdle=</span><span class="s">&quot;8&quot;</span>
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">      </span><span class="na">maxWait=</span><span class="s">&quot;10000&quot;</span>
-<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">      </span><span class="na">timeBetweenEvictionRunsMillis=</span><span class="s">&quot;30000&quot;</span>
-<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">      </span><span class="na">minEvictableIdleTimeMillis=</span><span class="s">&quot;60000&quot;</span>
-<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">      </span><span class="na">testWhileIdle=</span><span class="s">&quot;true&quot;</span>
-<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">      </span><span class="na">poolPreparedStatements=</span><span class="s">&quot;true&quot;</span>
-<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">      </span><span class="na">maxOpenPreparedStatements=</span><span class="s">&quot;100&quot;</span>
-<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">      </span><span class="na">validationQuery=</span><span class="s">&quot;SELECT 1&quot;</span>
-<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">      </span><span class="na">maxAge=</span><span class="s">&quot;600000&quot;</span>
-<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">      </span><span class="na">rollbackOnReturn=</span><span class="s">&quot;true&quot;</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">      </span><span class="nt">&lt;Resource</span><span class="w"> </span><span class="na">name=</span><span class="s">"jdbc/sqlserver"</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">      </span><span class="na">auth=</span><span class="s">"Container"</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">      </span><span class="na">type=</span><span class="s">"javax.sql.DataSource"</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">      </span><span class="na">driverClassName=</span><span class="s">"com.microsoft.sqlserver.jdbc.SQLServerDriver"</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">      </span><span class="na">url=</span><span class="s">"jdbc:sqlserver://localhost:1433;databaseName=test;user=admin;password=admin;"</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">      </span><span class="na">username=</span><span class="s">"admin"</span><span class="w"> </span><span class="na">password=</span><span class="s">"admin"</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">      </span><span class="na">maxTotal=</span><span class="s">"20"</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">      </span><span class="na">initialSize=</span><span class="s">"0"</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">      </span><span class="na">minIdle=</span><span class="s">"0"</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">      </span><span class="na">maxIdle=</span><span class="s">"8"</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">      </span><span class="na">maxWait=</span><span class="s">"10000"</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">      </span><span class="na">timeBetweenEvictionRunsMillis=</span><span class="s">"30000"</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">      </span><span class="na">minEvictableIdleTimeMillis=</span><span class="s">"60000"</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">      </span><span class="na">testWhileIdle=</span><span class="s">"true"</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">      </span><span class="na">poolPreparedStatements=</span><span class="s">"true"</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">      </span><span class="na">maxOpenPreparedStatements=</span><span class="s">"100"</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">      </span><span class="na">validationQuery=</span><span class="s">"SELECT 1"</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">      </span><span class="na">maxAge=</span><span class="s">"600000"</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">      </span><span class="na">rollbackOnReturn=</span><span class="s">"true"</span>
 <a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">      </span><span class="nt">/&gt;</span>
 <a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="nt">&lt;/Context&gt;</span>
 </code></pre></div>

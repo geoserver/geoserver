@@ -30116,10 +30116,10 @@
 <h1 id="specifying-compositing-and-blending-in-sld">Specifying compositing and blending in SLD<a class="headerlink" href="#specifying-compositing-and-blending-in-sld" title="Permanent link">&para;</a></h1>
 <h2 id="composites">Composites<a class="headerlink" href="#composites" title="Permanent link">&para;</a></h2>
 <p>Both compositing and blending can be specified in SLD by adding the following VendorOption to either the end of a Symbolizer or FeatureTypeStyle:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;composite&quot;</span><span class="nt">&gt;</span>multiply<span class="nt">&lt;/VendorOption&gt;</span><span class="w">        </span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"composite"</span><span class="nt">&gt;</span>multiply<span class="nt">&lt;/VendorOption&gt;</span><span class="w">        </span>
 </code></pre></div>
 <p>In case a custom opacity is desired, it can be added after the operation name separated with a comma:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;composite&quot;</span><span class="nt">&gt;</span>multiply,<span class="w"> </span>0.5<span class="nt">&lt;/VendorOption&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"composite"</span><span class="nt">&gt;</span>multiply,<span class="w"> </span>0.5<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -30133,7 +30133,7 @@
 </div>
 <h2 id="composite-bases">Composite bases<a class="headerlink" href="#composite-bases" title="Permanent link">&para;</a></h2>
 <p>For FeatureTypeStyles an additional vendor option can be added to control compositing groups:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;composite-base&quot;</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"composite-base"</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
 <p>This will tell the rendering engine to use that FeatureTypeStyle as the destination, and will compose all subsequent FeatureTypeStyle/Layers on top of it, until another base is found. Once the full set of layers against a base is composed, then the base itself will be composed against the next set of composed layers, using its own compositing operator, if present.</p>
 <p>Without this setting, the destination will be the full stack of all previous FeatureTypeStyles and layers drawn before the current one. This can be limiting for two reasons:</p>

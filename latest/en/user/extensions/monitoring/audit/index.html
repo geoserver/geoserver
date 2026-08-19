@@ -30154,9 +30154,9 @@ geoserver_audit_20110811_7.log
 geoserver_audit_20110811_8.log
 </code></pre></div>
 <p>By default each log file contents will be a xml document looking like the following:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="cp">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nt">&lt;Requests&gt;</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nt">&lt;Request</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;168&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nt">&lt;Request</span><span class="w"> </span><span class="na">id=</span><span class="s">"168"</span><span class="nt">&gt;</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">       </span><span class="nt">&lt;Service&gt;</span>WMS<span class="nt">&lt;/Service&gt;</span><span class="w"> </span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">       </span><span class="nt">&lt;Version&gt;</span>1.1.1<span class="nt">&lt;/Version&gt;</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">       </span><span class="nt">&lt;Operation&gt;</span>GetMap<span class="nt">&lt;/Operation&gt;</span><span class="w"> </span>
@@ -30185,42 +30185,42 @@ geoserver_audit_20110811_8.log
 <h2 id="customizing-log-contents">Customizing Log Contents<a class="headerlink" href="#customizing-log-contents" title="Permanent link">&para;</a></h2>
 <p>The log contents are driven by three FreeMarker templates.</p>
 <p><code>header.ftl</code> is used once when a new log file is created to form the first few lines of the file. The default header template is:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="cp">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nt">&lt;Requests&gt;</span>
 </code></pre></div>
 <p><code>content.ftl</code> is used to write out the request details. The default template dumps all the known fields about the request:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="err">&lt;</span>#escape<span class="w"> </span>x<span class="w"> </span>as<span class="w"> </span>x?xml&gt;
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nt">&lt;Request</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;${id!&quot;</span><span class="err">&quot;}&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">   </span><span class="nt">&lt;Service&gt;</span>${service!&quot;&quot;}<span class="nt">&lt;/Service&gt;</span><span class="w"> </span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">   </span><span class="nt">&lt;Version&gt;</span>${owsVersion!&quot;&quot;}<span class="nt">&lt;/Version&gt;</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">   </span><span class="nt">&lt;Operation&gt;</span>${operation!&quot;&quot;}<span class="nt">&lt;/Operation&gt;</span><span class="w"> </span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">   </span><span class="nt">&lt;SubOperation&gt;</span>${subOperation!&quot;&quot;}<span class="nt">&lt;/SubOperation&gt;</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">   </span><span class="nt">&lt;Resources&gt;</span>${resourcesList!&quot;&quot;}<span class="nt">&lt;/Resources&gt;</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">   </span><span class="nt">&lt;ResourcesProcessingTime&gt;</span>${resourcesProcessingTimeList!&quot;&quot;}<span class="nt">&lt;/ResourcesProcessingTime&gt;</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">   </span><span class="nt">&lt;LabelsProcessingTime&gt;</span>${labellingProcessingTime!&quot;&quot;}<span class="nt">&lt;/LabelsProcessingTime&gt;</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">   </span><span class="nt">&lt;Path&gt;</span>${path!&quot;&quot;}<span class="nt">&lt;/Path&gt;</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">   </span><span class="nt">&lt;QueryString&gt;</span>${queryString!&quot;&quot;}<span class="nt">&lt;/QueryString&gt;</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nt">&lt;Request</span><span class="w"> </span><span class="na">id=</span><span class="s">"${id!"</span><span class="err">"}"</span><span class="nt">&gt;</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">   </span><span class="nt">&lt;Service&gt;</span>${service!""}<span class="nt">&lt;/Service&gt;</span><span class="w"> </span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">   </span><span class="nt">&lt;Version&gt;</span>${owsVersion!""}<span class="nt">&lt;/Version&gt;</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">   </span><span class="nt">&lt;Operation&gt;</span>${operation!""}<span class="nt">&lt;/Operation&gt;</span><span class="w"> </span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">   </span><span class="nt">&lt;SubOperation&gt;</span>${subOperation!""}<span class="nt">&lt;/SubOperation&gt;</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">   </span><span class="nt">&lt;Resources&gt;</span>${resourcesList!""}<span class="nt">&lt;/Resources&gt;</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">   </span><span class="nt">&lt;ResourcesProcessingTime&gt;</span>${resourcesProcessingTimeList!""}<span class="nt">&lt;/ResourcesProcessingTime&gt;</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">   </span><span class="nt">&lt;LabelsProcessingTime&gt;</span>${labellingProcessingTime!""}<span class="nt">&lt;/LabelsProcessingTime&gt;</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">   </span><span class="nt">&lt;Path&gt;</span>${path!""}<span class="nt">&lt;/Path&gt;</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">   </span><span class="nt">&lt;QueryString&gt;</span>${queryString!""}<span class="nt">&lt;/QueryString&gt;</span>
 <a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">   </span><span class="err">&lt;</span>#if<span class="w"> </span>bodyAsString??&gt;
 <a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">   </span><span class="nt">&lt;Body&gt;</span>
 <a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">   </span>${bodyAsString}
 <a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">   </span><span class="nt">&lt;/Body&gt;</span>
 <a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">   </span><span class="err">&lt;</span>/#if&gt;
-<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">   </span><span class="nt">&lt;HttpMethod&gt;</span>${httpMethod!&quot;&quot;}<span class="nt">&lt;/HttpMethod&gt;</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">   </span><span class="nt">&lt;HttpMethod&gt;</span>${httpMethod!""}<span class="nt">&lt;/HttpMethod&gt;</span>
 <a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">   </span><span class="nt">&lt;StartTime&gt;</span>${startTime?datetime?iso_utc_ms}<span class="nt">&lt;/StartTime&gt;</span><span class="w"> </span>
 <a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">   </span><span class="nt">&lt;EndTime&gt;</span>${endTime?datetime?iso_utc_ms}<span class="nt">&lt;/EndTime&gt;</span>
 <a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">   </span><span class="nt">&lt;TotalTime&gt;</span>${totalTime}<span class="nt">&lt;/TotalTime&gt;</span><span class="w"> </span>
-<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">   </span><span class="nt">&lt;RemoteAddr&gt;</span>${remoteAddr!&quot;&quot;}<span class="nt">&lt;/RemoteAddr&gt;</span>
-<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">   </span><span class="nt">&lt;RemoteHost&gt;</span>${remoteHost!&quot;&quot;}<span class="nt">&lt;/RemoteHost&gt;</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">   </span><span class="nt">&lt;RemoteAddr&gt;</span>${remoteAddr!""}<span class="nt">&lt;/RemoteAddr&gt;</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">   </span><span class="nt">&lt;RemoteHost&gt;</span>${remoteHost!""}<span class="nt">&lt;/RemoteHost&gt;</span>
 <a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="w">   </span><span class="nt">&lt;Host&gt;</span>${host}<span class="nt">&lt;/Host&gt;</span><span class="w"> </span>
-<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="w">   </span><span class="nt">&lt;RemoteUser&gt;</span>${remoteUser!&quot;&quot;}<span class="nt">&lt;/RemoteUser&gt;</span>
-<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="w">   </span><span class="nt">&lt;ResponseStatus&gt;</span>${responseStatus!&quot;&quot;}<span class="nt">&lt;/ResponseStatus&gt;</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="w">   </span><span class="nt">&lt;RemoteUser&gt;</span>${remoteUser!""}<span class="nt">&lt;/RemoteUser&gt;</span>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="w">   </span><span class="nt">&lt;ResponseStatus&gt;</span>${responseStatus!""}<span class="nt">&lt;/ResponseStatus&gt;</span>
 <a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="w">   </span><span class="nt">&lt;ResponseLength&gt;</span>${responseLength?c}<span class="nt">&lt;/ResponseLength&gt;</span>
-<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a><span class="w">   </span><span class="nt">&lt;ResponseContentType&gt;</span>${responseContentType!&quot;&quot;}<span class="nt">&lt;/ResponseContentType&gt;</span>
-<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="w">   </span><span class="nt">&lt;CacheResult&gt;</span>${cacheResult!&quot;&quot;}<span class="nt">&lt;/CacheResult&gt;</span>
-<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="w">   </span><span class="nt">&lt;MissReason&gt;</span>${missReason!&quot;&quot;}<span class="nt">&lt;/MissReason&gt;</span>
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a><span class="w">   </span><span class="nt">&lt;ResponseContentType&gt;</span>${responseContentType!""}<span class="nt">&lt;/ResponseContentType&gt;</span>
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="w">   </span><span class="nt">&lt;CacheResult&gt;</span>${cacheResult!""}<span class="nt">&lt;/CacheResult&gt;</span>
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="w">   </span><span class="nt">&lt;MissReason&gt;</span>${missReason!""}<span class="nt">&lt;/MissReason&gt;</span>
 <a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a><span class="w">   </span><span class="err">&lt;</span>#if<span class="w"> </span>error??&gt;
 <a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a><span class="w">   </span><span class="nt">&lt;Failed&gt;</span>true<span class="nt">&lt;/Failed&gt;</span>
-<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a><span class="w">   </span><span class="nt">&lt;ErrorMessage&gt;</span>${errorMessage!&quot;&quot;}<span class="nt">&lt;/ErrorMessage&gt;</span>
+<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a><span class="w">   </span><span class="nt">&lt;ErrorMessage&gt;</span>${errorMessage!""}<span class="nt">&lt;/ErrorMessage&gt;</span>
 <a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a><span class="w">   </span><span class="err">&lt;</span>#else&gt;
 <a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a><span class="w">   </span><span class="nt">&lt;Failed&gt;</span>false<span class="nt">&lt;/Failed&gt;</span>
 <a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a><span class="w">   </span><span class="err">&lt;</span>/#if&gt;

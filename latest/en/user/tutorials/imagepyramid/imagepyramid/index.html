@@ -30117,7 +30117,7 @@
 <p>In order to build the pyramid we'll use the <a href="http://www.gdal.org/gdal_retile.md">gdal_retile.py</a> utility, part of the GDAL command line utilities and available for various operating systems (if you're using Microsoft Windows look for <a href="http://fwtools.maptools.org/">FWTools</a>).</p>
 <p>The following commands will build a pyramid on disk:</p>
 <div class="highlight"><pre><span></span><code>mkdir bmpyramid
-gdal_retile.py -v -r bilinear -levels 4 -ps 2048 2048 -co &quot;TILED=YES&quot; -co &quot;COMPRESS=JPEG&quot; -targetDir bmpyramid bmreduced.tiff
+gdal_retile.py -v -r bilinear -levels 4 -ps 2048 2048 -co "TILED=YES" -co "COMPRESS=JPEG" -targetDir bmpyramid bmreduced.tiff
 </code></pre></div>
 <p>The <a href="http://www.gdal.org/gdal_retile.md">gdal_retile.py</a> user guide provides a detailed explanation for all the possible parameters, here is a description of the ones used in the command line above:</p>
 <ul>

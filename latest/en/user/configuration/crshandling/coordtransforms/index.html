@@ -31725,53 +31725,53 @@
 </div>
 <h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
 <p>Custom NTv2 file:</p>
-<div class="highlight"><pre><span></span><code>4230,4258=PARAM_MT[&quot;NTv2&quot;, \
-  PARAMETER[&quot;Latitude and longitude difference file&quot;, &quot;100800401.gsb&quot;]]
+<div class="highlight"><pre><span></span><code>4230,4258=PARAM_MT["NTv2", \
+  PARAMETER["Latitude and longitude difference file", "100800401.gsb"]]
 </code></pre></div>
 <p>Geocentric transformation, preceded by an ellipsoid to geocentric conversion, and back geocentric to ellipsoid. The results is a concatenation of three math transforms:</p>
 <div class="highlight"><pre><span></span><code>4230,4258=CONCAT_MT[ \
-  PARAM_MT[&quot;Ellipsoid_To_Geocentric&quot;, \
-    PARAMETER[&quot;dim&quot;, 2], \
-    PARAMETER[&quot;semi_major&quot;, 6378388.0], \
-    PARAMETER[&quot;semi_minor&quot;, 6356911.9461279465]], \
-  PARAM_MT[&quot;Position Vector transformation (geog2D domain)&quot;, \
-    PARAMETER[&quot;dx&quot;, -116.641], \
-    PARAMETER[&quot;dy&quot;, -56.931], \
-    PARAMETER[&quot;dz&quot;, -110.559], \
-    PARAMETER[&quot;ex&quot;, 0.8925078166311858], \
-    PARAMETER[&quot;ey&quot;, 0.9207660950870382], \
-    PARAMETER[&quot;ez&quot;, -0.9166407989620964], \
-    PARAMETER[&quot;ppm&quot;, -3.5200000000346066]], \
-  PARAM_MT[&quot;Geocentric_To_Ellipsoid&quot;, \
-    PARAMETER[&quot;dim&quot;, 2], \
-    PARAMETER[&quot;semi_major&quot;, 6378137.0], \
-    PARAMETER[&quot;semi_minor&quot;, 6356752.314140356]]]
+  PARAM_MT["Ellipsoid_To_Geocentric", \
+    PARAMETER["dim", 2], \
+    PARAMETER["semi_major", 6378388.0], \
+    PARAMETER["semi_minor", 6356911.9461279465]], \
+  PARAM_MT["Position Vector transformation (geog2D domain)", \
+    PARAMETER["dx", -116.641], \
+    PARAMETER["dy", -56.931], \
+    PARAMETER["dz", -110.559], \
+    PARAMETER["ex", 0.8925078166311858], \
+    PARAMETER["ey", 0.9207660950870382], \
+    PARAMETER["ez", -0.9166407989620964], \
+    PARAMETER["ppm", -3.5200000000346066]], \
+  PARAM_MT["Geocentric_To_Ellipsoid", \
+    PARAMETER["dim", 2], \
+    PARAMETER["semi_major", 6378137.0], \
+    PARAMETER["semi_minor", 6356752.314140356]]]
 </code></pre></div>
 <p>You can make use of existing grid shift files such as this explicit transformation from NAD27 to WGS84 made up of a NADCON transform from NAD27 to NAD83 followed by a Molodenski transform converting from the GRS80 Ellipsoid (used by NAD83) to the WGS84 Ellipsoid:</p>
 <div class="highlight"><pre><span></span><code>4267,4326=CONCAT_MT[ \
-  PARAM_MT[&quot;NADCON&quot;, \
-    PARAMETER[&quot;Latitude difference file&quot;, &quot;conus.las&quot;], \
-    PARAMETER[&quot;Longitude difference file&quot;, &quot;conus.los&quot;]], \
-  PARAM_MT[&quot;Molodenski&quot;, \
-    PARAMETER[&quot;dim&quot;, 2], \
-    PARAMETER[&quot;dx&quot;, 0.0], \
-    PARAMETER[&quot;dy&quot;, 0.0], \
-    PARAMETER[&quot;dz&quot;, 0.0], \
-    PARAMETER[&quot;src_semi_major&quot;, 6378137.0], \
-    PARAMETER[&quot;src_semi_minor&quot;, 6356752.314140356], \
-    PARAMETER[&quot;tgt_semi_major&quot;, 6378137.0], \
-    PARAMETER[&quot;tgt_semi_minor&quot;, 6356752.314245179]]]
+  PARAM_MT["NADCON", \
+    PARAMETER["Latitude difference file", "conus.las"], \
+    PARAMETER["Longitude difference file", "conus.los"]], \
+  PARAM_MT["Molodenski", \
+    PARAMETER["dim", 2], \
+    PARAMETER["dx", 0.0], \
+    PARAMETER["dy", 0.0], \
+    PARAMETER["dz", 0.0], \
+    PARAMETER["src_semi_major", 6378137.0], \
+    PARAMETER["src_semi_minor", 6356752.314140356], \
+    PARAMETER["tgt_semi_major", 6378137.0], \
+    PARAMETER["tgt_semi_minor", 6356752.314245179]]]
 </code></pre></div>
 <p>Affine 2D transform operating directly in projected coordinates:</p>
-<div class="highlight"><pre><span></span><code>23031,25831=PARAM_MT[&quot;Affine&quot;, \
-  PARAMETER[&quot;num_row&quot;, 3], \
-  PARAMETER[&quot;num_col&quot;, 3], \
-  PARAMETER[&quot;elt_0_0&quot;, 1.0000015503712145], \
-  PARAMETER[&quot;elt_0_1&quot;, 0.00000758753979846734], \
-  PARAMETER[&quot;elt_0_2&quot;, -129.549], \
-  PARAMETER[&quot;elt_1_0&quot;, -0.00000758753979846734], \
-  PARAMETER[&quot;elt_1_1&quot;, 1.0000015503712145], \
-  PARAMETER[&quot;elt_1_2&quot;, -208.185]]
+<div class="highlight"><pre><span></span><code>23031,25831=PARAM_MT["Affine", \
+  PARAMETER["num_row", 3], \
+  PARAMETER["num_col", 3], \
+  PARAMETER["elt_0_0", 1.0000015503712145], \
+  PARAMETER["elt_0_1", 0.00000758753979846734], \
+  PARAMETER["elt_0_2", -129.549], \
+  PARAMETER["elt_1_0", -0.00000758753979846734], \
+  PARAMETER["elt_1_1", 1.0000015503712145], \
+  PARAMETER["elt_1_2", -208.185]]
 </code></pre></div>
 <p>Each operation can be described in a single line, or can be split in several lines for readability, adding a backslash "\" at the end of each line, as in the former examples.</p>
 <h2 id="coordinate-operations-with-custom-authorities">Coordinate Operations with custom authorities<a class="headerlink" href="#coordinate-operations-with-custom-authorities" title="Permanent link">&para;</a></h2>
@@ -31784,15 +31784,15 @@
 </div>
 <p>The authority prefix can be omitted in case it's EPSG, allowing to mix custom CRSs and EPSG CRSs in the same configuration file.</p>
 <p>For example, if you have defined a custom authority named "MYAUTH", you could define a custom coordinate operation like this:</p>
-<div class="highlight"><pre><span></span><code>MYAUTH\:1000,4326=PARAM_MT[&quot;Molodenski&quot;, \
-    PARAMETER[&quot;dim&quot;, 2], \
-    PARAMETER[&quot;dx&quot;, 1.0], \
-    PARAMETER[&quot;dy&quot;, 2.0], \
-    PARAMETER[&quot;dz&quot;, 3.0], \
-    PARAMETER[&quot;src_semi_major&quot;, 6378137.0], \
-    PARAMETER[&quot;src_semi_minor&quot;, 6356752.314140356], \
-    PARAMETER[&quot;tgt_semi_major&quot;, 6378137.0], \
-    PARAMETER[&quot;tgt_semi_minor&quot;, 6356752.314245179]]
+<div class="highlight"><pre><span></span><code>MYAUTH\:1000,4326=PARAM_MT["Molodenski", \
+    PARAMETER["dim", 2], \
+    PARAMETER["dx", 1.0], \
+    PARAMETER["dy", 2.0], \
+    PARAMETER["dz", 3.0], \
+    PARAMETER["src_semi_major", 6378137.0], \
+    PARAMETER["src_semi_minor", 6356752.314140356], \
+    PARAMETER["tgt_semi_major", 6378137.0], \
+    PARAMETER["tgt_semi_minor", 6356752.314245179]]
 </code></pre></div>
 <p>If the above files are modified at runtime, GeoServer won't notice the changes right away. To force a reload of the definitions, issue a "reset" of the configuration, e.g., from the UI go into "Server Status" and click on the "Reset" button.</p>
 

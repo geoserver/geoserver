@@ -30357,9 +30357,9 @@
 </code></pre></div>
 <p>The default option for this parameter is <code>false</code>.</p>
 <p>For example, the following request is invalid:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">&lt;wfs:GetFeature</span><span class="w"> </span><span class="na">service=</span><span class="s">&quot;WFS&quot;</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w"> </span><span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">&lt;Query</span><span class="w"> </span><span class="na">typeName=</span><span class="s">&quot;topp:states&quot;</span><span class="nt">/&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">&lt;wfs:GetFeature</span><span class="w"> </span><span class="na">service=</span><span class="s">"WFS"</span><span class="w"> </span><span class="na">version=</span><span class="s">"1.0.0"</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w"> </span><span class="na">xmlns:wfs=</span><span class="s">"http://www.opengis.net/wfs"</span><span class="nt">&gt;</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">&lt;Query</span><span class="w"> </span><span class="na">typeName=</span><span class="s">"topp:states"</span><span class="nt">/&gt;</span>
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nt">&lt;/wfs:GetFeature&gt;</span>
 </code></pre></div>
 <p>The request is invalid for two reasons:</p>
@@ -30368,10 +30368,10 @@
 <li>The namespace prefix has not been mapped to a namespace URI.</li>
 </ul>
 <p>That said, the request would still be processed by default. Executing the above command with the <code>strict=true</code> parameter, however, would result in an error. The correct syntax should be:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">&lt;wfs:GetFeature</span><span class="w"> </span><span class="na">service=</span><span class="s">&quot;WFS&quot;</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w"> </span><span class="na">xmlns:wfs=</span><span class="s">&quot;http://www.opengis.net/wfs&quot;</span><span class="w"> </span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w"> </span><span class="na">xmlns:topp=</span><span class="s">&quot;http://www.openplans.org/topp&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="nt">&lt;wfs:Query</span><span class="w"> </span><span class="na">typeName=</span><span class="s">&quot;topp:states&quot;</span><span class="nt">/&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">&lt;wfs:GetFeature</span><span class="w"> </span><span class="na">service=</span><span class="s">"WFS"</span><span class="w"> </span><span class="na">version=</span><span class="s">"1.0.0"</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w"> </span><span class="na">xmlns:wfs=</span><span class="s">"http://www.opengis.net/wfs"</span><span class="w"> </span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w"> </span><span class="na">xmlns:topp=</span><span class="s">"http://www.openplans.org/topp"</span><span class="nt">&gt;</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="nt">&lt;wfs:Query</span><span class="w"> </span><span class="na">typeName=</span><span class="s">"topp:states"</span><span class="nt">/&gt;</span>
 <a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="nt">&lt;/wfs:GetFeature&gt;</span>
 </code></pre></div>
 <h3 id="getcapabilities-request">GetCapabilities Request<a class="headerlink" href="#getcapabilities-request" title="Permanent link">&para;</a></h3>

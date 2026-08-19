@@ -30235,10 +30235,10 @@
 <li>Create a new directory named <code>hello_wps</code> somewhere on the file system.</li>
 <li>Add the following <code>pom.xml</code> to the root of the new module in the <code>hello_wps</code> directory:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">&lt;project</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="s">   http://maven.apache.org/maven-v4_0_0.xsd &quot;</span><span class="nt">&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">&lt;project</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">"http://maven.apache.org/POM/4.0.0"</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="na">xsi:schemaLocation=</span><span class="s">"http://maven.apache.org/POM/4.0.0</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="s">   http://maven.apache.org/maven-v4_0_0.xsd "</span><span class="nt">&gt;</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">   </span><span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">   </span><span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span><span class="w">  </span>
@@ -30368,12 +30368,12 @@
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.geotools.process.factory.DescribeResult</span><span class="p">;</span>
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.geoserver.wps.gs.GeoServerProcess</span><span class="p">;</span>
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="nd">@DescribeProcess</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&quot;helloWPS&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="o">=</span><span class="s">&quot;Hello WPS Sample&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="nd">@DescribeProcess</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">"helloWPS"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="o">=</span><span class="s">"Hello WPS Sample"</span><span class="p">)</span>
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">HelloWPS</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">GeoServerProcess</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">   </span><span class="nd">@DescribeResult</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;result&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="o">=</span><span class="s">&quot;output result&quot;</span><span class="p">)</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">   </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="nd">@DescribeParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="o">=</span><span class="s">&quot;name to return&quot;</span><span class="p">)</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;Hello, &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">   </span><span class="nd">@DescribeResult</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">"result"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="o">=</span><span class="s">"output result"</span><span class="p">)</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">   </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="nd">@DescribeParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">"name"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="o">=</span><span class="s">"name to return"</span><span class="p">)</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="s">"Hello, "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
 <a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">   </span><span class="p">}</span>
 <a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="p">}</span>
 </code></pre></div>
@@ -30395,10 +30395,10 @@
 </li>
 <li>
 <p>Create an <code>applicationContext.xml</code> in the <code>src/main/resources</code> directory with the following contents:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="cp">&lt;!DOCTYPE beans PUBLIC &quot;-//SPRING//DTD BEAN//EN&quot; &quot;http://www.springframework.org/dtd/spring-beans.dtd&quot;&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="cp">&lt;!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd"&gt;</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">&lt;beans&gt;</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;helloWPS&quot;</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;org.geoserver.hello.wps.HelloWPS&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">id=</span><span class="s">"helloWPS"</span><span class="w"> </span><span class="na">class=</span><span class="s">"org.geoserver.hello.wps.HelloWPS"</span><span class="nt">/&gt;</span>
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="nt">&lt;/beans&gt;</span>
 </code></pre></div>
 </li>
@@ -30430,7 +30430,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">RawData</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="cm">/**</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="cm">     * Returns the mime type of the stream&#39;s contents</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="cm">     * Returns the mime type of the stream's contents</span>
 <a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="cm">     * </span>
 <a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="cm">     * @return</span>
 <a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="cm">     */</span>
@@ -30456,14 +30456,14 @@
 <p>As an input, the RawData will be provided to the process, that will discover the mimeType chosen by the user, and will get access to the raw input stream of the data. As an output, the process will return a RawData and the WPS will see what mimeType the result will be in, get access to the raw contents, and grab a file extension to build file names for the user file downloads.</p>
 <p>The process using RawData will also have to provide some extra metadata in the annotations, in order to declare which mime types are supported and to allow the process to know which output mime types were chosen in the Execute request. The extra annotations <code>mimeTypes</code> and <code>chosenMimeType</code> are placed in the <code>meta</code> section of the result and parameter annotations:</p>
 <div class="highlight"><pre><span></span><code>``` java
-@DescribeResult(name = &quot;result&quot;, description = &quot;Output raster&quot;, 
-                meta = {&quot;mimeTypes=application/json,text/xml&quot;, 
-                        &quot;chosenMimeType=outputMimeType&quot; })
+@DescribeResult(name = "result", description = "Output raster", 
+                meta = {"mimeTypes=application/json,text/xml", 
+                        "chosenMimeType=outputMimeType" })
 public RawData execute(
-        @DescribeParameter(name = &quot;data&quot;,  
-                           meta = { &quot;mimeTypes=text/plain&quot; }) 
+        @DescribeParameter(name = "data",  
+                           meta = { "mimeTypes=text/plain" }) 
                            final RawData input,
-        @DescribeParameter(name = &quot;outputMimeType&quot;, min = 0) 
+        @DescribeParameter(name = "outputMimeType", min = 0) 
                            final String outputMimeType) {
 ```
 </code></pre></div>

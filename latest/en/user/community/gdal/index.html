@@ -30162,8 +30162,8 @@
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    [-srcwin xoff yoff xsize ysize] [-projwin ulx uly lrx lry] [-epo] [-eco]
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    [-a_srs srs_def] [-a_ullr ulx uly lrx lry] [-a_nodata value]
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    [-gcp pixel line easting northing [elevation]]*
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    [-mo &quot;META-TAG=VALUE&quot;]* [-q] [-sds]
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    [-co &quot;NAME=VALUE&quot;]* [-stats] [-norat]
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    [-mo "META-TAG=VALUE"]* [-q] [-sds]
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    [-co "NAME=VALUE"]* [-stats] [-norat]
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    src_dataset dst_dataset
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>GDAL 1.11.2, released 2015/02/10
@@ -30240,7 +30240,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;ToolConfiguration&gt;</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&lt;executable&gt;</span>gdal_translate<span class="nt">&lt;/executable&gt;</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">&lt;environment&gt;</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="nt">&lt;variable</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;GDAL_DATA&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;/usr/local/share/gdal&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="nt">&lt;variable</span><span class="w"> </span><span class="na">name=</span><span class="s">"GDAL_DATA"</span><span class="w"> </span><span class="na">value=</span><span class="s">"/usr/local/share/gdal"</span><span class="w"> </span><span class="nt">/&gt;</span>
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">&lt;/environment&gt;</span>
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="nt">&lt;formats&gt;</span>
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="nt">&lt;Format&gt;</span>
@@ -30249,7 +30249,7 @@
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">      </span><span class="nt">&lt;fileExtension&gt;</span>.jp2<span class="nt">&lt;/fileExtension&gt;</span>
 <a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">      </span><span class="nt">&lt;singleFile&gt;</span>true<span class="nt">&lt;/singleFile&gt;</span>
 <a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">      </span><span class="nt">&lt;mimeType&gt;</span>image/jp2<span class="nt">&lt;/mimeType&gt;</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">      </span><span class="nt">&lt;type&gt;</span>binary<span class="nt">&lt;/type&gt;</span><span class="w"> </span><span class="cm">&lt;!-- not really needed, it&#39;s the default --&gt;</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">      </span><span class="nt">&lt;type&gt;</span>binary<span class="nt">&lt;/type&gt;</span><span class="w"> </span><span class="cm">&lt;!-- not really needed, it's the default --&gt;</span>
 <a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w"> </span><span class="nt">&lt;option&gt;</span>-co<span class="nt">&lt;/option&gt;</span>
 <a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w"> </span><span class="nt">&lt;option&gt;</span>FORMAT=JP2<span class="nt">&lt;/option&gt;</span>
 <a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">    </span><span class="nt">&lt;/Format&gt;</span>

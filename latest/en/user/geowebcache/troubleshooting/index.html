@@ -30263,10 +30263,10 @@
 <div class="highlight"><pre><span></span><code>http://localhost:8090/geoserver/nurc/wms?LAYERS=nurc%3AArc_Sample&amp;STYLES=&amp;FORMAT=image%2Fjpeg&amp;TILED=true&amp;TILESORIGIN=-180%2C-90&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;SRS=EPSG%3A4326&amp;BBOX=-45,-45,0,0&amp;WIDTH=256&amp;HEIGHT=256
 </code></pre></div>
 <p>You can then paste this URL into a curl request:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="go">curl -v &quot;URL&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="go">curl -v "URL"</span>
 </code></pre></div>
 <p>For example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="go">curl -v &quot;http://localhost:8090/geoserver/nurc/wms?LAYERS=nurc%3AArc_Sample&amp;STYLES=&amp;FORMAT=image%2Fjpeg&amp;TILED=true&amp;TILESORIGIN=-180%2C-90&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;SRS=EPSG%3A4326&amp;BBOX=-45,-45,0,0&amp;WIDTH=256&amp;HEIGHT=256&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="go">curl -v "http://localhost:8090/geoserver/nurc/wms?LAYERS=nurc%3AArc_Sample&amp;STYLES=&amp;FORMAT=image%2Fjpeg&amp;TILED=true&amp;TILESORIGIN=-180%2C-90&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;SRS=EPSG%3A4326&amp;BBOX=-45,-45,0,0&amp;WIDTH=256&amp;HEIGHT=256"</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -30281,7 +30281,7 @@
 <h3 id="successful-request">Successful request<a class="headerlink" href="#successful-request" title="Permanent link">&para;</a></h3>
 <p>This request was successfully handled by the GeoWebCache WMS.</p>
 <p>Request:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="go">curl -v &quot;http://localhost:8080/geoserver/topp/wms?TILED=true&amp;LAYERS=states&amp;FORMAT=image/png&amp;REQUEST=GetMap&amp;STYLES=&amp;SRS=EPSG:4326&amp;BBOX=-135,45,-112.5,67.5&amp;WIDTH=256&amp;HEIGHT=256&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="go">curl -v "http://localhost:8080/geoserver/topp/wms?TILED=true&amp;LAYERS=states&amp;FORMAT=image/png&amp;REQUEST=GetMap&amp;STYLES=&amp;SRS=EPSG:4326&amp;BBOX=-135,45,-112.5,67.5&amp;WIDTH=256&amp;HEIGHT=256"</span>
 </code></pre></div>
 <p>Response:</p>
 <div class="highlight"><pre><span></span><code>&lt; HTTP/1.1 200 OK
@@ -30299,18 +30299,18 @@
 <h3 id="wrong-height-parameter">Wrong height parameter<a class="headerlink" href="#wrong-height-parameter" title="Permanent link">&para;</a></h3>
 <p>The following request is not handled by the GeoWebCache WMS because the image requested (256x257) does not conform to the expected 256x256 tile size.</p>
 <p>Request:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="go">curl -v &quot;http://localhost:8080/geoserver/topp/wms?TILED=true&amp;LAYERS=states&amp;FORMAT=image/png&amp;REQUEST=GetMap&amp;STYLES=&amp;SRS=EPSG:4326&amp;BBOX=-135,45,-112.5,67.5&amp;WIDTH=256&amp;HEIGHT=257&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="go">curl -v "http://localhost:8080/geoserver/topp/wms?TILED=true&amp;LAYERS=states&amp;FORMAT=image/png&amp;REQUEST=GetMap&amp;STYLES=&amp;SRS=EPSG:4326&amp;BBOX=-135,45,-112.5,67.5&amp;WIDTH=256&amp;HEIGHT=257"</span>
 </code></pre></div>
 <p>Response:</p>
 <div class="highlight"><pre><span></span><code>&lt; HTTP/1.1 200 OK
 &lt; Content-Type: image/png
-&lt; geowebcache-miss-reason: request does not align to grid(s) &#39;EPSG:4326&#39; 
+&lt; geowebcache-miss-reason: request does not align to grid(s) 'EPSG:4326' 
 ...
 </code></pre></div>
 <h3 id="no-tile-layer-associated">No tile layer associated<a class="headerlink" href="#no-tile-layer-associated" title="Permanent link">&para;</a></h3>
 <p>The following request is not handled by the GeoWebCache WMS because the layer requested has no tile layer configured.</p>
 <p>Request:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="go">curl -v &quot;http://localhost:8080/geoserver/topp/wms?TILED=true&amp;LAYERS=tasmania_roads&amp;FORMAT=image/png&amp;REQUEST=GetMap&amp;STYLES=&amp;SRS=EPSG:4326&amp;BBOX=-135,45,-112.5,67.5&amp;WIDTH=256&amp;HEIGHT=256&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="go">curl -v "http://localhost:8080/geoserver/topp/wms?TILED=true&amp;LAYERS=tasmania_roads&amp;FORMAT=image/png&amp;REQUEST=GetMap&amp;STYLES=&amp;SRS=EPSG:4326&amp;BBOX=-135,45,-112.5,67.5&amp;WIDTH=256&amp;HEIGHT=256"</span>
 </code></pre></div>
 <p>Response:</p>
 <div class="highlight"><pre><span></span><code>&lt; HTTP/1.1 200 OK
@@ -30321,7 +30321,7 @@
 <h3 id="missing-parameter-filter">Missing parameter filter<a class="headerlink" href="#missing-parameter-filter" title="Permanent link">&para;</a></h3>
 <p>The following request is not handled by the GeoWebCache WMS because the request contains a parameter filter (BGCOLOR) that is not configured for this layer.</p>
 <p>Request:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="go">curl -v &quot;http://localhost:8080/geoserver/topp/wms?BGCOLOR=0xAAAAAA&amp;TILED=true&amp;LAYERS=states&amp;FORMAT=image/png&amp;REQUEST=GetMap&amp;STYLES=&amp;SRS=EPSG:4326&amp;BBOX=-135,45,-112.5,67.5&amp;WIDTH=256&amp;HEIGHT=256&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="go">curl -v "http://localhost:8080/geoserver/topp/wms?BGCOLOR=0xAAAAAA&amp;TILED=true&amp;LAYERS=states&amp;FORMAT=image/png&amp;REQUEST=GetMap&amp;STYLES=&amp;SRS=EPSG:4326&amp;BBOX=-135,45,-112.5,67.5&amp;WIDTH=256&amp;HEIGHT=256"</span>
 </code></pre></div>
 <p>Response:</p>
 <div class="highlight"><pre><span></span><code>&lt; HTTP/1.1 200 OK
@@ -30332,7 +30332,7 @@
 <h3 id="crs-not-defined">CRS not defined<a class="headerlink" href="#crs-not-defined" title="Permanent link">&para;</a></h3>
 <p>The following request is not handled by the GeoWebCache WMS because the request references a CRS (EPSG:26986) that does not match any of the tile layer gridsets:</p>
 <p>Request:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="go">curl -v &quot;http://localhost:8080/geoserver/topp/wms?TILED=true&amp;LAYERS=states&amp;FORMAT=image/png&amp;REQUEST=GetMap&amp;STYLES=&amp;SRS=EPSG:26986&amp;BBOX=-135,45,-112.5,67.5&amp;WIDTH=256&amp;HEIGHT=256&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="go">curl -v "http://localhost:8080/geoserver/topp/wms?TILED=true&amp;LAYERS=states&amp;FORMAT=image/png&amp;REQUEST=GetMap&amp;STYLES=&amp;SRS=EPSG:26986&amp;BBOX=-135,45,-112.5,67.5&amp;WIDTH=256&amp;HEIGHT=256"</span>
 </code></pre></div>
 <p>Response:</p>
 <div class="highlight"><pre><span></span><code>&lt; HTTP/1.1 200 OK

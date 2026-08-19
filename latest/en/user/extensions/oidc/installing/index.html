@@ -30116,8 +30116,8 @@
 <p>This will run GeoServer on port 9999 and install the OIDC module.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>-p<span class="w"> </span><span class="m">9999</span>:8080<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">   </span>--env<span class="w"> </span><span class="nv">INSTALL_EXTENSIONS</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">   </span>--env<span class="w"> </span><span class="nv">STABLE_EXTENSIONS</span><span class="o">=</span><span class="s2">&quot;ysld,h2,sec-oidc&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">   </span>--env<span class="w"> </span><span class="nv">PROXY_BASE_URL</span><span class="o">=</span><span class="s2">&quot;http://localhost:9999/geoserver&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">   </span>--env<span class="w"> </span><span class="nv">STABLE_EXTENSIONS</span><span class="o">=</span><span class="s2">"ysld,h2,sec-oidc"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">   </span>--env<span class="w"> </span><span class="nv">PROXY_BASE_URL</span><span class="o">=</span><span class="s2">"http://localhost:9999/geoserver"</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">   </span>docker.osgeo.org/geoserver:3.0.x
 </code></pre></div>
 <div class="admonition note">

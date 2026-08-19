@@ -30422,52 +30422,52 @@
 <p>Security services are created via methods provided by the security manager. For instance to create a new xml user group service:</p>
 <div class="highlight"><pre><span></span><code>GeoServerSecurityManager mgr = ...;
 XMLSecurityServiceConfig config = new XMLSecurityServiceConfig();
-config.setName(&quot;foo&quot;);
-config.setFilename(&quot;users.xml&quot;);
+config.setName("foo");
+config.setFilename("users.xml");
 mgr.saveUserGroupService(config);
 </code></pre></div>
 <p>An instance of a security service is obtained by looking it up by the name matching its configuration object:</p>
-<div class="highlight"><pre><span></span><code>GeoServerUserGroupService ugService = mgr.loadUserGroupService(&quot;foo&quot;);
+<div class="highlight"><pre><span></span><code>GeoServerUserGroupService ugService = mgr.loadUserGroupService("foo");
 </code></pre></div>
 <p>The config object for the service can be looked up in a similar way:</p>
-<div class="highlight"><pre><span></span><code>SecurityUserGroupServiceConfig config = mgr.loadUserGroupServiceConfig(&quot;foo&quot;);
+<div class="highlight"><pre><span></span><code>SecurityUserGroupServiceConfig config = mgr.loadUserGroupServiceConfig("foo");
 </code></pre></div>
 <p>And modified accordingly:</p>
-<div class="highlight"><pre><span></span><code>config.setPasswordEncoderName(&quot;digest&quot;);
+<div class="highlight"><pre><span></span><code>config.setPasswordEncoderName("digest");
 mgr.saveUserGroupServiceConfig(config);
 </code></pre></div>
 <h3 id="usergroup_service">UserGroup Service/Store<a class="headerlink" href="#usergroup_service" title="Permanent link">&para;</a></h3>
 <p>The <code>GeoServerUserGroupService</code> and <code>GeoServerUserGroupStore</code> interfaces provides a database for users and groups. A GeoServerUserGroupService may be read only in that it acts solely as a source without the ability to create new or edit existing users and groups.</p>
 <p>The interfaces provide access to users and groups:</p>
-<div class="highlight"><pre><span></span><code>GeoServerUserGroupService ugService = mgr.loadUserGroupService(&quot;default&quot;);
+<div class="highlight"><pre><span></span><code>GeoServerUserGroupService ugService = mgr.loadUserGroupService("default");
 
 ugService.getUsers();
-GeoServerUser user = ugService.getUserByUsername(&quot;admin&quot;);
+GeoServerUser user = ugService.getUserByUsername("admin");
 
 ugService.getGroups();
-GeoServerUserGroup group = ugService.getGroupByGroupname(&quot;users&quot;);
+GeoServerUserGroup group = ugService.getGroupByGroupname("users");
 </code></pre></div>
 <p>The service interface advertises whether it is read only:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>if (ugService.canCreateStore()) {
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  GeoServerUserGroupStore store = ugService.createStore();
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  store.addUser(new GeoServerUser(&quot;bob&quot;));
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  store.addUser(new GeoServerUser("bob"));
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  store.store();
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>}
 </code></pre></div>
 <p>The <code>GeoServerUserGroupService</code> implements the spring security <code>UserDetailsService</code> interface in order to integrate with existing facilities such as remember me services which require a user details service for loading user information at runtime.</p>
 <h3 id="role_service">Role Service/Store<a class="headerlink" href="#role_service" title="Permanent link">&para;</a></h3>
 <p><code>GeoServerRoleService</code> and <code>GeoServerRoleStore</code> provide a database for roles and role associations for users and groups. Like user group services a <code>GeoServerRoleService</code> may be read only:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>GeoServerRoleService roleService = mgr.loadRoleService(&quot;default&quot;);
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>GeoServerRoleService roleService = mgr.loadRoleService("default");
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>roleService.getRoles();
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>roleService.getRolesForUser(&quot;admin&quot;);
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>roleService.getRolesForGroup(&quot;users&quot;);
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>roleService.getRolesForUser("admin");
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>roleService.getRolesForGroup("users");
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>if (roleService.canCreateStore()) {
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>  GeoServerRoleStore store = roleService.createStore();
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>  GeoServerRole role = new GeoServerRole(&quot;ROLE_FOO&quot;);
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>  GeoServerRole role = new GeoServerRole("ROLE_FOO");
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>  store.addRole(role);
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>  store.associateRoleToGroup(role, &quot;users&quot;);
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>  store.associateRoleToGroup(role, "users");
 <a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>  store.store();
 <a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>}
 </code></pre></div>
@@ -30515,8 +30515,8 @@ GeoServerUserGroup group = ugService.getGroupByGroupname(&quot;users&quot;);
 </code></pre></div>
 <p>The first method reports on the specific class of user group service it implements. This is how a specific security provider is chosen from a specific configuration object. <code>SecurityNamedServiceConfig.getClassName()</code> is used to locate the provider.</p>
 <p>The second method creates an instance of the security service from a specified configuration object. Providers are registered via spring, for example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;ldapSecurityProvider&quot;</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;org.geoserver.security.ldap.LDAPSecurityProvider&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">ref=</span><span class="s">&quot;geoServerSecurityManager&quot;</span><span class="nt">/&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">id=</span><span class="s">"ldapSecurityProvider"</span><span class="w"> </span><span class="na">class=</span><span class="s">"org.geoserver.security.ldap.LDAPSecurityProvider"</span><span class="nt">&gt;</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">&lt;constructor-arg</span><span class="w"> </span><span class="na">ref=</span><span class="s">"geoServerSecurityManager"</span><span class="nt">/&gt;</span>
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nt">&lt;/bean&gt;</span>
 </code></pre></div>
 <h2 id="security-configuration">Security Configuration<a class="headerlink" href="#security-configuration" title="Permanent link">&para;</a></h2>
@@ -30528,8 +30528,8 @@ GeoServerUserGroup group = ugService.getGroupByGroupname(&quot;users&quot;);
 <a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>String getName();
 </code></pre></div>
 <p>This name is used to reference both the configuration directly, or to the corresponding service implementation. For example consider a user group service named "foo":</p>
-<div class="highlight"><pre><span></span><code>GeoServerUserGroupService service = mgr.loadUserGroupService(&quot;foo&quot;);
-SecurityUserGroupServiceConfig config = mgr.loadUserGroupServiceConfig(&quot;foo&quot;);
+<div class="highlight"><pre><span></span><code>GeoServerUserGroupService service = mgr.loadUserGroupService("foo");
+SecurityUserGroupServiceConfig config = mgr.loadUserGroupServiceConfig("foo");
 </code></pre></div>
 <p>The second property is the fully qualified class name of the service implementation that the config object corresponds to:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>/**
@@ -30601,7 +30601,7 @@ config.setClassName(XMLUserGroupService.class.getName());
 <p>Interacting with the global configuration is much like interacting with a security service configuration:</p>
 <div class="highlight"><pre><span></span><code>SecurityManagerConfig config = mgr.getSecurityConfig();
 config.setEncryptingUrlParams(false);
-config.getAuthProviderNames().add(&quot;ldap&quot;);
+config.getAuthProviderNames().add("ldap");
 config.saveSecurityConfig(config);
 </code></pre></div>
 <h2 id="auth_filter_chain">Authentication Chain<a class="headerlink" href="#auth_filter_chain" title="Permanent link">&para;</a></h2>
@@ -30613,15 +30613,15 @@ config.saveSecurityConfig(config);
 <h2 id="pluggable-login-endpoints">Pluggable Login Endpoints<a class="headerlink" href="#pluggable-login-endpoints" title="Permanent link">&para;</a></h2>
 <p>To enable a new Login button just add lines similar to the following configuration into the <code>applicationContext.xml</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="cm">&lt;!-- login button --&gt;</span>
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;geoserverFormLoginButton&quot;</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;org.geoserver.web.LoginFormInfo&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;id&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;geoserverFormLoginButton&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;titleKey&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;login&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;descriptionKey&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;GeoServerBasePage.description&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;componentClass&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;org.geoserver.web.GeoServerBasePage&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;form&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;icon&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;img/icons/silk/door-in.png&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;include&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;include_login_form.html&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;loginPath&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;j_spring_security_check&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">id=</span><span class="s">"geoserverFormLoginButton"</span><span class="w"> </span><span class="na">class=</span><span class="s">"org.geoserver.web.LoginFormInfo"</span><span class="nt">&gt;</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"id"</span><span class="w"> </span><span class="na">value=</span><span class="s">"geoserverFormLoginButton"</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"titleKey"</span><span class="w"> </span><span class="na">value=</span><span class="s">"login"</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"descriptionKey"</span><span class="w"> </span><span class="na">value=</span><span class="s">"GeoServerBasePage.description"</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"componentClass"</span><span class="w"> </span><span class="na">value=</span><span class="s">"org.geoserver.web.GeoServerBasePage"</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"name"</span><span class="w"> </span><span class="na">value=</span><span class="s">"form"</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"icon"</span><span class="w"> </span><span class="na">value=</span><span class="s">"img/icons/silk/door-in.png"</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"include"</span><span class="w"> </span><span class="na">value=</span><span class="s">"include_login_form.html"</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"loginPath"</span><span class="w"> </span><span class="na">value=</span><span class="s">"j_spring_security_check"</span><span class="w"> </span><span class="nt">/&gt;</span>
 <a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="nt">&lt;/bean&gt;</span>
 </code></pre></div>
 <p>The same can be done for any other Security Filter which needs a specific button for a Login Endpoint.</p>
@@ -30637,12 +30637,12 @@ config.saveSecurityConfig(config);
 <li><strong>loginPath</strong>; Login custom endpoint used by the associated Security Filter.</li>
 </ol>
 <p>Example of <strong>include</strong> HTML can be:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">&lt;label</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;noshow&quot;</span><span class="w"> </span><span class="na">for=</span><span class="s">&quot;username&quot;</span><span class="nt">&gt;&lt;wicket:message</span><span class="w"> </span><span class="na">key=</span><span class="s">&quot;username&quot;</span><span class="nt">&gt;</span>Username<span class="nt">&lt;/wicket:message&gt;&lt;/label&gt;</span>
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nt">&lt;input</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;username&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;text&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;username&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">title=</span><span class="s">&quot;username&quot;</span><span class="w"> </span><span class="na">placeholder=</span><span class="s">&quot;username&quot;</span><span class="w"> </span><span class="na">wicket:message=</span><span class="s">&quot;title:username,placeholder:username&quot;</span><span class="nt">/&gt;</span>
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="nt">&lt;label</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;noshow&quot;</span><span class="w"> </span><span class="na">for=</span><span class="s">&quot;password&quot;</span><span class="nt">&gt;&lt;wicket:message</span><span class="w"> </span><span class="na">key=</span><span class="s">&quot;password&quot;</span><span class="nt">&gt;</span>Password<span class="nt">&lt;/wicket:message&gt;&lt;/label&gt;</span>
-<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="nt">&lt;input</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;password&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;password&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;password&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">title=</span><span class="s">&quot;password&quot;</span><span class="w"> </span><span class="na">placeholder=</span><span class="s">&quot;password&quot;</span><span class="w"> </span><span class="na">wicket:message=</span><span class="s">&quot;title:password,placeholder:passwordGeoServer&quot;</span><span class="nt">/&gt;</span>
-<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="nt">&lt;label</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;shown&quot;</span><span class="w"> </span><span class="na">for=</span><span class="s">&quot;_spring_security_remember_me&quot;</span><span class="nt">&gt;&lt;wicket:message</span><span class="w"> </span><span class="na">key=</span><span class="s">&quot;rememberMe&quot;</span><span class="nt">&gt;</span>Remember<span class="w"> </span>me<span class="nt">&lt;/wicket:message&gt;&lt;/label&gt;</span>
-<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="nt">&lt;input</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;_spring_security_remember_me&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;checkbox&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;_spring_security_remember_me&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">&lt;label</span><span class="w"> </span><span class="na">class=</span><span class="s">"noshow"</span><span class="w"> </span><span class="na">for=</span><span class="s">"username"</span><span class="nt">&gt;&lt;wicket:message</span><span class="w"> </span><span class="na">key=</span><span class="s">"username"</span><span class="nt">&gt;</span>Username<span class="nt">&lt;/wicket:message&gt;&lt;/label&gt;</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nt">&lt;input</span><span class="w"> </span><span class="na">id=</span><span class="s">"username"</span><span class="w"> </span><span class="na">type=</span><span class="s">"text"</span><span class="w"> </span><span class="na">name=</span><span class="s">"username"</span><span class="w"> </span><span class="na">value=</span><span class="s">""</span><span class="w"> </span><span class="na">title=</span><span class="s">"username"</span><span class="w"> </span><span class="na">placeholder=</span><span class="s">"username"</span><span class="w"> </span><span class="na">wicket:message=</span><span class="s">"title:username,placeholder:username"</span><span class="nt">/&gt;</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="nt">&lt;label</span><span class="w"> </span><span class="na">class=</span><span class="s">"noshow"</span><span class="w"> </span><span class="na">for=</span><span class="s">"password"</span><span class="nt">&gt;&lt;wicket:message</span><span class="w"> </span><span class="na">key=</span><span class="s">"password"</span><span class="nt">&gt;</span>Password<span class="nt">&lt;/wicket:message&gt;&lt;/label&gt;</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="nt">&lt;input</span><span class="w"> </span><span class="na">id=</span><span class="s">"password"</span><span class="w"> </span><span class="na">type=</span><span class="s">"password"</span><span class="w"> </span><span class="na">name=</span><span class="s">"password"</span><span class="w"> </span><span class="na">value=</span><span class="s">""</span><span class="w"> </span><span class="na">title=</span><span class="s">"password"</span><span class="w"> </span><span class="na">placeholder=</span><span class="s">"password"</span><span class="w"> </span><span class="na">wicket:message=</span><span class="s">"title:password,placeholder:passwordGeoServer"</span><span class="nt">/&gt;</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="nt">&lt;label</span><span class="w"> </span><span class="na">class=</span><span class="s">"shown"</span><span class="w"> </span><span class="na">for=</span><span class="s">"_spring_security_remember_me"</span><span class="nt">&gt;&lt;wicket:message</span><span class="w"> </span><span class="na">key=</span><span class="s">"rememberMe"</span><span class="nt">&gt;</span>Remember<span class="w"> </span>me<span class="nt">&lt;/wicket:message&gt;&lt;/label&gt;</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="nt">&lt;input</span><span class="w"> </span><span class="na">id=</span><span class="s">"_spring_security_remember_me"</span><span class="w"> </span><span class="na">type=</span><span class="s">"checkbox"</span><span class="w"> </span><span class="na">name=</span><span class="s">"_spring_security_remember_me"</span><span class="w"> </span><span class="nt">/&gt;</span>
 </code></pre></div>
 
 

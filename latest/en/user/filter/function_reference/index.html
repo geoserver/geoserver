@@ -30467,11 +30467,11 @@
 <p>This function returns the value of environment variables defined in various contexts. WMS GetMap automatically defines some variables <a href="../../styling/sld/extensions/substitution/">SLD rendering</a>, while others can be provided using the <code>env</code> request parameter. Example usage in e.g. a dynamic symbolizer:</p>
 <p><code>${env('size', 20)}</code></p>
 <p>Example usage in a default Symbolizer:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">&lt;PointSymbolizer</span><span class="w"> </span><span class="na">uom=</span><span class="s">&quot;http://www.opengeospatial.org/se/units/metre&quot;</span><span class="nt">&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">&lt;PointSymbolizer</span><span class="w"> </span><span class="na">uom=</span><span class="s">"http://www.opengeospatial.org/se/units/metre"</span><span class="nt">&gt;</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">&lt;Graphic&gt;</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span>...
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="nt">&lt;Size&gt;</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">      </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;env&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">      </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">"env"</span><span class="nt">&gt;</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">        </span><span class="nt">&lt;ogc:Literal&gt;</span>size<span class="nt">&lt;/ogc:Literal&gt;</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">        </span><span class="nt">&lt;ogc:Literal&gt;</span>20<span class="nt">&lt;/ogc:Literal&gt;</span>
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">      </span><span class="nt">&lt;/ogc:Function&gt;</span>

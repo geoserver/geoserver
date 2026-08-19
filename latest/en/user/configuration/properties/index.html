@@ -30643,7 +30643,7 @@
 <li>For Tomcat on Linux edit <strong><code>setenv.sh</code></strong> to append additional java system properties:</li>
 </ul>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Append system properties</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">CATALINA_OPTS</span><span class="si">}</span><span class="s2"> -DGEOSERVER_DATA_DIR=/var/lib/geoserver_data&quot;</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="si">${</span><span class="nv">CATALINA_OPTS</span><span class="si">}</span><span class="s2"> -DGEOSERVER_DATA_DIR=/var/lib/geoserver_data"</span>
 </code></pre></div>
 <ul>
 <li>For Tomcat on Windows use <strong><em>Apache Tomcat Properties</em></strong> application, navigating to the <strong>Java</strong> tab to edit <strong>Java Options</strong>:</li>
@@ -30657,9 +30657,9 @@
 <ul>
 <li>Tomcat: Use your application server to configure the GeoServer web application via <strong><code>conf/Catalina/localhost/geoserver.xml</code></strong> file:</li>
 </ul>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">&lt;Context</span><span class="w"> </span><span class="na">docBase=</span><span class="s">&quot;geoserver.war&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&lt;Parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;GEOSERVER_DATA_DIR&quot;</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">             </span><span class="na">value=</span><span class="s">&quot;/var/opt/geoserver/data&quot;</span><span class="w"> </span><span class="na">override=</span><span class="s">&quot;false&quot;</span><span class="nt">/&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">&lt;Context</span><span class="w"> </span><span class="na">docBase=</span><span class="s">"geoserver.war"</span><span class="nt">&gt;</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&lt;Parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">"GEOSERVER_DATA_DIR"</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">             </span><span class="na">value=</span><span class="s">"/var/opt/geoserver/data"</span><span class="w"> </span><span class="na">override=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nt">&lt;/Context&gt;</span>
 </code></pre></div>
 <div class="admonition note">

@@ -30186,7 +30186,7 @@
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>b.xsd declares c:prefix
 </code></pre></div>
 <p>The GeoTools encoder does not honour these namespaces and writes out:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>&quot;a:&quot; , &quot;b:&quot; but NOT &quot;c:&quot;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>"a:" , "b:" but NOT "c:"
 </code></pre></div>
 <p>The result is c's element being encoded as:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">&lt;null:cElement/&gt;</span>
@@ -30194,7 +30194,7 @@
 <h2 id="when-to-configure-for-secondary-namespaces">When to configure for secondary namespaces<a class="headerlink" href="#when-to-configure-for-secondary-namespaces" title="Permanent link">&para;</a></h2>
 <p>If your application spans several namespaces which may be very common in application schemas.</p>
 <p>A sure sign that calls for secondary namespace configuration is when prefixes for namespaces are printed out as the literal string "null" or error messages like:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>java.io.IOException: The prefix &quot;null&quot; for element &quot;null:something&quot; is not bound.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>java.io.IOException: The prefix "null" for element "null:something" is not bound.
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

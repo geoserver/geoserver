@@ -30521,9 +30521,9 @@
 </ul>
 <p>Set to TRUE to display the 'NetCDF Auxiliary Store' option in GeoServer. A NetCDF Auxiliary Store must be published <em>after</em> publishing the actual NetCDF store.</p>
 <p>The NetCDF Auxiliary Store returns a WFS record like this for each possible combination of dimension values that do not include the two prime spatial dimensions:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">&lt;topp:my-aux-store</span><span class="w"> </span><span class="na">gml:id=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">&lt;topp:my-aux-store</span><span class="w"> </span><span class="na">gml:id=</span><span class="s">"1"</span><span class="nt">&gt;</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w"> </span><span class="nt">&lt;topp:the_geom&gt;</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">&lt;gml:Polygon</span><span class="w"> </span><span class="na">srsName=</span><span class="s">&quot;http://www.opengis.net/gml/srs/epsg.xml#4326&quot;</span><span class="w"> </span><span class="na">srsDimension=</span><span class="s">&quot;2&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">&lt;gml:Polygon</span><span class="w"> </span><span class="na">srsName=</span><span class="s">"http://www.opengis.net/gml/srs/epsg.xml#4326"</span><span class="w"> </span><span class="na">srsDimension=</span><span class="s">"2"</span><span class="nt">&gt;</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">   </span><span class="nt">&lt;gml:exterior&gt;&lt;gml:LinearRing&gt;</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">   </span><span class="nt">&lt;gml:posList&gt;</span>259.96003054<span class="w"> </span>-0.04<span class="w"> </span>259.96003054<span class="w"> </span>70.04<span class="w"> </span>310.03999998<span class="w"> </span>70.04<span class="w"> </span>310.03999998<span class="w"> </span>-0.04<span class="w"> </span>259.96003054<span class="w">   </span>-0.04<span class="nt">&lt;/gml:posList&gt;</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">   </span><span class="nt">&lt;/gml:LinearRing&gt;&lt;/gml:exterior&gt;</span>
@@ -30543,7 +30543,7 @@
 <p><em>Grid Mapping and related custom EPSG definition</em></p>
 <p>User defined NetCDF Coordinate Reference Systems with their custom EPSG need to be provided in <strong><code>user_projections\netcdf.projections.properties</code></strong> file inside your data directory (you have to create that file if missing).</p>
 <p>A sample entry in that property file could look like this:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>971835=PROJCS[&quot;albers_conical_equal_area&quot;, GEOGCS[&quot;unknown&quot;, DATUM[&quot;unknown&quot;, SPHEROID[&quot;unknown&quot;, 6378137.0, 298.2572221010042]], PRIMEM[&quot;Greenwich&quot;, 0.0], UNIT[&quot;degree&quot;, 0.017453292519943295], AXIS[&quot;Geodetic longitude&quot;, EAST], AXIS[&quot;Geodetic latitude&quot;, NORTH]], PROJECTION[&quot;Albers_Conic_Equal_Area&quot;], PARAMETER[&quot;central_meridian&quot;, -126.0], PARAMETER[&quot;latitude_of_origin&quot;, 45.0], PARAMETER[&quot;standard_parallel_1&quot;, 50.0], PARAMETER[&quot;false_easting&quot;, 1000000.0], PARAMETER[&quot;false_northing&quot;, 0.0], PARAMETER[&quot;standard_parallel_2&quot;, 58.5], UNIT[&quot;m&quot;, 1.0], AXIS[&quot;Easting&quot;, EAST], AXIS[&quot;Northing&quot;, NORTH], AUTHORITY[&quot;EPSG&quot;,&quot;971835&quot;]]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>971835=PROJCS["albers_conical_equal_area", GEOGCS["unknown", DATUM["unknown", SPHEROID["unknown", 6378137.0, 298.2572221010042]], PRIMEM["Greenwich", 0.0], UNIT["degree", 0.017453292519943295], AXIS["Geodetic longitude", EAST], AXIS["Geodetic latitude", NORTH]], PROJECTION["Albers_Conic_Equal_Area"], PARAMETER["central_meridian", -126.0], PARAMETER["latitude_of_origin", 45.0], PARAMETER["standard_parallel_1", 50.0], PARAMETER["false_easting", 1000000.0], PARAMETER["false_northing", 0.0], PARAMETER["standard_parallel_2", 58.5], UNIT["m", 1.0], AXIS["Easting", EAST], AXIS["Northing", NORTH], AUTHORITY["EPSG","971835"]]
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -30565,25 +30565,25 @@
 <ol>
 <li>
 <p>Insert the code WKT for the projection at the end of the file (on a single line or with backslash characters):</p>
-<div class="highlight"><pre><span></span><code>971835=PROJCS[&quot;albers_conical_equal_area&quot;, \
-  GEOGCS[&quot;unknown&quot;, \
-    DATUM[&quot;unknown&quot;, \
-      SPHEROID[&quot;unknown&quot;, 6378137.0, 298.2572221010042]],  \
-    PRIMEM[&quot;Greenwich&quot;, 0.0], \
-    UNIT[&quot;degree&quot;, 0.017453292519943295], \
-    AXIS[&quot;Geodetic longitude&quot;, EAST], \
-    AXIS[&quot;Geodetic latitude&quot;, NORTH]], \
-  PROJECTION[&quot;Albers_Conic_Equal_Area&quot;], \
-  PARAMETER[&quot;central_meridian&quot;, -126.0], \
-  PARAMETER[&quot;latitude_of_origin&quot;, 45.0], \
-  PARAMETER[&quot;standard_parallel_1&quot;, 50.0], \
-  PARAMETER[&quot;false_easting&quot;, 1000000.0], \
-  PARAMETER[&quot;false_northing&quot;, 0.0], \
-  PARAMETER[&quot;standard_parallel_2&quot;, 58.5], \
-  UNIT[&quot;m&quot;, 1.0], \
-  AXIS[&quot;Easting&quot;, EAST], \
-  AXIS[&quot;Northing&quot;, NORTH], \
-  AUTHORITY[&quot;EPSG&quot;,&quot;971835&quot;]]
+<div class="highlight"><pre><span></span><code>971835=PROJCS["albers_conical_equal_area", \
+  GEOGCS["unknown", \
+    DATUM["unknown", \
+      SPHEROID["unknown", 6378137.0, 298.2572221010042]],  \
+    PRIMEM["Greenwich", 0.0], \
+    UNIT["degree", 0.017453292519943295], \
+    AXIS["Geodetic longitude", EAST], \
+    AXIS["Geodetic latitude", NORTH]], \
+  PROJECTION["Albers_Conic_Equal_Area"], \
+  PARAMETER["central_meridian", -126.0], \
+  PARAMETER["latitude_of_origin", 45.0], \
+  PARAMETER["standard_parallel_1", 50.0], \
+  PARAMETER["false_easting", 1000000.0], \
+  PARAMETER["false_northing", 0.0], \
+  PARAMETER["standard_parallel_2", 58.5], \
+  UNIT["m", 1.0], \
+  AXIS["Easting", EAST], \
+  AXIS["Northing", NORTH], \
+  AUTHORITY["EPSG","971835"]]
 </code></pre></div>
 </li>
 <li>
@@ -30603,28 +30603,28 @@
 <p>For GeoServer &lt; 2.16.x, Projected Coordinates with axis units in km are automatically converted to meters and associated ProjectedCRS has Unit in meters too. Therefore, polygons stored in the geometry table have coordinates in meters.</p>
 <p>Starting with GeoServer 2.16.x, automatic conversion km-to-m is disabled by default in order to support km coordinates, directly. Therefore, make sure to define a proper custom CRS with km unit if you want to support it. (That is also needed if you want to publish the index as a vector layer).</p>
 <p>For example:</p>
-<div class="highlight"><pre><span></span><code>971815=PROJCS[&quot;albers_conical_equal_area&quot;, \
-  GEOGCS[&quot;unknown&quot;, \
-    DATUM[&quot;unknown&quot;, \
-      SPHEROID[&quot;unknown&quot;, 6378137.0, 298.2572221010042]],  \
-    PRIMEM[&quot;Greenwich&quot;, 0.0], \
-    UNIT[&quot;degree&quot;, 0.017453292519943295], \
-    AXIS[&quot;Geodetic longitude&quot;, EAST], \
-    AXIS[&quot;Geodetic latitude&quot;, NORTH]], \
-  PROJECTION[&quot;Albers_Conic_Equal_Area&quot;], \
-  PARAMETER[&quot;central_meridian&quot;, -126.0], \
-  PARAMETER[&quot;latitude_of_origin&quot;, 45.0], \
-  PARAMETER[&quot;standard_parallel_1&quot;, 50.0], \
-  PARAMETER[&quot;false_easting&quot;, 1000000.0], \
-  PARAMETER[&quot;false_northing&quot;, 0.0], \
-  PARAMETER[&quot;standard_parallel_2&quot;, 58.5], \
-  UNIT[&quot;km&quot;, 1000.0], \
-  AXIS[&quot;Easting&quot;, EAST], \
-  AXIS[&quot;Northing&quot;, NORTH], \
-  AUTHORITY[&quot;EPSG&quot;,&quot;971815&quot;]]
+<div class="highlight"><pre><span></span><code>971815=PROJCS["albers_conical_equal_area", \
+  GEOGCS["unknown", \
+    DATUM["unknown", \
+      SPHEROID["unknown", 6378137.0, 298.2572221010042]],  \
+    PRIMEM["Greenwich", 0.0], \
+    UNIT["degree", 0.017453292519943295], \
+    AXIS["Geodetic longitude", EAST], \
+    AXIS["Geodetic latitude", NORTH]], \
+  PROJECTION["Albers_Conic_Equal_Area"], \
+  PARAMETER["central_meridian", -126.0], \
+  PARAMETER["latitude_of_origin", 45.0], \
+  PARAMETER["standard_parallel_1", 50.0], \
+  PARAMETER["false_easting", 1000000.0], \
+  PARAMETER["false_northing", 0.0], \
+  PARAMETER["standard_parallel_2", 58.5], \
+  UNIT["km", 1000.0], \
+  AXIS["Easting", EAST], \
+  AXIS["Northing", NORTH], \
+  AUTHORITY["EPSG","971815"]]
 </code></pre></div>
 <p>Note:</p>
-<div class="highlight"><pre><span></span><code>UNIT[&quot;km&quot;, 1000.0], \
+<div class="highlight"><pre><span></span><code>UNIT["km", 1000.0], \
 </code></pre></div>
 <p>Set <strong><code>-Dorg.geotools.coverage.io.netcdf.convertAxis.km</code></strong> to <code>true</code> to activate the automatic conversion or <code>false</code> to deactivate it.</p>
 <div class="admonition note">
@@ -30731,43 +30731,43 @@
 <div class="highlight"><pre><span></span><code>java -cp &lt;path-to-geoserver&gt;\WEB-INF\lib\*.jar org.geotools.coverage.io.netcdf.tools.CreateIndexer &lt;path-to-sample-nc-file&gt; [-p &lt;path-to-netcdf-projections&gt;] [&lt;path-to-output-directory&gt;]
 </code></pre></div>
 <p>On Linux:</p>
-<div class="highlight"><pre><span></span><code>java -cp &#39;&lt;path-to-geoserver&gt;/WEB-INF/lib/*&#39; org.geotools.coverage.io.netcdf.tools.CreateIndexer &lt;path-to-sample-nc-file&gt; [-p &lt;path-to-netcdf-projections&gt;] [&lt;path-to-output-directory&gt;]
+<div class="highlight"><pre><span></span><code>java -cp '&lt;path-to-geoserver&gt;/WEB-INF/lib/*' org.geotools.coverage.io.netcdf.tools.CreateIndexer &lt;path-to-sample-nc-file&gt; [-p &lt;path-to-netcdf-projections&gt;] [&lt;path-to-output-directory&gt;]
 </code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>On older GeoServer version the command might fail complaining it cannot find <code>org.jaxen.NamespaceContext</code>. If that's the case, download <a href="https://repo1.maven.org/maven2/jaxen/jaxen/1.1.6/jaxen-1.1.6.jar">Jaxen 1.1.6</a>, add it into the GeoServer <code>WEB-INF/lib</code> directory, and try again.</p>
 </div>
 <p>This will generate the files and it's going to be good enough if each NetCDF contains the same coverages. The <code>indexer.xml</code> file might look as follows:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><span class="nt">&lt;Indexer&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span><span class="nt">&lt;Indexer&gt;</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">&lt;domains&gt;</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="nt">&lt;domain</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;time&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="nt">&lt;domain</span><span class="w"> </span><span class="na">name=</span><span class="s">"time"</span><span class="nt">&gt;</span>
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">      </span><span class="nt">&lt;attributes&gt;&lt;attribute&gt;</span>time<span class="nt">&lt;/attribute&gt;&lt;/attributes&gt;</span>
 <a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="nt">&lt;/domain&gt;</span>
 <a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span><span class="nt">&lt;/domains&gt;</span>
 <a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">  </span><span class="nt">&lt;coverages&gt;</span>
 <a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="nt">&lt;coverage&gt;</span>
 <a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">      </span><span class="nt">&lt;name&gt;</span>dbz<span class="nt">&lt;/name&gt;</span>
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">      </span><span class="nt">&lt;schema</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;dbz&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">      </span><span class="nt">&lt;schema</span><span class="w"> </span><span class="na">name=</span><span class="s">"dbz"</span><span class="nt">&gt;</span>
 <a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">        </span><span class="nt">&lt;attributes&gt;</span>
 <a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">          </span>the_geom:Polygon,imageindex:Integer,location:String,time:java.util.Date
 <a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">        </span><span class="nt">&lt;/attributes&gt;</span>
 <a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">      </span><span class="nt">&lt;/schema&gt;</span>
 <a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">      </span><span class="nt">&lt;domains&gt;</span>
-<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">        </span><span class="nt">&lt;domain</span><span class="w"> </span><span class="na">ref=</span><span class="s">&quot;time&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">        </span><span class="nt">&lt;domain</span><span class="w"> </span><span class="na">ref=</span><span class="s">"time"</span><span class="w"> </span><span class="nt">/&gt;</span>
 <a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">      </span><span class="nt">&lt;/domains&gt;</span>
 <a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">    </span><span class="nt">&lt;/coverage&gt;</span>
 <a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="w">  </span><span class="nt">&lt;/coverages&gt;</span>
 <a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="w">  </span><span class="nt">&lt;parameters&gt;</span>
-<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="nt">&lt;parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;AuxiliaryFile&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;/path/to/the/mosaic/_auxiliary.xml&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
-<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="nt">&lt;parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;AbsolutePath&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="nt">&lt;parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">"AuxiliaryFile"</span><span class="w"> </span><span class="na">value=</span><span class="s">"/path/to/the/mosaic/_auxiliary.xml"</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="nt">&lt;parameter</span><span class="w"> </span><span class="na">name=</span><span class="s">"AbsolutePath"</span><span class="w"> </span><span class="na">value=</span><span class="s">"true"</span><span class="w"> </span><span class="nt">/&gt;</span>
 <a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="w">  </span><span class="nt">&lt;/parameters&gt;</span>
 <a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="nt">&lt;/Indexer&gt;</span>
 </code></pre></div>
 <p>While the <code>_auxiliary.xml</code> file might look like:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><span class="nt">&lt;Indexer&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span><span class="nt">&lt;Indexer&gt;</span>
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">&lt;coverages&gt;</span>
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="nt">&lt;coverage&gt;</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">      </span><span class="nt">&lt;schema</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;dbz&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">      </span><span class="nt">&lt;schema</span><span class="w"> </span><span class="na">name=</span><span class="s">"dbz"</span><span class="nt">&gt;</span>
 <a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">        </span><span class="nt">&lt;attributes&gt;</span>
 <a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">          </span>the_geom:Polygon,imageindex:Integer,time:java.util.Date
 <a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">        </span><span class="nt">&lt;/attributes&gt;</span>

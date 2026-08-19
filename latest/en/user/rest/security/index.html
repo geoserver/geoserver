@@ -30436,7 +30436,7 @@
 </code></pre></div>
 </div>
 <p><em>Response</em></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><span class="nt">&lt;masterPassword&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span><span class="nt">&lt;masterPassword&gt;</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="nt">&lt;oldMasterPassword&gt;</span>geoserver<span class="nt">&lt;/oldMasterPassword&gt;</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nt">&lt;/masterPassword&gt;</span>
 </code></pre></div>
@@ -30448,14 +30448,14 @@
 </div>
 <p>Given a <code>changes.xml</code> file:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;masterPassword&gt;</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">   </span><span class="nt">&lt;oldMasterPassword&gt;</span>-&quot;}3a^Kh<span class="nt">&lt;/oldMasterPassword&gt;</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">   </span><span class="nt">&lt;oldMasterPassword&gt;</span>-"}3a^Kh<span class="nt">&lt;/oldMasterPassword&gt;</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">   </span><span class="nt">&lt;newMasterPassword&gt;</span>geoserver1<span class="nt">&lt;/newMasterPassword&gt;</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nt">&lt;/masterPassword&gt;</span>
 </code></pre></div>
 <p><em>Request</em></p>
 <div class="admonition abstract">
 <p class="admonition-title">curl</p>
-<div class="highlight"><pre><span></span><code>curl -v -u admin:geoserver -XPUT -H &quot;Content-type: text/xml&quot; -d @change.xml http://localhost:8080/geoserver/rest/security/masterpw.xml
+<div class="highlight"><pre><span></span><code>curl -v -u admin:geoserver -XPUT -H "Content-type: text/xml" -d @change.xml http://localhost:8080/geoserver/rest/security/masterpw.xml
 </code></pre></div>
 </div>
 <p><em>Response</em></p>
@@ -30470,7 +30470,7 @@
 </code></pre></div>
 </div>
 <p><em>Response</em></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nt">&lt;catalog&gt;</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">&lt;mode&gt;</span>HIDE<span class="nt">&lt;/mode&gt;</span>
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="nt">&lt;/catalog&gt;</span>
@@ -30478,7 +30478,7 @@
 <h2 id="changing-the-catalog-mode">Changing the catalog mode<a class="headerlink" href="#changing-the-catalog-mode" title="Permanent link">&para;</a></h2>
 <h3 id="set-a-new-catalog-mode">Set a new catalog mode<a class="headerlink" href="#set-a-new-catalog-mode" title="Permanent link">&para;</a></h3>
 <p>Given a <code>newMode.xml</code> file:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nt">&lt;catalog&gt;</span>
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="nt">&lt;mode&gt;</span>MIXED<span class="nt">&lt;/mode&gt;</span>
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nt">&lt;/catalog&gt;</span>
@@ -30486,7 +30486,7 @@
 <p><em>Request</em></p>
 <div class="admonition abstract">
 <p class="admonition-title">curl</p>
-<div class="highlight"><pre><span></span><code>curl -v -u admin:geoserver -XPUT -H &quot;Content-type: text/xml&quot; -d @newMode.xml http://localhost:8080/geoserver/rest/security/acl/catalog.xml
+<div class="highlight"><pre><span></span><code>curl -v -u admin:geoserver -XPUT -H "Content-type: text/xml" -d @newMode.xml http://localhost:8080/geoserver/rest/security/acl/catalog.xml
 </code></pre></div>
 </div>
 <h2 id="listing-access-control-rules">Listing access control rules<a class="headerlink" href="#listing-access-control-rules" title="Permanent link">&para;</a></h2>
@@ -30498,7 +30498,7 @@
 </code></pre></div>
 </div>
 <p><em>Response</em></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nt">&lt;rules</span><span class="w"> </span><span class="nt">/&gt;</span>
 </code></pre></div>
 <div class="admonition note">
@@ -30508,16 +30508,16 @@
 <h2 id="changing-access-control-rules">Changing access control rules<a class="headerlink" href="#changing-access-control-rules" title="Permanent link">&para;</a></h2>
 <h3 id="set-a-new-list-of-access-control-rules">Set a new list of access control rules<a class="headerlink" href="#set-a-new-list-of-access-control-rules" title="Permanent link">&para;</a></h3>
 <p>Given a <code>rules.xml</code> file:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nt">&lt;rules&gt;</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">   </span><span class="nt">&lt;rule</span><span class="w"> </span><span class="na">resource=</span><span class="s">&quot;topp.*.r&quot;</span><span class="nt">&gt;</span>ROLE_AUTHORIZED<span class="nt">&lt;/rule&gt;</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">   </span><span class="nt">&lt;rule</span><span class="w"> </span><span class="na">resource=</span><span class="s">&quot;topp.mylayer.w&quot;</span><span class="nt">&gt;</span>ROLE_1,ROLE_2<span class="nt">&lt;/rule&gt;</span><span class="w">      </span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">   </span><span class="nt">&lt;rule</span><span class="w"> </span><span class="na">resource=</span><span class="s">"topp.*.r"</span><span class="nt">&gt;</span>ROLE_AUTHORIZED<span class="nt">&lt;/rule&gt;</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">   </span><span class="nt">&lt;rule</span><span class="w"> </span><span class="na">resource=</span><span class="s">"topp.mylayer.w"</span><span class="nt">&gt;</span>ROLE_1,ROLE_2<span class="nt">&lt;/rule&gt;</span><span class="w">      </span>
 <a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="nt">&lt;/rules&gt;</span>
 </code></pre></div>
 <p><em>Request</em></p>
 <div class="admonition abstract">
 <p class="admonition-title">curl</p>
-<div class="highlight"><pre><span></span><code>curl -v -u admin:geoserver -XPOST -H &quot;Content-type: text/xml&quot; -d @rules.xml http://localhost:8080/geoserver/rest/security/acl/layers.xml
+<div class="highlight"><pre><span></span><code>curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d @rules.xml http://localhost:8080/geoserver/rest/security/acl/layers.xml
 </code></pre></div>
 </div>
 <p><em>Response</em></p>

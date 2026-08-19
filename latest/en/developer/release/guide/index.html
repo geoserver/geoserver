@@ -30766,7 +30766,7 @@ A file system sandbox is used to limit access for GeoServer Administrators and W
 
 * A system sandbox is established using `GEOSERVER_FILESYSTEM_SANDBOX` application property, and applies to the entire application, limiting GeoServer administrators to the `&lt;sandbox&gt;` folder, and individual workspace administrators into isolated `&lt;sandbox&gt;/&lt;workspace&gt;` folders.
 
-* A regular sandbox can be configured from the **Security &gt; Data** screen, and is used to limit individual workspace administrators into `&lt;sandbox&gt;/&lt;workspace&gt;` folders to avoid accessing each other&#39;s files.
+* A regular sandbox can be configured from the **Security &gt; Data** screen, and is used to limit individual workspace administrators into `&lt;sandbox&gt;/&lt;workspace&gt;` folders to avoid accessing each other's files.
 
   ![](/img/posts/2.26/filesystem-sandbox.png)
 
@@ -30819,7 +30819,7 @@ git push geoserver 3.0.x
 </li>
 <li>
 <p>Commit the changes and push to the main development branch on GitHub:</p>
-<div class="highlight"><pre><span></span><code>git commit -am &quot;Updated version to 3.1.0-SNAPSHOT, updated GeoTools dependency to 36-SNAPSHOT, updated GeoWebCache dependency to 2.1-SNAPSHOT&quot;
+<div class="highlight"><pre><span></span><code>git commit -am "Updated version to 3.1.0-SNAPSHOT, updated GeoTools dependency to 36-SNAPSHOT, updated GeoWebCache dependency to 2.1-SNAPSHOT"
 git push geoserver main
 </code></pre></div>
 </li>
@@ -30835,10 +30835,10 @@ git push geoserver main
 <div class="highlight"><pre><span></span><code># Change this when releasing
 # LINK=maintain 
 ...
-# echo &quot;link $VER to $LINK_PATH&quot;
-# ssh -oStrictHostKeyChecking=no -p 2223 $REMOTE &quot;if [ -e $LINK_PATH ]; then rm $LINK_PATH; fi &amp;&amp; ln -s $REMOTE_PATH $LINK_PATH&quot;
+# echo "link $VER to $LINK_PATH"
+# ssh -oStrictHostKeyChecking=no -p 2223 $REMOTE "if [ -e $LINK_PATH ]; then rm $LINK_PATH; fi &amp;&amp; ln -s $REMOTE_PATH $LINK_PATH"
 #
-# echo &quot;docs published to https://docs.geoserver.org/$LINK/en/user&quot;
+# echo "docs published to https://docs.geoserver.org/$LINK/en/user"
 </code></pre></div>
 </li>
 <li>

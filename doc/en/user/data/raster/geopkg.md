@@ -19,7 +19,7 @@ By default, **GeoPackage (mosaic)** will be an option in the **Raster Data Sourc
 | **Option** | **Description** |
 |----|----|
 | `Workspace` | Name of the workspace to contain the GeoPackage Mosaic store. This will also be the prefix of the raster layers created from the store. |
-| `Data Source Name` | Name of the GeoPackage Mosaic Store as it will be known to GeoServer. This can be different from the filename. ) |
+| `Data Source Name` | Name of the GeoPackage Mosaic Store as it will be known to GeoServer. (This can be different from the filename. ) |
 | `Description` | A full free-form description of the GeoPackage Mosaic Store. |
 | `Enabled` | If checked, it enables the store. If unchecked (disabled), no data in the GeoPackage Mosaic Store will be served from GeoServer. |
 | `URL` | Location of the GeoPackage file. This can be an absolute path (such as **`file:C:\Data\landbase.gpkg`**) or a path relative to GeoServer's data directory (such as **`file:data/landbase.gpkg`**). |

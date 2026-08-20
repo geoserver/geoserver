@@ -30315,30 +30315,30 @@
 </div>
 <p>There is four ways to invoke this operation. Follows an example of all those variants invocations using CURL.</p>
 <p>Replace a single file uploading the replacement file:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>curl -u admin:geoserver -H &#39;Content-Type: multipart/form-data&#39;
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>  -F &quot;file=@tiles_0_0.sqlite&quot;
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>  -F &quot;destination=EPSG_4326/sf_restricted/image_png/null/10/tiles_0_0.sqlite&quot;
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>  -F &quot;layer=sf:restricted&quot;
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>  -XPOST &#39;http://localhost:8080/geoserver/gwc/rest/sqlite/replace&#39;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>curl -u admin:geoserver -H 'Content-Type: multipart/form-data'
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>  -F "file=@tiles_0_0.sqlite"
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>  -F "destination=EPSG_4326/sf_restricted/image_png/null/10/tiles_0_0.sqlite"
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>  -F "layer=sf:restricted"
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>  -XPOST 'http://localhost:8080/geoserver/gwc/rest/sqlite/replace'
 </code></pre></div>
 <p>Replace a single file using a file already present on the system:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>curl -u admin:geoserver -H &#39;Content-Type: multipart/form-data&#39;
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>  -F &quot;source=/tmp/tiles_0_0.sqlite&quot;
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>  -F &quot;destination=EPSG_4326/sf_restricted/image_png/null/10/tiles_0_0.sqlite&quot;
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>  -F &quot;layer=sf:restricted&quot;
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>  -XPOST &#39;http://localhost:8080/geoserver/gwc/rest/sqlite/replace&#39;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>curl -u admin:geoserver -H 'Content-Type: multipart/form-data'
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>  -F "source=/tmp/tiles_0_0.sqlite"
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>  -F "destination=EPSG_4326/sf_restricted/image_png/null/10/tiles_0_0.sqlite"
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>  -F "layer=sf:restricted"
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>  -XPOST 'http://localhost:8080/geoserver/gwc/rest/sqlite/replace'
 </code></pre></div>
 <p>Replace multiple files uploading a ZIP file:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>curl -u admin:geoserver -H &#39;Content-Type: multipart/form-data&#39;
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>  -F &quot;file=@tiles.zip&quot;
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>  -F &quot;layer=sf:restricted&quot;
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>  -XPOST &#39;http://localhost:8080/geoserver/gwc/rest/sqlite/replace&#39;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>curl -u admin:geoserver -H 'Content-Type: multipart/form-data'
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>  -F "file=@tiles.zip"
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>  -F "layer=sf:restricted"
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>  -XPOST 'http://localhost:8080/geoserver/gwc/rest/sqlite/replace'
 </code></pre></div>
 <p>Replace multiple files using a directory already present on the system:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>curl -u admin:geoserver -H &#39;Content-Type: multipart/form-data&#39;
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>  -F &quot;source=/tmp/tiles&quot;
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>  -F &quot;layer=sf:restricted&quot;
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>  -XPOST &#39;http://localhost:8080/geoserver/gwc/rest/sqlite/replace&#39;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>curl -u admin:geoserver -H 'Content-Type: multipart/form-data'
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>  -F "source=/tmp/tiles"
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>  -F "layer=sf:restricted"
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>  -XPOST 'http://localhost:8080/geoserver/gwc/rest/sqlite/replace'
 </code></pre></div>
 <p>The <em>layer</em> parameter identifies the layer whose associated blob store content should be replaced. The <em>file</em> parameter is used to upload a single file or a ZIP file. The <em>source</em> parameter is used to reference an already present file or directory. The <em>destination</em> parameter is used to define the file that should be replaced with the provided file.</p>
 <p>This are the only valid combinations of this parameters other combinations will ignore some of the provided parameters or will throw an exception.</p>

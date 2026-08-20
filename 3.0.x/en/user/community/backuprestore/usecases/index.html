@@ -30352,10 +30352,10 @@
 <p>The baseline scenario: archive the whole catalog and configuration, then restore it.</p>
 <p>To back up from the UI, open <strong>Backup and Restore</strong>, set <strong>Archive full path</strong> to the target <code>.zip</code>, leave the filters empty, and click <strong>Start</strong>. From the REST API:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">   </span><span class="nt">&quot;backup&quot;</span><span class="p">:{</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">      </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="s2">&quot;/path/to/backup/full.zip&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">      </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">      </span><span class="nt">&quot;options&quot;</span><span class="p">:{</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">   </span><span class="nt">"backup"</span><span class="p">:{</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">      </span><span class="nt">"archiveFile"</span><span class="p">:</span><span class="s2">"/path/to/backup/full.zip"</span><span class="p">,</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">      </span><span class="nt">"overwrite"</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">      </span><span class="nt">"options"</span><span class="p">:{</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">      </span><span class="p">}</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">   </span><span class="p">}</span>
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">}</span>
@@ -30373,10 +30373,10 @@
 </ul>
 <p>Because this is the default, a migration backup needs no special option:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">   </span><span class="nt">&quot;backup&quot;</span><span class="p">:{</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">      </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="s2">&quot;/path/to/backup/migration.zip&quot;</span><span class="p">,</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">      </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="nt">&quot;options&quot;</span><span class="p">:{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">   </span><span class="nt">"backup"</span><span class="p">:{</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">      </span><span class="nt">"archiveFile"</span><span class="p">:</span><span class="s2">"/path/to/backup/migration.zip"</span><span class="p">,</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">      </span><span class="nt">"overwrite"</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="nt">"options"</span><span class="p">:{</span>
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">      </span><span class="p">}</span>
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">   </span><span class="p">}</span>
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">}</span>
@@ -30388,11 +30388,11 @@
 </ul>
 <p>If you instead want the legacy <strong>portable, name-based</strong> archive — catalog ids stripped and regenerated on restore, the right choice when restoring into a fresh, empty data directory — turn the option off with <code>BK_PRESERVE_IDS=false</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">   </span><span class="nt">&quot;backup&quot;</span><span class="p">:{</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">      </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="s2">&quot;/path/to/backup/portable.zip&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">      </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">      </span><span class="nt">&quot;options&quot;</span><span class="p">:{</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">        </span><span class="nt">&quot;option&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;BK_PRESERVE_IDS=false&quot;</span><span class="p">]</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">   </span><span class="nt">"backup"</span><span class="p">:{</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">      </span><span class="nt">"archiveFile"</span><span class="p">:</span><span class="s2">"/path/to/backup/portable.zip"</span><span class="p">,</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">      </span><span class="nt">"overwrite"</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">      </span><span class="nt">"options"</span><span class="p">:{</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">        </span><span class="nt">"option"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"BK_PRESERVE_IDS=false"</span><span class="p">]</span>
 <a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">      </span><span class="p">}</span>
 <a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">   </span><span class="p">}</span>
 <a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="p">}</span>
@@ -30418,23 +30418,23 @@
 <p>Restoring the security configuration verbatim across two instances fails when their master passwords differ: a keystore encrypted with the source's master password cannot be read on the target, and a verbatim copy overwrites the target's whole security configuration. The 3.x module offers two ways to migrate security across instances. Both require opting security in (uncheck <strong>Skip Security Settings</strong>, or <code>BK_SKIP_SECURITY=false</code>), since security is excluded by default.</p>
 <p><strong>Merge mode</strong> adds only the principals the target is missing. <strong>Merge Security</strong> (<code>BK_MERGE_SECURITY=true</code>) performs an add-only merge of the archive's users, groups and roles into the target's existing security services; the target keeps its own configuration, keystore and master password, and a missing user/group or role service the merge needs is bootstrapped empty. New users keep their archived (digest) passwords; reversible passwords must be reset afterwards.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">   </span><span class="nt">&quot;restore&quot;</span><span class="p">:{</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">      </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="s2">&quot;/path/to/backup/source-instance.zip&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">      </span><span class="nt">&quot;options&quot;</span><span class="p">:{</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">        </span><span class="nt">&quot;option&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;BK_SKIP_SECURITY=false&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;BK_MERGE_SECURITY=true&quot;</span><span class="p">]</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">   </span><span class="nt">"restore"</span><span class="p">:{</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">      </span><span class="nt">"archiveFile"</span><span class="p">:</span><span class="s2">"/path/to/backup/source-instance.zip"</span><span class="p">,</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">      </span><span class="nt">"options"</span><span class="p">:{</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">        </span><span class="nt">"option"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"BK_SKIP_SECURITY=false"</span><span class="p">,</span><span class="w"> </span><span class="s2">"BK_MERGE_SECURITY=true"</span><span class="p">]</span>
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">      </span><span class="p">}</span>
 <a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">   </span><span class="p">}</span>
 <a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="p">}</span>
 </code></pre></div>
 <p><strong>Replace mode with keystore re-encryption</strong> brings the source's security configuration across wholesale and makes its keystore readable on the target. Supply both <code>BK_SOURCE_MASTER_PASSWORD</code> and <code>BK_TARGET_MASTER_PASSWORD</code> so the archive's keystore is re-encrypted from the source master password to the target's:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">   </span><span class="nt">&quot;restore&quot;</span><span class="p">:{</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">      </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="s2">&quot;/path/to/backup/source-instance.zip&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">      </span><span class="nt">&quot;options&quot;</span><span class="p">:{</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">        </span><span class="nt">&quot;option&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">          </span><span class="s2">&quot;BK_SKIP_SECURITY=false&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">          </span><span class="s2">&quot;BK_SOURCE_MASTER_PASSWORD=sourceMasterPwd&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">          </span><span class="s2">&quot;BK_TARGET_MASTER_PASSWORD=targetMasterPwd&quot;</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">   </span><span class="nt">"restore"</span><span class="p">:{</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">      </span><span class="nt">"archiveFile"</span><span class="p">:</span><span class="s2">"/path/to/backup/source-instance.zip"</span><span class="p">,</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">      </span><span class="nt">"options"</span><span class="p">:{</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">        </span><span class="nt">"option"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">          </span><span class="s2">"BK_SKIP_SECURITY=false"</span><span class="p">,</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">          </span><span class="s2">"BK_SOURCE_MASTER_PASSWORD=sourceMasterPwd"</span><span class="p">,</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">          </span><span class="s2">"BK_TARGET_MASTER_PASSWORD=targetMasterPwd"</span>
 <a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">        </span><span class="p">]</span>
 <a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">      </span><span class="p">}</span>
 <a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">   </span><span class="p">}</span>
@@ -30448,21 +30448,21 @@
 <p>To avoid carrying encrypted store passwords in the archive — for example, when the same archive is restored into environments with different credentials — parameterize them on backup and substitute concrete values on restore.</p>
 <p>On <strong>backup</strong>, enable <strong>Parameterize Store Passwords</strong> (<code>BK_PARAM_PASSWORDS=true</code>). Each store password is written as a token of the form <code>${workspaceName:storeName.passwd.encryptedValue}</code> instead of an encrypted value:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">{</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">   </span><span class="nt">&quot;backup&quot;</span><span class="p">:{</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">      </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="s2">&quot;/path/to/backup/parameterized.zip&quot;</span><span class="p">,</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">      </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">      </span><span class="nt">&quot;options&quot;</span><span class="p">:{</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">        </span><span class="nt">&quot;option&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;BK_PARAM_PASSWORDS=true&quot;</span><span class="p">]</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">   </span><span class="nt">"backup"</span><span class="p">:{</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">      </span><span class="nt">"archiveFile"</span><span class="p">:</span><span class="s2">"/path/to/backup/parameterized.zip"</span><span class="p">,</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">      </span><span class="nt">"overwrite"</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">      </span><span class="nt">"options"</span><span class="p">:{</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">        </span><span class="nt">"option"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"BK_PARAM_PASSWORDS=true"</span><span class="p">]</span>
 <a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">      </span><span class="p">}</span>
 <a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">   </span><span class="p">}</span>
 <a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="p">}</span>
 </code></pre></div>
 <p>On <strong>restore</strong>, pass <code>BK_PASSWORD_TOKENS</code> — a comma-separated list of <code>token=value</code> pairs — to substitute each token with the concrete password for the target environment:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="p">{</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">   </span><span class="nt">&quot;restore&quot;</span><span class="p">:{</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">      </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="s2">&quot;/path/to/backup/parameterized.zip&quot;</span><span class="p">,</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">      </span><span class="nt">&quot;options&quot;</span><span class="p">:{</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">        </span><span class="nt">&quot;option&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;BK_PASSWORD_TOKENS=${workspace:store1.passwd.encryptedValue}=secret1,${workspace:store2.passwd.encryptedValue}=secret2&quot;</span><span class="p">]</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">   </span><span class="nt">"restore"</span><span class="p">:{</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">      </span><span class="nt">"archiveFile"</span><span class="p">:</span><span class="s2">"/path/to/backup/parameterized.zip"</span><span class="p">,</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">      </span><span class="nt">"options"</span><span class="p">:{</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">        </span><span class="nt">"option"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"BK_PASSWORD_TOKENS=${workspace:store1.passwd.encryptedValue}=secret1,${workspace:store2.passwd.encryptedValue}=secret2"</span><span class="p">]</span>
 <a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">      </span><span class="p">}</span>
 <a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">   </span><span class="p">}</span>
 <a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="p">}</span>
@@ -30474,10 +30474,10 @@
 <h2 id="validate-before-restore">Validate before restore<a class="headerlink" href="#validate-before-restore" title="Permanent link">&para;</a></h2>
 <p>Validate an archive non-destructively before committing it. A <strong>dry-run</strong> (the <strong>Dry-Run</strong> checkbox, or <code>BK_DRY_RUN=true</code>) runs the whole restore but snapshots and rolls back the affected data-directory subtrees, leaving the data directory untouched. Combine it with <strong>Fail-on-Invalid</strong> (<code>BK_FAIL_ON_INVALID=true</code>) to make the pre-flight validation pass <strong>abort</strong> on the first invalid object instead of only logging warnings:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="p">{</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">   </span><span class="nt">&quot;restore&quot;</span><span class="p">:{</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">      </span><span class="nt">&quot;archiveFile&quot;</span><span class="p">:</span><span class="s2">&quot;/path/to/backup/full.zip&quot;</span><span class="p">,</span>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">      </span><span class="nt">&quot;options&quot;</span><span class="p">:{</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">        </span><span class="nt">&quot;option&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;BK_DRY_RUN=true&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;BK_FAIL_ON_INVALID=true&quot;</span><span class="p">]</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">   </span><span class="nt">"restore"</span><span class="p">:{</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">      </span><span class="nt">"archiveFile"</span><span class="p">:</span><span class="s2">"/path/to/backup/full.zip"</span><span class="p">,</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">      </span><span class="nt">"options"</span><span class="p">:{</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">        </span><span class="nt">"option"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"BK_DRY_RUN=true"</span><span class="p">,</span><span class="w"> </span><span class="s2">"BK_FAIL_ON_INVALID=true"</span><span class="p">]</span>
 <a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">      </span><span class="p">}</span>
 <a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">   </span><span class="p">}</span>
 <a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="p">}</span>

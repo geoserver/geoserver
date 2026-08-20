@@ -30281,7 +30281,7 @@
 <li>In your text editor of choice, create a new text file called <code>time.ftl</code>.</li>
 <li>Add the following text:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>${RPT_YEAR.value?date(&#39;yyyy&#39;)}
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>${RPT_YEAR.value?date('yyyy')}
 </code></pre></div>
 <ol>
 <li>Save the file to the <code>&lt;GEOSERVER_DATA_DIR&gt;/workspaces/topp/inet_weu_shapefile/inet_weu</code> directory. Where <code>&lt;GEOSERVER_DATA_DIR&gt;</code> is the location of the "data directory" of your GeoServer installation. Usually pointed to via the <code>GEOSERVER_DATA_DIR</code> environment variable.</li>
@@ -30311,10 +30311,10 @@
 </code></pre></div>
 <p>While GeoServer will try its best to parse the data there are cases in which your data is in a format which it cannot parse. When this occurs it is necessary to explicitly specify the format. Luckily Freemarker provides us with functionality to do just this.</p>
 <p>Consider the date time <code>12:30 on January 01, 2007</code> specified in the following format: <code>01?01%2007&amp;12$30!00</code>. When creating the template we need to explicitly tell Freemarker the format the date time is in with the datetime function. This is an example time template file (time.ftl) file with explicit formatting: :</p>
-<div class="highlight"><pre><span></span><code>${DATETIME_ATTRIBUTE_NAME.value?datetime(&quot;M?d%y&amp;H:m:s&quot;)}
+<div class="highlight"><pre><span></span><code>${DATETIME_ATTRIBUTE_NAME.value?datetime("M?d%y&amp;H:m:s")}
 </code></pre></div>
 <p>The process is similar for dates (no time). The date <code>01?01%2007</code> would be specified in a template with explicit formatting:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>${DATETIME_ATTRIBUTE_NAME.value?date(&quot;M?d%y&quot;)}
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>${DATETIME_ATTRIBUTE_NAME.value?date("M?d%y")}
 </code></pre></div>
 <p>So when must you specify the date format in this manner? The following table illustrates the <strong>date</strong> formats that GeoServer can understand. Note that the '-' character can be one of any of the following characters: '/' (forward slash), ' ' (space), '.' (period), ',' (comma)</p>
 <table>

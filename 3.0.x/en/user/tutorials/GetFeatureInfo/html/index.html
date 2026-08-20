@@ -30322,7 +30322,7 @@
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>  &lt;head&gt;
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    &lt;title&gt;GeoServer GetFeatureInfo output&lt;/title&gt;
 <a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>  &lt;/head&gt;
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>  &lt;style type=&quot;text/css&quot;&gt;
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>  &lt;style type="text/css"&gt;
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    table.featureInfo, table.featureInfo td, table.featureInfo th {
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>        border:1px solid #ddd;
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>        border-collapse:collapse;
@@ -30369,19 +30369,19 @@ whose features all have the same type. In the above example, the template was ca
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>in the event of multuple feature collections it will be called for for each feature collection in turn.
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>--&gt;
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>&lt;#list features as feature&gt;
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>&lt;table class=&quot;featureInfo&quot;&gt;
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>  &lt;caption class=&quot;featureInfo&quot; &lt;#if type.description??&gt; title=&quot;${type.description} &lt;#else/&gt; title=&quot;${type.name}&quot; &lt;/#if&gt;&gt;
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>&lt;table class="featureInfo"&gt;
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>  &lt;caption class="featureInfo" &lt;#if type.description??&gt; title="${type.description} &lt;#else/&gt; title="${type.name}" &lt;/#if&gt;&gt;
 <a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    &lt;#if type.title??&gt; ${type.title} &lt;#else/&gt; ${type.name} &lt;/#if&gt;
 <a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>  &lt;/caption&gt;
 <a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>&lt;tbody&gt;
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>&lt;tr class=&quot;odd&quot;&gt;
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>  &lt;th scope=&quot;row&quot;&gt;FeatureID&lt;/th&gt;
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>&lt;tr class="odd"&gt;
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>  &lt;th scope="row"&gt;FeatureID&lt;/th&gt;
 <a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>  &lt;td&gt;${feature.fid}&lt;/td&gt;
 <a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>&lt;/tr&gt;
 <a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>&lt;#list feature.attributes as attribute&gt;
 <a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>&lt;#if !attribute.isGeometry &amp;&amp; !attribute.value.isEmpty() &gt;
-<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>  &lt;tr class=&quot;${attribute?item_parity}&quot;&gt;
-<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>    &lt;th&lt;#if attribute.description??&gt; title=&quot;${attribute.description}&quot;&lt;/#if&gt; scope=&quot;row&quot;&gt;${attribute.name}&lt;/th&gt;
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>  &lt;tr class="${attribute?item_parity}"&gt;
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>    &lt;th&lt;#if attribute.description??&gt; title="${attribute.description}"&lt;/#if&gt; scope="row"&gt;${attribute.name}&lt;/th&gt;
 <a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>    &lt;td&gt;${attribute.value}&lt;/td&gt;
 <a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>  &lt;/tr&gt;
 <a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>&lt;/#if&gt;
@@ -30423,8 +30423,8 @@ whose features all have the same type. In the above example, the template was ca
 <p>This is easy: just put the following template in the feature type folder, which in this case is <code>workspaces/topp/DS_poi/poi</code> (you should refer to your Internet visible server address instead of localhost, or its IP if you have fixed IPs):</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="err">&lt;</span>#list features as feature&gt;
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>  <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">b</span><span class="p">&gt;</span>Point of interest, &quot;${feature.NAME.value}&quot;<span class="p">&lt;/</span><span class="nt">b</span><span class="p">&gt;</span>: <span class="p">&lt;</span><span class="nt">br</span><span class="p">/&gt;</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>  <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;http://localhost:8080/geoserver/popup_map/${feature.THUMBNAIL.value}&quot;</span><span class="p">/&gt;</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>  <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">b</span><span class="p">&gt;</span>Point of interest, "${feature.NAME.value}"<span class="p">&lt;/</span><span class="nt">b</span><span class="p">&gt;</span>: <span class="p">&lt;</span><span class="nt">br</span><span class="p">/&gt;</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>  <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">"http://localhost:8080/geoserver/popup_map/${feature.THUMBNAIL.value}"</span><span class="p">/&gt;</span>
 <a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>  <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
 <a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="err">&lt;</span>/#list&gt;
 <a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
@@ -30488,7 +30488,7 @@ whose features all have the same type. In the above example, the template was ca
 <p>This exposes the static members of <code>java.lang.String</code> using the variable name <code>String</code> in the template, which can be used in templates as follows:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="err">&lt;</span>#list features as feature&gt;
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>  <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>${feature.NAME.value}: ${String.format(&quot;%.2f €&quot;, feature.AMOUNT.rawValue)}
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>  <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>${feature.NAME.value}: ${String.format("%.2f €", feature.AMOUNT.rawValue)}
 <a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>  <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
 <a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="err">&lt;</span>/#list&gt;
 <a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
@@ -30499,10 +30499,10 @@ whose features all have the same type. In the above example, the template was ca
 <div class="highlight"><pre><span></span><code>-Dorg.geoserver.htmlTemplates.staticMemberAccess=*
 </code></pre></div>
 <p>In this case GeoServer exposes a <code>statics</code> variable you can use in templates to access static members as follows:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="err">&lt;</span>#assign String=statics[&#39;java.lang.String&#39;]&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="err">&lt;</span>#assign String=statics['java.lang.String']&gt;
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
 <a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="err">&lt;</span>#list features as feature&gt;
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>  <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>${feature.NAME.value}: ${String.format(&quot;%.2f €&quot;, feature.AMOUNT.rawValue)}
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>  <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>${feature.NAME.value}: ${String.format("%.2f €", feature.AMOUNT.rawValue)}
 <a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>  <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
 <a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="err">&lt;</span>/#list&gt;
 <a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>

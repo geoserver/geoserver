@@ -30275,10 +30275,10 @@
 </li>
 </ul>
 <p>The tile cache separation is implemented by injecting a synthetic <code>ACCESS_LIMITS_KEY</code> parameter into the tile request before it reaches the cache. The value is a compact JSON object encoding the active access restrictions. For example, a user restricted to features where <code>NAME = 'Blue Lake'</code> would carry:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ACCESS_LIMITS_KEY={&quot;readFilter&quot;:&quot;NAME = &#39;Blue Lake&#39;&quot;}
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ACCESS_LIMITS_KEY={"readFilter":"NAME = 'Blue Lake'"}
 </code></pre></div>
 <p>A user clipped to a raster region in Australia would carry:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ACCESS_LIMITS_KEY={&quot;rasterFilter&quot;:&quot;MULTIPOLYGON (((140 -50, 150 -50, 150 -30, 140 -30, 140 -50)))&quot;}
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ACCESS_LIMITS_KEY={"rasterFilter":"MULTIPOLYGON (((140 -50, 150 -50, 150 -30, 140 -30, 140 -50)))"}
 </code></pre></div>
 <p>Unrestricted users have no <code>ACCESS_LIMITS_KEY</code> in their tile parameters and continue to use the shared default cache. GWC hashes all tile parameters into the <code>parametersId</code> used to locate tiles in the cache storage, so tiles with different <code>ACCESS_LIMITS_KEY</code> values are stored at different cache paths even if they cover the same bounding box.</p>
 <p>When access restrictions involve complex geometries or long filter expressions, the <code>ACCESS_LIMITS_KEY</code> value can become large. GeoWebCache limits it to <strong>64 KB</strong> by default. If the serialized key exceeds this limit, individual field values are truncated (longest first) until the total fits. Each truncated value is replaced with a visible prefix followed by <code>...too long, sha is &lt;sha256hex&gt;</code>, where the SHA-256 is computed from the full original value. The limit can be overridden with the system property <code>gwc.security.maxKeyLength</code> (value in characters).</p>

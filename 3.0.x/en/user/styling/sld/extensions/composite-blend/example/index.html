@@ -30042,12 +30042,12 @@
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="nt">&lt;Rule&gt;</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="nt">&lt;LineSymbolizer&gt;</span>
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">      </span><span class="nt">&lt;Stroke&gt;</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">        </span><span class="nt">&lt;CssParameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;stroke-width&quot;</span><span class="nt">&gt;</span>10<span class="nt">&lt;/CssParameter&gt;</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">        </span><span class="nt">&lt;CssParameter</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;stroke&quot;</span><span class="nt">&gt;</span>#000000<span class="nt">&lt;/CssParameter&gt;</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">        </span><span class="nt">&lt;CssParameter</span><span class="w"> </span><span class="na">name=</span><span class="s">"stroke-width"</span><span class="nt">&gt;</span>10<span class="nt">&lt;/CssParameter&gt;</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">        </span><span class="nt">&lt;CssParameter</span><span class="w"> </span><span class="na">name=</span><span class="s">"stroke"</span><span class="nt">&gt;</span>#000000<span class="nt">&lt;/CssParameter&gt;</span>
 <a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">      </span><span class="nt">&lt;/Stroke&gt;</span>
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">    </span><span class="nt">&lt;/LineSymbolizer&gt;</span>
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">  </span><span class="nt">&lt;/Rule&gt;</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">  </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;composite&quot;</span><span class="nt">&gt;</span>destination-in<span class="nt">&lt;/VendorOption&gt;</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">  </span><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"composite"</span><span class="nt">&gt;</span>destination-in<span class="nt">&lt;/VendorOption&gt;</span>
 <a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="nt">&lt;/FeatureTypeStyle&gt;</span>
 <a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="nt">&lt;FeatureTypeStyle&gt;</span>
 <a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">  </span><span class="cm">&lt;!-- The label rules, skipped for brevity --&gt;</span>
@@ -30060,7 +30060,7 @@
 <p><img alt="" src="../images/ne-states-border-composite1.png" /></p>
 <p>This other background layer is hardly visible, because it has been cut by the mask. This shows the risks of using alpha compositing without care in a WMS setting.</p>
 <p>In order to achieve the desired result no matter how the client composes the request, the first FeatureTypeStyle that draws the polygons (the states themselves) needs to be set as a <em>compositing base</em>, ensuring the mask will only be applied to it.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;composite-base&quot;</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"composite-base"</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
 <p>The result will look like the following (though a multiply blend was added to the base to ensure a nice visual transparency effect on the border lines):</p>
 <p><img alt="" src="../images/ne-states-border-composite2.jpg" /></p>

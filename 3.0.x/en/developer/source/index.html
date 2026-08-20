@@ -30686,11 +30686,11 @@ core.precomposeunicode true
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>git<span class="w"> </span>status
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>Untracked files:
-   (use &quot;git add &lt;file&gt;...&quot; to include in what will be committed)
+   (use "git add &lt;file&gt;..." to include in what will be committed)
 
    ...
 
-   &quot;Entit\303\251G\303\251n\303\251rique/&quot;
+   "Entit\303\251G\303\251n\303\251rique/"
 </code></pre></div>
 <p>GeoServer requires macOS users to use the following setting:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>core.precomposeunicode<span class="w"> </span><span class="nb">true</span>
@@ -30700,13 +30700,13 @@ core.precomposeunicode true
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>core.precomposeunicode<span class="w"> </span><span class="nb">false</span>
 <a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>mv<span class="w"> </span>EntitéGénérique<span class="w"> </span>/tmp/EntitéGénérique
 <a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>git<span class="w"> </span>rm<span class="w"> </span>EntitéGénérique
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Remove EntitéGénérique with decomposed filename&quot;</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Remove EntitéGénérique with decomposed filename"</span>
 </code></pre></div>
 <p>And then added:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>core.precomposeunicode<span class="w"> </span><span class="nb">true</span>
 <a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>mv<span class="w"> </span>/tmp/EntitéGénérique<span class="w"> </span>EntitéGénérique
 <a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>git<span class="w"> </span>add<span class="w"> </span>EntitéGénérique
-<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Restore EntitéGénérique with precomposed filename&quot;</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Restore EntitéGénérique with precomposed filename"</span>
 </code></pre></div>
 </div>
 <p>Some useful reading on this subject:</p>
@@ -30832,7 +30832,7 @@ data/
 <div class="highlight"><pre><span></span><code>% git checkout main
 # do some work on file x
 % git add x
-% git commit -m &quot;commit message&quot; x
+% git commit -m "commit message" x
 </code></pre></div>
 <p>Again there are many variations but generally the staging process involves using <code>git add</code> to stage files that have been added or modified, and <code>git rm</code> to stage files that have been deleted. <code>git mv</code> is used to move files and stage the changes in one step.</p>
 <p>At any time you can run <code>git status</code> to check what files have been changed in the working area and what has been staged for commit. It also shows the current branch, which is useful when switching frequently between branches.</p>
@@ -30842,7 +30842,7 @@ data/
 <div class="highlight"><pre><span></span><code>% git checkout main
 # make a change
 % git add/rm/mv ...
-% git commit -m &quot;making change x&quot;
+% git commit -m "making change x"
 % git pull upstream main
 % git push upstream main
 </code></pre></div>
@@ -30861,7 +30861,7 @@ data/
 <div class="highlight"><pre><span></span><code>% git checkout -b my_feature main
 % # make some changes
 % git add/rm, etc...
-% git commit -m &quot;first part of my_feature&quot;
+% git commit -m "first part of my_feature"
 </code></pre></div>
 <p>Rinse, wash, repeat. The nice about thing about using a feature branch is that it is easy to switch context to work on something else. Just <code>git checkout</code> whatever other branch you need to work on, and then return to the feature branch when ready.</p>
 <div class="admonition note">
@@ -30883,7 +30883,7 @@ data/
 <div class="highlight"><pre><span></span><code>% git checkout main
 % # make the change
 % git add/rm/etc... 
-% git commit -m &quot;fixing bug GEOS-XYZ&quot;
+% git commit -m "fixing bug GEOS-XYZ"
 % git pull --rebase upstream main
 % git push upstream main
 </code></pre></div>
@@ -30911,13 +30911,13 @@ data/
 % git log
 </code></pre></div>
 <p>The git log shows the current commit on the branch is commit "123". We make some changes and commit the result:</p>
-<div class="highlight"><pre><span></span><code>% git commit &quot;fixing bug x&quot; # results in commit 456
+<div class="highlight"><pre><span></span><code>% git commit "fixing bug x" # results in commit 456
 </code></pre></div>
 <p>We realize we forgot to stage a change before committing, so we add the file and commit:</p>
-<div class="highlight"><pre><span></span><code>% git commit -m &quot;oops, forgot to commit that file&quot; # results in commit 678
+<div class="highlight"><pre><span></span><code>% git commit -m "oops, forgot to commit that file" # results in commit 678
 </code></pre></div>
 <p>Then we notice a small mistake, so we fix and commit again:</p>
-<div class="highlight"><pre><span></span><code>% git commit -m &quot;darn, made a typo&quot; # results in commit #910
+<div class="highlight"><pre><span></span><code>% git commit -m "darn, made a typo" # results in commit #910
 </code></pre></div>
 <p>At this point we have three commits when what we really want is one. So we rebase, specifying the revision immediately prior to the first commit:</p>
 <div class="highlight"><pre><span></span><code>% git rebase -i 123
@@ -30931,7 +30931,7 @@ data/
 <p>The <code>git merge</code> command takes an option <code>--squash</code> that performs the merge against the working area but does not commit the result to the target branch. This squashes all the commits from the feature branch into a single changeset that is staged and ready to be committed:</p>
 <div class="highlight"><pre><span></span><code>% git checkout main
 % git merge --squash my_feature
-% git commit -m &quot;implemented feature x&quot;
+% git commit -m "implemented feature x"
 </code></pre></div>
 <h2 id="more-useful-reading">More useful reading<a class="headerlink" href="#more-useful-reading" title="Permanent link">&para;</a></h2>
 <p>The content in this section is not intended to be a comprehensive introduction to git. There are many things not covered that are invaluable to day-to-day work with git. Some more useful info:</p>

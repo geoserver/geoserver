@@ -30872,37 +30872,37 @@
 </tbody>
 </table>
 <h3 id="base-url-used-in-examples">Base URL used in examples<a class="headerlink" href="#base-url-used-in-examples" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nv">BASE</span><span class="o">=</span><span class="s2">&quot;http://localhost:9002/geoserver/rest/security&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nv">BASE</span><span class="o">=</span><span class="s2">"http://localhost:9002/geoserver/rest/security"</span>
 </code></pre></div>
 <h3 id="get-list-all-filters">GET --- List all filters<a class="headerlink" href="#get-list-all-filters" title="Permanent link">&para;</a></h3>
 <h4 id="xml">XML<a class="headerlink" href="#xml" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">     </span>-H<span class="w"> </span><span class="s2">&quot;Accept: application/xml&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">     </span><span class="s2">&quot;</span><span class="nv">$BASE</span><span class="s2">/authfilters&quot;</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">     </span>-H<span class="w"> </span><span class="s2">"Accept: application/xml"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">     </span><span class="s2">"</span><span class="nv">$BASE</span><span class="s2">/authfilters"</span>
 </code></pre></div>
 <h4 id="response-200-ok">Response: 200 OK<a class="headerlink" href="#response-200-ok" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&lt;authfilters&gt;</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&lt;authfilter&gt;</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">&lt;name&gt;</span>Keycloak<span class="nt">&lt;/name&gt;</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">&lt;atom:link</span><span class="w"> </span><span class="na">xmlns:atom=</span><span class="s">&quot;http://www.w3.org/2005/Atom&quot;</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">               </span><span class="na">rel=</span><span class="s">&quot;alternate&quot;</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">               </span><span class="na">href=</span><span class="s">&quot;http://localhost:9002/geoserver/rest/security/authfilters/Keycloak.xml&quot;</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">               </span><span class="na">type=</span><span class="s">&quot;application/atom+xml&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">&lt;atom:link</span><span class="w"> </span><span class="na">xmlns:atom=</span><span class="s">"http://www.w3.org/2005/Atom"</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">               </span><span class="na">rel=</span><span class="s">"alternate"</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">               </span><span class="na">href=</span><span class="s">"http://localhost:9002/geoserver/rest/security/authfilters/Keycloak.xml"</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">               </span><span class="na">type=</span><span class="s">"application/atom+xml"</span><span class="nt">/&gt;</span>
 <a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">  </span><span class="nt">&lt;/authfilter&gt;</span>
 <a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="nt">&lt;/authfilters&gt;</span>
 </code></pre></div>
 <h4 id="json">JSON<a class="headerlink" href="#json" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">     </span>-H<span class="w"> </span><span class="s2">&quot;Accept: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">     </span><span class="s2">&quot;</span><span class="nv">$BASE</span><span class="s2">/authfilters&quot;</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">     </span>-H<span class="w"> </span><span class="s2">"Accept: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">     </span><span class="s2">"</span><span class="nv">$BASE</span><span class="s2">/authfilters"</span>
 </code></pre></div>
 <h4 id="response-200-ok_1">Response: 200 OK<a class="headerlink" href="#response-200-ok_1" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">&quot;authfilters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="nt">&quot;authfilter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">"authfilters"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="nt">"authfilter"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">      </span><span class="p">{</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Keycloak&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">        </span><span class="nt">&quot;href&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:9002/geoserver/rest/security/authfilters/Keycloak.json&quot;</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">        </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Keycloak"</span><span class="p">,</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">        </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:9002/geoserver/rest/security/authfilters/Keycloak.json"</span>
 <a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">      </span><span class="p">}</span>
 <a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="p">]</span>
 <a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">  </span><span class="p">}</span>
@@ -30911,13 +30911,13 @@
 <h3 id="post-create-a-filter">POST --- Create a filter<a class="headerlink" href="#post-create-a-filter" title="Permanent link">&para;</a></h3>
 <h4 id="xml_1">XML<a class="headerlink" href="#xml_1" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">     </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/xml&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">     </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/xml"</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">     </span>-i<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">     </span>-d<span class="w"> </span>@-<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BASE</span><span class="s2">/authfilters&quot;</span><span class="w"> </span><span class="s">&lt;&lt;&#39;XML&#39;</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">     </span>-d<span class="w"> </span>@-<span class="w"> </span><span class="s2">"</span><span class="nv">$BASE</span><span class="s2">/authfilters"</span><span class="w"> </span><span class="s">&lt;&lt;'XML'</span>
 <a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="s">&lt;org.geoserver.security.oauth2.OpenIdConnectFilterConfig&gt;</span>
 <a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="s">  &lt;name&gt;Keycloak7&lt;/name&gt;</span>
 <a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="s">  &lt;className&gt;org.geoserver.security.oauth2.OpenIdConnectAuthenticationFilter&lt;/className&gt;</span>
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="s">  &lt;roleSource class=&quot;org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig$PreAuthenticatedUserNameRoleSource&quot;&gt;RoleService&lt;/roleSource&gt;</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="s">  &lt;roleSource class="org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig$PreAuthenticatedUserNameRoleSource"&gt;RoleService&lt;/roleSource&gt;</span>
 <a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="s">  &lt;roleServiceName&gt;default&lt;/roleServiceName&gt;</span>
 <a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="s">  &lt;clientId&gt;myclient&lt;/clientId&gt;</span>
 <a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="s">  &lt;clientSecret&gt;UGIAvmT8qgfikS9cbAi2vUJOTVUU61sG&lt;/clientSecret&gt;</span>
@@ -30952,41 +30952,41 @@
 </ul>
 <h4 id="json_1">JSON<a class="headerlink" href="#json_1" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">     </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">     </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">     </span>-i<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">     </span>-d<span class="w"> </span>@-<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BASE</span><span class="s2">/authfilters&quot;</span><span class="w"> </span><span class="s">&lt;&lt;&#39;JSON&#39;</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">     </span>-d<span class="w"> </span>@-<span class="w"> </span><span class="s2">"</span><span class="nv">$BASE</span><span class="s2">/authfilters"</span><span class="w"> </span><span class="s">&lt;&lt;'JSON'</span>
 <a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="s">{</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="s">  &quot;org.geoserver.security.oauth2.OpenIdConnectFilterConfig&quot;: {</span>
-<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="s">    &quot;name&quot;: &quot;Keycloak12&quot;,</span>
-<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="s">    &quot;className&quot;: &quot;org.geoserver.security.oauth2.OpenIdConnectAuthenticationFilter&quot;,</span>
-<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="s">    &quot;roleSource&quot;: {</span>
-<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="s">      &quot;@class&quot;: &quot;org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig$PreAuthenticatedUserNameRoleSource&quot;,</span>
-<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="s">      &quot;$&quot;: &quot;RoleService&quot;</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="s">  "org.geoserver.security.oauth2.OpenIdConnectFilterConfig": {</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="s">    "name": "Keycloak12",</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="s">    "className": "org.geoserver.security.oauth2.OpenIdConnectAuthenticationFilter",</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="s">    "roleSource": {</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="s">      "@class": "org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig$PreAuthenticatedUserNameRoleSource",</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="s">      "$": "RoleService"</span>
 <a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="s">    },</span>
-<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="s">    &quot;roleServiceName&quot;: &quot;default&quot;,</span>
-<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="s">    &quot;clientId&quot;: &quot;myclient&quot;,</span>
-<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="s">    &quot;clientSecret&quot;: &quot;UGIAvmT8qgfikS9cbAi2vUJOTVUU61sG&quot;,</span>
-<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="s">    &quot;accessTokenUri&quot;: &quot;http://localhost:8080/realms/myrealm/protocol/openid-connect/token&quot;,</span>
-<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="s">    &quot;userAuthorizationUri&quot;: &quot;http://localhost:8080/realms/myrealm/protocol/openid-connect/auth&quot;,</span>
-<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="s">    &quot;redirectUri&quot;: &quot;http://localhost:9001/geoserver/&quot;,</span>
-<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="s">    &quot;checkTokenEndpointUrl&quot;: &quot;http://localhost:8080/realms/myrealm/protocol/openid-connect/userinfo&quot;,</span>
-<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a><span class="s">    &quot;introspectionEndpointUrl&quot;: &quot;http://localhost:8080/realms/myrealm/protocol/openid-connect/token/introspect&quot;,</span>
-<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a><span class="s">    &quot;logoutUri&quot;: &quot;http://localhost:8080/realms/myrealm/protocol/openid-connect/logout&quot;,</span>
-<a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a><span class="s">    &quot;scopes&quot;: &quot;openid email&quot;,</span>
-<a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a><span class="s">    &quot;enableRedirectAuthenticationEntryPoint&quot;: false,</span>
-<a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a><span class="s">    &quot;forceAccessTokenUriHttps&quot;: false,</span>
-<a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a><span class="s">    &quot;forceUserAuthorizationUriHttps&quot;: false,</span>
-<a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a><span class="s">    &quot;loginEndpoint&quot;: &quot;/j_spring_oauth2_openid_connect_login&quot;,</span>
-<a id="__codelineno-6-27" name="__codelineno-6-27" href="#__codelineno-6-27"></a><span class="s">    &quot;logoutEndpoint&quot;: &quot;/j_spring_oauth2_openid_connect_logout&quot;,</span>
-<a id="__codelineno-6-28" name="__codelineno-6-28" href="#__codelineno-6-28"></a><span class="s">    &quot;allowUnSecureLogging&quot;: false,</span>
-<a id="__codelineno-6-29" name="__codelineno-6-29" href="#__codelineno-6-29"></a><span class="s">    &quot;principalKey&quot;: &quot;email&quot;,</span>
-<a id="__codelineno-6-30" name="__codelineno-6-30" href="#__codelineno-6-30"></a><span class="s">    &quot;jwkURI&quot;: &quot;http://localhost:8080/realms/myrealm/protocol/openid-connect/certs&quot;,</span>
-<a id="__codelineno-6-31" name="__codelineno-6-31" href="#__codelineno-6-31"></a><span class="s">    &quot;postLogoutRedirectUri&quot;: &quot;http://localhost:9001/geoserver/&quot;,</span>
-<a id="__codelineno-6-32" name="__codelineno-6-32" href="#__codelineno-6-32"></a><span class="s">    &quot;sendClientSecret&quot;: false,</span>
-<a id="__codelineno-6-33" name="__codelineno-6-33" href="#__codelineno-6-33"></a><span class="s">    &quot;allowBearerTokens&quot;: true,</span>
-<a id="__codelineno-6-34" name="__codelineno-6-34" href="#__codelineno-6-34"></a><span class="s">    &quot;usePKCE&quot;: false,</span>
-<a id="__codelineno-6-35" name="__codelineno-6-35" href="#__codelineno-6-35"></a><span class="s">    &quot;enforceTokenValidation&quot;: false,</span>
-<a id="__codelineno-6-36" name="__codelineno-6-36" href="#__codelineno-6-36"></a><span class="s">    &quot;cacheAuthentication&quot;: false</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="s">    "roleServiceName": "default",</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="s">    "clientId": "myclient",</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="s">    "clientSecret": "UGIAvmT8qgfikS9cbAi2vUJOTVUU61sG",</span>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="s">    "accessTokenUri": "http://localhost:8080/realms/myrealm/protocol/openid-connect/token",</span>
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="s">    "userAuthorizationUri": "http://localhost:8080/realms/myrealm/protocol/openid-connect/auth",</span>
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="s">    "redirectUri": "http://localhost:9001/geoserver/",</span>
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="s">    "checkTokenEndpointUrl": "http://localhost:8080/realms/myrealm/protocol/openid-connect/userinfo",</span>
+<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a><span class="s">    "introspectionEndpointUrl": "http://localhost:8080/realms/myrealm/protocol/openid-connect/token/introspect",</span>
+<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a><span class="s">    "logoutUri": "http://localhost:8080/realms/myrealm/protocol/openid-connect/logout",</span>
+<a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a><span class="s">    "scopes": "openid email",</span>
+<a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a><span class="s">    "enableRedirectAuthenticationEntryPoint": false,</span>
+<a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a><span class="s">    "forceAccessTokenUriHttps": false,</span>
+<a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a><span class="s">    "forceUserAuthorizationUriHttps": false,</span>
+<a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a><span class="s">    "loginEndpoint": "/j_spring_oauth2_openid_connect_login",</span>
+<a id="__codelineno-6-27" name="__codelineno-6-27" href="#__codelineno-6-27"></a><span class="s">    "logoutEndpoint": "/j_spring_oauth2_openid_connect_logout",</span>
+<a id="__codelineno-6-28" name="__codelineno-6-28" href="#__codelineno-6-28"></a><span class="s">    "allowUnSecureLogging": false,</span>
+<a id="__codelineno-6-29" name="__codelineno-6-29" href="#__codelineno-6-29"></a><span class="s">    "principalKey": "email",</span>
+<a id="__codelineno-6-30" name="__codelineno-6-30" href="#__codelineno-6-30"></a><span class="s">    "jwkURI": "http://localhost:8080/realms/myrealm/protocol/openid-connect/certs",</span>
+<a id="__codelineno-6-31" name="__codelineno-6-31" href="#__codelineno-6-31"></a><span class="s">    "postLogoutRedirectUri": "http://localhost:9001/geoserver/",</span>
+<a id="__codelineno-6-32" name="__codelineno-6-32" href="#__codelineno-6-32"></a><span class="s">    "sendClientSecret": false,</span>
+<a id="__codelineno-6-33" name="__codelineno-6-33" href="#__codelineno-6-33"></a><span class="s">    "allowBearerTokens": true,</span>
+<a id="__codelineno-6-34" name="__codelineno-6-34" href="#__codelineno-6-34"></a><span class="s">    "usePKCE": false,</span>
+<a id="__codelineno-6-35" name="__codelineno-6-35" href="#__codelineno-6-35"></a><span class="s">    "enforceTokenValidation": false,</span>
+<a id="__codelineno-6-36" name="__codelineno-6-36" href="#__codelineno-6-36"></a><span class="s">    "cacheAuthentication": false</span>
 <a id="__codelineno-6-37" name="__codelineno-6-37" href="#__codelineno-6-37"></a><span class="s">  }</span>
 <a id="__codelineno-6-38" name="__codelineno-6-38" href="#__codelineno-6-38"></a><span class="s">}</span>
 <a id="__codelineno-6-39" name="__codelineno-6-39" href="#__codelineno-6-39"></a><span class="s">JSON</span>
@@ -31066,8 +31066,8 @@
 <h3 id="get-view-a-filter">GET --- View a filter<a class="headerlink" href="#get-view-a-filter" title="Permanent link">&para;</a></h3>
 <h4 id="xml_2">XML<a class="headerlink" href="#xml_2" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">     </span>-H<span class="w"> </span><span class="s2">&quot;Accept: application/xml&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">     </span><span class="s2">&quot;</span><span class="nv">$BASE</span><span class="s2">/authfilters/anonymous&quot;</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">     </span>-H<span class="w"> </span><span class="s2">"Accept: application/xml"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">     </span><span class="s2">"</span><span class="nv">$BASE</span><span class="s2">/authfilters/anonymous"</span>
 </code></pre></div>
 <h4 id="response-200-ok_2">Response: 200 OK<a class="headerlink" href="#response-200-ok_2" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">&lt;org.geoserver.security.config.AnonymousAuthenticationFilterConfig&gt;</span>
@@ -31078,44 +31078,44 @@
 </code></pre></div>
 <h4 id="json_2">JSON<a class="headerlink" href="#json_2" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">     </span>-H<span class="w"> </span><span class="s2">&quot;Accept: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">     </span><span class="s2">&quot;</span><span class="nv">$BASE</span><span class="s2">/authfilters/Keycloak&quot;</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">     </span>-H<span class="w"> </span><span class="s2">"Accept: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">     </span><span class="s2">"</span><span class="nv">$BASE</span><span class="s2">/authfilters/Keycloak"</span>
 </code></pre></div>
 <h4 id="response-200-ok_3">Response: 200 OK<a class="headerlink" href="#response-200-ok_3" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="p">{</span>
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">  </span><span class="nt">&quot;org.geoserver.security.oauth2.OpenIdConnectFilterConfig&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;6bc4a33d:196d8c8ede2:-8000&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Keycloak&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">    </span><span class="nt">&quot;@class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;org.geoserver.security.oauth2.OpenIdConnectFilterConfig&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">    </span><span class="nt">&quot;className&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;org.geoserver.security.oauth2.OpenIdConnectAuthenticationFilter&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">    </span><span class="nt">&quot;roleSource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">      </span><span class="nt">&quot;@class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig$PreAuthenticatedUserNameRoleSource&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">      </span><span class="nt">&quot;$&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RoleService&quot;</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">  </span><span class="nt">"org.geoserver.security.oauth2.OpenIdConnectFilterConfig"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"6bc4a33d:196d8c8ede2:-8000"</span><span class="p">,</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Keycloak"</span><span class="p">,</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">    </span><span class="nt">"@class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.geoserver.security.oauth2.OpenIdConnectFilterConfig"</span><span class="p">,</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">    </span><span class="nt">"className"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.geoserver.security.oauth2.OpenIdConnectAuthenticationFilter"</span><span class="p">,</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">    </span><span class="nt">"roleSource"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">      </span><span class="nt">"@class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig$PreAuthenticatedUserNameRoleSource"</span><span class="p">,</span>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">      </span><span class="nt">"$"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RoleService"</span>
 <a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">    </span><span class="p">},</span>
-<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">    </span><span class="nt">&quot;roleServiceName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="w">    </span><span class="nt">&quot;clientId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;myclient&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="w">    </span><span class="nt">&quot;clientSecret&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;UGIAvmT8qgfikS9cbAi2vUJOTVUU61sG&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="w">    </span><span class="nt">&quot;accessTokenUri&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:8080/realms/myrealm/protocol/openid-connect/token&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="w">    </span><span class="nt">&quot;userAuthorizationUri&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:8080/realms/myrealm/protocol/openid-connect/auth&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="w">    </span><span class="nt">&quot;redirectUri&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:9001/geoserver/&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="w">    </span><span class="nt">&quot;checkTokenEndpointUrl&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:8080/realms/myrealm/protocol/openid-connect/userinfo&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a><span class="w">    </span><span class="nt">&quot;introspectionEndpointUrl&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:8080/realms/myrealm/protocol/openid-connect/token/introspect&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a><span class="w">    </span><span class="nt">&quot;logoutUri&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:8080/realms/myrealm/protocol/openid-connect/logout&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a><span class="w">    </span><span class="nt">&quot;scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;openid email&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a><span class="w">    </span><span class="nt">&quot;enableRedirectAuthenticationEntryPoint&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a><span class="w">    </span><span class="nt">&quot;forceAccessTokenUriHttps&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a><span class="w">    </span><span class="nt">&quot;forceUserAuthorizationUriHttps&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a><span class="w">    </span><span class="nt">&quot;loginEndpoint&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/j_spring_oauth2_openid_connect_login&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-25" name="__codelineno-10-25" href="#__codelineno-10-25"></a><span class="w">    </span><span class="nt">&quot;logoutEndpoint&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/j_spring_oauth2_openid_connect_logout&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-26" name="__codelineno-10-26" href="#__codelineno-10-26"></a><span class="w">    </span><span class="nt">&quot;allowUnSecureLogging&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<a id="__codelineno-10-27" name="__codelineno-10-27" href="#__codelineno-10-27"></a><span class="w">    </span><span class="nt">&quot;principalKey&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;email&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-28" name="__codelineno-10-28" href="#__codelineno-10-28"></a><span class="w">    </span><span class="nt">&quot;jwkURI&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:8080/realms/myrealm/protocol/openid-connect/certs&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-29" name="__codelineno-10-29" href="#__codelineno-10-29"></a><span class="w">    </span><span class="nt">&quot;postLogoutRedirectUri&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:9001/geoserver/&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-30" name="__codelineno-10-30" href="#__codelineno-10-30"></a><span class="w">    </span><span class="nt">&quot;sendClientSecret&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<a id="__codelineno-10-31" name="__codelineno-10-31" href="#__codelineno-10-31"></a><span class="w">    </span><span class="nt">&quot;allowBearerTokens&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<a id="__codelineno-10-32" name="__codelineno-10-32" href="#__codelineno-10-32"></a><span class="w">    </span><span class="nt">&quot;usePKCE&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<a id="__codelineno-10-33" name="__codelineno-10-33" href="#__codelineno-10-33"></a><span class="w">    </span><span class="nt">&quot;enforceTokenValidation&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<a id="__codelineno-10-34" name="__codelineno-10-34" href="#__codelineno-10-34"></a><span class="w">    </span><span class="nt">&quot;cacheAuthentication&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">    </span><span class="nt">"roleServiceName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"default"</span><span class="p">,</span>
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="w">    </span><span class="nt">"clientId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"myclient"</span><span class="p">,</span>
+<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="w">    </span><span class="nt">"clientSecret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UGIAvmT8qgfikS9cbAi2vUJOTVUU61sG"</span><span class="p">,</span>
+<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="w">    </span><span class="nt">"accessTokenUri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:8080/realms/myrealm/protocol/openid-connect/token"</span><span class="p">,</span>
+<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="w">    </span><span class="nt">"userAuthorizationUri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:8080/realms/myrealm/protocol/openid-connect/auth"</span><span class="p">,</span>
+<a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="w">    </span><span class="nt">"redirectUri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:9001/geoserver/"</span><span class="p">,</span>
+<a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="w">    </span><span class="nt">"checkTokenEndpointUrl"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:8080/realms/myrealm/protocol/openid-connect/userinfo"</span><span class="p">,</span>
+<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a><span class="w">    </span><span class="nt">"introspectionEndpointUrl"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:8080/realms/myrealm/protocol/openid-connect/token/introspect"</span><span class="p">,</span>
+<a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a><span class="w">    </span><span class="nt">"logoutUri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:8080/realms/myrealm/protocol/openid-connect/logout"</span><span class="p">,</span>
+<a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a><span class="w">    </span><span class="nt">"scopes"</span><span class="p">:</span><span class="w"> </span><span class="s2">"openid email"</span><span class="p">,</span>
+<a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a><span class="w">    </span><span class="nt">"enableRedirectAuthenticationEntryPoint"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a><span class="w">    </span><span class="nt">"forceAccessTokenUriHttps"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a><span class="w">    </span><span class="nt">"forceUserAuthorizationUriHttps"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a><span class="w">    </span><span class="nt">"loginEndpoint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/j_spring_oauth2_openid_connect_login"</span><span class="p">,</span>
+<a id="__codelineno-10-25" name="__codelineno-10-25" href="#__codelineno-10-25"></a><span class="w">    </span><span class="nt">"logoutEndpoint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/j_spring_oauth2_openid_connect_logout"</span><span class="p">,</span>
+<a id="__codelineno-10-26" name="__codelineno-10-26" href="#__codelineno-10-26"></a><span class="w">    </span><span class="nt">"allowUnSecureLogging"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<a id="__codelineno-10-27" name="__codelineno-10-27" href="#__codelineno-10-27"></a><span class="w">    </span><span class="nt">"principalKey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"email"</span><span class="p">,</span>
+<a id="__codelineno-10-28" name="__codelineno-10-28" href="#__codelineno-10-28"></a><span class="w">    </span><span class="nt">"jwkURI"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:8080/realms/myrealm/protocol/openid-connect/certs"</span><span class="p">,</span>
+<a id="__codelineno-10-29" name="__codelineno-10-29" href="#__codelineno-10-29"></a><span class="w">    </span><span class="nt">"postLogoutRedirectUri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:9001/geoserver/"</span><span class="p">,</span>
+<a id="__codelineno-10-30" name="__codelineno-10-30" href="#__codelineno-10-30"></a><span class="w">    </span><span class="nt">"sendClientSecret"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<a id="__codelineno-10-31" name="__codelineno-10-31" href="#__codelineno-10-31"></a><span class="w">    </span><span class="nt">"allowBearerTokens"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-10-32" name="__codelineno-10-32" href="#__codelineno-10-32"></a><span class="w">    </span><span class="nt">"usePKCE"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<a id="__codelineno-10-33" name="__codelineno-10-33" href="#__codelineno-10-33"></a><span class="w">    </span><span class="nt">"enforceTokenValidation"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<a id="__codelineno-10-34" name="__codelineno-10-34" href="#__codelineno-10-34"></a><span class="w">    </span><span class="nt">"cacheAuthentication"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
 <a id="__codelineno-10-35" name="__codelineno-10-35" href="#__codelineno-10-35"></a><span class="w">  </span><span class="p">}</span>
 <a id="__codelineno-10-36" name="__codelineno-10-36" href="#__codelineno-10-36"></a><span class="p">}</span>
 </code></pre></div>
@@ -31123,8 +31123,8 @@
 <h4 id="xml_3">XML<a class="headerlink" href="#xml_3" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">     </span>-X<span class="w"> </span>PUT<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">     </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/xml&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">     </span>-d<span class="w"> </span>@-<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BASE</span><span class="s2">/authfilters/restInterceptor9&quot;</span><span class="w"> </span><span class="s">&lt;&lt;&#39;XML&#39;</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">     </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/xml"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">     </span>-d<span class="w"> </span>@-<span class="w"> </span><span class="s2">"</span><span class="nv">$BASE</span><span class="s2">/authfilters/restInterceptor9"</span><span class="w"> </span><span class="s">&lt;&lt;'XML'</span>
 <a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="s">&lt;org.geoserver.security.config.SecurityInterceptorFilterConfig&gt;</span>
 <a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="s">  &lt;id&gt;-2bf62d17:196c4deaf9b:-7fff&lt;/id&gt;</span>
 <a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="s">  &lt;name&gt;restInterceptor9&lt;/name&gt;</span>
@@ -31141,15 +31141,15 @@
 <h4 id="json_3">JSON<a class="headerlink" href="#json_3" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">     </span>-X<span class="w"> </span>PUT<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">     </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">     </span>-d<span class="w"> </span>@-<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BASE</span><span class="s2">/authfilters/restInterceptor13&quot;</span><span class="w"> </span><span class="s">&lt;&lt;&#39;JSON&#39;</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">     </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">     </span>-d<span class="w"> </span>@-<span class="w"> </span><span class="s2">"</span><span class="nv">$BASE</span><span class="s2">/authfilters/restInterceptor13"</span><span class="w"> </span><span class="s">&lt;&lt;'JSON'</span>
 <a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="s">{</span>
-<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="s">  &quot;org.geoserver.security.config.SecurityInterceptorFilterConfig&quot;: {</span>
-<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="s">    &quot;id&quot;: &quot;-3abefb99:196c5207331:-7ffe&quot;,</span>
-<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="s">    &quot;name&quot;: &quot;restInterceptor13&quot;,</span>
-<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="s">    &quot;className&quot;: &quot;org.geoserver.security.filter.GeoServerSecurityInterceptorFilter&quot;,</span>
-<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="s">    &quot;allowIfAllAbstainDecisions&quot;: true,</span>
-<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="s">    &quot;securityMetadataSource&quot;: &quot;restFilterDefinitionMap&quot;</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="s">  "org.geoserver.security.config.SecurityInterceptorFilterConfig": {</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="s">    "id": "-3abefb99:196c5207331:-7ffe",</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="s">    "name": "restInterceptor13",</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="s">    "className": "org.geoserver.security.filter.GeoServerSecurityInterceptorFilter",</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="s">    "allowIfAllAbstainDecisions": true,</span>
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="s">    "securityMetadataSource": "restFilterDefinitionMap"</span>
 <a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="s">  }</span>
 <a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="s">}</span>
 <a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="s">JSON</span>
@@ -31161,7 +31161,7 @@
 <h3 id="delete-remove-a-filter">DELETE --- Remove a filter<a class="headerlink" href="#delete-remove-a-filter" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">     </span>-X<span class="w"> </span>DELETE<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">     </span><span class="s2">&quot;</span><span class="nv">$BASE</span><span class="s2">/authfilters/restInterceptor13&quot;</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">     </span><span class="s2">"</span><span class="nv">$BASE</span><span class="s2">/authfilters/restInterceptor13"</span>
 </code></pre></div>
 <h4 id="response_4">Response<a class="headerlink" href="#response_4" title="Permanent link">&para;</a></h4>
 <ul>

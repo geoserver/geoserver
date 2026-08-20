@@ -30258,7 +30258,7 @@
 <ol>
 <li>
 <p>Execute the following curl command:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span>-v<span class="w">  </span>-G<span class="w"> </span><span class="s2">&quot;http://localhost:8080/geoserver/wfs?request=getcapabilities&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span>-v<span class="w">  </span>-G<span class="w"> </span><span class="s2">"http://localhost:8080/geoserver/wfs?request=getcapabilities"</span>
 </code></pre></div>
 </li>
 </ol>
@@ -30277,7 +30277,7 @@
 <a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="err">&lt;</span> 
 <a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="err">&lt;</span><span class="na">html</span><span class="p">&gt;</span>
 <a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">http-equiv</span><span class="o">=</span><span class="s">&quot;Content-Type&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;text/html; charset=ISO-8859-1&quot;</span><span class="p">/&gt;</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">http-equiv</span><span class="o">=</span><span class="s">"Content-Type"</span> <span class="na">content</span><span class="o">=</span><span class="s">"text/html; charset=ISO-8859-1"</span><span class="p">/&gt;</span>
 <a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Error 403 Access Denied<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
 <a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>    <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
 <a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>        ...
@@ -30285,7 +30285,7 @@
 <ol>
 <li>
 <p>Execute the same command but specify the <code>--header</code> option.:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl<span class="w"> </span>-v<span class="w"> </span>--header<span class="w"> </span><span class="s2">&quot;sdf09rt2s: admin&quot;</span><span class="w"> </span>-G<span class="w"> </span><span class="s2">&quot;http://localhost:8080/geoserver/wfs?request=getcapabilities&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl<span class="w"> </span>-v<span class="w"> </span>--header<span class="w"> </span><span class="s2">"sdf09rt2s: admin"</span><span class="w"> </span>-G<span class="w"> </span><span class="s2">"http://localhost:8080/geoserver/wfs?request=getcapabilities"</span>
 </code></pre></div>
 <p>The result should be a successful authentication and contain the normal WFS capabilities response.</p>
 <div class="admonition note">

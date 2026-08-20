@@ -30208,7 +30208,7 @@
 <div class="highlight"><pre><span></span><code>/geoserver/&lt;workspace&gt;/&lt;layer&gt;/K_140M/ows?service=WMS&amp;version=1.3.0&amp;request=GetMap
 </code></pre></div>
 <p>and this module will translate the URL to this new one:</p>
-<div class="highlight"><pre><span></span><code>/geoserver/&lt;workspace&gt;/&lt;layer&gt;/ows?service=WMS&amp;version=1.3.0&amp;request=GetMap&amp;cql_filter=seq=&#39;K140M&#39;
+<div class="highlight"><pre><span></span><code>/geoserver/&lt;workspace&gt;/&lt;layer&gt;/ows?service=WMS&amp;version=1.3.0&amp;request=GetMap&amp;cql_filter=seq='K140M'
 </code></pre></div>
 <p>This module is configured by a set of rules that will be applied to the incoming URLs. Note that a get capabilities result will include the original URL maintaining the extra filter.</p>
 <p>This module also gives the possibility to echo existing URL parameters to the result of a get capabilities result. As an example, by default the following get capabilities request (note the existing cql_filter parameter):</p>
@@ -30348,7 +30348,7 @@
 <p>By default, the params-extractor module does not interact with the security authentication filters. This is because the params-extractor filter is called later in the GeoServer filters chain.</p>
 <p>If you want params-extractor to work before the security filter chain, you have to configure it as a standard servlet filter in the GeoServer WEB-INF/web.xml file.</p>
 <p>This can be done adding the following to your current web.xml (immediately after the <code>Set Character Encoding</code> filter) and restarting GeoServer:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="cp">&lt;!DOCTYPE beans PUBLIC &quot;-//SPRING//DTD BEAN//EN&quot; &quot;http://www.springframework.org/dtd/spring-beans.dtd&quot;&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="cp">&lt;!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd"&gt;</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nt">&lt;web-app&gt;</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span>...
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="nt">&lt;filter&gt;</span>

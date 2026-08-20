@@ -30107,7 +30107,7 @@
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="n">serial4</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="n">geometry</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="n">geometry</span><span class="p">(</span><span class="n">polygon</span><span class="p">,</span><span class="w"> </span><span class="mi">4326</span><span class="p">)</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="n">params</span><span class="w"> </span><span class="nb">text</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="ss">&quot;time&quot;</span><span class="w"> </span><span class="k">timestamp</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="ss">"time"</span><span class="w"> </span><span class="k">timestamp</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">burntarea_pkey</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">);</span>
 </code></pre></div>
@@ -30133,13 +30133,13 @@
 <p>Once the configuration is set, a POST request can be used to ingest a vector dataset from the disk through the <code>external</code> method, which avoids copying the source data:</p>
 <div class="admonition abstract">
 <p class="admonition-title">curl request</p>
-<div class="highlight"><pre><span></span><code>curl --request POST --url &#39;http://localhost:8080/geoserver/rest/workspaces/dggs_test/datastores/burntarea_mosaic/mosaic/external.parquet?spi=dggs&#39; --data /mnt/data/burntarea_2024/11/29/800ffffffffffff.parquet
+<div class="highlight"><pre><span></span><code>curl --request POST --url 'http://localhost:8080/geoserver/rest/workspaces/dggs_test/datastores/burntarea_mosaic/mosaic/external.parquet?spi=dggs' --data /mnt/data/burntarea_2024/11/29/800ffffffffffff.parquet
 </code></pre></div>
 </div>
 <p>In contrast, the next example shows how to ingest a GeoParquet file stored in S3 by relying on the <code>remote</code> method:</p>
 <div class="admonition abstract">
 <p class="admonition-title">curl request</p>
-<div class="highlight"><pre><span></span><code>curl --request POST --url &#39;http://localhost:8080/geoserver/rest/workspaces/dggs_test/datastores/burntarea_mosaic/mosaic/remote.parquet?spi=dggs&#39; --data s3://gs-cog/parquet/2024/11/30/802bfffffffffff.parquet
+<div class="highlight"><pre><span></span><code>curl --request POST --url 'http://localhost:8080/geoserver/rest/workspaces/dggs_test/datastores/burntarea_mosaic/mosaic/remote.parquet?spi=dggs' --data s3://gs-cog/parquet/2024/11/30/802bfffffffffff.parquet
 </code></pre></div>
 </div>
 

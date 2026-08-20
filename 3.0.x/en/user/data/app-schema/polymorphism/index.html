@@ -30436,7 +30436,7 @@
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">&lt;sourceExpression&gt;</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">      </span><span class="nt">&lt;OCQL&gt;</span>VALUE_ID<span class="nt">&lt;/OCQL&gt;</span><span class="w">   </span>
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="nt">&lt;linkElement&gt;</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">        </span>Recode(CLASS_TEXT,<span class="w"> </span>&#39;numeric&#39;,<span class="w"> </span>&#39;NumericType&#39;,<span class="w"> </span>&#39;literal&#39;,<span class="w"> </span>&#39;gsml:CGI_TermValue&#39;)
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">        </span>Recode(CLASS_TEXT,<span class="w"> </span>'numeric',<span class="w"> </span>'NumericType',<span class="w"> </span>'literal',<span class="w"> </span>'gsml:CGI_TermValue')
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">        </span><span class="nt">&lt;/linkElement&gt;</span>
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">      </span><span class="nt">&lt;linkField&gt;</span>FEATURE_LINK<span class="nt">&lt;/linkField&gt;</span>
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="nt">&lt;/sourceExpression&gt;</span><span class="w">                   </span>
@@ -30466,7 +30466,7 @@
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="nt">&lt;targetAttribute&gt;</span>ex:someAttribute<span class="nt">&lt;/targetAttribute&gt;</span><span class="w">   </span>
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="nt">&lt;sourceExpression&gt;</span>
 <a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">      </span><span class="nt">&lt;linkElement&gt;</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">        </span>Recode(CLASS_TEXT,<span class="w"> </span>&#39;numeric&#39;,<span class="w"> </span>&#39;NumericType&#39;,<span class="w"> </span>&#39;literal&#39;,<span class="w"> </span>&#39;gsml:CGI_TermValue&#39;)
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">        </span>Recode(CLASS_TEXT,<span class="w"> </span>'numeric',<span class="w"> </span>'NumericType',<span class="w"> </span>'literal',<span class="w"> </span>'gsml:CGI_TermValue')
 <a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">        </span><span class="nt">&lt;/linkElement&gt;</span>
 <a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="nt">&lt;/sourceExpression&gt;</span><span class="w">                   </span>
 <a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">    </span><span class="nt">&lt;isMultiple&gt;</span>true<span class="nt">&lt;/isMultiple&gt;</span>
@@ -30478,30 +30478,30 @@
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nt">&lt;targetAttribute&gt;</span>ex:someAttribute<span class="nt">&lt;/targetAttribute&gt;</span>
 <a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="nt">&lt;ClientProperty&gt;</span>
 <a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="nt">&lt;name&gt;</span>xlink:href<span class="nt">&lt;/name&gt;</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="nt">&lt;value&gt;</span>if_then_else(isNull(NUMERIC_VALUE),<span class="w"> </span>&#39;urn:ogc:def:nil:OGC:1.0:missing&#39;,<span class="w"> </span>strConcat(&#39;#&#39;,<span class="w"> </span>NUMERIC_VALUE))<span class="nt">&lt;/value&gt;</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="nt">&lt;value&gt;</span>if_then_else(isNull(NUMERIC_VALUE),<span class="w"> </span>'urn:ogc:def:nil:OGC:1.0:missing',<span class="w"> </span>strConcat('#',<span class="w"> </span>NUMERIC_VALUE))<span class="nt">&lt;/value&gt;</span>
 <a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="nt">&lt;/ClientProperty&gt;</span>
 <a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="nt">&lt;/AttributeMapping&gt;</span>
 </code></pre></div>
 <p>The above example means, if NUMERIC_VALUE is null, the attribute should be encoded as:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">&lt;ex:someAttribute</span><span class="w"> </span><span class="na">xlink:href=</span><span class="s">&quot;urn:ogc:def:nil:OGC:1.0:missing&quot;</span><span class="nt">&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">&lt;ex:someAttribute</span><span class="w"> </span><span class="na">xlink:href=</span><span class="s">"urn:ogc:def:nil:OGC:1.0:missing"</span><span class="nt">&gt;</span>
 </code></pre></div>
 <p>Otherwise, it would be encoded as:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">&lt;ex:someAttribute</span><span class="w"> </span><span class="na">xlink:href=</span><span class="s">&quot;#123&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span>where<span class="w"> </span>NUMERIC_VALUE<span class="w"> </span>=<span class="w"> </span>&#39;123&#39;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">&lt;ex:someAttribute</span><span class="w"> </span><span class="na">xlink:href=</span><span class="s">"#123"</span><span class="nt">&gt;</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span>where<span class="w"> </span>NUMERIC_VALUE<span class="w"> </span>=<span class="w"> </span>'123'
 </code></pre></div>
 <p>However, this is not possible when we have cases where a fully structured attribute is also a possibility. The <a href="#toxlinkhref">toxlinkhref</a> function can be used for this scenario. E.g.:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nt">&lt;AttributeMapping&gt;</span>
 <a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">    </span><span class="nt">&lt;targetAttribute&gt;</span>ex:someAttribute<span class="nt">&lt;/targetAttribute&gt;</span><span class="w"> </span>
 <a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="nt">&lt;sourceExpression&gt;</span>
 <a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">      </span><span class="nt">&lt;linkElement&gt;</span>
-<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">        </span>if_then_else(isNull(NUMERIC_VALUE),<span class="w"> </span>toXlinkHref(&#39;urn:ogc:def:nil:OGC:1.0:missing&#39;),<span class="w"> </span>
-<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">              </span>if_then_else(lessEqualThan(NUMERIC_VALUE,<span class="w"> </span>1000),<span class="w"> </span>&#39;numeric_value&#39;,<span class="w"> </span>toXlinkHref(&#39;urn:ogc:def:nil:OGC:1.0:missing&#39;)))<span class="w"> </span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">        </span>if_then_else(isNull(NUMERIC_VALUE),<span class="w"> </span>toXlinkHref('urn:ogc:def:nil:OGC:1.0:missing'),<span class="w"> </span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">              </span>if_then_else(lessEqualThan(NUMERIC_VALUE,<span class="w"> </span>1000),<span class="w"> </span>'numeric_value',<span class="w"> </span>toXlinkHref('urn:ogc:def:nil:OGC:1.0:missing')))<span class="w"> </span>
 <a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">        </span><span class="nt">&lt;/linkElement&gt;</span>
 <a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">    </span><span class="nt">&lt;/sourceExpression&gt;</span><span class="w"> </span>
 <a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="nt">&lt;/AttributeMapping&gt;</span>
 </code></pre></div>
 <p>The above example means, if NUMERIC_VALUE is null, the output would be encoded as:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">&lt;ex:someAttribute</span><span class="w"> </span><span class="na">xlink:href=</span><span class="s">&quot;urn:ogc:def:nil:OGC:1.0:missing&quot;</span><span class="nt">&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">&lt;ex:someAttribute</span><span class="w"> </span><span class="na">xlink:href=</span><span class="s">"urn:ogc:def:nil:OGC:1.0:missing"</span><span class="nt">&gt;</span>
 </code></pre></div>
 <p>Otherwise, if NUMERIC_VALUE is less or equal than 1000, it would be encoded with attributes from FeatureTypeMapping with 'numeric_value' mappingName. If NUMERIC_VALUE is greater than 1000, it would be encoded as the first scenario.</p>
 <h2 id="useful-functions">Useful functions<a class="headerlink" href="#useful-functions" title="Permanent link">&para;</a></h2>
@@ -30584,8 +30584,8 @@
 <p>Please refer to <a href="../../../filter/function_reference/">Filter Function Reference</a>.</p>
 <h3 id="combinations">Combinations<a class="headerlink" href="#combinations" title="Permanent link">&para;</a></h3>
 <p>You can combine functions, but it might affect performance. E.g.:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>if_then_else(isNull(NUMERIC_VALUE), toXlinkHref(&#39;urn:ogc:def:nil:OGC:1.0:missing&#39;), 
-<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>    if_then_else(lessEqualThan(NUMERIC_VALUE, 1000), &#39;numeric_value&#39;, toXlinkHref(&#39;urn:ogc:def:nil:OGC:1.0:missing&#39;))) 
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>if_then_else(isNull(NUMERIC_VALUE), toXlinkHref('urn:ogc:def:nil:OGC:1.0:missing'), 
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>    if_then_else(lessEqualThan(NUMERIC_VALUE, 1000), 'numeric_value', toXlinkHref('urn:ogc:def:nil:OGC:1.0:missing'))) 
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -30595,10 +30595,10 @@
 </div>
 <h2 id="null-or-missing-value">Null or missing value<a class="headerlink" href="#null-or-missing-value" title="Permanent link">&para;</a></h2>
 <p>To skip the attribute for a specific case, you can use Expression.NIL as a value in if_then_else or not include the key in <a href="#recode-function">Recode function</a> . E.g.:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>if_then_else(isNull(VALUE), Expression.NIL, &#39;gsml:CGI_TermValue&#39;)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>if_then_else(isNull(VALUE), Expression.NIL, 'gsml:CGI_TermValue')
 </code></pre></div>
 <p>means the attribute would not be encoded if VALUE is null.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>Recode(VALUE, &#39;term_value&#39;, &#39;gsml:CGI_TermValue&#39;)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>Recode(VALUE, 'term_value', 'gsml:CGI_TermValue')
 </code></pre></div>
 <p>means the attribute would not be encoded if VALUE is anything but 'term_value'.</p>
 <p>To encode an attribute as xlink:href that represents missing value on the top level, see <a href="#referential-polymorphism">Referential Polymorphism</a>.</p>
@@ -30613,11 +30613,11 @@
 <a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="w">      </span><span class="nt">&lt;/sourceExpression&gt;</span>
 <a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="w">      </span><span class="nt">&lt;ClientProperty&gt;</span>
 <a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="w">          </span><span class="nt">&lt;name&gt;</span>xsi:type<span class="nt">&lt;/name&gt;</span>
-<a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a><span class="w">          </span><span class="nt">&lt;value&gt;</span>&#39;gml:MeasureType&#39;<span class="nt">&lt;/value&gt;</span>
+<a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a><span class="w">          </span><span class="nt">&lt;value&gt;</span>'gml:MeasureType'<span class="nt">&lt;/value&gt;</span>
 <a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a><span class="w">      </span><span class="nt">&lt;/ClientProperty&gt;</span>
 <a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a><span class="w">      </span><span class="nt">&lt;ClientProperty&gt;</span>
 <a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a><span class="w">          </span><span class="nt">&lt;name&gt;</span>uom<span class="nt">&lt;/name&gt;</span><span class="w"> </span>
-<a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a><span class="w">          </span><span class="nt">&lt;value&gt;</span>&#39;http://www.opengis.net/def/uom/UCUM/0/Ma&#39;<span class="nt">&lt;/value&gt;</span>
+<a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a><span class="w">          </span><span class="nt">&lt;value&gt;</span>'http://www.opengis.net/def/uom/UCUM/0/Ma'<span class="nt">&lt;/value&gt;</span>
 <a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a><span class="w">      </span><span class="nt">&lt;/ClientProperty&gt;</span><span class="w"> </span>
 <a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a><span class="nt">&lt;/AttributeMapping&gt;</span>
 </code></pre></div>
@@ -30644,8 +30644,8 @@
 <a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="w">  </span><span class="nt">&lt;targetAttribute&gt;</span>om:result<span class="nt">&lt;/targetAttribute&gt;</span>
 <a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="w">  </span><span class="nt">&lt;sourceExpression&gt;</span>
 <a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="w">    </span><span class="nt">&lt;linkElement&gt;</span>
-<a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="w">       </span>Recode(NAME,<span class="w"> </span>Expression.Nil,<span class="w"> </span>toXlinkHref(&#39;urn:ogc:def:nil:OGC::missing&#39;),&#39;numeric&#39;,
-<a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a><span class="w">               </span>toXlinkHref(strConcat(&#39;urn:numeric-value::&#39;,<span class="w"> </span>NUMERIC_VALUE)),<span class="w"> </span>&#39;literal&#39;,<span class="w"> </span>&#39;TermValue2&#39;)
+<a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="w">       </span>Recode(NAME,<span class="w"> </span>Expression.Nil,<span class="w"> </span>toXlinkHref('urn:ogc:def:nil:OGC::missing'),'numeric',
+<a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a><span class="w">               </span>toXlinkHref(strConcat('urn:numeric-value::',<span class="w"> </span>NUMERIC_VALUE)),<span class="w"> </span>'literal',<span class="w"> </span>'TermValue2')
 <a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a><span class="w">    </span><span class="nt">&lt;/linkElement&gt;</span>
 <a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a><span class="w">  </span><span class="nt">&lt;/sourceExpression&gt;</span>
 <a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a><span class="nt">&lt;/AttributeMapping&gt;</span>

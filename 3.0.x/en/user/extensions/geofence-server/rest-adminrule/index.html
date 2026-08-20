@@ -30283,13 +30283,13 @@
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="nt">&lt;/AdminRule&gt;</span>
 </code></pre></div>
 <p>Encoding of a rule in JSON:</p>
-<div class="highlight"><pre><span></span><code>{&quot;id&quot;:..,&quot;priority&quot;:..,&quot;userName&quot;:&quot;..&quot;,&quot;roleName&quot;:&quot;..&quot;,&quot;addressRange&quot;:&quot;..&quot;,&quot;workspace&quot;:&quot;..&quot;,&quot;access&quot;:&quot;..&quot;}
+<div class="highlight"><pre><span></span><code>{"id":..,"priority":..,"userName":"..","roleName":"..","addressRange":"..","workspace":"..","access":".."}
 </code></pre></div>
 <p>In case a rule that has "any" ("*") for a particular field the field is either not included (default), left empty or specified with a single asterisk (the latter two may be used for updates to distinguish from "do not change this field").</p>
 <p><code>access</code> should be either <code>ADMIN</code> or <code>USER</code>.</p>
 <p><code>addressRange</code> is a string in CIDR notation (block/bits: e.g. <code>127.0.0.1/32</code>).</p>
 <p>Encoding of a list of rules in XML:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;AdminRules</span><span class="w"> </span><span class="na">count=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;AdminRules</span><span class="w"> </span><span class="na">count=</span><span class="s">"n"</span><span class="nt">&gt;</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="nt">&lt;AdminRule&gt;</span><span class="w"> </span>...<span class="w"> </span><span class="nt">&lt;/AdminRule&gt;</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">&lt;AdminRule&gt;</span><span class="w"> </span>...<span class="w"> </span><span class="nt">&lt;/AdminRule&gt;</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span>...<span class="w">     </span>
@@ -30297,7 +30297,7 @@
 </code></pre></div>
 <p>The result of a count would not include the actual <AdminRule> tags.</p>
 <p>Encoding of a list of rules in JSON:</p>
-<div class="highlight"><pre><span></span><code>{&quot;count&quot;:n,&quot;adminrules&quot;:[{..},{..},..]}
+<div class="highlight"><pre><span></span><code>{"count":n,"adminrules":[{..},{..},..]}
 </code></pre></div>
 <h3 id="filter-parameters">Filter Parameters<a class="headerlink" href="#filter-parameters" title="Permanent link">&para;</a></h3>
 <p>All filter parameters are optional.</p>

@@ -30442,7 +30442,7 @@
 <h4 id="create-an-empty-imagemosaic-without-configuring-it">Create an empty ImageMosaic without configuring it<a class="headerlink" href="#create-an-empty-imagemosaic-without-configuring-it" title="Permanent link">&para;</a></h4>
 <div class="admonition abstract">
 <p class="admonition-title">curl request</p>
-<div class="highlight"><pre><span></span><code>curl -u admin:geoserver -XPUT --write-out %{http_code} -H &quot;Content-type:application/zip&quot; --data-binary @modisvi.zip http://localhost:8080/geoserver/rest/workspaces/test/coveragestores/modisvi/file.imagemosaic?configure=none
+<div class="highlight"><pre><span></span><code>curl -u admin:geoserver -XPUT --write-out %{http_code} -H "Content-type:application/zip" --data-binary @modisvi.zip http://localhost:8080/geoserver/rest/workspaces/test/coveragestores/modisvi/file.imagemosaic?configure=none
 </code></pre></div>
 </div>
 <p><em>Response</em></p>
@@ -30452,7 +30452,7 @@
 <p>Next step is providing a prototype dataset for the coverage to be supported.</p>
 <div class="admonition abstract">
 <p class="admonition-title">curl request</p>
-<div class="highlight"><pre><span></span><code>curl -u admin:geoserver -XPOST -H &quot;Content-type: text/plain&quot; --write-out %{http_code} -d &quot;https://modis-vi-nasa.s3-us-west-2.amazonaws.com/MOD13A1.006/2018.01.01.tif&quot; &quot;http://localhost:8080/geoserver/rest/workspaces/test/coveragestores/modisvi/remote.imagemosaic&quot;
+<div class="highlight"><pre><span></span><code>curl -u admin:geoserver -XPOST -H "Content-type: text/plain" --write-out %{http_code} -d "https://modis-vi-nasa.s3-us-west-2.amazonaws.com/MOD13A1.006/2018.01.01.tif" "http://localhost:8080/geoserver/rest/workspaces/test/coveragestores/modisvi/remote.imagemosaic"
 </code></pre></div>
 </div>
 <p><em>Response</em></p>
@@ -30474,7 +30474,7 @@
 <p>Once we get the list of available coverages, we need to configure a coverage by sending the config through REST.</p>
 <div class="admonition abstract">
 <p class="admonition-title">curl request</p>
-<div class="highlight"><pre><span></span><code>curl -v -u admin:geoserver -XPOST -H &quot;Content-type: text/xml&quot; -d @&quot;coverage.xml&quot; &quot;http://localhost:8080/geoserver/rest/workspaces/test/coveragestores/modisvi/coverages&quot;
+<div class="highlight"><pre><span></span><code>curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d @"coverage.xml" "http://localhost:8080/geoserver/rest/workspaces/test/coveragestores/modisvi/coverages"
 </code></pre></div>
 </div>
 <p>where coverage.xml has this content:</p>
@@ -30483,7 +30483,7 @@
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">&lt;nativeName&gt;</span>modisvi<span class="nt">&lt;/nativeName&gt;</span>
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">&lt;enabled&gt;</span>true<span class="nt">&lt;/enabled&gt;</span>
 <a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">  </span><span class="nt">&lt;metadata&gt;</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">key=</span><span class="s">&quot;time&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">key=</span><span class="s">"time"</span><span class="nt">&gt;</span>
 <a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">      </span><span class="nt">&lt;dimensionInfo&gt;</span>
 <a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">        </span><span class="nt">&lt;enabled&gt;</span>true<span class="nt">&lt;/enabled&gt;</span>
 <a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">        </span><span class="nt">&lt;presentation&gt;</span>LIST<span class="nt">&lt;/presentation&gt;</span>
@@ -30500,12 +30500,12 @@
 <p>Now that we have a coverageStore ready and a coverage layer configured we can start adding more granules.</p>
 <div class="admonition abstract">
 <p class="admonition-title">curl request</p>
-<div class="highlight"><pre><span></span><code>curl -u admin:geoserver -XPOST -H &quot;Content-type: text/plain&quot; --write-out %{http_code} -d &quot;https://modis-vi-nasa.s3-us-west-2.amazonaws.com/MOD13A1.006/2018.01.17.tif&quot; &quot;http://localhost:8080/geoserver/rest/workspaces/test/coveragestores/modisvi/remote.imagemosaic&quot;
+<div class="highlight"><pre><span></span><code>curl -u admin:geoserver -XPOST -H "Content-type: text/plain" --write-out %{http_code} -d "https://modis-vi-nasa.s3-us-west-2.amazonaws.com/MOD13A1.006/2018.01.17.tif" "http://localhost:8080/geoserver/rest/workspaces/test/coveragestores/modisvi/remote.imagemosaic"
 </code></pre></div>
 </div>
 <h4 id="setting-style">Setting Style<a class="headerlink" href="#setting-style" title="Permanent link">&para;</a></h4>
 <p>That MODIS data has 2 bands representing (Normalized Difference Vegetation Index) (NDVI) and Enhanced Vegetation Index (EVI). Let's add this ndvi.sld style to apply a proper colormap to the NDVI band (copy this content to a file named ndvi.sld to be used by the next REST call):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">&lt;StyledLayerDescriptor</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/sld&quot;</span><span class="w"> </span><span class="na">xmlns:sld=</span><span class="s">&quot;http://www.opengis.net/sld&quot;</span><span class="w"> </span><span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span><span class="w"> </span><span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span><span class="nt">&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">&lt;StyledLayerDescriptor</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">"http://www.opengis.net/sld"</span><span class="w"> </span><span class="na">xmlns:sld=</span><span class="s">"http://www.opengis.net/sld"</span><span class="w"> </span><span class="na">xmlns:gml=</span><span class="s">"http://www.opengis.net/gml"</span><span class="w"> </span><span class="na">xmlns:ogc=</span><span class="s">"http://www.opengis.net/ogc"</span><span class="w"> </span><span class="na">version=</span><span class="s">"1.0.0"</span><span class="nt">&gt;</span>
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">&lt;NamedLayer&gt;</span>
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="nt">&lt;Name&gt;</span>Default<span class="w"> </span>Styler<span class="nt">&lt;/Name&gt;</span>
 <a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="nt">&lt;UserStyle&gt;</span>
@@ -30521,12 +30521,12 @@
 <a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">              </span><span class="nt">&lt;/GrayChannel&gt;</span>
 <a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">            </span><span class="nt">&lt;/ChannelSelection&gt;</span>
 <a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">            </span><span class="nt">&lt;ColorMap&gt;</span>
-<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="w">              </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#000000&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;-1&quot;</span><span class="nt">/&gt;</span>
-<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="w">              </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#0000ff&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;-0.75&quot;</span><span class="nt">/&gt;</span>
-<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="w">              </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#ff00ff&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;-0.25&quot;</span><span class="nt">/&gt;</span>
-<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="w">              </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#ff0000&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;0&quot;</span><span class="nt">/&gt;</span>
-<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="w">              </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#ffff00&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;0.5&quot;</span><span class="nt">/&gt;</span>
-<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="w">              </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">&quot;#00ff00&quot;</span><span class="w"> </span><span class="na">quantity=</span><span class="s">&quot;1&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="w">              </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">"#000000"</span><span class="w"> </span><span class="na">quantity=</span><span class="s">"-1"</span><span class="nt">/&gt;</span>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="w">              </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">"#0000ff"</span><span class="w"> </span><span class="na">quantity=</span><span class="s">"-0.75"</span><span class="nt">/&gt;</span>
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="w">              </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">"#ff00ff"</span><span class="w"> </span><span class="na">quantity=</span><span class="s">"-0.25"</span><span class="nt">/&gt;</span>
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="w">              </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">"#ff0000"</span><span class="w"> </span><span class="na">quantity=</span><span class="s">"0"</span><span class="nt">/&gt;</span>
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="w">              </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">"#ffff00"</span><span class="w"> </span><span class="na">quantity=</span><span class="s">"0.5"</span><span class="nt">/&gt;</span>
+<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="w">              </span><span class="nt">&lt;ColorMapEntry</span><span class="w"> </span><span class="na">color=</span><span class="s">"#00ff00"</span><span class="w"> </span><span class="na">quantity=</span><span class="s">"1"</span><span class="nt">/&gt;</span>
 <a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="w">            </span><span class="nt">&lt;/ColorMap&gt;</span>
 <a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="w">            </span><span class="nt">&lt;ContrastEnhancement/&gt;</span>
 <a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="w">          </span><span class="nt">&lt;/RasterSymbolizer&gt;</span>
@@ -30538,13 +30538,13 @@
 </code></pre></div>
 <div class="admonition abstract">
 <p class="admonition-title">curl request to create the style</p>
-<div class="highlight"><pre><span></span><code>curl -v -u admin:geoserver -XPOST -H &quot;Content-type: application/vnd.ogc.sld+xml&quot; -d @ndvi.sld http://localhost:8080/geoserver/rest/styles
+<div class="highlight"><pre><span></span><code>curl -v -u admin:geoserver -XPOST -H "Content-type: application/vnd.ogc.sld+xml" -d @ndvi.sld http://localhost:8080/geoserver/rest/styles
 </code></pre></div>
 </div>
 <div class="admonition abstract">
 <p class="admonition-title">curl request to set the style as default style of the layer</p>
 <p>:</p>
-<div class="highlight"><pre><span></span><code>curl -v -u admin:geoserver -XPUT -H &quot;Content-type: text/xml&quot; -d &quot;&lt;layer&gt;&lt;defaultStyle&gt;&lt;name&gt;ndvi&lt;/name&gt;&lt;/defaultStyle&gt;&lt;/layer&gt;&quot; http://localhost:8080/geoserver/rest/layers/modisvi.xml
+<div class="highlight"><pre><span></span><code>curl -v -u admin:geoserver -XPUT -H "Content-type: text/xml" -d "&lt;layer&gt;&lt;defaultStyle&gt;&lt;name&gt;ndvi&lt;/name&gt;&lt;/defaultStyle&gt;&lt;/layer&gt;" http://localhost:8080/geoserver/rest/layers/modisvi.xml
 </code></pre></div>
 </div>
 <h3 id="final-preview">Final preview<a class="headerlink" href="#final-preview" title="Permanent link">&para;</a></h3>

@@ -30217,7 +30217,7 @@
 <p>You can add GeoServer Extensions - the container will download them during startup.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>docker run -it -p 8080:8080 \
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>  --env INSTALL_EXTENSIONS=true \
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>  --env STABLE_EXTENSIONS=&quot;ysld,ogcapi-features&quot; \
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>  --env STABLE_EXTENSIONS="ysld,ogcapi-features" \
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>  docker.osgeo.org/geoserver:3.0.x
 </code></pre></div>
 <p>This will download and install the <a href="../../styling/ysld/">YSLD</a> and <a href="../../services/features/">OGCAPI - Features</a> extension.</p>
@@ -30333,8 +30333,8 @@
 <p>To work with community modules you must be using the GeoServer 3.0.x nightly build that matches the community module build:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>docker run -it -p 8080:8080 \
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>  --env INSTALL_EXTENSIONS=true \
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>  --env STABLE_EXTENSIONS=&quot;ysld,h2&quot; \
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>  --env COMMUNITY_EXTENSIONS=&quot;ogcapi-images,ogcapi-maps,ogcapi-styles,ogcapi-tiles&quot; \
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>  --env STABLE_EXTENSIONS="ysld,h2" \
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>  --env COMMUNITY_EXTENSIONS="ogcapi-images,ogcapi-maps,ogcapi-styles,ogcapi-tiles" \
 <a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>  docker.osgeo.org/geoserver:3.0.x
 </code></pre></div>
 <p>For the current list see GeoServer <a href="https://build.geoserver.org/geoserver/main/community-latest/">build server</a>.</p>

@@ -30338,7 +30338,7 @@
 <p>Using this function, a <code>Rule</code> matching only single points can be written as:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&lt;Rule&gt;</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">   </span><span class="nt">&lt;ogc:PropertyIsEqualTo&gt;</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">      </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;geometryType&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">      </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">"geometryType"</span><span class="nt">&gt;</span>
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">         </span><span class="nt">&lt;ogc:PropertyName&gt;</span>geom<span class="nt">&lt;/ogc:PropertyName&gt;</span>
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">      </span><span class="nt">&lt;/ogc:Function&gt;</span>
 <a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">      </span><span class="nt">&lt;ogc:Literal&gt;</span>Point<span class="nt">&lt;/ogc:Literal&gt;</span>
@@ -30352,8 +30352,8 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">&lt;Rule&gt;</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">   </span><span class="nt">&lt;ogc:Filter&gt;</span>
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">     </span><span class="nt">&lt;ogc:PropertyIsEqualTo&gt;</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">       </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;in3&quot;</span><span class="nt">&gt;</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">          </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;geometryType&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">       </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">"in3"</span><span class="nt">&gt;</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">          </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">"geometryType"</span><span class="nt">&gt;</span>
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">              </span><span class="nt">&lt;ogc:PropertyName&gt;</span>geom<span class="nt">&lt;/ogc:PropertyName&gt;</span>
 <a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">          </span><span class="nt">&lt;/ogc:Function&gt;</span>
 <a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">          </span><span class="nt">&lt;ogc:Literal&gt;</span>LineString<span class="nt">&lt;/ogc:Literal&gt;</span>
@@ -30373,7 +30373,7 @@
 <p>A slightly simpler alternative is to use the geometry <code>dimension</code> function to select geometries of a desired dimension. Dimension 0 selects Points and MultiPoints, dimension 1 selects LineStrings, LinearRings and MultiLineStrings, and dimension 2 selects Polygons and MultiPolygons. The following example shows how to select linear geometries:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">&lt;Rule&gt;</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">   </span><span class="nt">&lt;ogc:PropertyIsEqualTo&gt;</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">      </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;dimension&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">      </span><span class="nt">&lt;ogc:Function</span><span class="w"> </span><span class="na">name=</span><span class="s">"dimension"</span><span class="nt">&gt;</span>
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">         </span><span class="nt">&lt;ogc:PropertyName&gt;</span>geom<span class="nt">&lt;/ogc:PropertyName&gt;</span>
 <a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">      </span><span class="nt">&lt;/ogc:Function&gt;</span>
 <a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">      </span><span class="nt">&lt;ogc:Literal&gt;</span>1<span class="nt">&lt;/ogc:Literal&gt;</span>

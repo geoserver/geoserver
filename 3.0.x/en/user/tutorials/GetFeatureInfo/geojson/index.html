@@ -30036,29 +30036,29 @@
 <p>Follow examples of json template for each type.</p>
 <p>The <em>header json template</em>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w"> </span><span class="nt">&quot;header&quot;</span><span class="p">:</span><span class="s2">&quot;this is the header&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w"> </span><span class="nt">&quot;features&quot;</span><span class="p">:[</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w"> </span><span class="nt">"header"</span><span class="p">:</span><span class="s2">"this is the header"</span><span class="p">,</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w"> </span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"FeatureCollection"</span><span class="p">,</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w"> </span><span class="nt">"features"</span><span class="p">:[</span>
 </code></pre></div>
 <p>The <em>footer json template</em>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>],
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>&quot;footer&quot; : &quot;this is the footer&quot;
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>"footer" : "this is the footer"
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>}
 </code></pre></div>
 <p>The <em>content json template</em>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>&lt;#list features as feature&gt;
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>{
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>&quot;content&quot; : &quot;this is the content&quot;,
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>&quot;type&quot;: &quot;Feature&quot;,
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>&quot;id&quot; : &quot;${feature.fid}&quot;,
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>"content" : "this is the content",
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>"type": "Feature",
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>"id" : "${feature.fid}",
 <a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>&lt;#list feature.attributes as attribute&gt;
 <a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>&lt;#if attribute.isGeometry&gt;
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>&quot;geometry&quot;: ${geoJSON.geomToGeoJSON(attribute.rawValue)},
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>"geometry": ${geoJSON.geomToGeoJSON(attribute.rawValue)},
 <a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>&lt;/#if&gt;
 <a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>&lt;/#list&gt;
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>&quot;properties&quot;: {
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>"properties": {
 <a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>&lt;#list feature.attributes?filter(a -&gt; !a.isGeometry) as attribute&gt;
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>&quot;${attribute.name}&quot;: &quot;${attribute.value}&quot;
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>"${attribute.name}": "${attribute.value}"
 <a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>&lt;#if attribute_has_next&gt;
 <a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>,
 <a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>&lt;/#if&gt;
@@ -30076,16 +30076,16 @@
 </code></pre></div>
 <p>will produce the output:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&quot;header&quot;</span><span class="p">:</span><span class="s2">&quot;this is the header&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">&quot;features&quot;</span><span class="p">:[</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">"header"</span><span class="p">:</span><span class="s2">"this is the header"</span><span class="p">,</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"FeatureCollection"</span><span class="p">,</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">"features"</span><span class="p">:[</span>
 <a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">     </span><span class="p">{</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">        </span><span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="s2">&quot;this is the content&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;tiger_roads.7752&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">        </span><span class="nt">&quot;geometry&quot;</span><span class="p">:{</span>
-<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">           </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;MultiLineString&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">           </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:[</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">        </span><span class="nt">"content"</span><span class="p">:</span><span class="s2">"this is the content"</span><span class="p">,</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">        </span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"Feature"</span><span class="p">,</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">        </span><span class="nt">"id"</span><span class="p">:</span><span class="s2">"tiger_roads.7752"</span><span class="p">,</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">        </span><span class="nt">"geometry"</span><span class="p">:{</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">           </span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"MultiLineString"</span><span class="p">,</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">           </span><span class="nt">"coordinates"</span><span class="p">:[</span>
 <a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">              </span><span class="p">[</span>
 <a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">                 </span><span class="p">[</span>
 <a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">                    </span><span class="mf">-73.9674</span><span class="p">,</span>
@@ -30102,13 +30102,13 @@
 <a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="w">              </span><span class="p">]</span>
 <a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a><span class="w">           </span><span class="p">]</span>
 <a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a><span class="w">        </span><span class="p">},</span>
-<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a><span class="w">        </span><span class="nt">&quot;properties&quot;</span><span class="p">:{</span>
-<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a><span class="w">           </span><span class="nt">&quot;CFCC&quot;</span><span class="p">:</span><span class="s2">&quot;A41&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a><span class="w">           </span><span class="nt">&quot;NAME&quot;</span><span class="p">:</span><span class="s2">&quot;85th St Transverse&quot;</span>
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a><span class="w">        </span><span class="nt">"properties"</span><span class="p">:{</span>
+<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a><span class="w">           </span><span class="nt">"CFCC"</span><span class="p">:</span><span class="s2">"A41"</span><span class="p">,</span>
+<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a><span class="w">           </span><span class="nt">"NAME"</span><span class="p">:</span><span class="s2">"85th St Transverse"</span>
 <a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a><span class="w">        </span><span class="p">}</span>
 <a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a><span class="w">     </span><span class="p">}</span>
 <a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a><span class="w">  </span><span class="p">],</span>
-<a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a><span class="w">  </span><span class="nt">&quot;footer&quot;</span><span class="p">:</span><span class="s2">&quot;this is the footer&quot;</span>
+<a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a><span class="w">  </span><span class="nt">"footer"</span><span class="p">:</span><span class="s2">"this is the footer"</span>
 <a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a><span class="p">}</span>
 </code></pre></div>
 <p>While taking care of moving header_json.ftl and footer_json.ftl into the templates directory and performing the following request against the layer group tiger-ny :</p>
@@ -30116,15 +30116,15 @@
 </code></pre></div>
 <p>will return the following result:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">&quot;header&quot;</span><span class="p">:</span><span class="s2">&quot;this is the header&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">&quot;features&quot;</span><span class="p">:[</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">"header"</span><span class="p">:</span><span class="s2">"this is the header"</span><span class="p">,</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"FeatureCollection"</span><span class="p">,</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">"features"</span><span class="p">:[</span>
 <a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">     </span><span class="p">{</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;giant_polygon.1&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">        </span><span class="nt">&quot;geometry&quot;</span><span class="p">:{</span>
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">           </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;MultiPolygon&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">           </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:[</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">        </span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"Feature"</span><span class="p">,</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">        </span><span class="nt">"id"</span><span class="p">:</span><span class="s2">"giant_polygon.1"</span><span class="p">,</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">        </span><span class="nt">"geometry"</span><span class="p">:{</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">           </span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"MultiPolygon"</span><span class="p">,</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">           </span><span class="nt">"coordinates"</span><span class="p">:[</span>
 <a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">              </span><span class="p">[</span>
 <a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">                 </span><span class="p">[</span>
 <a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">                    </span><span class="p">[</span>
@@ -30151,11 +30151,11 @@
 <a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a><span class="w">              </span><span class="p">]</span>
 <a id="__codelineno-4-35" name="__codelineno-4-35" href="#__codelineno-4-35"></a><span class="w">           </span><span class="p">]</span>
 <a id="__codelineno-4-36" name="__codelineno-4-36" href="#__codelineno-4-36"></a><span class="w">        </span><span class="p">},</span>
-<a id="__codelineno-4-37" name="__codelineno-4-37" href="#__codelineno-4-37"></a><span class="w">        </span><span class="nt">&quot;properties&quot;</span><span class="p">:{</span>
-<a id="__codelineno-4-38" name="__codelineno-4-38" href="#__codelineno-4-38"></a><span class="w">           </span><span class="nt">&quot;@featureType&quot;</span><span class="p">:</span><span class="s2">&quot;giant_polygon&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-39" name="__codelineno-4-39" href="#__codelineno-4-39"></a><span class="w">           </span><span class="nt">&quot;the_geom&quot;</span><span class="p">:{</span>
-<a id="__codelineno-4-40" name="__codelineno-4-40" href="#__codelineno-4-40"></a><span class="w">              </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;MultiPolygon&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-41" name="__codelineno-4-41" href="#__codelineno-4-41"></a><span class="w">              </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:[</span>
+<a id="__codelineno-4-37" name="__codelineno-4-37" href="#__codelineno-4-37"></a><span class="w">        </span><span class="nt">"properties"</span><span class="p">:{</span>
+<a id="__codelineno-4-38" name="__codelineno-4-38" href="#__codelineno-4-38"></a><span class="w">           </span><span class="nt">"@featureType"</span><span class="p">:</span><span class="s2">"giant_polygon"</span><span class="p">,</span>
+<a id="__codelineno-4-39" name="__codelineno-4-39" href="#__codelineno-4-39"></a><span class="w">           </span><span class="nt">"the_geom"</span><span class="p">:{</span>
+<a id="__codelineno-4-40" name="__codelineno-4-40" href="#__codelineno-4-40"></a><span class="w">              </span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"MultiPolygon"</span><span class="p">,</span>
+<a id="__codelineno-4-41" name="__codelineno-4-41" href="#__codelineno-4-41"></a><span class="w">              </span><span class="nt">"coordinates"</span><span class="p">:[</span>
 <a id="__codelineno-4-42" name="__codelineno-4-42" href="#__codelineno-4-42"></a><span class="w">                 </span><span class="p">[</span>
 <a id="__codelineno-4-43" name="__codelineno-4-43" href="#__codelineno-4-43"></a><span class="w">                    </span><span class="p">[</span>
 <a id="__codelineno-4-44" name="__codelineno-4-44" href="#__codelineno-4-44"></a><span class="w">                       </span><span class="p">[</span>
@@ -30185,12 +30185,12 @@
 <a id="__codelineno-4-68" name="__codelineno-4-68" href="#__codelineno-4-68"></a><span class="w">        </span><span class="p">}</span>
 <a id="__codelineno-4-69" name="__codelineno-4-69" href="#__codelineno-4-69"></a><span class="w">     </span><span class="p">},</span>
 <a id="__codelineno-4-70" name="__codelineno-4-70" href="#__codelineno-4-70"></a><span class="w">     </span><span class="p">{</span>
-<a id="__codelineno-4-71" name="__codelineno-4-71" href="#__codelineno-4-71"></a><span class="w">        </span><span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="s2">&quot;this is the content&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-72" name="__codelineno-4-72" href="#__codelineno-4-72"></a><span class="w">        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-73" name="__codelineno-4-73" href="#__codelineno-4-73"></a><span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;tiger_roads.7672&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-74" name="__codelineno-4-74" href="#__codelineno-4-74"></a><span class="w">        </span><span class="nt">&quot;geometry&quot;</span><span class="p">:{</span>
-<a id="__codelineno-4-75" name="__codelineno-4-75" href="#__codelineno-4-75"></a><span class="w">           </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;MultiLineString&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-76" name="__codelineno-4-76" href="#__codelineno-4-76"></a><span class="w">           </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:[</span>
+<a id="__codelineno-4-71" name="__codelineno-4-71" href="#__codelineno-4-71"></a><span class="w">        </span><span class="nt">"content"</span><span class="p">:</span><span class="s2">"this is the content"</span><span class="p">,</span>
+<a id="__codelineno-4-72" name="__codelineno-4-72" href="#__codelineno-4-72"></a><span class="w">        </span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"Feature"</span><span class="p">,</span>
+<a id="__codelineno-4-73" name="__codelineno-4-73" href="#__codelineno-4-73"></a><span class="w">        </span><span class="nt">"id"</span><span class="p">:</span><span class="s2">"tiger_roads.7672"</span><span class="p">,</span>
+<a id="__codelineno-4-74" name="__codelineno-4-74" href="#__codelineno-4-74"></a><span class="w">        </span><span class="nt">"geometry"</span><span class="p">:{</span>
+<a id="__codelineno-4-75" name="__codelineno-4-75" href="#__codelineno-4-75"></a><span class="w">           </span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"MultiLineString"</span><span class="p">,</span>
+<a id="__codelineno-4-76" name="__codelineno-4-76" href="#__codelineno-4-76"></a><span class="w">           </span><span class="nt">"coordinates"</span><span class="p">:[</span>
 <a id="__codelineno-4-77" name="__codelineno-4-77" href="#__codelineno-4-77"></a><span class="w">              </span><span class="p">[</span>
 <a id="__codelineno-4-78" name="__codelineno-4-78" href="#__codelineno-4-78"></a><span class="w">                 </span><span class="p">[</span>
 <a id="__codelineno-4-79" name="__codelineno-4-79" href="#__codelineno-4-79"></a><span class="w">                    </span><span class="mf">-74.0108</span><span class="p">,</span>
@@ -30203,37 +30203,37 @@
 <a id="__codelineno-4-86" name="__codelineno-4-86" href="#__codelineno-4-86"></a><span class="w">              </span><span class="p">]</span>
 <a id="__codelineno-4-87" name="__codelineno-4-87" href="#__codelineno-4-87"></a><span class="w">           </span><span class="p">]</span>
 <a id="__codelineno-4-88" name="__codelineno-4-88" href="#__codelineno-4-88"></a><span class="w">        </span><span class="p">},</span>
-<a id="__codelineno-4-89" name="__codelineno-4-89" href="#__codelineno-4-89"></a><span class="w">        </span><span class="nt">&quot;properties&quot;</span><span class="p">:{</span>
-<a id="__codelineno-4-90" name="__codelineno-4-90" href="#__codelineno-4-90"></a><span class="w">           </span><span class="nt">&quot;CFCC&quot;</span><span class="p">:</span><span class="s2">&quot;A41&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-91" name="__codelineno-4-91" href="#__codelineno-4-91"></a><span class="w">           </span><span class="nt">&quot;NAME&quot;</span><span class="p">:</span><span class="s2">&quot;Broadway&quot;</span>
+<a id="__codelineno-4-89" name="__codelineno-4-89" href="#__codelineno-4-89"></a><span class="w">        </span><span class="nt">"properties"</span><span class="p">:{</span>
+<a id="__codelineno-4-90" name="__codelineno-4-90" href="#__codelineno-4-90"></a><span class="w">           </span><span class="nt">"CFCC"</span><span class="p">:</span><span class="s2">"A41"</span><span class="p">,</span>
+<a id="__codelineno-4-91" name="__codelineno-4-91" href="#__codelineno-4-91"></a><span class="w">           </span><span class="nt">"NAME"</span><span class="p">:</span><span class="s2">"Broadway"</span>
 <a id="__codelineno-4-92" name="__codelineno-4-92" href="#__codelineno-4-92"></a><span class="w">        </span><span class="p">}</span>
 <a id="__codelineno-4-93" name="__codelineno-4-93" href="#__codelineno-4-93"></a><span class="w">     </span><span class="p">},</span>
 <a id="__codelineno-4-94" name="__codelineno-4-94" href="#__codelineno-4-94"></a><span class="w">     </span><span class="p">{</span>
-<a id="__codelineno-4-95" name="__codelineno-4-95" href="#__codelineno-4-95"></a><span class="w">        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-96" name="__codelineno-4-96" href="#__codelineno-4-96"></a><span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;poi.3&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-97" name="__codelineno-4-97" href="#__codelineno-4-97"></a><span class="w">        </span><span class="nt">&quot;geometry&quot;</span><span class="p">:{</span>
-<a id="__codelineno-4-98" name="__codelineno-4-98" href="#__codelineno-4-98"></a><span class="w">           </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Point&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-99" name="__codelineno-4-99" href="#__codelineno-4-99"></a><span class="w">           </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:[</span>
+<a id="__codelineno-4-95" name="__codelineno-4-95" href="#__codelineno-4-95"></a><span class="w">        </span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"Feature"</span><span class="p">,</span>
+<a id="__codelineno-4-96" name="__codelineno-4-96" href="#__codelineno-4-96"></a><span class="w">        </span><span class="nt">"id"</span><span class="p">:</span><span class="s2">"poi.3"</span><span class="p">,</span>
+<a id="__codelineno-4-97" name="__codelineno-4-97" href="#__codelineno-4-97"></a><span class="w">        </span><span class="nt">"geometry"</span><span class="p">:{</span>
+<a id="__codelineno-4-98" name="__codelineno-4-98" href="#__codelineno-4-98"></a><span class="w">           </span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"Point"</span><span class="p">,</span>
+<a id="__codelineno-4-99" name="__codelineno-4-99" href="#__codelineno-4-99"></a><span class="w">           </span><span class="nt">"coordinates"</span><span class="p">:[</span>
 <a id="__codelineno-4-100" name="__codelineno-4-100" href="#__codelineno-4-100"></a><span class="w">              </span><span class="mf">-74.01053</span><span class="p">,</span>
 <a id="__codelineno-4-101" name="__codelineno-4-101" href="#__codelineno-4-101"></a><span class="w">              </span><span class="mf">40.709387</span>
 <a id="__codelineno-4-102" name="__codelineno-4-102" href="#__codelineno-4-102"></a><span class="w">           </span><span class="p">]</span>
 <a id="__codelineno-4-103" name="__codelineno-4-103" href="#__codelineno-4-103"></a><span class="w">        </span><span class="p">},</span>
-<a id="__codelineno-4-104" name="__codelineno-4-104" href="#__codelineno-4-104"></a><span class="w">        </span><span class="nt">&quot;properties&quot;</span><span class="p">:{</span>
-<a id="__codelineno-4-105" name="__codelineno-4-105" href="#__codelineno-4-105"></a><span class="w">           </span><span class="nt">&quot;@featureType&quot;</span><span class="p">:</span><span class="s2">&quot;poi&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-106" name="__codelineno-4-106" href="#__codelineno-4-106"></a><span class="w">           </span><span class="nt">&quot;the_geom&quot;</span><span class="p">:{</span>
-<a id="__codelineno-4-107" name="__codelineno-4-107" href="#__codelineno-4-107"></a><span class="w">              </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Point&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-108" name="__codelineno-4-108" href="#__codelineno-4-108"></a><span class="w">              </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:[</span>
+<a id="__codelineno-4-104" name="__codelineno-4-104" href="#__codelineno-4-104"></a><span class="w">        </span><span class="nt">"properties"</span><span class="p">:{</span>
+<a id="__codelineno-4-105" name="__codelineno-4-105" href="#__codelineno-4-105"></a><span class="w">           </span><span class="nt">"@featureType"</span><span class="p">:</span><span class="s2">"poi"</span><span class="p">,</span>
+<a id="__codelineno-4-106" name="__codelineno-4-106" href="#__codelineno-4-106"></a><span class="w">           </span><span class="nt">"the_geom"</span><span class="p">:{</span>
+<a id="__codelineno-4-107" name="__codelineno-4-107" href="#__codelineno-4-107"></a><span class="w">              </span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"Point"</span><span class="p">,</span>
+<a id="__codelineno-4-108" name="__codelineno-4-108" href="#__codelineno-4-108"></a><span class="w">              </span><span class="nt">"coordinates"</span><span class="p">:[</span>
 <a id="__codelineno-4-109" name="__codelineno-4-109" href="#__codelineno-4-109"></a><span class="w">                 </span><span class="mf">-74.01053</span><span class="p">,</span>
 <a id="__codelineno-4-110" name="__codelineno-4-110" href="#__codelineno-4-110"></a><span class="w">                 </span><span class="mf">40.709387</span>
 <a id="__codelineno-4-111" name="__codelineno-4-111" href="#__codelineno-4-111"></a><span class="w">              </span><span class="p">]</span>
 <a id="__codelineno-4-112" name="__codelineno-4-112" href="#__codelineno-4-112"></a><span class="w">           </span><span class="p">},</span>
-<a id="__codelineno-4-113" name="__codelineno-4-113" href="#__codelineno-4-113"></a><span class="w">           </span><span class="nt">&quot;NAME&quot;</span><span class="p">:</span><span class="s2">&quot;art&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-114" name="__codelineno-4-114" href="#__codelineno-4-114"></a><span class="w">           </span><span class="nt">&quot;THUMBNAIL&quot;</span><span class="p">:</span><span class="s2">&quot;pics/22037856-Ti.jpg&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-115" name="__codelineno-4-115" href="#__codelineno-4-115"></a><span class="w">           </span><span class="nt">&quot;MAINPAGE&quot;</span><span class="p">:</span><span class="s2">&quot;pics/22037856-L.jpg&quot;</span>
+<a id="__codelineno-4-113" name="__codelineno-4-113" href="#__codelineno-4-113"></a><span class="w">           </span><span class="nt">"NAME"</span><span class="p">:</span><span class="s2">"art"</span><span class="p">,</span>
+<a id="__codelineno-4-114" name="__codelineno-4-114" href="#__codelineno-4-114"></a><span class="w">           </span><span class="nt">"THUMBNAIL"</span><span class="p">:</span><span class="s2">"pics/22037856-Ti.jpg"</span><span class="p">,</span>
+<a id="__codelineno-4-115" name="__codelineno-4-115" href="#__codelineno-4-115"></a><span class="w">           </span><span class="nt">"MAINPAGE"</span><span class="p">:</span><span class="s2">"pics/22037856-L.jpg"</span>
 <a id="__codelineno-4-116" name="__codelineno-4-116" href="#__codelineno-4-116"></a><span class="w">        </span><span class="p">}</span>
 <a id="__codelineno-4-117" name="__codelineno-4-117" href="#__codelineno-4-117"></a><span class="w">     </span><span class="p">}</span>
 <a id="__codelineno-4-118" name="__codelineno-4-118" href="#__codelineno-4-118"></a><span class="w">  </span><span class="p">],</span>
-<a id="__codelineno-4-119" name="__codelineno-4-119" href="#__codelineno-4-119"></a><span class="w">  </span><span class="nt">&quot;footer&quot;</span><span class="p">:</span><span class="s2">&quot;this is the footer&quot;</span>
+<a id="__codelineno-4-119" name="__codelineno-4-119" href="#__codelineno-4-119"></a><span class="w">  </span><span class="nt">"footer"</span><span class="p">:</span><span class="s2">"this is the footer"</span>
 <a id="__codelineno-4-120" name="__codelineno-4-120" href="#__codelineno-4-120"></a><span class="p">}</span>
 </code></pre></div>
 <p>As it is possible to see, the json output comprises a mix of the output mediated by a content_json.ftl for the tiger_roads feature, and the normal output for the other features, while header and footer have been kept respectively at the top and at the bottom.</p>

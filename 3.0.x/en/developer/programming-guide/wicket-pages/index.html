@@ -30308,21 +30308,21 @@
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">}</span>
 </code></pre></div>
 <p>There would also need to be a Spring application context document (<strong><code>src/main/java/applicationContext.xml</code></strong>):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;org.geoserver.web.MenuPageInfo&quot;</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;myPageLink&quot;</span><span class="nt">&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">class=</span><span class="s">"org.geoserver.web.MenuPageInfo"</span><span class="w"> </span><span class="na">id=</span><span class="s">"myPageLink"</span><span class="nt">&gt;</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="cm">&lt;!-- An internal identifier for the link component --&gt;</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;id&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;mypage&quot;</span><span class="nt">/&gt;</span><span class="w"> </span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"id"</span><span class="w"> </span><span class="na">value=</span><span class="s">"mypage"</span><span class="nt">/&gt;</span><span class="w"> </span>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="cm">&lt;!-- The i18n key for the link title --&gt;</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;titleKey&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;org.geoserver.web.example.MyPage.page.title&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"titleKey"</span><span class="w"> </span><span class="na">value=</span><span class="s">"org.geoserver.web.example.MyPage.page.title"</span><span class="nt">/&gt;</span>
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="cm">&lt;!-- The i18n key for a longer description of the page --&gt;</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;descriptionKey&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;org.geoserver.web.example.MyPage.page.description&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"descriptionKey"</span><span class="w"> </span><span class="na">value=</span><span class="s">"org.geoserver.web.example.MyPage.page.description"</span><span class="nt">/&gt;</span>
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="cm">&lt;!-- The fully qualified name of the page class --&gt;</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;componentClass&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;org.geoserver.web.example.MyPage&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"componentClass"</span><span class="w"> </span><span class="na">value=</span><span class="s">"org.geoserver.web.example.MyPage"</span><span class="nt">/&gt;</span>
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="cm">&lt;!-- Optional, an icon to display alongside the link. --&gt;</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;icon&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;imgs/some-image.png&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"icon"</span><span class="w"> </span><span class="na">value=</span><span class="s">"imgs/some-image.png"</span><span class="nt">/&gt;</span>
 <a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="cm">&lt;!-- Optional, the category in which the link should be grouped. --&gt;</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;category&quot;</span><span class="w"> </span><span class="na">ref=</span><span class="s">&quot;someCategory&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"category"</span><span class="w"> </span><span class="na">ref=</span><span class="s">"someCategory"</span><span class="nt">/&gt;</span>
 <a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="cm">&lt;!-- Optional, a key used to order the links in the menu. --&gt;</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;order&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;100&quot;</span><span class="nt">/&gt;</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"order"</span><span class="w"> </span><span class="na">value=</span><span class="s">"100"</span><span class="nt">/&gt;</span>
 <a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="nt">&lt;/bean&gt;</span>
 </code></pre></div>
 <p>The third necessary file is the default dictionary for internationalized strings, at <strong><code>src/main/resources/GeoServerApplication.properties</code></strong>:</p>
@@ -30378,7 +30378,7 @@
 <a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MyPage</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">GeoServerBasePage</span><span class="p">{</span>
 <a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">MyPage</span><span class="p">(){</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">        </span><span class="n">add</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Label</span><span class="p">(</span><span class="s">&quot;label&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Hello World&quot;</span><span class="p">));</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">        </span><span class="n">add</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Label</span><span class="p">(</span><span class="s">"label"</span><span class="p">,</span><span class="w"> </span><span class="s">"Hello World"</span><span class="p">));</span>
 <a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="p">}</span>
 </code></pre></div>
@@ -30387,7 +30387,7 @@
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="p">&lt;</span><span class="nt">wicket:extend</span><span class="p">&gt;</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    Greetings, GeoServer User! My message for you is <span class="p">&lt;</span><span class="nt">span</span> <span class="na">wicket:id</span><span class="o">=</span><span class="s">&quot;label&quot;</span><span class="p">&gt;</span> thanks for using GeoServer <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>.
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    Greetings, GeoServer User! My message for you is <span class="p">&lt;</span><span class="nt">span</span> <span class="na">wicket:id</span><span class="o">=</span><span class="s">"label"</span><span class="p">&gt;</span> thanks for using GeoServer <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>.
 <a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="p">&lt;/</span><span class="nt">wicket:extend</span><span class="p">&gt;</span>
 <a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
 <a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
@@ -30399,14 +30399,14 @@
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.apache.wicket.markup.html.link.Link</span><span class="p">;</span>
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="c1">//...</span>
 <a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">add</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Link</span><span class="p">(</span><span class="s">&quot;link&quot;</span><span class="p">){</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">add</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Link</span><span class="p">(</span><span class="s">"link"</span><span class="p">){</span>
 <a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onClick</span><span class="p">(){</span>
 <a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">        </span><span class="n">setResponsePage</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">MyPage</span><span class="p">());</span>
 <a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="p">});</span>
 </code></pre></div>
 <p>The corresponding HTML would look like:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Follow this lovely <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;#&quot;</span> <span class="na">wicket:id</span><span class="o">=</span><span class="s">&quot;link&quot;</span><span class="p">&gt;</span>link<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Follow this lovely <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">"#"</span> <span class="na">wicket:id</span><span class="o">=</span><span class="s">"link"</span><span class="p">&gt;</span>link<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>.
 </code></pre></div>
 <h2 id="making-it-internationalizable">Making it Internationalizable<a class="headerlink" href="#making-it-internationalizable" title="Permanent link">&para;</a></h2>
 <p>In the GeoServer UI, we use a customized resource lookup utility within Wicket to allow any module to provide resource strings. All you need to do is include your <strong>i18n (Internationalization)</strong> values in a Java Properties file named <code>GeoServerApplication.properties</code> in the <code>resources</code> directory of your <code>src</code> directory (ie, <strong><code>{project}/src/main/resources/GeoServerApplication.properties</code></strong>).</p>
@@ -30424,8 +30424,8 @@
 <p>In forms, group each field as a <code>&lt;div&gt;</code> with a label and a form field, try to avoid using lists for the layout, as they are only intended for listing items. For radio buttons and checkboxes, the label should come after the field; for all others the label should precede the field. For example:</p>
 <div class="highlight"><pre><span></span><code>``` html
 &lt;div&gt;
-  &lt;label for=&quot;foo&quot;&gt;&lt;wicket:message key=&quot;foo&quot;&gt; Foo &lt;/wicket:message&gt;&lt;/label&gt;
-  &lt;input wicket:id=&quot;foo&quot; type=&quot;text&quot;&gt;&lt;/input&gt;
+  &lt;label for="foo"&gt;&lt;wicket:message key="foo"&gt; Foo &lt;/wicket:message&gt;&lt;/label&gt;
+  &lt;input wicket:id="foo" type="text"&gt;&lt;/input&gt;
 &lt;/div&gt;
 ```
 
@@ -30435,7 +30435,7 @@ Similar fields can be grouped within a `&lt;fieldset&gt;`, the title of this gro
 &lt;fieldset&gt;
    &lt;legend&gt;
      &lt;span&gt;
-       &lt;wicket:message key=&quot;foo&quot;&gt; Foo &lt;/wicket:message&gt;
+       &lt;wicket:message key="foo"&gt; Foo &lt;/wicket:message&gt;
      &lt;/span&gt;
    &lt;/legend&gt;
    ...
@@ -30447,7 +30447,7 @@ Similar fields can be grouped within a `&lt;fieldset&gt;`, the title of this gro
 <div class="highlight"><pre><span></span><code>For example extra padding at the top of a `form` can be achieved as follows:
 
 ``` html
-&lt;form wicket:id=&quot;form&quot; class=&quot;pt-3&quot;&gt;
+&lt;form wicket:id="form" class="pt-3"&gt;
     ...
 &lt;/form&gt;
 ```

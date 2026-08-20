@@ -30248,16 +30248,16 @@
 </code></pre></div>
 <p>will set the cache TTL to <code>5</code> seconds.</p>
 <p>Examples:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>&quot;PT20.345S&quot; -- parses as &quot;20.345 seconds&quot;
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>&quot;PT15M&quot;     -- parses as &quot;15 minutes&quot; (where a minute is 60 seconds)
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>&quot;PT10H&quot;     -- parses as &quot;10 hours&quot; (where an hour is 3600 seconds)
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>&quot;P2D&quot;       -- parses as &quot;2 days&quot; (where a day is 24 hours or 86400 seconds)
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>&quot;P2DT3H4M&quot;  -- parses as &quot;2 days, 3 hours and 4 minutes&quot;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>"PT20.345S" -- parses as "20.345 seconds"
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>"PT15M"     -- parses as "15 minutes" (where a minute is 60 seconds)
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>"PT10H"     -- parses as "10 hours" (where an hour is 3600 seconds)
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>"P2D"       -- parses as "2 days" (where a day is 24 hours or 86400 seconds)
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>"P2DT3H4M"  -- parses as "2 days, 3 hours and 4 minutes"
 </code></pre></div>
 <p>This is <strong>important</strong> because the cache TTL will impact the latency for GeoServer to respond to data access or workspace admin access rules modified or deleted directly through the ACL REST API that happen outside GeoServer.</p>
 <p>If you're implementing a workflow where you're managing ACL rules directly through the ACL service API, you might want to set a shorter cache TTL.</p>
 <p>Alternatively, you can introduce a direct call to the GeoServer REST API to force clearing the cache using the <code>/rest/reset</code> endpoint. For example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;http://localhost:8080/geoserver/rest/reset&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>admin:geoserver<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">"http://localhost:8080/geoserver/rest/reset"</span>
 </code></pre></div>
 <p>The web user interface can also be used to clear out the caches through the "Server Status" page, clicking the <code>Resource Cache -&gt; Clear</code> button.</p>
 <p>In either case, you'd see a message like the following in the GeoServer logs, provided the logging configuration enables the info level for the <code>org.geoserver.acl.authorization.cache</code> topic:</p>

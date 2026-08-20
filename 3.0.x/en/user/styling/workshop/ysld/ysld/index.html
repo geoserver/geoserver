@@ -30449,16 +30449,16 @@
 </li>
 </ol>
 <p>For example, a symbolizer block is a list, so every entry requires its own dash:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>- symbolizer:
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  - polygon:
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    ...
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  - text:
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    ...
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">symbolizer</span><span class="p">:</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">polygon</span><span class="p">:</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">text</span><span class="p">:</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span>
 </code></pre></div>
 <p>The <code>polygon:</code> and <code>text:</code> objects (the individual symbolizers themselves) are mappings, and as such, the contents do not require dashes, only indents:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">polygon</span><span class="p">:</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="nt">stroke-color</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;#808080&#39;</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;#FF0000&#39;</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="nt">stroke-color</span><span class="p">:</span><span class="w"> </span><span class="s">'#808080'</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">'#FF0000'</span>
 </code></pre></div>
 <p>The dash next to polygon means that the item itself is contained in a list, not that it contains a list. And the placement of the dash is at the same level of indentation as the list title.</p>
 <p>If you have a list that contains only one item, and there is no other content at higher levels of the list, you may omit the enclosing elements. For example, the following are equivalent:</p>
@@ -30469,13 +30469,13 @@
 <a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">        </span><span class="nt">symbols</span><span class="p">:</span>
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">mark</span><span class="p">:</span>
 <a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">            </span><span class="nt">shape</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">circle</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">            </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;gray&#39;</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">            </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">'gray'</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">point</span><span class="p">:</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">symbols</span><span class="p">:</span>
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">mark</span><span class="p">:</span>
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">      </span><span class="nt">shape</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">circle</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">      </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;gray&#39;</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">      </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">'gray'</span>
 </code></pre></div>
 <p>This is useful for making your styles more concise.</p>
 <h3 id="indentation">Indentation<a class="headerlink" href="#indentation" title="Permanent link">&para;</a></h3>
@@ -30483,7 +30483,7 @@
 <p>For example, the polygon symbolizer, since it is a mapping, contains certain parameters inside it, such as the color of the fill and stroke. These must be indented such that they are "inside" the polygon block.</p>
 <p>In this example, the following markup is <strong>correct</strong>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">polygon</span><span class="p">:</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;#808080&#39;</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">'#808080'</span>
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="nt">fill-opacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
 <a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="nt">stroke-color</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">black</span>
 <a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="nt">stroke-opacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.75</span>
@@ -30491,7 +30491,7 @@
 <p>The parameters inside the polygon (symbolizer) are indented, meaning that they are referencing the symbolizer and are not "outside it."</p>
 <p>Compare to the following <strong>incorrect</strong> markup:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">polygon</span><span class="p">:</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;#808080&#39;</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">'#808080'</span>
 <a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="nt">fill-opacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
 <a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">  </span><span class="nt">stroke-color</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">black</span>
 <a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">  </span><span class="nt">stroke-opacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.75</span>
@@ -30502,11 +30502,11 @@
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="nt">symbols</span><span class="p">:</span>
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">mark</span><span class="p">:</span>
 <a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">      </span><span class="nt">shape</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">circle</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">      </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;gray&#39;</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">      </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">'gray'</span>
 </code></pre></div>
 <p>We can make a style consisting of more than one rule, carefully choosing the selector for each rule. In this case we are using a selector to style capital cities with a star, and non-capital with a circle:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">rules</span><span class="p">:</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">filter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${FEATURECLA = &#39;Admin-0 capital&#39;}</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">filter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${FEATURECLA = 'Admin-0 capital'}</span>
 <a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="nt">scale</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">max</span><span class="p p-Indicator">]</span>
 <a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="nt">symbolizers</span><span class="p">:</span>
 <a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">point</span><span class="p">:</span>
@@ -30514,10 +30514,10 @@
 <a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">        </span><span class="nt">symbols</span><span class="p">:</span>
 <a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">mark</span><span class="p">:</span>
 <a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">            </span><span class="nt">shape</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">star</span>
-<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">            </span><span class="nt">stroke-color</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;black&#39;</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">            </span><span class="nt">stroke-color</span><span class="p">:</span><span class="w"> </span><span class="s">'black'</span>
 <a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">            </span><span class="nt">stroke-width</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
-<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">            </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;gray&#39;</span>
-<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">filter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${FEATURECLA &lt;&gt; &#39;Admin-0 capital&#39;}</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">            </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">'gray'</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">filter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${FEATURECLA &lt;&gt; 'Admin-0 capital'}</span>
 <a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="w">    </span><span class="nt">scale</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">max</span><span class="p p-Indicator">]</span>
 <a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="w">    </span><span class="nt">symbolizers</span><span class="p">:</span>
 <a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">point</span><span class="p">:</span>
@@ -30525,18 +30525,18 @@
 <a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a><span class="w">        </span><span class="nt">symbols</span><span class="p">:</span>
 <a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">mark</span><span class="p">:</span>
 <a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a><span class="w">            </span><span class="nt">shape</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">circle</span>
-<a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a><span class="w">            </span><span class="nt">stroke-color</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;black&#39;</span>
+<a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a><span class="w">            </span><span class="nt">stroke-color</span><span class="p">:</span><span class="w"> </span><span class="s">'black'</span>
 <a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a><span class="w">            </span><span class="nt">stroke-width</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
-<a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a><span class="w">            </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;gray&#39;</span>
+<a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a><span class="w">            </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">'gray'</span>
 </code></pre></div>
 <p>The feature attribute test performed above uses <strong>Constraint Query Language (CQL)</strong>. This syntax can be used to define filters to select content, similar to how the SQL WHERE statement is used. It can also be used to define expressions to access attribute values allowing their use when defining style properties.</p>
 <p>Rule selectors can also be triggered based on the state of the rendering engine. In this example we are only applying labels when zoomed in:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nt">rules</span><span class="p">:</span>
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">scale</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;2.0E7&#39;</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">scale</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">min</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'2.0E7'</span><span class="p p-Indicator">]</span>
 <a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="nt">symbolizers</span><span class="p">:</span>
 <a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">text</span><span class="p">:</span>
 <a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">        </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${NAME}</span>
-<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">        </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;gray&#39;</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">        </span><span class="nt">fill-color</span><span class="p">:</span><span class="w"> </span><span class="s">'gray'</span>
 </code></pre></div>
 <p>In the above example the label is defined using the CQL Expression <code>NAME</code>. This results in a dynamic style that generates each label on a case-by-case basis, filling in the label with the feature attribute <code>NAME</code>.</p>
 <p>Reference:</p>
@@ -30582,13 +30582,13 @@
 <p>As noted above, YSLD has a one-to-one correspondence with SLD, it merely uses a different markup language to display the same content. We can compare a SLD style with a YSLD style to see this correspondence:</p>
 <h3 id="sld-style">SLD Style<a class="headerlink" href="#sld-style" title="Permanent link">&para;</a></h3>
 <p>Here is an example <a href="../../files/airports0.sld">SLD file</a> for reference:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;</span>
-<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="nt">&lt;StyledLayerDescriptor</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span>
-<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w"> </span><span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://www.opengis.net/sld StyledLayerDescriptor.xsd&quot;</span>
-<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://www.opengis.net/sld&quot;</span>
-<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w"> </span><span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span>
-<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w"> </span><span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span>
-<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w"> </span><span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="nt">&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="cp">&lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="nt">&lt;StyledLayerDescriptor</span><span class="w"> </span><span class="na">version=</span><span class="s">"1.0.0"</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w"> </span><span class="na">xsi:schemaLocation=</span><span class="s">"http://www.opengis.net/sld StyledLayerDescriptor.xsd"</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w"> </span><span class="na">xmlns=</span><span class="s">"http://www.opengis.net/sld"</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w"> </span><span class="na">xmlns:ogc=</span><span class="s">"http://www.opengis.net/ogc"</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w"> </span><span class="na">xmlns:xlink=</span><span class="s">"http://www.w3.org/1999/xlink"</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w"> </span><span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span><span class="nt">&gt;</span>
 <a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">  </span><span class="nt">&lt;NamedLayer&gt;</span>
 <a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">    </span><span class="nt">&lt;Name&gt;</span>airports<span class="nt">&lt;/Name&gt;</span>
 <a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w">    </span><span class="nt">&lt;UserStyle&gt;</span>
@@ -30600,8 +30600,8 @@
 <a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="w">          </span><span class="nt">&lt;PointSymbolizer&gt;</span>
 <a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="w">            </span><span class="nt">&lt;Graphic&gt;</span>
 <a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a><span class="w">              </span><span class="nt">&lt;ExternalGraphic&gt;</span>
-<a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a><span class="w">                </span><span class="nt">&lt;OnlineResource</span><span class="w"> </span><span class="na">xlink:type=</span><span class="s">&quot;simple&quot;</span>
-<a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a><span class="w">                </span><span class="na">xlink:href=</span><span class="s">&quot;airport.svg&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a><span class="w">                </span><span class="nt">&lt;OnlineResource</span><span class="w"> </span><span class="na">xlink:type=</span><span class="s">"simple"</span>
+<a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a><span class="w">                </span><span class="na">xlink:href=</span><span class="s">"airport.svg"</span><span class="w"> </span><span class="nt">/&gt;</span>
 <a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a><span class="w">                </span><span class="nt">&lt;Format&gt;</span>image/svg<span class="nt">&lt;/Format&gt;</span>
 <a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a><span class="w">              </span><span class="nt">&lt;/ExternalGraphic&gt;</span>
 <a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a><span class="w">              </span><span class="nt">&lt;Size&gt;</span>16<span class="nt">&lt;/Size&gt;</span>

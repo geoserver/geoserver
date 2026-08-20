@@ -30219,7 +30219,7 @@
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nt">&lt;/workspace&gt;</span>
 </code></pre></div>
 <p>Failure to define the <code>gml</code> namespace prefix with a secondary namespace will result in errors like:</p>
-<div class="highlight"><pre><span></span><code>java.io.IOException: The prefix &quot;null&quot; for element &quot;null:name&quot; is not bound.
+<div class="highlight"><pre><span></span><code>java.io.IOException: The prefix "null" for element "null:name" is not bound.
 </code></pre></div>
 <p>while encoding a response (in this case one containing <code>gml:name</code>), even if the namespace prefix is defined in the mapping file.</p>
 <h3 id="gml-321-geometries-require-gmlid">GML 3.2.1 geometries require gml:id<a class="headerlink" href="#gml-321-geometries-require-gmlid" title="Permanent link">&para;</a></h3>
@@ -30227,7 +30227,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&lt;AttributeMapping&gt;</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="nt">&lt;targetAttribute&gt;</span>gsml:shape<span class="nt">&lt;/targetAttribute&gt;</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">&lt;idExpression&gt;</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">        </span><span class="nt">&lt;OCQL&gt;</span>strConcat(&#39;shape.&#39;,<span class="w"> </span>getId())<span class="nt">&lt;/OCQL&gt;</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">        </span><span class="nt">&lt;OCQL&gt;</span>strConcat('shape.',<span class="w"> </span>getId())<span class="nt">&lt;/OCQL&gt;</span>
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="nt">&lt;/idExpression&gt;</span>
 <a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="nt">&lt;sourceExpression&gt;</span>
 <a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">        </span><span class="nt">&lt;OCQL&gt;</span>SHAPE<span class="nt">&lt;/OCQL&gt;</span>

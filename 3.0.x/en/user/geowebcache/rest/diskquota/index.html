@@ -30224,7 +30224,7 @@
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>&lt; 
 <a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>* Connection #0 to host localhost left intact
 <a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>* Closing connection #0
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>{&quot;gwcQuotaConfiguration&quot;:{&quot;diskBlockSize&quot;:2048,&quot;enabled&quot;:true,&quot;maxConcurrentCleanUps&quot;:5,&quot;cacheCleanUpFrequency&quot;:5,&quot;globalExpirationPolicyName&quot;:&quot;LRU&quot;,&quot;globalQuota&quot;:{&quot;value&quot;:&quot;100&quot;,&quot;units&quot;:&quot;MiB&quot;},&quot;cacheCleanUpUnits&quot;:&quot;SECONDS&quot;}}
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>{"gwcQuotaConfiguration":{"diskBlockSize":2048,"enabled":true,"maxConcurrentCleanUps":5,"cacheCleanUpFrequency":5,"globalExpirationPolicyName":"LRU","globalQuota":{"value":"100","units":"MiB"},"cacheCleanUpUnits":"SECONDS"}}
 </code></pre></div>
 <h3 id="changing-configuration">Changing configuration<a class="headerlink" href="#changing-configuration" title="Permanent link">&para;</a></h3>
 <div class="admonition note">
@@ -30233,11 +30233,11 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">&lt;gwcQuotaConfiguration&gt;&lt;maxConcurrentCleanUps&gt;</span>2<span class="nt">&lt;/maxConcurrentCleanUps&gt;&lt;/gwcQuotaConfiguration&gt;</span>
 </code></pre></div>
 <p>The following will only change the diskBlockSize, enabled, and globalQuota properties in JSON format:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">{</span><span class="nt">&quot;gwcQuotaConfiguration&quot;</span><span class="p">:{</span><span class="nt">&quot;diskBlockSize&quot;</span><span class="p">:</span><span class="mi">2048</span><span class="p">,</span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="nt">&quot;globalQuota&quot;</span><span class="p">:{</span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="s2">&quot;100&quot;</span><span class="p">,</span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="s2">&quot;MiB&quot;</span><span class="p">}}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">{</span><span class="nt">"gwcQuotaConfiguration"</span><span class="p">:{</span><span class="nt">"diskBlockSize"</span><span class="p">:</span><span class="mi">2048</span><span class="p">,</span><span class="nt">"enabled"</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="nt">"globalQuota"</span><span class="p">:{</span><span class="nt">"value"</span><span class="p">:</span><span class="s2">"100"</span><span class="p">,</span><span class="nt">"units"</span><span class="p">:</span><span class="s2">"MiB"</span><span class="p">}}</span>
 </code></pre></div>
 </div>
 <p>The following XML example successfully enables the quota and sets the globalQuota size:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="go">curl -v -u admin:geoserver &quot;http://localhost:8090/geoserver/gwc/rest/diskquota.xml&quot; -X PUT -d &quot;&lt;gwcQuotaConfiguration&gt;&lt;enabled&gt;true&lt;/enabled&gt;&lt;globalQuota&gt;&lt;value&gt;100&lt;/value&gt;&lt;units&gt;GiB&lt;/units&gt;&lt;/globalQuota&gt;&lt;/gwcQuotaConfiguration&gt;&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="go">curl -v -u admin:geoserver "http://localhost:8090/geoserver/gwc/rest/diskquota.xml" -X PUT -d "&lt;gwcQuotaConfiguration&gt;&lt;enabled&gt;true&lt;/enabled&gt;&lt;globalQuota&gt;&lt;value&gt;100&lt;/value&gt;&lt;units&gt;GiB&lt;/units&gt;&lt;/globalQuota&gt;&lt;/gwcQuotaConfiguration&gt;"</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">&lt; HTTP</span><span class="err">/1.1</span><span class="w"> </span><span class="err">200</span><span class="w"> </span><span class="err">OK</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="err">&lt;</span><span class="w"> </span><span class="err">Date:</span><span class="w"> </span><span class="err">Fri,</span><span class="w"> </span><span class="err">18</span><span class="w"> </span><span class="err">Mar</span><span class="w"> </span><span class="err">2011</span><span class="w"> </span><span class="err">20:59:31</span><span class="w"> </span><span class="err">GMT</span>
@@ -30260,7 +30260,7 @@
 <a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="nt">&lt;/gwcQuotaConfiguration&gt;</span>
 </code></pre></div>
 <p>The following JSON example changes the globalQuote and expirationPolicyName parameters:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="go">curl -v -u admin:geoserver &quot;http://localhost:8090/geoserver/gwc/rest/diskquota.json&quot; -X PUT -d &quot;{&quot;gwcQuotaConfiguration&quot;:{&quot;globalQuota&quot;:{&quot;value&quot;:&quot;100&quot;,&quot;units&quot;:&quot;MiB&quot;},&quot;globalExpirationPolicyName&quot;:&quot;LRU&quot;}}&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="go">curl -v -u admin:geoserver "http://localhost:8090/geoserver/gwc/rest/diskquota.json" -X PUT -d "{"gwcQuotaConfiguration":{"globalQuota":{"value":"100","units":"MiB"},"globalExpirationPolicyName":"LRU"}}"</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>&lt; HTTP/1.1 200 OK
 <a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>&lt; Date: Fri, 18 Mar 2011 21:02:20 GMT
@@ -30270,10 +30270,10 @@
 <a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>&lt; 
 <a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>* Connection #0 to host localhost left intact
 <a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>* Closing connection #0
-<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>{&quot;gwcQuotaConfiguration&quot;:{&quot;diskBlockSize&quot;:2048,&quot;enabled&quot;:true,&quot;maxConcurrentCleanUps&quot;:5,&quot;cacheCleanUpFrequency&quot;:5,&quot;globalExpirationPolicyName&quot;:&quot;LRU&quot;,&quot;globalQuota&quot;:{&quot;value&quot;:&quot;100&quot;,&quot;units&quot;:&quot;MiB&quot;},&quot;cacheCleanUpUnits&quot;:&quot;SECONDS&quot;,&quot;layerQuotas&quot;:[]}}
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>{"gwcQuotaConfiguration":{"diskBlockSize":2048,"enabled":true,"maxConcurrentCleanUps":5,"cacheCleanUpFrequency":5,"globalExpirationPolicyName":"LRU","globalQuota":{"value":"100","units":"MiB"},"cacheCleanUpUnits":"SECONDS","layerQuotas":[]}}
 </code></pre></div>
 <p>The following <em>invalid</em> XML example has an invalid parameter (maxConcurrentCleanUps must be &gt; 0). It returns a 400 response code and contains an error message as plain text:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="go">curl -v -u admin:geoserver &quot;http://localhost:8090/geoserver/gwc/rest/diskquota.xml&quot; -X PUT -d &quot;&lt;gwcQuotaConfiguration&gt;&lt;maxConcurrentCleanUps&gt;-1&lt;/maxConcurrentCleanUps&gt;&lt;/gwcQuotaConfiguration&gt;&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="go">curl -v -u admin:geoserver "http://localhost:8090/geoserver/gwc/rest/diskquota.xml" -X PUT -d "&lt;gwcQuotaConfiguration&gt;&lt;maxConcurrentCleanUps&gt;-1&lt;/maxConcurrentCleanUps&gt;&lt;/gwcQuotaConfiguration&gt;"</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>&lt; HTTP/1.1 400 Bad Request
 <a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>&lt; Date: Fri, 18 Mar 2011 20:53:26 GMT
@@ -30286,7 +30286,7 @@
 <a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>maxConcurrentCleanUps shall be a positive integer: -1
 </code></pre></div>
 <p>The following <em>invalid</em> JSON example uses an unknown unit of measure (ZZiB). It returns a 400 response code and contains an error message as plain text:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="go">curl -v -u admin:geoserver &quot;http://localhost:8090/geoserver/gwc/rest/diskquota.json&quot; -X PUT -d &quot;{&quot;gwcQuotaConfiguration&quot;:{&quot;globalQuota&quot;:{&quot;value&quot;:&quot;100&quot;,&quot;units&quot;:&quot;ZZiB&quot;}}}&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="go">curl -v -u admin:geoserver "http://localhost:8090/geoserver/gwc/rest/diskquota.json" -X PUT -d "{"gwcQuotaConfiguration":{"globalQuota":{"value":"100","units":"ZZiB"}}}"</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>&lt; HTTP/1.1 400 Bad Request
 <a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>&lt; Date: Fri, 18 Mar 2011 20:56:23 GMT

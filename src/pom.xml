@@ -101,11 +101,11 @@
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
     <spring.ldap.version>4.1.0</spring.ldap.version>
     <spring-integration.version>7.1.0</spring-integration.version>
-    <wicket.version>10.9.1</wicket.version>
+    <wicket.version>10.10.0</wicket.version>
     <!-- WicketStuff provides additional components and extensions for the Wicket framework,
     such as select2 integration, which is used in GeoServer's admin interface.
     This version should match the Wicket version, but may differ in patch versions. -->
-    <wicketstuff.version>10.9.2</wicketstuff.version>
+    <wicketstuff.version>10.10.0</wicketstuff.version>
     <!-- ================================ -->
     <!-- Dependency version management    -->
     <!-- ================================ -->
@@ -124,7 +124,7 @@
     <jasypt.version>1.9.3</jasypt.version>
     <javac.version>9+181-r4173-1</javac.version>
     <javaapiforkml.version>3.0.11</javaapiforkml.version>
-    <jetty.version>12.1.11</jetty.version>
+    <jetty.version>12.1.12</jetty.version>
     <jmh.version>1.37</jmh.version>
     <joda-time.version>2.8.1</joda-time.version>
     <marlin.version>0.9.4.8</marlin.version>
@@ -135,7 +135,7 @@
     <nimbus-jose-jwt.version>10.9.1</nimbus-jose-jwt.version>
     <opengeo-geodb.version>0.9</opengeo-geodb.version>
     <pmd.version>7.23.0</pmd.version>
-    <poi.version>5.4.0</poi.version>
+    <poi.version>5.5.1</poi.version>
     <postgis.jdbc.version>1.3.3</postgis.jdbc.version>
     <servlet-api.version>6.1.0</servlet-api.version>
     <xalan.version>2.7.3</xalan.version>
@@ -637,7 +637,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.22.0</version>
+        <version>1.22.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents.client5</groupId>
@@ -652,7 +652,7 @@
       <dependency>
         <groupId>commons-validator</groupId>
         <artifactId>commons-validator</artifactId>
-        <version>1.10.1</version>
+        <version>1.11.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -924,9 +924,9 @@
         <version>1.26.1</version>
       </dependency>
       <dependency>
-        <groupId>jfree</groupId>
+        <groupId>org.jfree</groupId>
         <artifactId>jfreechart</artifactId>
-        <version>1.0.10</version>
+        <version>1.0.19</version>
       </dependency>
       <dependency>
         <groupId>ar.com.hjg</groupId>
@@ -990,7 +990,7 @@
       <dependency>
         <groupId>org.jsoup</groupId>
         <artifactId>jsoup</artifactId>
-        <version>1.18.3</version>
+        <version>1.23.1</version>
       </dependency>
       <dependency>
         <groupId>com.github.svenmeier.wicket-dnd</groupId>
@@ -1012,7 +1012,7 @@
       <dependency>
         <groupId>com.github.oshi</groupId>
         <artifactId>oshi-core</artifactId>
-        <version>7.3.0</version>
+        <version>7.4.4</version>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.server</groupId>
@@ -1078,7 +1078,7 @@
       <dependency>
         <groupId>org.wiremock</groupId>
         <artifactId>wiremock-standalone</artifactId>
-        <version>3.11.0</version>
+        <version>3.13.2</version>
       </dependency>
       <dependency>
         <!-- used for tests that require environment variables -->

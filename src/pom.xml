@@ -881,7 +881,7 @@
       <dependency>
         <groupId>io.swagger.core.v3</groupId>
         <artifactId>swagger-core</artifactId>
-        <version>2.0.2</version>
+        <version>2.2.52</version>
         <!-- exclude: javax.xml.bind, org.slf4j, swagger-annotations -->
       </dependency>
       <dependency>

@@ -38,6 +38,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.awt.Dimension;
@@ -1472,7 +1473,7 @@ public class GeoServerTileLayerTest {
         assertThat(legendsInfo.get("alternateStyle-2").getFormat(), is("image/png"));
         assertThat(
                 legendsInfo.get("alternateStyle-2").getLegendUrl().trim(),
-                is("http://localhost:8080/geoserver/some-url"));
+                is("http://localhost:8080/geoserver/styles/some-url"));
     }
 
     @Test
@@ -1540,6 +1541,9 @@ public class GeoServerTileLayerTest {
         when(httpRequest.getServerName()).thenReturn("localhost");
         when(httpRequest.getServerPort()).thenReturn(8080);
         when(httpRequest.getContextPath()).thenReturn("/geoserver");
+        ServletContext servletContext = mock(ServletContext.class);
+        when(httpRequest.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/geoserver");
         Dispatcher.REQUEST.set(request);
     }
 

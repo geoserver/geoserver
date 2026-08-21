@@ -128,7 +128,7 @@
     <jmh.version>1.37</jmh.version>
     <joda-time.version>2.8.1</joda-time.version>
     <marlin.version>0.9.4.8</marlin.version>
-    <mf.version>2.5-SNAPSHOT</mf.version>
+    <mf.version>3.22.0</mf.version>
     <mockito.version>5.23.0</mockito.version>
     <!-- nimbus-jose-jwt is a transitive of spring-security-oauth2-jose; managed here so direct
          consumers (sec-oidc) inherit the same version Spring Security expects (do not pin it lower). -->

@@ -11,7 +11,7 @@ updates:
       timezone: "Europe/Rome"
     groups:
       maven-deps:
-        group-by: dependency-name  
+        group-by: dependency-name
     open-pull-requests-limit: 10
     labels:
       - "dependencies"

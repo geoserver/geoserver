@@ -26,8 +26,10 @@ visible in the **FIPS** tab of **About & Status > Server Status**:
 | storage of the master password | password based encryption in a file | AES-GCM in a file |
 
 !!! note
-    The keystore file keeps its name, `security/geoserver.jceks`, whatever format it holds. Only the
-    content changes. The **FIPS** tab is the place that tells you which format is in use.
+    The keystore file is named after its format. A normal install keeps `security/geoserver.jceks`,
+    a FIPS one gets `security/geoserver.bcfks`. GeoServer checks the first bytes of the file against
+    the format it expects and refuses to start when they disagree, rather than creating an empty
+    keystore and losing the keys your passwords were encrypted with.
 
 The `crypt3` encryption is not FIPS specific. It uses algorithms every Java runtime offers, so a
 normal GeoServer with the same keystore reads a value written under FIPS. Only the other direction

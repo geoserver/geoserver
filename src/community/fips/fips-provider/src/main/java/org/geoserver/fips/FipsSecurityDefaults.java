@@ -4,6 +4,7 @@
  */
 package org.geoserver.fips;
 
+import org.geoserver.platform.security.KeyStoreFormat;
 import org.geoserver.platform.security.SecurityDefaults;
 
 /**
@@ -30,7 +31,7 @@ public class FipsSecurityDefaults implements SecurityDefaults {
     static final String AES_GCM_ENCODER = "aesGcmPasswordEncoder";
 
     /** BouncyCastle's own keystore format, the only one the FIPS-validated provider offers. */
-    static final String BCFKS_KEYSTORE = "BCFKS";
+    static final String BCFKS_KEYSTORE = KeyStoreFormat.BCFKS.name();
 
     static final String AES_GCM_MASTER_PASSWORD_PROVIDER =
             "org.geoserver.security.password.AesGcmMasterPasswordProvider";

@@ -25,6 +25,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.security.KeyStoreFormat;
 import org.geoserver.platform.security.SecurityDefaults;
 import org.geoserver.security.password.RandomPasswordProvider;
 import org.geotools.util.logging.Logging;
@@ -42,8 +43,11 @@ import org.springframework.beans.factory.BeanNameAware;
 public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
 
     public static final String DEFAULT_BEAN_NAME = "DefaultKeyStoreProvider";
+    /** File name of a JCEKS keystore, the type GeoServer uses unless a deployment overrides it. */
     public static final String DEFAULT_FILE_NAME = "geoserver.jceks";
-    public static final String PREPARED_FILE_NAME = "geoserver.jceks.new";
+
+    /** File name the master password change writes, see {@link #prepareForMasterPasswordChange}. */
+    public static final String PREPARED_FILE_NAME = DEFAULT_FILE_NAME + ".new";
 
     public static final String CONFIGPASSWORDKEY = "config:password:key";
     public static final String URLPARAMKEY = "url:param:key";
@@ -86,6 +90,15 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
         return SecurityDefaults.get(SecurityDefaults.Setting.KEYSTORE_TYPE, KEYSTORETYPE);
     }
 
+    /** Keystore file name, named after the type so a reader can tell the format from the file. */
+    static String fileName() {
+        return KeyStoreFormat.fileName(keyStoreType());
+    }
+
+    private static String preparedFileName() {
+        return fileName() + ".new";
+    }
+
     public KeyStoreProviderImpl() {}
 
     @Override
@@ -111,8 +124,10 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
      */
     @Override
     public Resource getResource() {
-        if (keyStoreResource == null) {
-            keyStoreResource = securityManager.security().get(DEFAULT_FILE_NAME);
+        String fileName = fileName();
+        // the name follows the configured type, which a deployment can override after this bean is built
+        if (keyStoreResource == null || !fileName.equals(keyStoreResource.name())) {
+            keyStoreResource = securityManager.security().get(fileName);
         }
         return keyStoreResource;
     }
@@ -238,13 +253,14 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
     }
 
     /**
-     * Opens or creates a {@link KeyStore} using the file {@link #DEFAULT_FILE_NAME}
+     * Opens or creates a {@link KeyStore} using the file named by {@link #fileName()}
      *
-     * <p>Throws an exception for an invalid master key
+     * <p>Throws an exception for an invalid master key, or for a keystore that is not of the configured type
      */
     protected void assertActivatedKeyStore() throws IOException {
         if (ks != null) return;
 
+        assertKeyStoreFormat();
         char[] passwd = securityManager.getMasterPassword();
         try {
             ks = KeyStore.getInstance(keyStoreType());
@@ -265,6 +281,34 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
             throw new IOException(ex);
         } finally {
             securityManager.disposePassword(passwd);
+        }
+    }
+
+    /**
+     * Refuses to open a keystore that is not of the configured type.
+     *
+     * <p>Do not skip this check: without it a keystore left from another type is not found, GeoServer creates an empty
+     * one in its place, and every password encrypted with the old keys silently stops decrypting.
+     */
+    private void assertKeyStoreFormat() throws IOException {
+        String type = keyStoreType();
+        KeyStoreFormat found = KeyStoreFormat.detect(getResource());
+        if (found != null && !found.name().equalsIgnoreCase(type)) {
+            throw new IOException("Key store " + getResource().path() + " is a " + found + " file, but this "
+                    + "installation is configured for " + type + ". Convert the file, or configure that type.");
+        }
+        if (getResource().getType() != Type.UNDEFINED) {
+            return;
+        }
+        // no keystore of the configured type: another one left in place means keys, not a fresh install
+        for (KeyStoreFormat format : KeyStoreFormat.values()) {
+            Resource other = securityManager.security().get(KeyStoreFormat.fileName(format.name()));
+            if (other.getType() != Type.UNDEFINED) {
+                throw new IOException("Key store " + other.path() + " holds the keys of this installation, but it is "
+                        + "configured for " + type + ", read from "
+                        + getResource().path()
+                        + ". Convert the file, or configure that type.");
+            }
         }
     }
 
@@ -384,7 +428,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
     public void prepareForMasterPasswordChange(char[] oldPassword, char[] newPassword) throws IOException {
 
         Resource dir = getResource().parent();
-        Resource newKSFile = dir.get(PREPARED_FILE_NAME);
+        Resource newKSFile = dir.get(preparedFileName());
         if (newKSFile.getType() != Type.UNDEFINED) {
             newKSFile.delete();
         }
@@ -437,8 +481,8 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
     @Override
     public void commitMasterPasswordChange() throws IOException {
         Resource dir = getResource().parent();
-        Resource newKSFile = dir.get(PREPARED_FILE_NAME);
-        Resource oldKSFile = dir.get(DEFAULT_FILE_NAME);
+        Resource newKSFile = dir.get(preparedFileName());
+        Resource oldKSFile = dir.get(fileName());
 
         if (newKSFile.getType() == Type.UNDEFINED) {
             return; // nothing to do

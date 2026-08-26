@@ -35,7 +35,7 @@ Checking the `Cloud Optimized GeoTIFF (COG)` checkbox will provide new options:
 | **URL** | (prefixed by `cog://`) representing the connection URL to the COG Dataset. |
 | **Range Reader Settings** | Which type of Range Reader implementation. Values currently supported are HTTP, GoogleCloud, Azure, S3 the latter using an S3 Client |
 | **User Name / Access Key ID / Account Name** | Optional user name (HTTP) or Access Key ID (S3) or Account Name (Azure) in case the COG dataset requires authentication |
-| **Password / Secret Access Key / Account Key** | Password (HTTP) or Secret Access Key (S3) or Account Key (Azure) for the previous credential |
+| **Password / Secret Access Key / Account Key / SAS Token** | Password (HTTP), Secret Access Key (S3), or an Account Key or SAS Token (Azure) for the previous credential |
 
 ## COG ImageMosaic Configuration
 
@@ -48,7 +48,7 @@ Additional configuration parameters can be specified in the ImageMosaic indexer 
 | Cog | Y | A boolean flag (true/false) to be set (Cog=true) in order to signal that the ImageMosaic is a COG data mosaic. |
 | CogRangeReader | N | Specifies the desired RangeReader implementation performing the Range Reads requests. |
 | CogUser | N | Credential to be set whenever basic HTTP authentication is needed to access the COG Datasets or an S3 Access KeyID is required or an Azure AccountName is required |
-| CogPassword | N | Password for the above user OR Secret Access Key for the above S3 KeyId or AccountKey for the above Azure AccountName. |
+| CogPassword | N | Password for the above user, Secret Access Key for the above S3 KeyId, or an Account Key or SAS Token for the above Azure Account Name. |
 
 #### COG RangeReader {: #cog_plugin_rangereader }
 
@@ -116,9 +116,12 @@ A single Azure Client will be used for the same container. Account and container
 |----|----|
 | azure.reader.accountName | The Azure Account Name |
 | azure.reader.accountKey | The Azure Account Key for the above Account |
+| azure.reader.sasToken | The Azure Shared Access Signature token. When specified, it takes precedence over the Account Key |
 | azure.reader.container | The default container for the above Account |
 | azure.reader.prefix | The optional prefix containing blobs |
 | azure.reader.maxConnections | The max number of connections supported by the underlying Azure client |
+
+A container-scoped service SAS with read (`r`) permission is sufficient for COG range reads. Supply the SAS in the password field, `CogPassword`, or `azure.reader.sasToken`; a leading `?` is optional.
 
 ## Client configuration (System Properties)
 

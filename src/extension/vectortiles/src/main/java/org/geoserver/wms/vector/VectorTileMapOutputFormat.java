@@ -98,7 +98,7 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat implement
 
     @FunctionalInterface
     /** Accepts features for addition to the tile builders */
-    private interface FeatureSink {
+    interface FeatureSink {
         void accept(
                 String layerName, String featureId, String geometryName, Geometry geom, Map<String, Object> properties);
     }
@@ -108,9 +108,19 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat implement
         return builder::addFeature;
     }
 
-    /** Creates a feature sink that distributes features into multiple tiles */
-    private static FeatureSink tiledSink(
-            VectorTileBuilder[] builders, int metaX, int metaY, double subtileW, double subtileH, double bufferPx) {
+    /**
+     * Creates a feature sink that distributes features into multiple tiles. Geometries come in the screen coordinates
+     * of the whole meta-tile; subclasses whose builders want map coordinates override this.
+     */
+    protected FeatureSink tiledSink(
+            VectorTileBuilder[] builders,
+            int metaX,
+            int metaY,
+            Rectangle paintArea,
+            ReferencedEnvelope renderingArea,
+            double bufferPx) {
+        final double subtileW = paintArea.getWidth() / metaX;
+        final double subtileH = paintArea.getHeight() / metaY;
 
         // Precompute clip polygons in METATILE screen coords (one per subtile)
         final int numTiles = metaX * metaY;
@@ -265,16 +275,8 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat implement
                 // Single tile -> single sink
                 sink = singleSink(builders[0]);
             } else {
-                // geometries are in screen coords of 'paintArea'
-                final double subtileScreenW = paintArea.getWidth() / metaX;
-                final double subtileScreenH = paintArea.getHeight() / metaY;
                 sink = tiledSink(
-                        builders,
-                        metaX,
-                        metaY,
-                        subtileScreenW,
-                        subtileScreenH,
-                        buffer + CLIP_BBOX_SIZE_INCREASE_PIXELS);
+                        builders, metaX, metaY, paintArea, renderingArea, buffer + CLIP_BBOX_SIZE_INCREASE_PIXELS);
             }
 
             String layerName = schema.getName().getLocalPart();

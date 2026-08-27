@@ -4,6 +4,8 @@ This directory contains the shared theme customizations for all GeoServer docume
 
 ## Theme Structure
 
+Theme overrides are registered in `mkdocs.yml` as `custom_dir: doc/themes/geoserver`:
+
 ```
 doc/themes/geoserver/
 ├── img/
@@ -16,9 +18,7 @@ doc/themes/geoserver/
 │   └── extra.css              # Custom CSS for all documentation
 ├── overrides/
 │   └── partials/              # (empty - reserved for future overrides)
-├── static/                    # Legacy Sphinx theme files (not used by MkDocs)
-├── layout.html                # Legacy Sphinx layout (not used by MkDocs)
-├── theme.conf                 # Legacy Sphinx config (not used by MkDocs)
+└── main.html                  # Default version warning
 └── README.md                  # This file
 ```
 

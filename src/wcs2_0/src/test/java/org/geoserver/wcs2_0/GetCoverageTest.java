@@ -10,6 +10,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -43,6 +44,7 @@ import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.image.test.ImageAssert;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
@@ -305,5 +307,41 @@ public class GetCoverageTest extends WCSTestSupport {
         assertNotNull(gridCoverage);
         assertTrue(hasCoverage);
         scheduleForCleaning(gridCoverage);
+    }
+
+    /** The PNG output carries no georeferencing, but must hold the same pixels as the GeoTIFF one. */
+    @Test
+    public void testPNGOutput() throws Exception {
+        BufferedImage tiff = getResponseAsImage(getCoverage("image/tiff"), "tif");
+        MockHttpServletResponse response = getCoverage("image/png");
+        assertEquals("image/png", getBaseMimeType(response.getContentType()));
+        BufferedImage png = getResponseAsImage(response, "png");
+
+        assertEquals(tiff.getWidth(), png.getWidth());
+        assertEquals(tiff.getHeight(), png.getHeight());
+        assertEquals(3, png.getSampleModel().getNumBands());
+        ImageAssert.assertEquals(tiff, png, 0);
+    }
+
+    /**
+     * JPEG is lossy, but at the default quality the difference against the GeoTIFF output stays below what the
+     * perceptual comparison in {@link ImageAssert} counts as a mismatch (writing at quality 0.05 gives 10 mismatches).
+     */
+    @Test
+    public void testJPEGOutput() throws Exception {
+        BufferedImage tiff = getResponseAsImage(getCoverage("image/tiff"), "tif");
+        MockHttpServletResponse response = getCoverage("image/jpeg");
+        assertEquals("image/jpeg", getBaseMimeType(response.getContentType()));
+        BufferedImage jpeg = getResponseAsImage(response, "jpeg");
+
+        assertEquals(tiff.getWidth(), jpeg.getWidth());
+        assertEquals(tiff.getHeight(), jpeg.getHeight());
+        assertEquals(3, jpeg.getSampleModel().getNumBands());
+        ImageAssert.assertEquals(tiff, jpeg, 0);
+    }
+
+    private MockHttpServletResponse getCoverage(String format) throws Exception {
+        return getAsServletResponse(
+                "wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=wcs__BlueMarble&format=" + format);
     }
 }

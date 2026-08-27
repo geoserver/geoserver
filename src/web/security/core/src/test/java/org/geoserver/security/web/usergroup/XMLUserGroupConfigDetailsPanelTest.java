@@ -177,6 +177,9 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
         // end test add with name clash
 
         // start test modify
+        // cancel must leave the encoder unchanged, whatever it was
+        String defaultEncoderName =
+                ((XMLUserGroupServiceConfig) getSecurityNamedServiceConfig("default")).getPasswordEncoderName();
         clickNamedServiceConfig("default");
         tester.assertRenderedPage(SecurityNamedServiceEditPage.class);
 
@@ -195,7 +198,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
         tester.assertRenderedPage(basePage.getClass());
 
         xmlConfig = (XMLUserGroupServiceConfig) getSecurityNamedServiceConfig("default");
-        assertEquals(getDigestPasswordEncoder().getName(), xmlConfig.getPasswordEncoderName());
+        assertEquals(defaultEncoderName, xmlConfig.getPasswordEncoderName());
         assertEquals(PasswordValidatorImpl.DEFAULT_NAME, xmlConfig.getPasswordPolicyName());
         assertEquals("users.xml", xmlConfig.getFileName());
         assertEquals(10000, xmlConfig.getCheckInterval());

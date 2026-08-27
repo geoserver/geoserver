@@ -1,5 +1,11 @@
 # Contributing
 
+## AI policy
+
+We welcome contributions from anyone, if your work has been assisted by AI please make sure you have read the [AI policy](https://geoserver.org/ai) and that your contribution follows it.
+
+## Contributor agreement and exemptions
+
 When submitting pull request:
 
 * **Small Contribution / Single Source Code File:** For a small change to a single source file a project committer can review and apply the change on your behalf. This is a quick workaround allowing us to correct spelling mistakes in the documentation, clarify a javadoc, or accept a very small fix.

@@ -30,7 +30,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'        # only build the oldest Java version, but below run against the matrix of LTS versions
       - name: Set up Maven
-        uses: stCarolas/setup-maven@v5
+        uses: stCarolas/setup-maven@v5.1
         with:
           maven-version: 3.9.16
       - name: Maven repository caching
@@ -74,7 +74,7 @@ jobs:
           path: build/acceptance/geoserver/
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 

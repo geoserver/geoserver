@@ -248,6 +248,7 @@ public class GeoserverPasswordEncoderTest extends GeoServerMockTestSupport {
 
     @Test
     public void testConfigPBEEncoder() throws Exception {
+        JasyptDefaults.assumePbeUsable();
 
         // TODO runs from eclpise, but not from mnv clean install
         // assertTrue("masterpw".equals(MasterPasswordProviderImpl.get().getMasterPassword()));
@@ -315,6 +316,7 @@ public class GeoserverPasswordEncoderTest extends GeoServerMockTestSupport {
 
     @Test
     public void testUserGroupServiceEncoder() throws Exception {
+        JasyptDefaults.assumePbeUsable();
 
         GeoServerUserGroupService service = getSecurityManager().loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
 

@@ -96,16 +96,16 @@
     <!-- ================================ -->
     <gt.version>36-SNAPSHOT</gt.version>
     <gwc.version>2.1-SNAPSHOT</gwc.version>
-    <spring.version>7.0.8</spring.version>
-    <spring.security.version>7.1.0</spring.security.version>
+    <spring.version>7.0.9</spring.version>
+    <spring.security.version>7.1.1</spring.security.version>
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
-    <spring.ldap.version>4.1.0</spring.ldap.version>
-    <spring-integration.version>7.1.0</spring-integration.version>
-    <wicket.version>10.9.1</wicket.version>
+    <spring.ldap.version>4.1.1</spring.ldap.version>
+    <spring-integration.version>7.1.1</spring-integration.version>
+    <wicket.version>10.10.0</wicket.version>
     <!-- WicketStuff provides additional components and extensions for the Wicket framework,
     such as select2 integration, which is used in GeoServer's admin interface.
     This version should match the Wicket version, but may differ in patch versions. -->
-    <wicketstuff.version>10.9.2</wicketstuff.version>
+    <wicketstuff.version>10.10.0</wicketstuff.version>
     <!-- ================================ -->
     <!-- Dependency version management    -->
     <!-- ================================ -->
@@ -117,14 +117,25 @@
     <gf.version>3.9-SNAPSHOT</gf.version>
     <hazelcast.version>5.3.8</hazelcast.version>
     <cors.version>3.1</cors.version>
-    <hibernate-version>7.4.5.Final</hibernate-version>
+    <!-- BouncyCastle coordinates. Kept as properties because the regular and the
+         FIPS-validated product lines share the org.bouncycastle package space and so
+         cannot coexist on the classpath: the fips profile swaps the whole set. -->
+    <bc.prov.artifactId>bcprov-lts8on</bc.prov.artifactId>
+    <bc.prov.version>2.73.11</bc.prov.version>
+    <bc.pkix.artifactId>bcpkix-lts8on</bc.pkix.artifactId>
+    <bc.pkix.version>2.73.11</bc.pkix.version>
+    <!-- Versions of the FIPS-validated BouncyCastle jars. Declared here, not in the fips
+         profile, because the community fips modules need them in every build. -->
+    <bc.fips.prov.version>2.1.2</bc.fips.prov.version>
+    <bc.fips.pkix.version>2.1.10</bc.fips.pkix.version>
+    <hibernate-version>7.4.6.Final</hibernate-version>
     <httpcore.version>4.4.16</httpcore.version>
     <httpclient.version>5.4.4</httpclient.version>
     <jacoco.version>0.8.14</jacoco.version>
     <jasypt.version>1.9.3</jasypt.version>
     <javac.version>9+181-r4173-1</javac.version>
     <javaapiforkml.version>3.0.11</javaapiforkml.version>
-    <jetty.version>12.1.11</jetty.version>
+    <jetty.version>12.1.12</jetty.version>
     <jmh.version>1.37</jmh.version>
     <joda-time.version>2.8.1</joda-time.version>
     <marlin.version>0.9.4.8</marlin.version>
@@ -135,11 +146,11 @@
     <nimbus-jose-jwt.version>10.9.1</nimbus-jose-jwt.version>
     <opengeo-geodb.version>0.9</opengeo-geodb.version>
     <pmd.version>7.23.0</pmd.version>
-    <poi.version>5.4.0</poi.version>
+    <poi.version>5.5.1</poi.version>
     <postgis.jdbc.version>1.3.3</postgis.jdbc.version>
     <servlet-api.version>6.1.0</servlet-api.version>
     <xalan.version>2.7.3</xalan.version>
-    <protobuf.version>4.35.1</protobuf.version>
+    <protobuf.version>4.36.0</protobuf.version>
 
     <!-- ================================ -->
     <!-- Maven plugin configuration      -->
@@ -171,6 +182,8 @@
     <!-- Test configuration              -->
     <!-- ================================ -->
     <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1 -XX:ReservedCodeCacheSize=240m</argLine>
+    <!-- Extra flags for the forked test JVM, set by the fips profile, empty otherwise. -->
+    <fips.argLine></fips.argLine>
     <image.tests>true</image.tests>
     <interactive.image>false</interactive.image>
     <quietTests>true</quietTests>
@@ -590,7 +603,7 @@
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymock</artifactId>
-        <version>5.6.0</version>
+        <version>5.7.0</version>
       </dependency>
       <dependency>
         <groupId>cglib</groupId>
@@ -620,7 +633,7 @@
       <dependency>
         <groupId>org.codehaus.jettison</groupId>
         <artifactId>jettison</artifactId>
-        <version>1.5.6</version>
+        <version>1.5.7</version>
       </dependency>
       <dependency>
         <groupId>lucene</groupId>
@@ -640,7 +653,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.22.0</version>
+        <version>1.22.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents.client5</groupId>
@@ -655,7 +668,7 @@
       <dependency>
         <groupId>commons-validator</groupId>
         <artifactId>commons-validator</artifactId>
-        <version>1.10.1</version>
+        <version>1.11.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -729,8 +742,13 @@
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcprov-lts8on</artifactId>
-        <version>2.73.11</version>
+        <artifactId>${bc.prov.artifactId}</artifactId>
+        <version>${bc.prov.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>${bc.pkix.artifactId}</artifactId>
+        <version>${bc.pkix.version}</version>
       </dependency>
       <!-- wicket framework -->
       <dependency>
@@ -822,7 +840,7 @@
       <dependency>
         <groupId>com.fasterxml.woodstox</groupId>
         <artifactId>woodstox-core</artifactId>
-        <version>7.2.1</version>
+        <version>7.2.2</version>
       </dependency>
       <!-- jakarta mail and activation interfaces -->
       <dependency>
@@ -927,9 +945,9 @@
         <version>1.26.1</version>
       </dependency>
       <dependency>
-        <groupId>jfree</groupId>
+        <groupId>org.jfree</groupId>
         <artifactId>jfreechart</artifactId>
-        <version>1.0.10</version>
+        <version>1.0.19</version>
       </dependency>
       <dependency>
         <groupId>ar.com.hjg</groupId>
@@ -993,7 +1011,7 @@
       <dependency>
         <groupId>org.jsoup</groupId>
         <artifactId>jsoup</artifactId>
-        <version>1.18.3</version>
+        <version>1.23.1</version>
       </dependency>
       <dependency>
         <groupId>com.github.svenmeier.wicket-dnd</groupId>
@@ -1015,7 +1033,7 @@
       <dependency>
         <groupId>com.github.oshi</groupId>
         <artifactId>oshi-core</artifactId>
-        <version>7.3.0</version>
+        <version>7.4.4</version>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.server</groupId>
@@ -1081,7 +1099,7 @@
       <dependency>
         <groupId>org.wiremock</groupId>
         <artifactId>wiremock-standalone</artifactId>
-        <version>3.11.0</version>
+        <version>3.13.2</version>
       </dependency>
       <dependency>
         <!-- used for tests that require environment variables -->
@@ -1372,7 +1390,7 @@
         <plugin>
           <groupId>com.ruleoftech</groupId>
           <artifactId>markdown-page-generator-plugin</artifactId>
-          <version>2.4.0</version>
+          <version>2.5.2</version>
         </plugin>
         <plugin>
           <groupId>pl.project13.maven</groupId>
@@ -1460,7 +1478,7 @@
                Additional needs for JAI: java.desktop/sun.awt.image
                Additional needs for LDAP tests:  java.naming/com.sun.jndi.ldap
             -->
-          <argLine>@{argLine} -XX:+IgnoreUnrecognizedVMOptions -Dfile.encoding=UTF-8 --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED  --add-opens=java.desktop/sun.awt.image=ALL-UNNAMED --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED</argLine>
+          <argLine>@{argLine} -XX:+IgnoreUnrecognizedVMOptions -Dfile.encoding=UTF-8 --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED  --add-opens=java.desktop/sun.awt.image=ALL-UNNAMED --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED ${fips.argLine}</argLine>
         </configuration>
       </plugin>
 
@@ -1884,6 +1902,117 @@
   </reporting>
 
   <profiles>
+    <profile>
+      <!-- Builds a FIPS-capable GeoServer: BouncyCastle swapped for its FIPS-validated
+           line, the community fips modules in the reactor, and gs-fips-provider on the
+           classpath so the crypto provider is chosen through the extension point.
+           This is a deployment shape, it does not restrict what the tests may use;
+           add fips-test for that. -->
+      <id>fips</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <!-- The regular and the FIPS BouncyCastle jars share the org.bouncycastle
+                     package space, so a leaked regular jar does not clash loudly: it shadows
+                     classes and the tests then pass while running non-approved code. Fail the
+                     build instead. -->
+                <id>ban-regular-bouncycastle</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <bannedDependencies>
+                      <excludes>
+                        <exclude>org.bouncycastle:*-lts8on</exclude>
+                        <exclude>org.bouncycastle:*-jdk18on</exclude>
+                        <exclude>org.bouncycastle:*-jdk15on</exclude>
+                        <exclude>org.bouncycastle:*-jdk15to18</exclude>
+                      </excludes>
+                      <searchTransitive>true</searchTransitive>
+                    </bannedDependencies>
+                  </rules>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <properties>
+        <bc.prov.artifactId>bc-fips</bc.prov.artifactId>
+        <bc.prov.version>${bc.fips.prov.version}</bc.prov.version>
+        <bc.pkix.artifactId>bcpkix-fips</bc.pkix.artifactId>
+        <bc.pkix.version>${bc.fips.pkix.version}</bc.pkix.version>
+      </properties>
+      <dependencyManagement>
+        <dependencies>
+          <!-- An installed pom keeps ${bc.prov.artifactId} unresolved, and a consumer expands it
+               from the installed parent, where this profile is off: gs-main then brings the
+               regular BouncyCastle back and the enforcer rule above fires. Exclusions are read
+               from the consumer's own build, so they close the hole a property cannot. -->
+          <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-main</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+              <exclusion>
+                <artifactId>bcprov-lts8on</artifactId>
+                <groupId>org.bouncycastle</groupId>
+              </exclusion>
+              <exclusion>
+                <artifactId>bcpkix-lts8on</artifactId>
+                <groupId>org.bouncycastle</groupId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-main</artifactId>
+            <version>${project.version}</version>
+            <classifier>tests</classifier>
+            <exclusions>
+              <exclusion>
+                <artifactId>bcprov-lts8on</artifactId>
+                <groupId>org.bouncycastle</groupId>
+              </exclusion>
+              <exclusion>
+                <artifactId>bcpkix-lts8on</artifactId>
+                <groupId>org.bouncycastle</groupId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+    </profile>
+    <profile>
+      <!-- Verification build: run as -Pfips,fips-test, it has no effect on its own since it
+           does not swap the jars. Puts the forked test JVM in approved-only mode and hides the
+           services a FIPS operating system does not have, so a build here fails on what a
+           deployment fails on: SHA1PRNG, the JCEKS keystore and the password based ciphers.
+           See RestrictedJdkProviders for the list and where it was measured.
+           It deliberately leaves MD5, SHA-1, DES, JKS and TLS alone, because a FIPS system
+           keeps offering those; an earlier version removed them and produced a pile of work no
+           installation needs. The FIPS virtual machine, described in the FIPS notes, is what
+           checks that this profile still tells the truth. -->
+      <id>fips-test</id>
+      <properties>
+        <fips.argLine>-Dorg.bouncycastle.fips.approved_only=true -Dgeoserver.fips.test=true</fips.argLine>
+      </properties>
+      <dependencies>
+        <dependency>
+          <!-- gs-main brings the provider module along for everything below it, but the two
+               modules above it, gs-platform and gs-ows, cannot depend on it: gs-fips-provider
+               depends on gs-platform itself. They at least get the jars. -->
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>${bc.prov.artifactId}</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
     <profile>
       <!-- optional:geosolutions repo when resolving dependencies      -->
       <!--                                                             -->

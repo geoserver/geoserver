@@ -49,6 +49,7 @@ final class PluginRegistry {
         TESTERS.put("acl", new GeoServerAclTester());
         TESTERS.put("geofence", new GeofenceTester());
         TESTERS.put("geofence-server", new GeofenceServerTester());
+        TESTERS.put("fips", new FipsTester());
     }
 
     private PluginRegistry() {}

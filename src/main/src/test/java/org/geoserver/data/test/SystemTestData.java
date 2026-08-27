@@ -7,13 +7,21 @@ package org.geoserver.data.test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import javax.crypto.SecretKeyFactory;
 import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -49,6 +57,7 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.security.CryptoProviderSupplier;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.IOTestUtils;
 import org.geoserver.util.IOUtils;
@@ -290,14 +299,62 @@ public class SystemTestData extends CiteTestData {
         addRasterLayer(qName, filename, extension, props, scope, catalog);
     }
 
+    /**
+     * Files of the canned security directory that hold no encrypted value, so any crypto provider can read them. They
+     * are needed because GeoServer, left to itself, writes rules that lock down the administrative operations, which is
+     * what a deployment wants, while the tests expect the open rules of the canned directory.
+     */
+    private static final List<String> PLAIN_SECURITY_FILES =
+            List.of("layers.properties", "services.properties", "rest.properties");
+
     public void setUpSecurity() throws IOException {
         File secDir = new File(getDataDirectoryRoot(), "security");
+        if (!canReadCannedSecurityDirectory()) {
+            // let GeoServer set up a directory that fits the crypto provider it has. Slower than
+            // unpacking the canned one, but the canned keystore and passwords cannot be read here.
+            // The access rules still come from the canned directory, see above.
+            extractSecurityFiles(secDir, PLAIN_SECURITY_FILES);
+            return;
+        }
         IOUtils.decompress(SystemTestData.class.getResourceAsStream("security.zip"), secDir);
         String javaVendor = System.getProperty("java.vendor");
         if (javaVendor.contains("IBM")) {
             IOUtils.copy(new File(secDir, "geoserver.jceks.ibm"), new File(secDir, "geoserver.jceks"));
         } else {
             IOUtils.copy(new File(secDir, "geoserver.jceks.default"), new File(secDir, "geoserver.jceks"));
+        }
+    }
+
+    private static void extractSecurityFiles(File secDir, List<String> names) throws IOException {
+        secDir.mkdirs();
+        try (ZipInputStream zip = new ZipInputStream(SystemTestData.class.getResourceAsStream("security.zip"))) {
+            for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
+                if (names.contains(entry.getName())) {
+                    try (OutputStream out = new FileOutputStream(new File(secDir, entry.getName()))) {
+                        zip.transferTo(out);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * The canned security directory comes from GeoServer 2.x: a JCEKS keystore, passwords encrypted with
+     * {@code PBEWithMD5AndDES}, and a master password stored the same way. None of it can be read where those
+     * algorithms are missing, as under FIPS. Asking the JVM is safer than a flag someone has to remember to set.
+     */
+    public static boolean canReadCannedSecurityDirectory() {
+        // a deployment that picks its own crypto provider also picks its own keystore type, so the canned JCEKS
+        // file is the wrong format for it, even on a JVM that can still read JCEKS
+        if (ServiceLoader.load(CryptoProviderSupplier.class).findFirst().isPresent()) {
+            return false;
+        }
+        try {
+            KeyStore.getInstance("JCEKS");
+            SecretKeyFactory.getInstance("PBEWithMD5AndDES");
+            return true;
+        } catch (GeneralSecurityException e) {
+            return false;
         }
     }
 

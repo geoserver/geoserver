@@ -3,7 +3,7 @@
 A custom GeoPackage can be created with any number of tiles and features layers using the `GeoPackage` WPS Process (see [Process Cookbook](../../services/wps/processes/index.md)).
 
 !!! warning
-    While the process generates a compliant GeoPackage, some abilities like generalization, style and part of the metadata export are based on unofficial extensions discussed in the [Testbed 16 GeoPackage engineering report](http://docs.opengeospatial.org/per/20-019r1.md).
+    While the process generates a compliant GeoPackage, some abilities like generalization, style and part of the metadata export are based on unofficial extensions discussed in the [Testbed 16 GeoPackage engineering report](https://docs.ogc.org/per/20-019r1.html).
 
 The WPS process takes in one parameter: `contents` which is an XML schema that represents the desired output.
 
@@ -64,14 +64,14 @@ Outline of the features layer:
 
 Each features layer has the following properties:
 
-:   - `featuretype` (mandatory): the feature type
-    - `propertynames` (optional): list of comma-separated names of properties in feature type to be included (default is all properties)
-    - `filter` (optional): any OGC filter that will be applied on features before output
-    - `indexed` (optional): include spatial indexes in the output (true/false)
-    - `styles` (optional): include styles in the output (true/false). The exported structure uses the portrayal and semantic annotation extensions, as described in [Testbed 16 E/R](http://docs.opengeospatial.org/per/20-019r1.md#_portrayal)
-    - `metadata` (optional): embed metadata referred by the layer metadata links into the GeoPackage (true/false). The base metadata tables are filled with contents, while semantic annotations might be used to add extra information about the metadata itself.
-    - `overviews` (optional): adds overview tables that can speed up rendering. See more at [Creating generalized tables](#overviews)
-    - `sort` (optional): a filter encoding `fes:SortByType` which allows sorting the table contents on one or more attributes. If the chosen attribute is a geometry, the table will be sorted on its GeoHash, [improving access locality](http://docs.opengeospatial.org/per/20-019r1.md#record_sorting) when using spatial indexes.
+- `featuretype` (mandatory): the feature type
+- `propertynames` (optional): list of comma-separated names of properties in feature type to be included (default is all properties)
+- `filter` (optional): any OGC filter that will be applied on features before output
+- `indexed` (optional): include spatial indexes in the output (true/false)
+- `styles` (optional): include styles in the output (true/false). The exported structure uses the portrayal and semantic annotation extensions, as described in [Testbed 16 E/R](https://docs.ogc.org/per/20-019r1.html#_portrayal)
+- `metadata` (optional): embed metadata referred by the layer metadata links into the GeoPackage (true/false). The base metadata tables are filled with contents, while semantic annotations might be used to add extra information about the metadata itself.
+- `overviews` (optional): adds overview tables that can speed up rendering. See more at [Creating generalized tables](#overviews)
+- `sort` (optional): a filter encoding `fes:SortByType` which allows sorting the table contents on one or more attributes. If the chosen attribute is a geometry, the table will be sorted on its GeoHash, [improving access locality](https://docs.ogc.org/per/20-019r1.html#record_sorting) when using spatial indexes.
 
 Outline of the tiles layer:
 
@@ -106,27 +106,18 @@ Outline of the tiles layer:
 
 Each tiles layer has the following properties:
 
-:   - `layers` (mandatory): comma-separated list of layers that will be included
-
-    - `styles`, `sld`, and `sldbody` are mutually exclusive, having one is mandatory
-
-      - `styles`: list of comma-separated styles to be used
-          - `sld`: path to SLD style file
-          - `sldbody`: inline SLD style file
-
-    - `format` (optional): mime-type of image format of tiles (image/png or image/jpeg)
-
-    - `bgcolor` (optional): background colour as a six-digit hexadecimal RGB value
-
-    - `transparent` (optional): transparency (true or false)
-
-    - `coverage` (optional)
-
-    - `minzoom`, `maxzoom`, `minColumn`, `maxColumn`, `minRow`, `maxRow` (all optional): set the minimum and maximum zoom level, column, and rows
-
-    - `gridset` (optional): see below
-
-    - `parameters` (optional): list of other parameters that can be used in a GetMap to produce tiles (open to all GeoServer vendor parameters)
+- `layers` (mandatory): comma-separated list of layers that will be included
+- `styles`, `sld`, and `sldbody` are mutually exclusive, having one is mandatory
+  - `styles`: list of comma-separated styles to be used
+      - `sld`: path to SLD style file
+      - `sldbody`: inline SLD style file
+- `format` (optional): mime-type of image format of tiles (image/png or image/jpeg)
+- `bgcolor` (optional): background colour as a six-digit hexadecimal RGB value
+- `transparent` (optional): transparency (true or false)
+- `coverage` (optional)
+- `minzoom`, `maxzoom`, `minColumn`, `maxColumn`, `minRow`, `maxRow` (all optional): set the minimum and maximum zoom level, column, and rows
+- `gridset` (optional): see below
+- `parameters` (optional): list of other parameters that can be used in a GetMap to produce tiles (open to all GeoServer vendor parameters)
 
 Gridset can take on two possible (mutually exclusive) forms:
 
@@ -158,7 +149,7 @@ where the `name` of a known gridset is specified; or a custom gridset may be def
 
 ## Creating generalized tables {: #overviews }
 
-The process can create generalized tables, as described in [Testbed 16 generalized tables extension](http://docs.opengeospatial.org/per/20-019r1.md#im_generalized_tables_extension).
+The process can create generalized tables, as described in [Testbed 16 generalized tables extension](https://docs.ogc.org/per/20-019r1.html#im_generalized_tables_extension).
 
 Generalized tables are sidecar tables that typically contain less records than the original table, with the option to also generalize their geometry. These are created by adding a list of `overview` directives in a feature layer description, each one containing:
 

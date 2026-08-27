@@ -69,11 +69,10 @@ public class MasterPasswordControllerTest extends SecurityRESTTestSupport {
         Document dom = getAsDOM(MP_URI_XML, 200);
         assertEquals(
                 MasterPasswordController.XML_ROOT_ELEM, dom.getDocumentElement().getNodeName());
-        assertEquals(
-                "geoserver",
-                xp.evaluate(
+        assertTrue(getSecurityManager()
+                .checkMasterPassword(xp.evaluate(
                         "/" + MasterPasswordController.XML_ROOT_ELEM + "/" + MasterPasswordController.MP_CURRENT_KEY,
-                        dom));
+                        dom)));
     }
 
     @Test
@@ -86,7 +85,7 @@ public class MasterPasswordControllerTest extends SecurityRESTTestSupport {
     public void testGetAsJSON() throws Exception {
         JSONObject json = (JSONObject) getAsJSON(MP_URI_JSON);
         String password = (String) json.get(MasterPasswordController.MP_CURRENT_KEY);
-        assertEquals("geoserver", password);
+        assertTrue(getSecurityManager().checkMasterPassword(password));
     }
 
     @Test
@@ -122,24 +121,45 @@ public class MasterPasswordControllerTest extends SecurityRESTTestSupport {
     @Test
     public void testPutAsXML() throws Exception {
 
-        String body = MessageFormat.format(xmlTemplate, "geoserver", "geoserver1");
+        String current = currentMasterPassword();
+        String body = MessageFormat.format(xmlTemplate, xmlEscape(current), "geoserver1");
         assertEquals(200, putAsServletResponse(MP_URI_XML, body, "text/xml").getStatus());
         assertTrue(getSecurityManager().checkMasterPassword("geoserver1"));
 
-        body = MessageFormat.format(xmlTemplate, "geoserver1", "geoserver");
+        body = MessageFormat.format(xmlTemplate, "geoserver1", xmlEscape(current));
         assertEquals(200, putAsServletResponse(MP_URI_XML, body, "text/xml").getStatus());
-        assertTrue(getSecurityManager().checkMasterPassword("geoserver"));
+        assertTrue(getSecurityManager().checkMasterPassword(current));
     }
 
     @Test
     public void testPutAsJSON() throws Exception {
 
-        String body = jsonTemplate.formatted("geoserver", "geoserver1");
+        String current = currentMasterPassword();
+        String body = jsonTemplate.formatted(jsonEscape(current), "geoserver1");
         assertEquals(200, putAsServletResponse(MP_URI_JSON, body, "text/json").getStatus());
         assertTrue(getSecurityManager().checkMasterPassword("geoserver1"));
 
-        body = jsonTemplate.formatted("geoserver1", "geoserver");
+        body = jsonTemplate.formatted("geoserver1", jsonEscape(current));
         assertEquals(200, putAsServletResponse(MP_URI_JSON, body, "text/json").getStatus());
-        assertTrue(getSecurityManager().checkMasterPassword("geoserver"));
+        assertTrue(getSecurityManager().checkMasterPassword(current));
+    }
+
+    /**
+     * Read through the endpoint under test rather than naming a password: a data directory GeoServer sets up itself
+     * gets a random master password, only the canned test configuration ships a known one.
+     */
+    private String currentMasterPassword() throws Exception {
+        JSONObject json = (JSONObject) getAsJSON(MP_URI_JSON);
+        return (String) json.get(MasterPasswordController.MP_CURRENT_KEY);
+    }
+
+    /** A generated password can hold any printable character, markup included. */
+    private static String xmlEscape(String password) {
+        return password.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+    }
+
+    /** Same for a JSON string literal, see {@link #xmlEscape}. */
+    private static String jsonEscape(String password) {
+        return password.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 }

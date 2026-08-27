@@ -442,6 +442,17 @@ webresources
 Wholeservice
 
 # Security/SSL terms
+bouncycastle
+bcprov
+bcpkix
+bcutil
+JCEKS
+BCFKS
+Hmac
+PRNG
+DRBG
+Pfips
+Pcommunity
 truststore
 trustcacerts
 storepass

@@ -206,6 +206,31 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         assertNull(realRule.getRuleLimits());
     }
 
+    /** A POST update sending only some Limits fields must not wipe the ones it didn't send. */
+    @Test
+    public void testLimitsPartialUpdatePreservesUnsetFields() {
+        JaxbRule rule = new JaxbRule();
+        rule.setPriority(5L);
+        rule.setAccess("LIMIT");
+        rule.setLimits(new JaxbRule.Limits());
+        rule.getLimits().setAllowedArea(GML3MockData.multiPolygon());
+        rule.getLimits().setCatalogMode("MIXED");
+        rule.getLimits().setSpatialFilterType("CLIP");
+
+        long id = prepareGeoFenceTestRules(rule);
+
+        JaxbRule ruleMods = new JaxbRule();
+        ruleMods.setLimits(new JaxbRule.Limits());
+        ruleMods.getLimits().setCatalogMode("HIDE");
+
+        controller.update(id, ruleMods);
+
+        Rule realRule = adminService.get(id);
+        assertEquals("HIDE", realRule.getRuleLimits().getCatalogMode().toString());
+        assertNotNull(realRule.getRuleLimits().getAllowedArea());
+        assertEquals("CLIP", realRule.getRuleLimits().getSpatialFilterType().toString());
+    }
+
     @Test
     public void testLayerDetails() {
         JaxbRule rule = new JaxbRule();
@@ -316,6 +341,34 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 rule.getLayerDetails().getAllowedStyles(),
                 realRule.getLayerDetails().getAllowedStyles());
         assertEquals(2, realRule.getLayerDetails().getAttributes().size());
+    }
+
+    /** A POST update sending only some LayerDetails fields must not wipe the ones it didn't send. */
+    @Test
+    public void testLayerDetailsPartialUpdatePreservesUnsetFields() {
+        JaxbRule rule = new JaxbRule();
+        rule.setPriority(5L);
+        rule.setWorkspace("workspace");
+        rule.setLayer("layer");
+        rule.setAccess("ALLOW");
+        rule.setLayerDetails(new JaxbRule.LayerDetails());
+        rule.getLayerDetails().setAllowedArea(GML3MockData.multiPolygon());
+        rule.getLayerDetails().setCqlFilterRead("myFilterRead");
+        rule.getLayerDetails().setDefaultStyle("myDefaultStyle");
+        rule.getLayerDetails().setLayerType("VECTOR");
+
+        long id = prepareGeoFenceTestRules(rule);
+
+        JaxbRule ruleMods = new JaxbRule();
+        ruleMods.setLayerDetails(new JaxbRule.LayerDetails());
+        ruleMods.getLayerDetails().setDefaultStyle("myDefaultStyle2");
+
+        controller.update(id, ruleMods);
+
+        Rule realRule = adminService.get(id);
+        assertEquals("myDefaultStyle2", realRule.getLayerDetails().getDefaultStyle());
+        assertEquals("myFilterRead", realRule.getLayerDetails().getCqlFilterRead());
+        assertNotNull(realRule.getLayerDetails().getArea());
     }
 
     @Test

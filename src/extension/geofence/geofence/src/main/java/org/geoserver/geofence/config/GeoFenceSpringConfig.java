@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
  * Java-based wiring for beans needing literal constructor arguments, property-file values, or externally-defined
  * GeoServer beans.
  *
- * <p>{@code geofence.properties} is read directly ({@link #loadProperties}), not via a Spring
+ * <p>{@code geofence.properties} is read directly ({@link #geoFenceProperties}), not via a Spring
  * {@code PropertySourcesPlaceholderConfigurer} bean - that resolves too early, before the data directory is set up.
  */
 @Configuration
@@ -48,8 +48,10 @@ public class GeoFenceSpringConfig implements ApplicationContextAware {
 
     /**
      * Reads {@code geofence/geofence.properties} - same file {@link GeoFenceConfigurationManager} reads/saves through.
+     * A bean so the file is only read once and shared, instead of every consumer re-reading it.
      */
-    private Properties loadProperties(GeoServerDataDirectory dataDirectory) {
+    @Bean(name = "geoFenceProperties")
+    public Properties geoFenceProperties(GeoServerDataDirectory dataDirectory) {
         Properties props = new Properties();
         mergeFrom(props, dataDirectory, CONFIG_LOCATION);
         return props;
@@ -68,8 +70,7 @@ public class GeoFenceSpringConfig implements ApplicationContextAware {
     }
 
     @Bean
-    public GeoFenceConfiguration geoFenceConfiguration(GeoServerDataDirectory dataDirectory) {
-        Properties props = loadProperties(dataDirectory);
+    public GeoFenceConfiguration geoFenceConfiguration(@Qualifier("geoFenceProperties") Properties props) {
         GeoFenceConfiguration cfg = new GeoFenceConfiguration();
         cfg.setInstanceName(props.getProperty("instanceName", "default-gs"));
         cfg.setServicesUrl(props.getProperty("servicesUrl", "http://localhost:9191/geofence/rest"));
@@ -100,8 +101,7 @@ public class GeoFenceSpringConfig implements ApplicationContextAware {
     }
 
     @Bean
-    public CacheConfiguration cacheConfiguration(GeoServerDataDirectory dataDirectory) {
-        Properties props = loadProperties(dataDirectory);
+    public CacheConfiguration cacheConfiguration(@Qualifier("geoFenceProperties") Properties props) {
         CacheConfiguration cfg = new CacheConfiguration();
         cfg.setSize(Long.parseLong(props.getProperty("cacheSize", "1000")));
         cfg.setRefreshMilliSec(Long.parseLong(props.getProperty("cacheRefresh", "30000")));
@@ -133,14 +133,14 @@ public class GeoFenceSpringConfig implements ApplicationContextAware {
     }
 
     @Bean
-    public RuleReaderServiceFactory ruleReaderBackendFactory(GeoServerDataDirectory dataDirectory) {
-        String backendName = loadProperties(dataDirectory).getProperty("ruleReaderBackend", "");
+    public RuleReaderServiceFactory ruleReaderBackendFactory(@Qualifier("geoFenceProperties") Properties props) {
+        String backendName = props.getProperty("ruleReaderBackend", "");
         return new RuleReaderServiceFactory(resolveRuleReaderBackend(backendName), false);
     }
 
     @Bean
-    public RuleReaderServiceFactory ruleReaderFrontendFactory(GeoServerDataDirectory dataDirectory) {
-        String frontendName = loadProperties(dataDirectory).getProperty("ruleReaderFrontend", "cachedRuleReader");
+    public RuleReaderServiceFactory ruleReaderFrontendFactory(@Qualifier("geoFenceProperties") Properties props) {
+        String frontendName = props.getProperty("ruleReaderFrontend", "cachedRuleReader");
         return new RuleReaderServiceFactory(frontendName, true);
     }
 

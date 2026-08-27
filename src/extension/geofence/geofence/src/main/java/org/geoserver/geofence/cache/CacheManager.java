@@ -6,7 +6,6 @@ package org.geoserver.geofence.cache;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
-import jakarta.annotation.PostConstruct;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
@@ -39,16 +38,17 @@ public class CacheManager {
     private RuleCacheLoaderFactory ruleServiceLoaderFactory;
     private ContainerAccessCacheLoaderFactory containerAccessCacheLoaderFactory;
 
-    private LoadingCache<RuleFilter, AccessInfo> ruleCache;
-    private LoadingCache<RuleFilter, PermsResult> permCache;
-    private LoadingCache<RuleFilter, AccessInfo> authCache;
-    private LoadingCache<ContainerAccessCacheLoaderFactory.ResolveParams, ContainerLimitResolver.ProcessingResult>
+    private volatile LoadingCache<RuleFilter, AccessInfo> ruleCache;
+    private volatile LoadingCache<RuleFilter, PermsResult> permCache;
+    private volatile LoadingCache<RuleFilter, AccessInfo> authCache;
+    private volatile LoadingCache<
+                    ContainerAccessCacheLoaderFactory.ResolveParams, ContainerLimitResolver.ProcessingResult>
             contCache;
 
     private final GeoFenceConfigurationManager configurationManager;
 
     /** Latest configuration used */
-    private CacheConfiguration cacheConfiguration = new CacheConfiguration();
+    private volatile CacheConfiguration cacheConfiguration = new CacheConfiguration();
 
     /** This is a do-it-all constructor, that also calls the init() method. */
     @Autowired
@@ -83,7 +83,6 @@ public class CacheManager {
      * <p>Please use {@link #getCacheInitParams() } to set the cache parameters before <code>init()
      * </code>ting the cache
      */
-    @PostConstruct
     public final void init() {
 
         cacheConfiguration = configurationManager.getCacheConfiguration();

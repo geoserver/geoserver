@@ -8,6 +8,7 @@ package org.geoserver.geofence.services;
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.geofence.core.services.RuleReaderService;
 import org.geofence.core.services.dto.AccessInfo;
 import org.geofence.core.services.dto.AccessTypeDTO;
@@ -82,12 +83,12 @@ public class RestRuleReaderService implements RuleReaderService {
         return toPermsResult(restResult);
     }
 
-    public void setServiceUrl(String serviceUrl) {
+    public synchronized void setServiceUrl(String serviceUrl) {
         this.updatedUrl = serviceUrl;
     }
 
     private synchronized org.geofence.web.rest.api.interfaces.RESTRuleReaderService ruleReaderClient() {
-        if (client == null || !updatedUrl.equals(currentUrl)) {
+        if (client == null || !Objects.equals(updatedUrl, currentUrl)) {
             GeoFenceClient newClient = new GeoFenceClient();
             newClient.setRestUrl(updatedUrl);
             client = newClient;

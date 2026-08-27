@@ -253,10 +253,10 @@ public class RulesRestController extends RestBaseController implements Sequentia
         Rule theRule = adminService().get(id);
         adminService().update(rule.toRule(theRule));
         if (rule.getLimits() != null) {
-            adminService().setLimits(id, rule.getLimits().toRuleLimits(null));
+            adminService().setLimits(id, rule.getLimits().toRuleLimits(theRule.getRuleLimits()));
         }
         if (rule.getLayerDetails() != null) {
-            adminService().setDetails(id, rule.getLayerDetails().toLayerDetails(null));
+            adminService().setDetails(id, rule.getLayerDetails().toLayerDetails(theRule.getLayerDetails()));
         }
     }
 

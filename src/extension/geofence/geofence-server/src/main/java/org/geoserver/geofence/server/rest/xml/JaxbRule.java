@@ -258,11 +258,14 @@ public class JaxbRule extends AbstractPayload {
         }
 
         public org.geofence.core.model.LayerDetails toLayerDetails(org.geofence.core.model.LayerDetails details) {
-            details = new org.geofence.core.model.LayerDetails();
+            if (details == null) {
+                details = new org.geofence.core.model.LayerDetails();
+            }
             if (convertAny(layerType) != null) {
                 details.setType(LayerType.valueOf(layerType.toUpperCase()));
             }
             if (allowedStyles != null) {
+                details.getAllowedStyles().clear();
                 details.getAllowedStyles().addAll(allowedStyles);
             }
             if (convertAny(allowedArea) != null) {
@@ -282,6 +285,7 @@ public class JaxbRule extends AbstractPayload {
                 }
             }
             if (layerAttributes != null) {
+                details.getAttributes().clear();
                 for (LayerAttribute att : layerAttributes) {
                     Iterator<org.geofence.core.model.LayerAttribute> it =
                             details.getAttributes().iterator();

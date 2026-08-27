@@ -65,20 +65,20 @@ means the security subsystem will fail somewhere, and this table says which piec
 ## Reading the same values over REST
 
 The FIPS module reports itself among the module statuses, so the same values can be read without the
-user interface:
+user interface. Ask for the HTML form of the module status list:
 
 ```
-curl -u admin:geoserver "http://localhost:8080/geoserver/rest/about/status.json"
+curl -u admin:geoserver "http://localhost:8080/geoserver/rest/about/status.html"
 ```
 
-The entry to look for is the one with module `gs-fips-provider`. Its `message` holds one line per
-item of the first table, then one line per required algorithm:
+The entry to look for is the one whose **Module** is `gs-fips-provider`. Its **Message** holds one
+line per item of the first table, then one line per required algorithm:
 
 ```
 Crypto module: READY
 Approved-only mode: on
 Operating system FIPS mode: yes
-Crypto provider: BCFIPS 2.1.0
+Crypto provider: BCFIPS 2.0102
 Provider position: first
 Keystore format: BCFKS
 Config password encoder: AES-GCM
@@ -91,8 +91,12 @@ SecretKeyFactory PBKDF2WithHmacSHA256: yes
 MessageDigest SHA-256: yes
 ```
 
-The same entry has two boolean fields: `isAvailable` is true when the module self tests passed,
-`isEnabled` when approved-only mode is on.
+The same entry has two boolean fields: **Available** is true when the module self tests passed,
+**Enabled** when approved-only mode is on.
+
+!!! note
+    The `json` and `xml` forms of `rest/about/status` list module names and links only, with no
+    message, so none of the values above can be read there.
 
 ## Limitations
 

@@ -218,7 +218,7 @@ distributed without full source.
 > 
 > * "Freely Available" means that no fee is charged for the item itself, though there may be fees involved in handling the item. It also means that recipients of the item may redistribute it under the same conditions they received it.
 > 
-> 0. The Jetty Package is Copyright (c) Mort Bay Consulting Pty. Ltd. (Australia) and others. Individual files in this package may contain additional copyright notices. The javax.servlet packages are copyright Sun Microsystems Inc.
+> 0. The Jetty Package is Copyright (c) Mort Bay Consulting Pty. Ltd. (Australia) and others. Individual files in this package may contain additional copyright notices. The jakarta.servlet packages are copyright Oracle and/or its affiliates and other contributors, made available under the Eclipse Public License v. 2.0 by the Eclipse Foundation.
 > 
 > 1. The Standard Version of the Jetty package is available from https://jetty.mortbay.org.
 > 

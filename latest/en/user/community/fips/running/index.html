@@ -30435,15 +30435,15 @@ keystore format, <code>AES/GCM/NoPadding</code>, <code>PBKDF2WithHmacSHA256</cod
 means the security subsystem will fail somewhere, and this table says which piece is missing.</p>
 <h2 id="reading-the-same-values-over-rest">Reading the same values over REST<a class="headerlink" href="#reading-the-same-values-over-rest" title="Permanent link">&para;</a></h2>
 <p>The FIPS module reports itself among the module statuses, so the same values can be read without the
-user interface:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl -u admin:geoserver "http://localhost:8080/geoserver/rest/about/status.json"
+user interface. Ask for the HTML form of the module status list:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl -u admin:geoserver "http://localhost:8080/geoserver/rest/about/status.html"
 </code></pre></div>
-<p>The entry to look for is the one with module <code>gs-fips-provider</code>. Its <code>message</code> holds one line per
-item of the first table, then one line per required algorithm:</p>
+<p>The entry to look for is the one whose <strong>Module</strong> is <code>gs-fips-provider</code>. Its <strong>Message</strong> holds one
+line per item of the first table, then one line per required algorithm:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Crypto module: READY
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Approved-only mode: on
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Operating system FIPS mode: yes
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>Crypto provider: BCFIPS 2.1.0
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>Crypto provider: BCFIPS 2.0102
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>Provider position: first
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>Keystore format: BCFKS
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>Config password encoder: AES-GCM
@@ -30455,8 +30455,13 @@ item of the first table, then one line per required algorithm:</p>
 <a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>SecretKeyFactory PBKDF2WithHmacSHA256: yes
 <a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>MessageDigest SHA-256: yes
 </code></pre></div>
-<p>The same entry has two boolean fields: <code>isAvailable</code> is true when the module self tests passed,
-<code>isEnabled</code> when approved-only mode is on.</p>
+<p>The same entry has two boolean fields: <strong>Available</strong> is true when the module self tests passed,
+<strong>Enabled</strong> when approved-only mode is on.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>json</code> and <code>xml</code> forms of <code>rest/about/status</code> list module names and links only, with no
+message, so none of the values above can be read there.</p>
+</div>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
 <p><strong>HTTP Digest authentication cannot be used.</strong> MD5 is in the protocol itself, both ends have to
 compute the same value, and the stored password format is MD5 too. Move those configurations to

@@ -1,51 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://xmlns.jcp.org/xml/ns/javaee"
-            xmlns:javaee="http://xmlns.jcp.org/xml/ns/javaee"
+            targetNamespace="https://jakarta.ee/xml/ns/jakartaee"
+            xmlns:jakartaee="https://jakarta.ee/xml/ns/jakartaee"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
-            version="2.3">
+            version="4.0">
   <xsd:annotation>
     <xsd:documentation>
 
-      DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+      Copyright (c) 2009, 2021 Oracle and/or its affiliates. All rights reserved.
       
-      Copyright (c) 2009-2013 Oracle and/or its affiliates. All rights reserved.
+      This program and the accompanying materials are made available under the
+      terms of the Eclipse Public License v. 2.0, which is available at
+      http://www.eclipse.org/legal/epl-2.0.
       
-      The contents of this file are subject to the terms of either the GNU
-      General Public License Version 2 only ("GPL") or the Common Development
-      and Distribution License("CDDL") (collectively, the "License").  You
-      may not use this file except in compliance with the License.  You can
-      obtain a copy of the License at
-      https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
-      or packager/legal/LICENSE.txt.  See the License for the specific
-      language governing permissions and limitations under the License.
+      This Source Code may also be made available under the following Secondary
+      Licenses when the conditions for such availability set forth in the
+      Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+      version 2 with the GNU Classpath Exception, which is available at
+      https://www.gnu.org/software/classpath/license.html.
       
-      When distributing the software, include this License Header Notice in each
-      file and include the License file at packager/legal/LICENSE.txt.
-      
-      GPL Classpath Exception:
-      Oracle designates this particular file as subject to the "Classpath"
-      exception as provided by Oracle in the GPL Version 2 section of the License
-      file that accompanied this code.
-      
-      Modifications:
-      If applicable, add the following below the License Header, with the fields
-      enclosed by brackets [] replaced by your own identifying information:
-      "Portions Copyright [year] [name of copyright owner]"
-      
-      Contributor(s):
-      If you wish your version of this file to be governed by only the CDDL or
-      only the GPL Version 2, indicate your decision by adding "[Contributor]
-      elects to include this software in this distribution under the [CDDL or GPL
-      Version 2] license."  If you don't indicate a single choice of license, a
-      recipient has the option to distribute your version of this file under
-      either the CDDL, the GPL Version 2 or to extend the choice of license to
-      its licensees as provided above.  However, if you add GPL Version 2 code
-      and therefore, elected the GPL Version 2 license, then the option applies
-      only if the new code is made subject to such option by the copyright
-      holder.
+      SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
       
     </xsd:documentation>
   </xsd:annotation>
@@ -53,12 +29,12 @@
   <xsd:annotation>
     <xsd:documentation>
 
-      This is the XML Schema for the JSP 2.3 deployment descriptor
-      types.  The JSP 2.3 schema contains all the special
+      This is the XML Schema for the JSP 4.0 deployment descriptor
+      types.  The JSP 4.0 schema contains all the special
       structures and datatypes that are necessary to use JSP files
       from a web application. 
       
-      The contents of this schema is used by the web-common_3_1.xsd 
+      The contents of this schema is used by the web-common_6_1.xsd 
       file to define JSP specific content. 
       
     </xsd:documentation>
@@ -67,7 +43,7 @@
   <xsd:annotation>
     <xsd:documentation>
 
-      The following conventions apply to all Java EE
+      The following conventions apply to all Jakarta EE
       deployment descriptor elements unless indicated otherwise.
       
       - In elements that specify a pathname to a file within the
@@ -82,7 +58,7 @@
     </xsd:documentation>
   </xsd:annotation>
 
-  <xsd:include schemaLocation="javaee_7.xsd"/>
+  <xsd:include schemaLocation="jakartaee_11.xsd"/>
 
 
 <!-- **************************************************** -->
@@ -99,11 +75,11 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="taglib"
-                   type="javaee:taglibType"
+                   type="jakartaee:taglibType"
                    minOccurs="0"
                    maxOccurs="unbounded"/>
       <xsd:element name="jsp-property-group"
-                   type="javaee:jsp-property-groupType"
+                   type="jakartaee:jsp-property-groupType"
                    minOccurs="0"
                    maxOccurs="unbounded"/>
     </xsd:sequence>
@@ -124,7 +100,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:simpleContent>
-      <xsd:restriction base="javaee:pathType"/>
+      <xsd:restriction base="jakartaee:pathType"/>
     </xsd:simpleContent>
   </xsd:complexType>
 
@@ -157,12 +133,12 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:group ref="javaee:descriptionGroup"/>
+      <xsd:group ref="jakartaee:descriptionGroup"/>
       <xsd:element name="url-pattern"
-                   type="javaee:url-patternType"
+                   type="jakartaee:url-patternType"
                    maxOccurs="unbounded"/>
       <xsd:element name="el-ignored"
-                   type="javaee:true-falseType"
+                   type="jakartaee:true-falseType"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -176,8 +152,21 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
+      <xsd:element name="error-on-el-not-found"
+                   type="jakartaee:true-falseType"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+
+            Can be used to easily set the errorOnELNotFound
+            property of a group of JSP pages. By default, this
+            property is false.
+            
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
       <xsd:element name="page-encoding"
-                   type="javaee:string"
+                   type="jakartaee:string"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -198,7 +187,7 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="scripting-invalid"
-                   type="javaee:true-falseType"
+                   type="jakartaee:true-falseType"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -211,7 +200,7 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="is-xml"
-                   type="javaee:true-falseType"
+                   type="jakartaee:true-falseType"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -227,7 +216,7 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="include-prelude"
-                   type="javaee:pathType"
+                   type="jakartaee:pathType"
                    minOccurs="0"
                    maxOccurs="unbounded">
         <xsd:annotation>
@@ -244,7 +233,7 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="include-coda"
-                   type="javaee:pathType"
+                   type="jakartaee:pathType"
                    minOccurs="0"
                    maxOccurs="unbounded">
         <xsd:annotation>
@@ -261,7 +250,7 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="deferred-syntax-allowed-as-literal"
-                   type="javaee:true-falseType"
+                   type="jakartaee:true-falseType"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -276,7 +265,7 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="trim-directive-whitespaces"
-                   type="javaee:true-falseType"
+                   type="jakartaee:true-falseType"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -290,7 +279,7 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="default-content-type"
-                   type="javaee:string"
+                   type="jakartaee:string"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -304,7 +293,7 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="buffer"
-                   type="javaee:string"
+                   type="jakartaee:string"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -318,7 +307,7 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="error-on-undeclared-namespace"
-                   type="javaee:true-falseType"
+                   type="jakartaee:true-falseType"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -354,7 +343,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="taglib-uri"
-                   type="javaee:string">
+                   type="jakartaee:string">
         <xsd:annotation>
           <xsd:documentation>
 
@@ -369,7 +358,7 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="taglib-location"
-                   type="javaee:pathType">
+                   type="jakartaee:pathType">
         <xsd:annotation>
           <xsd:documentation>
 

@@ -37,7 +37,7 @@
   <bean id="wmsGeoJsonBuilderFactory" class="org.geoserver.wms.geojson.GeoJsonBuilderFactory">
   </bean>
 
-  <bean id="wmsGeoJsonMapOutputFormat" class="org.geoserver.wms.vector.VectorTileMapOutputFormat">
+  <bean id="wmsGeoJsonMapOutputFormat" class="org.geoserver.wms.vector.GeoJsonVectorTileMapOutputFormat">
     <constructor-arg ref="wmsGeoJsonBuilderFactory" />
     <property name="clipToMapBounds" value="true"/>
     <property name="transformToScreenCoordinates" value="false">

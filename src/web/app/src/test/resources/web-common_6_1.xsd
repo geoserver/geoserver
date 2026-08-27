@@ -1,81 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://xmlns.jcp.org/xml/ns/javaee"
-            xmlns:javaee="http://xmlns.jcp.org/xml/ns/javaee"
+            targetNamespace="https://jakarta.ee/xml/ns/jakartaee"
+            xmlns:jakartaee="https://jakarta.ee/xml/ns/jakartaee"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
-            version="3.1">
+            version="6.1">
   <xsd:annotation>
     <xsd:documentation>
 
-      DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+      Copyright (c) 2009, 2021 Oracle and/or its affiliates. All rights reserved.
       
-      Copyright (c) 2009-2013 Oracle and/or its affiliates. All rights reserved.
+      This program and the accompanying materials are made available under the
+      terms of the Eclipse Public License v. 2.0, which is available at
+      http://www.eclipse.org/legal/epl-2.0.
       
-      The contents of this file are subject to the terms of either the GNU
-      General Public License Version 2 only ("GPL") or the Common Development
-      and Distribution License("CDDL") (collectively, the "License").  You
-      may not use this file except in compliance with the License.  You can
-      obtain a copy of the License at
-      https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
-      or packager/legal/LICENSE.txt.  See the License for the specific
-      language governing permissions and limitations under the License.
+      This Source Code may also be made available under the following Secondary
+      Licenses when the conditions for such availability set forth in the
+      Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+      version 2 with the GNU Classpath Exception, which is available at
+      https://www.gnu.org/software/classpath/license.html.
       
-      When distributing the software, include this License Header Notice in each
-      file and include the License file at packager/legal/LICENSE.txt.
-      
-      GPL Classpath Exception:
-      Oracle designates this particular file as subject to the "Classpath"
-      exception as provided by Oracle in the GPL Version 2 section of the License
-      file that accompanied this code.
-      
-      Modifications:
-      If applicable, add the following below the License Header, with the fields
-      enclosed by brackets [] replaced by your own identifying information:
-      "Portions Copyright [year] [name of copyright owner]"
-      
-      Contributor(s):
-      If you wish your version of this file to be governed by only the CDDL or
-      only the GPL Version 2, indicate your decision by adding "[Contributor]
-      elects to include this software in this distribution under the [CDDL or GPL
-      Version 2] license."  If you don't indicate a single choice of license, a
-      recipient has the option to distribute your version of this file under
-      either the CDDL, the GPL Version 2 or to extend the choice of license to
-      its licensees as provided above.  However, if you add GPL Version 2 code
-      and therefore, elected the GPL Version 2 license, then the option applies
-      only if the new code is made subject to such option by the copyright
-      holder.
+      SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
       
     </xsd:documentation>
   </xsd:annotation>
 
   <xsd:annotation>
     <xsd:documentation>
-      <![CDATA[[
-      This is the common XML Schema for the Servlet 3.1 deployment descriptor.
+      <![CDATA[
+      This is the common XML Schema for the Servlet 6.1 deployment descriptor.
       This file is in turn used by web.xml and web-fragment.xml
       web application's war file.  All Servlet deployment descriptors
-      must indicate the web common schema by using the Java EE
+      must indicate the web common schema by using the Jakarta EE
       namespace:
       
-      http://xmlns.jcp.org/xml/ns/javaee 
+      https://jakarta.ee/xml/ns/jakartaee
       
-      and by indicating the version of the schema by 
-      using the version element as shown below: 
+      and by indicating the version of the schema by
+      using the version element as shown below:
       
-      <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+      <web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="..."
-      version="3.1"> 
+      version="6.1">
       ...
       </web-app>
       
       The instance documents may indicate the published version of
-      the schema using the xsi:schemaLocation attribute for Java EE
+      the schema using the xsi:schemaLocation attribute for Jakarta EE
       namespace with the following location:
       
-      http://xmlns.jcp.org/xml/ns/javaee/web-common_3_1.xsd
+      https://jakarta.ee/xml/ns/jakartaee/web-common_6_1.xsd
       
       ]]>
     </xsd:documentation>
@@ -84,7 +60,7 @@
   <xsd:annotation>
     <xsd:documentation>
 
-      The following conventions apply to all Java EE
+      The following conventions apply to all Jakarta EE
       deployment descriptor elements unless indicated otherwise.
       
       - In elements that specify a pathname to a file within the
@@ -99,17 +75,17 @@
     </xsd:documentation>
   </xsd:annotation>
 
-  <xsd:include schemaLocation="javaee_7.xsd"/>
+  <xsd:include schemaLocation="jakartaee_11.xsd"/>
 
-  <xsd:include schemaLocation="jsp_2_3.xsd"/>
+  <xsd:include schemaLocation="jsp_4_0.xsd"/>
 
   <xsd:group name="web-commonType">
     <xsd:choice>
-      <xsd:group ref="javaee:descriptionGroup"/>
+      <xsd:group ref="jakartaee:descriptionGroup"/>
       <xsd:element name="distributable"
-                   type="javaee:emptyType"/>
+                   type="jakartaee:emptyType"/>
       <xsd:element name="context-param"
-                   type="javaee:param-valueType">
+                   type="jakartaee:param-valueType">
         <xsd:annotation>
           <xsd:documentation>
 
@@ -121,42 +97,42 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="filter"
-                   type="javaee:filterType"/>
+                   type="jakartaee:filterType"/>
       <xsd:element name="filter-mapping"
-                   type="javaee:filter-mappingType"/>
+                   type="jakartaee:filter-mappingType"/>
       <xsd:element name="listener"
-                   type="javaee:listenerType"/>
+                   type="jakartaee:listenerType"/>
       <xsd:element name="servlet"
-                   type="javaee:servletType"/>
+                   type="jakartaee:servletType"/>
       <xsd:element name="servlet-mapping"
-                   type="javaee:servlet-mappingType"/>
+                   type="jakartaee:servlet-mappingType"/>
       <xsd:element name="session-config"
-                   type="javaee:session-configType"/>
+                   type="jakartaee:session-configType"/>
       <xsd:element name="mime-mapping"
-                   type="javaee:mime-mappingType"/>
+                   type="jakartaee:mime-mappingType"/>
       <xsd:element name="welcome-file-list"
-                   type="javaee:welcome-file-listType"/>
+                   type="jakartaee:welcome-file-listType"/>
       <xsd:element name="error-page"
-                   type="javaee:error-pageType"/>
+                   type="jakartaee:error-pageType"/>
       <xsd:element name="jsp-config"
-                   type="javaee:jsp-configType"/>
+                   type="jakartaee:jsp-configType"/>
       <xsd:element name="security-constraint"
-                   type="javaee:security-constraintType"/>
+                   type="jakartaee:security-constraintType"/>
       <xsd:element name="login-config"
-                   type="javaee:login-configType"/>
+                   type="jakartaee:login-configType"/>
       <xsd:element name="security-role"
-                   type="javaee:security-roleType"/>
-      <xsd:group ref="javaee:jndiEnvironmentRefsGroup"/>
+                   type="jakartaee:security-roleType"/>
+      <xsd:group ref="jakartaee:jndiEnvironmentRefsGroup"/>
       <xsd:element name="message-destination"
-                   type="javaee:message-destinationType"/>
+                   type="jakartaee:message-destinationType"/>
       <xsd:element name="locale-encoding-mapping-list"
-                   type="javaee:locale-encoding-mapping-listType"/>
+                   type="jakartaee:locale-encoding-mapping-listType"/>
     </xsd:choice>
   </xsd:group>
 
   <xsd:attributeGroup name="web-common-attributes">
     <xsd:attribute name="version"
-                   type="javaee:web-app-versionType"
+                   type="jakartaee:web-app-versionType"
                    use="required"/>
     <xsd:attribute name="id"
                    type="xsd:ID"/>
@@ -191,6 +167,50 @@
 
 <!-- **************************************************** -->
 
+  <xsd:complexType name="attribute-valueType">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        This type is a general type that can be used to declare
+        attribute/value lists.
+        
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description"
+                   type="jakartaee:descriptionType"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+      <xsd:element name="attribute-name"
+                   type="jakartaee:string">
+        <xsd:annotation>
+          <xsd:documentation>
+
+            The attribute-name element contains the name of an
+            attribute.
+            
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="attribute-value"
+                   type="jakartaee:xsdStringType">
+        <xsd:annotation>
+          <xsd:documentation>
+
+            The attribute-value element contains the value of a
+            attribute.
+            
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+    <xsd:attribute name="id"
+                   type="xsd:ID"/>
+  </xsd:complexType>
+
+
+<!-- **************************************************** -->
+
   <xsd:complexType name="auth-constraintType">
     <xsd:annotation>
       <xsd:documentation>
@@ -212,11 +232,11 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="description"
-                   type="javaee:descriptionType"
+                   type="jakartaee:descriptionType"
                    minOccurs="0"
                    maxOccurs="unbounded"/>
       <xsd:element name="role-name"
-                   type="javaee:role-nameType"
+                   type="jakartaee:role-nameType"
                    minOccurs="0"
                    maxOccurs="unbounded"/>
     </xsd:sequence>
@@ -244,7 +264,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:simpleContent>
-      <xsd:restriction base="javaee:string"/>
+      <xsd:restriction base="jakartaee:string"/>
     </xsd:simpleContent>
   </xsd:complexType>
 
@@ -276,7 +296,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:simpleContent>
-      <xsd:restriction base="javaee:string">
+      <xsd:restriction base="jakartaee:string">
         <xsd:enumeration value="FORWARD"/>
         <xsd:enumeration value="INCLUDE"/>
         <xsd:enumeration value="REQUEST"/>
@@ -300,7 +320,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:simpleContent>
-      <xsd:restriction base="javaee:xsdPositiveIntegerType">
+      <xsd:restriction base="jakartaee:xsdPositiveIntegerType">
         <xsd:pattern value="\d{3}"/>
         <xsd:attribute name="id"
                        type="xsd:ID"/>
@@ -327,7 +347,7 @@
         
         If an error-page element in the deployment descriptor does not
         contain an exception-type or an error-code element, the error
-        page is a default error page. 
+        page is a default error page.
         
         Used in: web-app
         
@@ -337,9 +357,9 @@
       <xsd:choice minOccurs="0"
                   maxOccurs="1">
         <xsd:element name="error-code"
-                     type="javaee:error-codeType"/>
+                     type="jakartaee:error-codeType"/>
         <xsd:element name="exception-type"
-                     type="javaee:fully-qualified-classType">
+                     type="jakartaee:fully-qualified-classType">
           <xsd:annotation>
             <xsd:documentation>
 
@@ -351,7 +371,7 @@
         </xsd:element>
       </xsd:choice>
       <xsd:element name="location"
-                   type="javaee:war-pathType">
+                   type="jakartaee:war-pathType">
         <xsd:annotation>
           <xsd:documentation>
 
@@ -387,11 +407,11 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:group ref="javaee:descriptionGroup"/>
+      <xsd:group ref="jakartaee:descriptionGroup"/>
       <xsd:element name="filter-name"
-                   type="javaee:filter-nameType"/>
+                   type="jakartaee:filter-nameType"/>
       <xsd:element name="filter-class"
-                   type="javaee:fully-qualified-classType"
+                   type="jakartaee:fully-qualified-classType"
                    minOccurs="0"
                    maxOccurs="1">
         <xsd:annotation>
@@ -403,10 +423,10 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="async-supported"
-                   type="javaee:true-falseType"
+                   type="jakartaee:true-falseType"
                    minOccurs="0"/>
       <xsd:element name="init-param"
-                   type="javaee:param-valueType"
+                   type="jakartaee:param-valueType"
                    minOccurs="0"
                    maxOccurs="unbounded">
         <xsd:annotation>
@@ -431,7 +451,7 @@
       <xsd:documentation>
 
         Declaration of the filter mappings in this web
-        application is done by using filter-mappingType. 
+        application is done by using filter-mappingType.
         The container uses the filter-mapping
         declarations to decide which filters to apply to a request,
         and in what order. The container matches the request URI to
@@ -450,16 +470,16 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="filter-name"
-                   type="javaee:filter-nameType"/>
+                   type="jakartaee:filter-nameType"/>
       <xsd:choice minOccurs="1"
                   maxOccurs="unbounded">
         <xsd:element name="url-pattern"
-                     type="javaee:url-patternType"/>
+                     type="jakartaee:url-patternType"/>
         <xsd:element name="servlet-name"
-                     type="javaee:servlet-nameType"/>
+                     type="jakartaee:servlet-nameType"/>
       </xsd:choice>
       <xsd:element name="dispatcher"
-                   type="javaee:dispatcherType"
+                   type="jakartaee:dispatcherType"
                    minOccurs="0"
                    maxOccurs="5"/>
     </xsd:sequence>
@@ -480,7 +500,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:simpleContent>
-      <xsd:restriction base="javaee:string">
+      <xsd:restriction base="jakartaee:string">
         <xsd:minLength value="1"/>
       </xsd:restriction>
     </xsd:simpleContent>
@@ -503,7 +523,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:simpleContent>
-      <xsd:extension base="javaee:nonEmptyStringType"/>
+      <xsd:extension base="jakartaee:nonEmptyStringType"/>
     </xsd:simpleContent>
   </xsd:complexType>
 
@@ -524,7 +544,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="form-login-page"
-                   type="javaee:war-pathType">
+                   type="jakartaee:war-pathType">
         <xsd:annotation>
           <xsd:documentation>
 
@@ -537,13 +557,13 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="form-error-page"
-                   type="javaee:war-pathType">
+                   type="jakartaee:war-pathType">
         <xsd:annotation>
           <xsd:documentation>
 
             The form-error-page element defines the location in
             the web app where the error page that is displayed
-            when login is not successful can be found. 
+            when login is not successful can be found.
             The path begins with a leading / and is interpreted
             relative to the root of the WAR.
             
@@ -569,7 +589,7 @@
   </xsd:simpleType>
 
   <xsd:simpleType name="load-on-startupType">
-    <xsd:union memberTypes="javaee:null-charType xsd:integer"/>
+    <xsd:union memberTypes="jakartaee:null-charType xsd:integer"/>
   </xsd:simpleType>
 
   <xsd:simpleType name="null-charType">
@@ -596,10 +616,10 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="auth-method"
-                   type="javaee:auth-methodType"
+                   type="jakartaee:auth-methodType"
                    minOccurs="0"/>
       <xsd:element name="realm-name"
-                   type="javaee:string"
+                   type="jakartaee:string"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -611,7 +631,7 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="form-login-config"
-                   type="javaee:form-login-configType"
+                   type="jakartaee:form-login-configType"
                    minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="id"
@@ -642,9 +662,9 @@
         </xsd:documentation>
       </xsd:annotation>
       <xsd:element name="extension"
-                   type="javaee:string"/>
+                   type="jakartaee:string"/>
       <xsd:element name="mime-type"
-                   type="javaee:mime-typeType"/>
+                   type="jakartaee:mime-typeType"/>
     </xsd:sequence>
     <xsd:attribute name="id"
                    type="xsd:ID"/>
@@ -667,7 +687,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:simpleContent>
-      <xsd:restriction base="javaee:string">
+      <xsd:restriction base="jakartaee:string">
         <xsd:pattern value="[^\p{Cc}^\s]+/[^\p{Cc}^\s]+"/>
       </xsd:restriction>
     </xsd:simpleContent>
@@ -690,17 +710,17 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="display-name"
-                   type="javaee:display-nameType"
+                   type="jakartaee:display-nameType"
                    minOccurs="0"
                    maxOccurs="unbounded"/>
       <xsd:element name="web-resource-collection"
-                   type="javaee:web-resource-collectionType"
+                   type="jakartaee:web-resource-collectionType"
                    maxOccurs="unbounded"/>
       <xsd:element name="auth-constraint"
-                   type="javaee:auth-constraintType"
+                   type="jakartaee:auth-constraintType"
                    minOccurs="0"/>
       <xsd:element name="user-data-constraint"
-                   type="javaee:user-data-constraintType"
+                   type="jakartaee:user-data-constraintType"
                    minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="id"
@@ -725,13 +745,13 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:group ref="javaee:descriptionGroup"/>
+      <xsd:group ref="jakartaee:descriptionGroup"/>
       <xsd:element name="servlet-name"
-                   type="javaee:servlet-nameType"/>
+                   type="jakartaee:servlet-nameType"/>
       <xsd:choice minOccurs="0"
                   maxOccurs="1">
         <xsd:element name="servlet-class"
-                     type="javaee:fully-qualified-classType">
+                     type="jakartaee:fully-qualified-classType">
           <xsd:annotation>
             <xsd:documentation>
 
@@ -742,14 +762,14 @@
           </xsd:annotation>
         </xsd:element>
         <xsd:element name="jsp-file"
-                     type="javaee:jsp-fileType"/>
+                     type="jakartaee:jsp-fileType"/>
       </xsd:choice>
       <xsd:element name="init-param"
-                   type="javaee:param-valueType"
+                   type="jakartaee:param-valueType"
                    minOccurs="0"
                    maxOccurs="unbounded"/>
       <xsd:element name="load-on-startup"
-                   type="javaee:load-on-startupType"
+                   type="jakartaee:load-on-startupType"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -775,20 +795,20 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="enabled"
-                   type="javaee:true-falseType"
+                   type="jakartaee:true-falseType"
                    minOccurs="0"/>
       <xsd:element name="async-supported"
-                   type="javaee:true-falseType"
+                   type="jakartaee:true-falseType"
                    minOccurs="0"/>
       <xsd:element name="run-as"
-                   type="javaee:run-asType"
+                   type="jakartaee:run-asType"
                    minOccurs="0"/>
       <xsd:element name="security-role-ref"
-                   type="javaee:security-role-refType"
+                   type="jakartaee:security-role-refType"
                    minOccurs="0"
                    maxOccurs="unbounded"/>
       <xsd:element name="multipart-config"
-                   type="javaee:multipart-configType"
+                   type="jakartaee:multipart-configType"
                    minOccurs="0"
                    maxOccurs="1"/>
     </xsd:sequence>
@@ -804,7 +824,7 @@
       <xsd:documentation>
 
         The servlet-mappingType defines a mapping between a
-        servlet and a url pattern. 
+        servlet and a url pattern.
         
         Used in: web-app
         
@@ -812,9 +832,9 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="servlet-name"
-                   type="javaee:servlet-nameType"/>
+                   type="jakartaee:servlet-nameType"/>
       <xsd:element name="url-pattern"
-                   type="javaee:url-patternType"
+                   type="jakartaee:url-patternType"
                    minOccurs="1"
                    maxOccurs="unbounded"/>
     </xsd:sequence>
@@ -836,7 +856,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:simpleContent>
-      <xsd:extension base="javaee:nonEmptyStringType"/>
+      <xsd:extension base="jakartaee:nonEmptyStringType"/>
     </xsd:simpleContent>
   </xsd:complexType>
 
@@ -856,7 +876,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="session-timeout"
-                   type="javaee:xsdIntegerType"
+                   type="jakartaee:xsdIntegerType"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -874,7 +894,7 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="cookie-config"
-                   type="javaee:cookie-configType"
+                   type="jakartaee:cookie-configType"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -886,7 +906,7 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="tracking-mode"
-                   type="javaee:tracking-modeType"
+                   type="jakartaee:tracking-modeType"
                    minOccurs="0"
                    maxOccurs="3">
         <xsd:annotation>
@@ -919,7 +939,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="name"
-                   type="javaee:cookie-nameType"
+                   type="jakartaee:cookie-nameType"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -932,7 +952,7 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="domain"
-                   type="javaee:cookie-domainType"
+                   type="jakartaee:cookie-domainType"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -944,7 +964,7 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="path"
-                   type="javaee:cookie-pathType"
+                   type="jakartaee:cookie-pathType"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -956,7 +976,7 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="comment"
-                   type="javaee:cookie-commentType"
+                   type="jakartaee:cookie-commentType"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -968,24 +988,24 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="http-only"
-                   type="javaee:true-falseType"
+                   type="jakartaee:true-falseType"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
 
-            Specifies whether any session tracking cookies created 
+            Specifies whether any session tracking cookies created
             by this web application will be marked as HttpOnly
             
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="secure"
-                   type="javaee:true-falseType"
+                   type="jakartaee:true-falseType"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
 
-            Specifies whether any session tracking cookies created 
+            Specifies whether any session tracking cookies created
             by this web application will be marked as secure.
             When true, all session tracking cookies must be marked
             as secure independent of the nature of the request that
@@ -997,7 +1017,7 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="max-age"
-                   type="javaee:xsdIntegerType"
+                   type="jakartaee:xsdIntegerType"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -1005,6 +1025,19 @@
             The lifetime (in seconds) that will be assigned to any
             session tracking cookies created by this web application.
             Default is -1
+            
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="attribute"
+                   type="jakartaee:attribute-valueType"
+                   minOccurs="0"
+                   maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>
+
+            The attribute-param element contains a name/value pair to
+            be added as an attribute to every session cookie.
             
           </xsd:documentation>
         </xsd:annotation>
@@ -1030,7 +1063,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:simpleContent>
-      <xsd:extension base="javaee:nonEmptyStringType"/>
+      <xsd:extension base="jakartaee:nonEmptyStringType"/>
     </xsd:simpleContent>
   </xsd:complexType>
 
@@ -1049,7 +1082,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:simpleContent>
-      <xsd:extension base="javaee:nonEmptyStringType"/>
+      <xsd:extension base="jakartaee:nonEmptyStringType"/>
     </xsd:simpleContent>
   </xsd:complexType>
 
@@ -1068,7 +1101,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:simpleContent>
-      <xsd:extension base="javaee:nonEmptyStringType"/>
+      <xsd:extension base="jakartaee:nonEmptyStringType"/>
     </xsd:simpleContent>
   </xsd:complexType>
 
@@ -1087,7 +1120,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:simpleContent>
-      <xsd:extension base="javaee:nonEmptyStringType"/>
+      <xsd:extension base="jakartaee:nonEmptyStringType"/>
     </xsd:simpleContent>
   </xsd:complexType>
 
@@ -1106,7 +1139,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:simpleContent>
-      <xsd:restriction base="javaee:string">
+      <xsd:restriction base="jakartaee:string">
         <xsd:enumeration value="COOKIE"/>
         <xsd:enumeration value="URL"/>
         <xsd:enumeration value="SSL"/>
@@ -1139,7 +1172,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:simpleContent>
-      <xsd:restriction base="javaee:string">
+      <xsd:restriction base="jakartaee:string">
         <xsd:enumeration value="NONE"/>
         <xsd:enumeration value="INTEGRAL"/>
         <xsd:enumeration value="CONFIDENTIAL"/>
@@ -1164,11 +1197,11 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="description"
-                   type="javaee:descriptionType"
+                   type="jakartaee:descriptionType"
                    minOccurs="0"
                    maxOccurs="unbounded"/>
       <xsd:element name="transport-guarantee"
-                   type="javaee:transport-guaranteeType"/>
+                   type="jakartaee:transport-guaranteeType"/>
     </xsd:sequence>
     <xsd:attribute name="id"
                    type="xsd:ID"/>
@@ -1188,7 +1221,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:simpleContent>
-      <xsd:restriction base="javaee:string">
+      <xsd:restriction base="jakartaee:string">
         <xsd:pattern value="/.*"/>
       </xsd:restriction>
     </xsd:simpleContent>
@@ -1205,7 +1238,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:token">
-      <xsd:enumeration value="3.1"/>
+      <xsd:enumeration value="6.1"/>
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -1224,7 +1257,7 @@
         elements, the security constraint applies to all methods
         except those identified in the collection.
         http-method-omission and http-method elements are never
-        mixed in the same collection. 
+        mixed in the same collection.
         
         Used in: security-constraint
         
@@ -1232,7 +1265,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="web-resource-name"
-                   type="javaee:string">
+                   type="jakartaee:string">
         <xsd:annotation>
           <xsd:documentation>
 
@@ -1243,16 +1276,16 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="description"
-                   type="javaee:descriptionType"
+                   type="jakartaee:descriptionType"
                    minOccurs="0"
                    maxOccurs="unbounded"/>
       <xsd:element name="url-pattern"
-                   type="javaee:url-patternType"
+                   type="jakartaee:url-patternType"
                    maxOccurs="unbounded"/>
       <xsd:choice minOccurs="0"
                   maxOccurs="1">
         <xsd:element name="http-method"
-                     type="javaee:http-methodType"
+                     type="jakartaee:http-methodType"
                      minOccurs="1"
                      maxOccurs="unbounded">
           <xsd:annotation>
@@ -1265,7 +1298,7 @@
           </xsd:annotation>
         </xsd:element>
         <xsd:element name="http-method-omission"
-                     type="javaee:http-methodType"
+                     type="jakartaee:http-methodType"
                      minOccurs="1"
                      maxOccurs="unbounded">
           <xsd:annotation>
@@ -1356,7 +1389,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="locale-encoding-mapping"
-                   type="javaee:locale-encoding-mappingType"
+                   type="jakartaee:locale-encoding-mappingType"
                    maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="id"
@@ -1379,9 +1412,9 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="locale"
-                   type="javaee:localeType"/>
+                   type="jakartaee:localeType"/>
       <xsd:element name="encoding"
-                   type="javaee:encodingType"/>
+                   type="jakartaee:encodingType"/>
     </xsd:sequence>
     <xsd:attribute name="id"
                    type="xsd:ID"/>
@@ -1420,7 +1453,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="location"
-                   type="javaee:string"
+                   type="jakartaee:string"
                    minOccurs="0"
                    maxOccurs="1">
         <xsd:annotation>
@@ -1438,7 +1471,7 @@
         <xsd:annotation>
           <xsd:documentation>
 
-            The maximum size limit of uploaded files
+            The maximum size limit of uploaded files in bytes
             
           </xsd:documentation>
         </xsd:annotation>
@@ -1450,7 +1483,7 @@
         <xsd:annotation>
           <xsd:documentation>
 
-            The maximum size limit of multipart/form-data requests
+            The maximum size limit of multipart/form-data requests in bytes
             
           </xsd:documentation>
         </xsd:annotation>
@@ -1462,7 +1495,7 @@
         <xsd:annotation>
           <xsd:documentation>
 
-            The size threshold after which an uploaded file will be
+            The size threshold (in bytes) after which an uploaded file will be
             written to disk
             
           </xsd:documentation>

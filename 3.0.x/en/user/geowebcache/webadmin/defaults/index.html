@@ -15442,6 +15442,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#enable-multi-layer-tile-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enable multi-layer tile caching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#automatically-cache-non-default-styles" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30504,6 +30515,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#enable-multi-layer-tile-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enable multi-layer tile caching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#automatically-cache-non-default-styles" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30666,6 +30688,23 @@
 <p><em>Default caching options</em></p>
 <h3 id="automatically-configure-a-geowebcache-layer-for-each-new-layer-or-layer-group">Automatically configure a GeoWebCache layer for each new layer or layer group<a class="headerlink" href="#automatically-configure-a-geowebcache-layer-for-each-new-layer-or-layer-group" title="Permanent link">&para;</a></h3>
 <p>This setting, enabled by default, determines how layers in GeoServer are handled via the embedded GeoWebCache. When this setting is enabled, an entry in the GeoWebCache layer listing will be created whenever a new layer or layer group is published in GeoServer. Use this setting to keep the GeoWebCache catalog in sync. (This is enabled by default.)</p>
+<h3 id="enable-multi-layer-tile-caching">Enable multi-layer tile caching<a class="headerlink" href="#enable-multi-layer-tile-caching" title="Permanent link">&para;</a></h3>
+<p>By default, GeoWebCache only caches a tiled <code>GetMap</code> request that names a single layer: a request whose <code>LAYERS</code> parameter lists more than one layer (a coalesced request) is always rendered live and never cached. When this setting is enabled, GeoServer instead caches each layer of a coalesced request independently, using its existing per-layer tile cache, and combines the cached tiles into the final image.</p>
+<p>Each member layer is still subject to the usual caching requirements (cacheable parameters, matching gridset, and so on); a member that does not qualify falls back to a live render for that member only, spliced into the result. The whole request falls back to a live combined render, exactly as if this setting were disabled, when:</p>
+<ul>
+<li>the request is not tiled</li>
+<li>any member's style draws labels, or applies compositing/blending, at the requested scale (these effects depend on the full layer stack and cannot be reproduced from independently-cached tiles);</li>
+<li>combining the member tiles would exceed the configured maximum WMS request memory.</li>
+</ul>
+<p>This setting is disabled by default.</p>
+<p>A layer group named in <code>LAYERS</code> alongside anything else does not use the group's own tile cache:</p>
+<ul>
+<li><code>LAYERS=groupA</code> (a single layer group, no comma) is not a coalesced request, so this setting does not apply to it: it uses the group's own tile cache directly.</li>
+<li><code>LAYERS=groupA,layerB</code> (a layer group combined with anything else) is a coalesced request, and the group is resolved to its own member layers before this setting's logic runs: <code>groupA</code>'s layers are then cached and stacked individually, each under its own name, using their own caches rather than the group's.</li>
+<li>The exception is a request that also carries per-layer parameters (<code>CQL_FILTER</code>, <code>STYLES</code>, <code>FILTER</code>, <code>SORTBY</code>, <code>INTERPOLATIONS</code>, <code>VIEWPARAMS</code>), since those are given one value per entry in <code>LAYERS</code> and can no longer be matched to the layers a group resolved to. Such a request renders live and is not cached, exactly as if this setting were disabled. A group holding a single layer resolves without changing the layer count, so it keeps working even with these parameters.</li>
+</ul>
+<p>How much this setting speeds up a coalesced request depends on the cost of rendering each member versus the cost of reading and decoding its cached PNG tile. The gain is largest when a member's data comes from a slow or contended source, such as a database or a remote service, where fetching and rendering the data is more expensive than reading a small PNG from disk and decoding it. For members backed by simple, fast-rendering data (for example, a small vector layer with a plain style, or a raster already stored as tiles), the gain shrinks, since PNG decoding and disk I/O may cost more relative to the render itself; a cache miss still falls back to a live render for that member, so enabling this setting should not make a coalesced request slower than it already was, only less beneficial for cheap-to-render members.</p>
+<p>Each coalesced request also writes into the same per-layer tile caches used by ordinary single-layer requests, so enabling this setting makes those caches fill up faster than before.</p>
 <h3 id="automatically-cache-non-default-styles">Automatically cache non-default styles<a class="headerlink" href="#automatically-cache-non-default-styles" title="Permanent link">&para;</a></h3>
 <p>By default, only requests using the default style for a given layer will be cached. When this setting is enabled, all requests for a given layer, even those that use a non-standard style will be cached. Disabling this may be useful in situations where disk space is an issue, or when only one default style is important.</p>
 <h3 id="default-metatile-size">Default metatile size<a class="headerlink" href="#default-metatile-size" title="Permanent link">&para;</a></h3>

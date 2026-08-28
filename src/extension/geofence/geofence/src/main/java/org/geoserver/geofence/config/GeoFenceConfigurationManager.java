@@ -71,10 +71,7 @@ public class GeoFenceConfigurationManager implements InitializingBean {
 
     /** Updates the configuration. */
     public void setConfiguration(GeoFenceConfiguration cfg) {
-
         this.geofenceConfiguration = cfg;
-
-        LOGGER.log(Level.INFO, "GeoFence configuration: instance name is {0}", cfg.getInstanceName());
     }
 
     public CacheConfiguration getCacheConfiguration() {
@@ -154,22 +151,15 @@ public class GeoFenceConfigurationManager implements InitializingBean {
         return configurer;
     }
 
-    /**
-     * The PropertyPlaceholderConfigurer may have race conditions sometimes, so we're going to read the props from the
-     * file and assign them to the GeoFenceConfiguration
-     */
+    /** Layers the properties file over the configuration built from defaults, so the file wins where it has a value. */
     @Override
     public void afterPropertiesSet() throws Exception {
         LOGGER.log(
                 Level.INFO,
-                "GeoFence configuration: force setting properties from {0}",
+                "GeoFence configuration: reading {0}",
                 configurer.getConfigFile().path());
-
-        if (loadConfiguration())
-            LOGGER.log(
-                    Level.INFO,
-                    "GeoFence configuration: instance name is {0}",
-                    geofenceConfiguration.getInstanceName());
+        loadConfiguration();
+        LOGGER.log(Level.INFO, "GeoFence configuration: instance name is {0}", geofenceConfiguration.getInstanceName());
     }
 
     public boolean loadConfiguration() throws IOException {
@@ -185,8 +175,8 @@ public class GeoFenceConfigurationManager implements InitializingBean {
         } catch (IllegalStateException e) {
 
             LOGGER.log(
-                    Level.INFO,
-                    "GeoFence configuration: could not open property file {0}",
+                    Level.WARNING,
+                    "GeoFence configuration: file {0} not found; using built-in defaults until one is saved",
                     configurer.getConfigFile().path());
             return false;
         }

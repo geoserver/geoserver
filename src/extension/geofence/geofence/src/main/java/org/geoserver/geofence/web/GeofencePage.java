@@ -14,6 +14,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -25,6 +28,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geofence.core.services.RuleReaderService;
 import org.geofence.core.services.dto.RuleFilter;
 import org.geoserver.geofence.cache.CacheConfiguration;
@@ -92,7 +96,11 @@ public class GeofencePage extends GeoServerSecuredPage {
                 denyingAll ? "ruleReaderUnavailable" : (embeddedBackend ? "ruleReaderEmbedded" : "ruleReaderRemote");
         IModel<String> ruleReaderModel =
                 new StringResourceModel(GeofencePage.class.getSimpleName() + "." + ruleReaderKey);
-        form.add(new Label("ruleReader", ruleReaderModel));
+        Label ruleReader = new Label("ruleReader", ruleReaderModel);
+        if (denyingAll) {
+            ruleReader.add(new AttributeAppender("class", new Model<>("gs-geofence-unavailable"), " "));
+        }
+        form.add(ruleReader);
 
         IModel<String> servicesUrlModel = embeddedBackend
                 ? new StringResourceModel(GeofencePage.class.getSimpleName() + ".servicesUrlEmbedded")
@@ -307,5 +315,12 @@ public class GeofencePage extends GeoServerSecuredPage {
     /** Creates a new wicket model from the configuration object. */
     private IModel<CacheConfiguration> getCacheConfigModel() {
         return new Model<>(cacheParams);
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.render(CssHeaderItem.forReference(
+                new PackageResourceReference(GeofencePage.class, GeofencePage.class.getSimpleName() + ".css")));
     }
 }

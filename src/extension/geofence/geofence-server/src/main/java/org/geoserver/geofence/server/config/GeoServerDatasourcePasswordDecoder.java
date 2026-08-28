@@ -31,7 +31,8 @@ public class GeoServerDatasourcePasswordDecoder implements DatasourcePasswordDec
             return Result.asIs(null);
         }
         String plaintext = passwordHelper.decode(storedPassword);
-        if (isPlainMarked(storedPassword)) {
+        // Same guard XStreamPersister applies to store passwords: before init, encode() silently wouldn't encrypt.
+        if (securityManager.isInitialized() && isPlainMarked(storedPassword)) {
             return Result.persist(plaintext, passwordHelper.encode(plaintext));
         }
         return Result.asIs(plaintext);

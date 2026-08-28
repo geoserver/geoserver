@@ -1410,9 +1410,9 @@
           <version>0.8.14</version>
         </plugin>
         <plugin>
-          <groupId>org.eclipse.jetty</groupId>
-          <artifactId>jetty-maven-plugin</artifactId>
-          <version>11.0.26</version>
+          <groupId>org.eclipse.jetty.ee11</groupId>
+          <artifactId>jetty-ee11-maven-plugin</artifactId>
+          <version>${jetty.version}</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>

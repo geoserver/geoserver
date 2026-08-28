@@ -123,7 +123,7 @@
     <bc.prov.artifactId>bcprov-lts8on</bc.prov.artifactId>
     <bc.prov.version>2.73.11</bc.prov.version>
     <bc.pkix.artifactId>bcpkix-lts8on</bc.pkix.artifactId>
-    <bc.pkix.version>2.73.11</bc.pkix.version>
+    <bc.pkix.version>2.73.12</bc.pkix.version>
     <!-- Versions of the FIPS-validated BouncyCastle jars. Declared here, not in the fips
          profile, because the community fips modules need them in every build. -->
     <bc.fips.prov.version>2.1.2</bc.fips.prov.version>

@@ -121,7 +121,7 @@
          FIPS-validated product lines share the org.bouncycastle package space and so
          cannot coexist on the classpath: the fips profile swaps the whole set. -->
     <bc.prov.artifactId>bcprov-lts8on</bc.prov.artifactId>
-    <bc.prov.version>2.73.11</bc.prov.version>
+    <bc.prov.version>2.73.12.1</bc.prov.version>
     <bc.pkix.artifactId>bcpkix-lts8on</bc.pkix.artifactId>
     <bc.pkix.version>2.73.12</bc.pkix.version>
     <!-- Versions of the FIPS-validated BouncyCastle jars. Declared here, not in the fips

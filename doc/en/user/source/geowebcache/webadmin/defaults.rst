@@ -105,6 +105,27 @@ Automatically configure a GeoWebCache layer for each new layer or layer group
 
 This setting, enabled by default, determines how layers in GeoServer are handled via the embedded GeoWebCache. When this setting is enabled, an entry in the GeoWebCache layer listing will be created whenever a new layer or layer group is published in GeoServer. Use this setting to keep the GeoWebCache catalog in sync. (This is enabled by default.)
 
+Enable multi-layer tile caching
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By default, GeoWebCache only caches a tiled ``GetMap`` request that names a single layer: a request whose ``LAYERS`` parameter lists more than one layer (a coalesced request) is always rendered live and never cached. When this setting is enabled, GeoServer instead caches each layer of a coalesced request independently, using its existing per-layer tile cache, and combines the cached tiles into the final image.
+
+Each member layer is still subject to the usual caching requirements (cacheable parameters, matching gridset, and so on); a member that does not qualify falls back to a live render for that member only, spliced into the result. The whole request falls back to a live combined render, exactly as if this setting were disabled, when:
+
+* the request is not tiled
+* any member's style draws labels, or applies compositing/blending, at the requested scale (these effects depend on the full layer stack and cannot be reproduced from independently-cached tiles)
+* combining the member tiles would exceed the configured maximum WMS request memory
+
+This setting is disabled by default.
+
+A layer group named in ``LAYERS`` alongside anything else does not use the group's own tile cache:
+
+* ``LAYERS=groupA`` (a single layer group, no comma) is not a coalesced request, so this setting does not apply to it: it uses the group's own tile cache directly.
+* ``LAYERS=groupA,layerB`` (a layer group combined with anything else) is a coalesced request, and the group is resolved to its own member layers before this setting's logic runs: ``groupA``'s layers are then cached and stacked individually, each under its own name, using their own caches rather than the group's.
+* The exception is a request that also carries per-layer parameters (``CQL_FILTER``, ``STYLES``, ``FILTER``, ``SORTBY``, ``INTERPOLATIONS``, ``VIEWPARAMS``), since those are given one value per entry in ``LAYERS`` and can no longer be matched to the layers a group resolved to. Such a request renders live and is not cached, exactly as if this setting were disabled. A group holding a single layer resolves without changing the layer count, so it keeps working even with these parameters.
+
+How much this setting speeds up a coalesced request depends on the cost of rendering each member versus the cost of reading and decoding its cached PNG tile. The gain is largest when a member's data comes from a slow or contended source, such as a database or a remote service, where fetching and rendering the data is more expensive than reading a small PNG from disk and decoding it. For members backed by simple, fast-rendering data (for example, a small vector layer with a plain style, or a raster already stored as tiles), the gain shrinks, since PNG decoding and disk I/O may cost more relative to the render itself; a cache miss still falls back to a live render for that member, so enabling this setting should not make a coalesced request slower than it already was, only less beneficial for cheap-to-render members.
+
 Automatically cache non-default styles
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

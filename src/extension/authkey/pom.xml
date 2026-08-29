@@ -27,6 +27,7 @@
     <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <!-- this is here to override the json-smart -runtime- scope used by json-path -->

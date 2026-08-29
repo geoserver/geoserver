@@ -51,7 +51,7 @@ import org.geowebcache.layer.TileLayer;
  * contiguous live-render runs, and assembles the result. A Spring singleton with no per-request state: the {@link GWC}
  * mediator it delegates security/tile-layer lookups to is passed in by each call instead.
  */
-class CoalescedRequestSplitter {
+public class CoalescedRequestSplitter {
 
     /** Log message prefix for multi-layer tile coalescing, so these lines are easy to grep out on their own. */
     static final String MULTI_LAYER_LOG_PREFIX = "GWC MultiLayer >> ";
@@ -62,7 +62,7 @@ class CoalescedRequestSplitter {
 
     private final GetMap getMap;
 
-    CoalescedRequestSplitter(ImageDecoderContainer decoders, ImageEncoderContainer encoders, GetMap getMap) {
+    public CoalescedRequestSplitter(ImageDecoderContainer decoders, ImageEncoderContainer encoders, GetMap getMap) {
         this.decoders = decoders;
         this.encoders = encoders;
         this.getMap = getMap;

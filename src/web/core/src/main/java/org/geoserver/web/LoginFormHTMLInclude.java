@@ -23,6 +23,7 @@ import org.geoserver.template.TemplateUtils;
 import org.geotools.util.logging.Logging;
 
 /** @author Alessio Fabiani, GeoSolutions S.A.S. */
+@SuppressWarnings({"deprecation", "removal"})
 public class LoginFormHTMLInclude extends Include {
 
     protected static final Logger LOGGER = Logging.getLogger(LoginFormHTMLInclude.class);

@@ -4,18 +4,24 @@
  */
 package org.geoserver.config.util;
 
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.List;
+import java.util.logging.Level;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.util.LoggerRule;
+import org.geotools.util.logging.Logging;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -25,22 +31,14 @@ public class XStreamServiceLoaderTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    @Rule
+    public LoggerRule logging = new LoggerRule(Logging.getLogger(XStreamServiceLoader.class), Level.CONFIG);
+
     @Test
     public void testXstreamPersisterReusedIfCalledWithSameGeoServerInstance() throws Exception {
         GeoServerResourceLoader rl = new GeoServerResourceLoader(folder.getRoot());
 
-        XStreamServiceLoader<ServiceInfo> loader = new XStreamServiceLoader<>(rl, "test") {
-
-            @Override
-            public Class<ServiceInfo> getServiceClass() {
-                return ServiceInfo.class;
-            }
-
-            @Override
-            protected ServiceInfo createServiceFromScratch(GeoServer gs) {
-                return new ServiceInfoImpl();
-            }
-        };
+        XStreamServiceLoader<ServiceInfo> loader = new ServiceInfoXStreamServiceLoader(rl, "test");
         loader = spy(loader);
 
         GeoServerImpl gs1 = new GeoServerImpl();
@@ -62,5 +60,36 @@ public class XStreamServiceLoaderTest {
         loader.load(gs1);
         loader.load(gs1);
         verify(loader, times(2)).initXStreamPersister(any(XStreamPersister.class), same(gs1));
+    }
+
+    @Test
+    public void duplicateFilename() {
+        GeoServerResourceLoader rl = new GeoServerResourceLoader(folder.getRoot());
+        XStreamServiceLoader<ServiceInfo> loader1 = new ServiceInfoXStreamServiceLoader(rl, "conflict");
+        XStreamServiceLoader<ServiceInfo> loader2 = new ServiceInfoXStreamServiceLoader(rl, "conflict");
+        XStreamServiceLoader<ServiceInfo> loader3 = new ServiceInfoXStreamServiceLoader(rl, "unique");
+
+        List<XStreamServiceLoader<?>> loaders = List.of(loader1, loader2, loader3);
+        XStreamServiceLoader.checkFilenameConflicts(loaders);
+        logging.assertLogged(hasProperty("level", is(Level.SEVERE)));
+        logging.assertLogged(hasProperty("message", is("Duplicate config filename ''{0}'' claimed by: {1}")));
+    }
+
+    private static class ServiceInfoXStreamServiceLoader extends XStreamServiceLoader<ServiceInfo> {
+        public ServiceInfoXStreamServiceLoader(GeoServerResourceLoader rl, String filenameBase) {
+            super(rl, filenameBase);
+        }
+
+        @Override
+        public Class<ServiceInfo> getServiceClass() {
+            return ServiceInfo.class;
+        }
+
+        @Override
+        protected ServiceInfo createServiceFromScratch(GeoServer gs) {
+            ServiceInfo info = new ServiceInfoImpl();
+            info.setName(getFilename());
+            return info;
+        }
     }
 }

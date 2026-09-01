@@ -25,7 +25,7 @@ jobs:
           fetch-depth: 1
 
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: 'temurin'
           java-version: '17'        # only build the oldest Java version, but below run against the matrix of LTS versions

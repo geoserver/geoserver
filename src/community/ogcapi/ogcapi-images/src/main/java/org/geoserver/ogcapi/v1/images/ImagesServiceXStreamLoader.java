@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class ImagesServiceXStreamLoader extends XStreamServiceLoader<ImagesServiceInfo> {
 
     public ImagesServiceXStreamLoader(GeoServerResourceLoader resourceLoader) {
-        super(resourceLoader, "tiles");
+        super(resourceLoader, "images");
     }
 
     @Override

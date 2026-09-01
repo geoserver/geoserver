@@ -23,6 +23,7 @@
     <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -141,6 +142,35 @@
           <scope>test</scope>
         </dependency>
       </dependencies>
+    </profile>
+    <profile>
+      <!-- ApacheDS, the LDAP server these tests embed, asks for the regular BouncyCastle provider
+           by class name, and the FIPS jars have no such class; it also pulls the regular jars onto
+           the test classpath, which is what the ban above exists to catch. Neither is something
+           GeoServer does, and the module itself uses no BouncyCastle, so it still builds in this
+           shape and only its tests stay behind. LDAP authentication is not FIPS specific: what is
+           untested here is the test server, not the feature. -->
+      <id>fips</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <!-- Only this rule has to go: ApacheDS drags the regular BouncyCastle in. The
+                     Maven version and the encoding rules still apply to this module. -->
+                <id>ban-regular-bouncycastle</id>
+                <configuration>
+                  <skip>true</skip>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <properties>
+        <skipTests>true</skipTests>
+      </properties>
     </profile>
   </profiles>
 </project>

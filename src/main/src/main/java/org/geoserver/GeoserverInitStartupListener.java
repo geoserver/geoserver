@@ -44,6 +44,7 @@ import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.logging.LoggingUtils.GeoToolsLoggingRedirection;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.CryptoProviders;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.data.DataAccessFinder;
 import org.geotools.api.data.DataStoreFinder;
@@ -79,6 +80,10 @@ public class GeoserverInitStartupListener implements ServletContextListener {
     @Override
     @SuppressWarnings("PMD.CloseResource")
     public void contextInitialized(ServletContextEvent sce) {
+        // pick the crypto provider before any class that does encryption is loaded; once that
+        // happens the choice can no longer be changed
+        CryptoProviders.getProvider();
+
         // enable JTS overlay-ng unless otherwise set (first thing, before JTS has a chance
         // to initialize itself)
         if (System.getProperty("jts.overlay") == null) {

@@ -11,6 +11,7 @@ import org.geoserver.data.test.MockTestData;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.password.GeoServerDigestPasswordEncoder;
 import org.geoserver.security.password.GeoServerPBEPasswordEncoder;
+import org.geoserver.security.password.GeoServerPasswordEncoder;
 import org.geoserver.security.password.GeoServerPlainTextPasswordEncoder;
 
 /**
@@ -60,6 +61,14 @@ public class GeoServerMockTestSupport extends GeoServerBaseTestSupport<MockTestD
     /** Accessor for digest password encoder. */
     protected GeoServerDigestPasswordEncoder getDigestPasswordEncoder() {
         return getSecurityManager().loadPasswordEncoder(GeoServerDigestPasswordEncoder.class);
+    }
+
+    /**
+     * The reversible encoder a user group service gets by default. It is not the password based one on every
+     * deployment.
+     */
+    protected GeoServerPasswordEncoder getReversiblePasswordEncoder() {
+        return getSecurityManager().loadDefaultUserGroupPasswordEncoder();
     }
 
     /** Accessor for regular (weak encryption) pbe password encoder. */

@@ -21,6 +21,7 @@
     <configDirectory>${basedir}/../../../data</configDirectory>
     <webappSourceDirectory>${basedir}/src/main/webapp</webappSourceDirectory>
     <jetty.port>8080</jetty.port>
+    <jetty.stopPort>9966</jetty.stopPort>
     <jetty.run.daemon>false</jetty.run.daemon>
   </properties>
   <dependencies>
@@ -234,21 +235,20 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.jetty.ee10</groupId>
-      <artifactId>jetty-ee10-webapp</artifactId>
+      <groupId>org.eclipse.jetty.ee11</groupId>
+      <artifactId>jetty-ee11-webapp</artifactId>
       <version>${jetty.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.jetty.ee10</groupId>
-      <artifactId>jetty-ee10-servlet</artifactId>
+      <groupId>org.eclipse.jetty.ee11</groupId>
+      <artifactId>jetty-ee11-servlet</artifactId>
       <version>${jetty.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcpkix-lts8on</artifactId>
-      <version>2.73.10</version>
+      <artifactId>${bc.pkix.artifactId}</artifactId>
     </dependency>
     <dependency>
       <groupId>jakarta.servlet</groupId>
@@ -299,8 +299,8 @@
       </plugin>
 
       <plugin>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-maven-plugin</artifactId>
+        <groupId>org.eclipse.jetty.ee11</groupId>
+        <artifactId>jetty-ee11-maven-plugin</artifactId>
         <configuration>
           <webApp>
             <contextPath>/geoserver</contextPath>
@@ -341,7 +341,7 @@
         <configuration>
           <warName>geoserver</warName>
           <webappDirectory>${project.build.directory}/geoserver</webappDirectory>
-          <packagingExcludes>WEB-INF/lib/javax.servlet-api*.jar,WEB-INF/lib/javax.activation-api*.jar</packagingExcludes>
+          <packagingExcludes>WEB-INF/lib/jakarta.servlet-api*.jar</packagingExcludes>
           <archive>
             <manifest>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
@@ -411,6 +411,19 @@
       </properties>
     </profile>
 
+    <profile>
+      <!-- Same id as the fips profile in the root pom, so a single -Pfips also puts the status page
+           tab in the war. gs-fips-provider needs no entry here: the fips profile of gs-main pulls
+           it in and every module inherits it, which a web module cannot rely on. -->
+      <id>fips</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-fips</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
     <profile>
       <id>graticule</id>
       <dependencies>

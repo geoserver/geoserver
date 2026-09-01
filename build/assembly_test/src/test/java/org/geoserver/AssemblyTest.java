@@ -4,8 +4,6 @@
  */
 package org.geoserver;
 
-import static org.assertj.core.api.Assertions.fail;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -440,6 +438,11 @@ public class AssemblyTest {
             } finally {
                 FileUtils.deleteDirectory(testWorkDir.toFile());
             }
+        } catch (Throwable t) {
+            // name the plugin, but keep the original failure as the cause: it carries the only detail
+            // that tells a reader what went wrong
+            throw new AssertionError(
+                    "GeoServer failed to start or verify with plugin " + name + ": " + t.getMessage(), t);
         } finally {
             // return ports to pool
             if (httpPort != null) {
@@ -456,9 +459,6 @@ public class AssemblyTest {
             String detail =
                     "after " + elapsedMs + " ms" + (persistentLogFile != null ? ", log: " + persistentLogFile : "");
             logTestProgress(status, name, detail);
-            // finally verify if the plugin broke the startup, or not
-            if (!succeeded)
-                fail("GeoServer failed to start or verify with plugin " + name + ". Check startup logs for details.");
         }
     }
 

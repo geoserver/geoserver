@@ -14,8 +14,10 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import org.eclipse.jetty.ee10.webapp.WebAppContext;
+import org.eclipse.jetty.ee11.webapp.WebAppContext;
 import org.eclipse.jetty.server.Server;
+import org.geotools.util.NullEntityResolver;
+import org.geotools.util.factory.Hints;
 import org.geotools.xml.XMLUtils;
 import org.junit.Test;
 
@@ -24,14 +26,16 @@ public class WebXmlTest {
     @Test
     public void testWebXmlXsdCompliance() throws Exception {
         // makes sure web.xml is XSD compliant (without requiring internet access in the process)
-        SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        // NullEntityResolver is safe here since every schema is a local, vendored file
+        Hints hints = new Hints(Hints.ENTITY_RESOLVER, NullEntityResolver.INSTANCE);
+        SchemaFactory factory = XMLUtils.newSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI, hints);
         Schema schema = factory.newSchema(new Source[] {
             new StreamSource(new File("src/test/resources/xml.xsd")),
-            new StreamSource(new File("src/test/resources/web-app_3_1.xsd")),
-            new StreamSource(new File("src/test/resources/web-common_3_1.xsd")),
-            new StreamSource(new File("src/test/resources/javaee_7.xsd")),
-            new StreamSource(new File("src/test/resources/javaee_web_services_client_1_4.xsd")),
-            new StreamSource(new File("src/test/resources/jsp_2_3.xsd"))
+            new StreamSource(new File("src/test/resources/web-app_6_1.xsd")),
+            new StreamSource(new File("src/test/resources/web-common_6_1.xsd")),
+            new StreamSource(new File("src/test/resources/jakartaee_11.xsd")),
+            new StreamSource(new File("src/test/resources/jakartaee_web_services_client_2_0.xsd")),
+            new StreamSource(new File("src/test/resources/jsp_4_0.xsd"))
         });
         Validator validator = schema.newValidator();
         validator.validate(new StreamSource(new File("src/main/webapp/WEB-INF/web.xml")));

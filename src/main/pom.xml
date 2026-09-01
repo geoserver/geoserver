@@ -21,6 +21,13 @@
   <dependencies>
 
     <dependency>
+      <!-- surefire has it at run time already; declared so RestrictedJdkProvidersListener compiles -->
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-core</artifactId>
     </dependency>
@@ -141,7 +148,7 @@
     <dependency>
       <groupId>jakarta.activation</groupId>
       <artifactId>jakarta.activation-api</artifactId>
-
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -241,7 +248,7 @@
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-lts8on</artifactId>
+      <artifactId>${bc.prov.artifactId}</artifactId>
     </dependency>
 
     <dependency>
@@ -330,6 +337,25 @@
   </build>
 
   <profiles>
+    <profile>
+      <!-- Puts the FIPS provider on the classpath of the whole build, and in WEB-INF/lib of the
+           war: gs-web-app declares no BouncyCastle of its own, so this dependency is what ships
+           the provider. It also makes every module run its tests the way a deployment runs, with
+           the provider chosen through the extension point rather than by the harness. It is
+           declared here rather than in each module because compile scope is inherited and test
+           scope is not. Core then depends on a community module, which the profile being off by
+           default keeps out of a normal build.
+           It names gs-fips-provider, never gs-fips-tests, which depends on gs-main and would
+           close a cycle. -->
+      <id>fips</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-fips-provider</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
     <profile>
       <id>gs-test-dependences</id>
       <activation>

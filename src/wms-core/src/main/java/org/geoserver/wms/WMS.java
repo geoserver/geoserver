@@ -14,16 +14,23 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -2009,5 +2016,44 @@ public class WMS implements ApplicationContextAware {
 
     public boolean isAutoEscapeTemplateValues() {
         return getServiceInfo().isAutoEscapeTemplateValues();
+    }
+
+    /**
+     * The combined {@code Cache-Control} max-age for a GetMap response covering {@code layers}: present iff
+     * {@code isGet} and every layer has caching enabled, in which case it is the smallest of each layer's own max age.
+     * Shared by the live multi-layer GetMap path and GWC's coalesced tile-caching path so both apply the exact same
+     * rule.
+     */
+    public static OptionalInt cacheMaxAge(boolean isGet, List<MapLayerInfo> layers) {
+        if (!isGet || layers.isEmpty()) {
+            return OptionalInt.empty();
+        }
+        int maxAge = Integer.MAX_VALUE;
+        for (MapLayerInfo layer : layers) {
+            if (!layer.isCachingEnabled()) {
+                return OptionalInt.empty();
+            }
+            maxAge = Math.min(maxAge, layer.getCacheMaxAge());
+        }
+        return OptionalInt.of(maxAge);
+    }
+
+    /**
+     * Formats the {@code Cache-Control}/{@code Expires} header pair for {@code maxAgeSeconds}, as computed by
+     * {@link #cacheMaxAge}.
+     */
+    public static Map<String, String> cacheControlHeaders(int maxAgeSeconds) {
+        Map<String, String> headers = new LinkedHashMap<>();
+        headers.put("Cache-Control", "max-age=" + maxAgeSeconds + ", must-revalidate");
+
+        GregorianCalendar calendar = new GregorianCalendar(GetMap.GMT_TIME_ZONE);
+        calendar.add(Calendar.SECOND, maxAgeSeconds);
+        // not thread-safe, must stay a fresh instance per call; Locale.US because an HTTP-date's day and month
+        // names are always English, see RFC 9110 section 5.6.7
+        DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+        format.setTimeZone(GetMap.GMT_TIME_ZONE);
+        headers.put("Expires", format.format(calendar.getTime()));
+
+        return headers;
     }
 }

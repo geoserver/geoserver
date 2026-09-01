@@ -112,7 +112,7 @@
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-lts8on</artifactId>
+      <artifactId>${bc.prov.artifactId}</artifactId>
     </dependency>
     <dependency>
       <groupId>com.github.svenmeier.wicket-dnd</groupId>
@@ -166,6 +166,12 @@
             </goals>
             <configuration>
               <target>
+                <!-- Fallback, used only when the property is not set. That happens when there
+                     is no git repository to read the revision from, as in a source archive.
+                     git-commit-id-plugin does not fail the build in that case.
+                     The value goes into a message shown by the About page. An unresolved
+                     property there breaks the whole page. -->
+                <property name="build.commit.id" value="unknown"></property>
                 <replace dir="${project.build.outputDirectory}" encoding="ISO-8859-1">
                   <include name="*.properties"></include>
                   <replacefilter token="@project.version@" value="${project.version}"></replacefilter>

@@ -14,6 +14,7 @@ import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig;
 import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.security.password.JasyptDefaults;
 import org.geoserver.security.validation.PasswordPolicyException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -50,7 +51,7 @@ public class PwdEnvParametrizationTest extends AbstractAuthenticationProviderTes
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         createUserGroupService(PLAIN_UG_SRV, getPlainTextPasswordEncoder().getName());
-        createUserGroupService(PBE_UG_SRV, getPBEPasswordEncoder().getName());
+        createUserGroupService(PBE_UG_SRV, getReversiblePasswordEncoder().getName());
         createUserGroupService(STRONG_PBE_UG_SRV, getStrongPBEPasswordEncoder().getName());
         UsernamePasswordAuthenticationProviderConfig plainTxt = new UsernamePasswordAuthenticationProviderConfig();
         plainTxt.setUserGroupServiceName(PLAIN_UG_SRV);
@@ -132,6 +133,7 @@ public class PwdEnvParametrizationTest extends AbstractAuthenticationProviderTes
 
     @Test
     public void testStrongPBETxtUgSrvWithPlainTxtPwd() throws IOException, PasswordPolicyException {
+        JasyptDefaults.assumeStrongPbeUsable();
         String key = "env.pwd5";
         System.setProperty(key, "plain:my_password");
         try {

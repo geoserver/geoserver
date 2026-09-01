@@ -22,6 +22,7 @@ import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensionsHelper;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,7 +60,12 @@ public class XStreamPersisterIntegrationTest extends GeoServerSystemTestSupport 
         // check password has been encrypted
         XMLAssert.assertXpathExists("/wmsStore/password", dom);
         XMLAssert.assertXpathNotExists("/wmsStore[password = 'password']", dom);
-        XMLAssert.assertXpathExists("/wmsStore[starts-with(password, 'crypt1:')]", dom);
+        // the encoder is whichever one the installation was configured with, not a fixed one:
+        // a deployment whose crypto provider cannot run the usual default gets another
+        GeoServerSecurityManager securityManager = getSecurityManager();
+        String encoderName = securityManager.getSecurityConfig().getConfigPasswordEncrypterName();
+        String prefix = securityManager.loadPasswordEncoder(encoderName).getPrefix();
+        XMLAssert.assertXpathExists("/wmsStore[starts-with(password, '" + prefix + ":')]", dom);
 
         WMSStoreInfo loaded = persister.load(new ByteArrayInputStream(out.toByteArray()), WMSStoreInfo.class);
         assertEquals("password", loaded.getPassword());

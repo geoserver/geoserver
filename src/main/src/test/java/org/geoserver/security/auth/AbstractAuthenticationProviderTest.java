@@ -147,7 +147,7 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
 
     @Override
     public GeoServerUserGroupService createUserGroupService(String name) throws Exception {
-        return createUserGroupService(name, getPBEPasswordEncoder().getName());
+        return createUserGroupService(name, getReversiblePasswordEncoder().getName());
     }
 
     public GeoServerUserGroupService createUserGroupService(String name, String passwordEncoderName) throws Exception {
@@ -382,7 +382,7 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
                     throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException,
                             SignatureException {}
         };
-        request.setAttribute("javax.servlet.request.X509Certificate", new X509Certificate[] {x509});
+        request.setAttribute("jakarta.servlet.request.X509Certificate", new X509Certificate[] {x509});
     }
 
     //    @Override

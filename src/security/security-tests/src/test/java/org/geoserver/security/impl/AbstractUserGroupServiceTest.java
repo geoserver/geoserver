@@ -233,7 +233,7 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
                 .getPassword()
                 .startsWith(getPlainTextPasswordEncoder().getPrefix()));
 
-        config.setPasswordEncoderName(getPBEPasswordEncoder().getName());
+        config.setPasswordEncoderName(getReversiblePasswordEncoder().getName());
         getSecurityManager().saveUserGroupService(config);
         service.initializeFromConfig(config);
 
@@ -241,10 +241,10 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
         // recoding
         assertTrue(service.loadUserByUsername("u1")
                 .getPassword()
-                .startsWith(getPBEPasswordEncoder().getPrefix()));
+                .startsWith(getReversiblePasswordEncoder().getPrefix()));
         assertTrue(service.loadUserByUsername("u2")
                 .getPassword()
-                .startsWith(getPBEPasswordEncoder().getPrefix()));
+                .startsWith(getReversiblePasswordEncoder().getPrefix()));
 
         config.setPasswordEncoderName(getDigestPasswordEncoder().getName());
         getSecurityManager().saveUserGroupService(config);
@@ -259,7 +259,7 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
                 .getPassword()
                 .startsWith(getDigestPasswordEncoder().getPrefix()));
 
-        config.setPasswordEncoderName(getPBEPasswordEncoder().getName());
+        config.setPasswordEncoderName(getReversiblePasswordEncoder().getName());
         getSecurityManager().saveUserGroupService(config);
         service.initializeFromConfig(config);
 
@@ -285,7 +285,7 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
                 .startsWith(getDigestPasswordEncoder().getPrefix()));
         assertTrue(service.loadUserByUsername("u3")
                 .getPassword()
-                .startsWith(getPBEPasswordEncoder().getPrefix()));
+                .startsWith(getReversiblePasswordEncoder().getPrefix()));
 
         config.setPasswordEncoderName(getEmptyEncoder().getName());
         getSecurityManager().saveUserGroupService(config);
@@ -303,7 +303,7 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
                 .getPassword()
                 .startsWith(getEmptyEncoder().getPrefix()));
 
-        config.setPasswordEncoderName(getPBEPasswordEncoder().getName());
+        config.setPasswordEncoderName(getReversiblePasswordEncoder().getName());
         getSecurityManager().saveUserGroupService(config);
         service.initializeFromConfig(config);
 

@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.logging.Level;
 import org.eclipse.imagen.PlanarImage;
@@ -55,6 +56,13 @@ class CoalescedRequestSplitter {
 
     /** Log message prefix for multi-layer tile coalescing, so these lines are easy to grep out on their own. */
     static final String MULTI_LAYER_LOG_PREFIX = "GWC MultiLayer >> ";
+
+    /**
+     * Request formats a coalesced tile can be assembled for. Members are decoded to ARGB and stacked, so png8 costs one
+     * extra quantization of the finished canvas (its member tiles were already quantized when they were cached) and its
+     * palette alpha is 1-bit, unlike {@code image/png}.
+     */
+    private static final Set<String> CACHEABLE_FORMATS = Set.of("image/png", "image/png8");
 
     private final ImageDecoderContainer decoders;
 
@@ -103,12 +111,6 @@ class CoalescedRequestSplitter {
             TileStackAssembler assembler = new TileStackAssembler(decoders, encoders);
             assembled = assembler.assemble(
                     this, gwc, request, segments, firstCached.member().tile().getMimeType(), deadline);
-        } catch (OutsideCoverageException e) {
-            // routine for a sparse member layer, not an error: same handling as the single-layer path
-            final String msg = e.getMessage() != null ? e.getMessage() : "tile outside coverage";
-            requestMismatchTarget.append(msg);
-            GWC.log.log(Level.FINE, msg);
-            return null;
         } catch (Exception e) {
             // Re-checking our own deadline, rather than inspecting the exception, tells if it has genuinely passed
             // In that case, a live re-render would just hit the same wall, so fail hard with no fallback.
@@ -116,6 +118,14 @@ class CoalescedRequestSplitter {
             if (deadline > 0 && System.currentTimeMillis() > deadline) {
                 String msg = "This request used more time than allowed and has been forcefully stopped.";
                 throw e instanceof ServiceException se ? se : new ServiceException(msg, e);
+            }
+            if (e instanceof OutsideCoverageException) {
+                // routine for a sparse member layer, not an error: classifyCoalescedMembers already skips the
+                // members this tile is outside of, so getting here means the coverage changed underneath us
+                final String msg = e.getMessage() != null ? e.getMessage() : "tile outside coverage";
+                GWC.log.log(Level.FINE, msg);
+                requestMismatchTarget.append(msg);
+                return null;
             }
             GWC.log.log(Level.INFO, "Error assembling coalesced tile", e);
             requestMismatchTarget.append("error assembling coalesced tile: ").append(e.getMessage());
@@ -354,8 +364,11 @@ class CoalescedRequestSplitter {
             requestMismatchTarget.append("multi-layer tile caching disabled");
             return null;
         }
-        if (!"image/png".equals(request.getFormat()) || !request.isTransparent()) {
-            requestMismatchTarget.append("multi-layer tile caching requires transparent image/png");
+        String format = request.getFormat();
+        // null-safe on purpose: FORMAT is only made mandatory later, in GetMap#assertMandatory, and Set#contains
+        // would throw on a null element
+        if (format == null || !CACHEABLE_FORMATS.contains(format) || !request.isTransparent()) {
+            requestMismatchTarget.append("multi-layer tile caching requires transparent image/png or image/png8");
             return null;
         }
         if (request.getRawKvp().get("FEATUREID") != null) {
@@ -536,6 +549,14 @@ class CoalescedRequestSplitter {
                 memberTile = gwc.prepareRequest(tileLayer, memberRequest, memberMismatch);
                 if (memberTile == null) {
                     liveReason = "'" + layerName + "': " + memberMismatch;
+                } else if (!tileLayer.getGridSubset(memberTile.getGridSetId()).covers(memberTile.getTileIndex())) {
+                    // sparse member: this tile is outside the layer's cached coverage, so asking its cache for it
+                    // would throw OutsideCoverageException and drop the whole stack to a live combined render. Only
+                    // this member needs the live render, and it does need one: a coverage can be narrower than the
+                    // data behind it (explicit cache bounds, or a zoom outside the subset's range), so an empty
+                    // tile is not a safe substitute
+                    liveReason = "'" + layerName + "' tile is outside its cached coverage";
+                    memberTile = null;
                 } else if (gridSetId == null) {
                     gridSetId = memberTile.getGridSetId();
                     tileIndex = memberTile.getTileIndex();

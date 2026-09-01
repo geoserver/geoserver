@@ -1646,6 +1646,20 @@ public class GWCTest {
         mismatch = new StringBuilder();
         assertNull(splitter.classifyCoalescedMembers(mediator, request, mismatch));
         assertTrue(mismatch.toString().contains("requires transparent image/png"));
+
+        // png8 passes the format gate: members are stacked in ARGB and the palette is applied when the assembled
+        // canvas is encoded, so the gate must not reject it along with the truly unsupported formats
+        request.setFormat("image/png8");
+        request.setTransparent(true);
+        mismatch = new StringBuilder();
+        assertNotNull(splitter.classifyCoalescedMembers(mediator, request, mismatch));
+        assertEquals("", mismatch.toString());
+
+        // FORMAT is only made mandatory further down the line, in GetMap, so the gate has to survive a null one
+        request.setFormat(null);
+        mismatch = new StringBuilder();
+        assertNull(splitter.classifyCoalescedMembers(mediator, request, mismatch));
+        assertTrue(mismatch.toString().contains("requires transparent image/png"));
     }
 
     @Test

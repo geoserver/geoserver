@@ -18,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.IndexColorModel;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,6 +38,7 @@ import org.geoserver.gwc.layer.TileLayerInfoUtil;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wms.WMSInfo;
 import org.geotools.image.test.ImageAssert;
+import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.layer.TileLayer;
@@ -90,11 +92,16 @@ public class MultiLayerCoalescingIntegrationTest extends GeoServerSystemTestSupp
     }
 
     private String coalescedGetMap(String layers) {
+        return coalescedGetMap(layers, "image/png");
+    }
+
+    private String coalescedGetMap(String layers, String format) {
         long[] coverage = gridSubset.getCoverage(0);
         long[] tileIndex = {coverage[0], coverage[1], coverage[4]};
         BoundingBox bounds = gridSubset.boundsFromIndex(tileIndex);
 
-        return "wms?service=WMS&request=GetMap&version=1.1.1&format=image/png&transparent=true&tiled=true"
+        return "wms?service=WMS&request=GetMap&version=1.1.1&transparent=true&tiled=true"
+                + "&format=" + format
                 + "&layers=" + layers
                 + "&srs=" + gridSubset.getSRS()
                 + "&width=" + gridSubset.getGridSet().getTileWidth()
@@ -103,10 +110,14 @@ public class MultiLayerCoalescingIntegrationTest extends GeoServerSystemTestSupp
     }
 
     private TileObject sampleTile(String layerName) throws StorageException {
+        return sampleTile(layerName, "image/png");
+    }
+
+    private TileObject sampleTile(String layerName, String format) throws StorageException {
         long[] coverage = gridSubset.getCoverage(0);
         long[] tileIndex = {coverage[0], coverage[1], coverage[4]};
         TileObject tileObject = TileObject.createQueryTileObject(
-                layerName, tileIndex, gridSubset.getName(), "image/png", Collections.emptyMap());
+                layerName, tileIndex, gridSubset.getName(), format, Collections.emptyMap());
         GWC.get().getCompositeBlobStore().get(tileObject);
         return tileObject;
     }
@@ -116,7 +127,12 @@ public class MultiLayerCoalescingIntegrationTest extends GeoServerSystemTestSupp
      * still be in flight when the coalesced request returns.
      */
     private void awaitCached(String layerName) {
-        await().atMost(5, TimeUnit.SECONDS).until(() -> sampleTile(layerName).getStatus() != StorageObject.Status.MISS);
+        awaitCached(layerName, "image/png");
+    }
+
+    private void awaitCached(String layerName, String format) {
+        await().atMost(5, TimeUnit.SECONDS)
+                .until(() -> sampleTile(layerName, format).getStatus() != StorageObject.Status.MISS);
     }
 
     /**
@@ -160,6 +176,138 @@ public class MultiLayerCoalescingIntegrationTest extends GeoServerSystemTestSupp
         assertEquals(200, secondResponse.getStatus());
         assertEquals("HIT", secondResponse.getHeader("geowebcache-cache-result"));
         assertArrayEquals(coalescedBytes, secondResponse.getContentAsByteArray());
+    }
+
+    @Test
+    public void testMemberOutsideItsCachedCoverageIsLiveRenderedOnly() throws Exception {
+        // populate layer1's cache through an ordinary single-layer request; layer2's stays empty
+        getAsServletResponse(coalescedGetMap(layer1));
+        awaitCached(layer1);
+
+        long[] coverage = gridSubset.getCoverage(0);
+        long[] tileIndex = {coverage[0], coverage[1], coverage[4]};
+        BoundingBox requested = gridSubset.boundsFromIndex(tileIndex);
+        BoundingBox gridSetBounds = gridSubset.getGridSetBounds();
+        // everything east of the requested tile: layer2 then caches a strip that excludes the tile asked for below
+        BoundingBox elsewhere = new BoundingBox(
+                requested.getMaxX(), gridSetBounds.getMinY(), gridSetBounds.getMaxX(), gridSetBounds.getMaxY());
+
+        BoundingBox previousExtent = setCachedExtent(layer2, elsewhere);
+        try {
+            // guards the premise rather than assuming the layer bounds: without this the test could pass for the
+            // wrong reason if the narrowed extent still covered the tile
+            GeoServerTileLayer narrowed = (GeoServerTileLayer) GWC.get().getTileLayerByName(layer2);
+            assertFalse(narrowed.getGridSubset(gridSubset.getName()).covers(tileIndex));
+
+            MockHttpServletResponse response = getAsServletResponse(coalescedGetMap(layer1 + "," + layer2));
+
+            assertEquals(200, response.getStatus());
+            assertEquals("image/png", response.getContentType());
+            // the whole stack used to drop to a live combined render here; only layer2 does now
+            assertEquals("PARTIAL 1/2", response.getHeader("geowebcache-cache-result"));
+
+            // the live-rendered member was spliced in, not dropped
+            byte[] coalescedBytes = response.getContentAsByteArray();
+            MockHttpServletResponse layer1Response = getAsServletResponse(coalescedGetMap(layer1));
+            assertFalse(Arrays.equals(coalescedBytes, layer1Response.getContentAsByteArray()));
+
+            // an out-of-coverage member is never cached for this tile, so the next request splits the same way
+            assertEquals(StorageObject.Status.MISS, sampleTile(layer2).getStatus());
+            assertEquals(
+                    "PARTIAL 1/2",
+                    getAsServletResponse(coalescedGetMap(layer1 + "," + layer2)).getHeader("geowebcache-cache-result"));
+        } finally {
+            setCachedExtent(layer2, previousExtent);
+        }
+    }
+
+    /**
+     * Narrows (or restores) the extent this layer caches for the test gridset.
+     *
+     * @return the extent that was configured before this call
+     */
+    private BoundingBox setCachedExtent(String layerName, BoundingBox extent) {
+        GeoServerTileLayer tileLayer = (GeoServerTileLayer) GWC.get().getTileLayerByName(layerName);
+        XMLGridSubset subset = tileLayer.getInfo().getGridSubsets().stream()
+                .filter(candidate -> gridSubset.getName().equals(candidate.getGridSetName()))
+                .findFirst()
+                .orElseThrow();
+        BoundingBox previous = subset.getExtent();
+        subset.setExtent(extent);
+        GWC.get().save(tileLayer);
+        return previous;
+    }
+
+    @Test
+    public void testCoalescedPng8Request() throws Exception {
+        cachePng8(layer1);
+        cachePng8(layer2);
+        try {
+            assertCoalescedPng8();
+        } finally {
+            uncachePng8(layer1);
+            uncachePng8(layer2);
+        }
+    }
+
+    private void assertCoalescedPng8() throws Exception {
+        String url = coalescedGetMap(layer1 + "," + layer2, "image/png8");
+        MockHttpServletResponse response = getAsServletResponse(url);
+
+        assertEquals(200, response.getStatus());
+        // png8 shares image/png as its response content type, exactly as a single-layer png8 tile does
+        assertEquals("image/png", response.getContentType());
+        assertNull(response.getHeader("geowebcache-miss-reason"));
+
+        // the stacked canvas is composited in ARGB, so the palette can only come from encoding it as png8
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        assertTrue(image.getColorModel() instanceof IndexColorModel);
+
+        // members are cached under png8, not under png: a png8 request must not be served from png tiles
+        awaitCached(layer1, "image/png8");
+        awaitCached(layer2, "image/png8");
+        assertEquals(StorageObject.Status.MISS, sampleTile(layer1).getStatus());
+
+        awaitCoalescedHit(url);
+    }
+
+    @Test
+    public void testCoalescedRequestRejectsPng8WithoutAPng8Cache() throws Exception {
+        // no cachePng8() here: the members only cache image/png, so no member qualifies for a png8 request
+        MockHttpServletResponse response = getAsServletResponse(coalescedGetMap(layer1 + "," + layer2, "image/png8"));
+
+        assertEquals(200, response.getStatus());
+        assertEquals("MISS", response.getHeader("geowebcache-cache-result"));
+        assertTrue(response.getHeader("geowebcache-miss-reason").contains("no member"));
+    }
+
+    @Test
+    public void testCoalescedRequestRejectsJpeg() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(coalescedGetMap(layer1 + "," + layer2, "image/jpeg"));
+
+        assertEquals(200, response.getStatus());
+        assertEquals("MISS", response.getHeader("geowebcache-cache-result"));
+        assertTrue(response.getHeader("geowebcache-miss-reason").contains("transparent image/png or image/png8"));
+    }
+
+    /** Adds png8 to a member's cached formats, so a png8 coalesced request can find a tile for it. */
+    private void cachePng8(String layerName) {
+        setPng8Cached(layerName, true);
+    }
+
+    /** Restores the member's cached formats, so the png8 tests don't leak into the ones that expect png only. */
+    private void uncachePng8(String layerName) {
+        setPng8Cached(layerName, false);
+    }
+
+    private void setPng8Cached(String layerName, boolean cached) {
+        GeoServerTileLayer tileLayer = (GeoServerTileLayer) GWC.get().getTileLayerByName(layerName);
+        if (cached) {
+            tileLayer.getInfo().getMimeFormats().add("image/png8");
+        } else {
+            tileLayer.getInfo().getMimeFormats().remove("image/png8");
+        }
+        GWC.get().save(tileLayer);
     }
 
     @Test

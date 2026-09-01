@@ -16,7 +16,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.geofence.core.db.GeofenceTestDatabase;
 import org.geofence.core.model.enums.CatalogMode;
 import org.geofence.core.model.enums.GrantType;
 import org.geofence.core.model.enums.SpatialFilterType;
@@ -31,6 +30,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.geofence.GeofenceAccessManager;
 import org.geoserver.geofence.config.GeoFenceConfiguration;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
+import org.geoserver.geofence.server.GeofenceDatabaseRule;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.security.VectorAccessLimits;
@@ -48,6 +48,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.Converters;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -63,9 +64,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class GeofenceAccessManagerIntegrationTest extends GeoServerSystemTestSupport {
 
-    static {
-        GeofenceTestDatabase.configureAsDatasourceOverride();
-    }
+    @ClassRule
+    public static final GeofenceDatabaseRule database = new GeofenceDatabaseRule();
 
     public GeofenceIntegrationTestSupport support;
 

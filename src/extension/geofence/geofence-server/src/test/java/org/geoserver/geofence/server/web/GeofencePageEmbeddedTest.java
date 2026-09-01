@@ -5,19 +5,19 @@
 package org.geoserver.geofence.server.web;
 
 import org.apache.wicket.model.StringResourceModel;
-import org.geofence.core.db.GeofenceTestDatabase;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.geofence.server.GeofenceDatabaseRule;
 import org.geoserver.geofence.web.GeofencePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 /** {@link GeofencePage}'s "test connection" button, exercised with the embedded engine actually on the classpath. */
 public class GeofencePageEmbeddedTest extends GeoServerWicketTestSupport {
 
-    static {
-        GeofenceTestDatabase.configureAsDatasourceOverride();
-    }
+    @ClassRule
+    public static final GeofenceDatabaseRule database = new GeofenceDatabaseRule();
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {

@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.custommonkey.xmlunit.XMLAssert;
-import org.geofence.core.db.GeofenceTestDatabase;
 import org.geofence.core.db.dao.DuplicateKeyException;
 import org.geofence.core.model.IPAddressRange;
 import org.geofence.core.model.LayerAttribute;
@@ -35,12 +34,14 @@ import org.geofence.core.services.exception.NotFoundServiceEx;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.geofence.GeofenceBaseTest;
+import org.geoserver.geofence.server.GeofenceDatabaseRule;
 import org.geoserver.geofence.server.rest.xml.JaxbRule;
 import org.geoserver.geofence.server.rest.xml.JaxbRuleList;
 import org.geoserver.geofence.server.xstream.GeoFenceServerXStreamInitializer;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.gml3.bindings.GML3MockData;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.kordamp.json.JSONArray;
 import org.kordamp.json.JSONObject;
@@ -54,9 +55,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 public class RulesRestControllerTest extends GeofenceBaseTest {
 
-    static {
-        GeofenceTestDatabase.configureAsDatasourceOverride();
-    }
+    @ClassRule
+    public static final GeofenceDatabaseRule database = new GeofenceDatabaseRule();
 
     protected RulesRestController controller;
 

@@ -10,12 +10,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.logging.Level;
-import org.geofence.core.db.GeofenceTestDatabase;
 import org.geofence.core.services.RuleAdminService;
 import org.geofence.core.services.dto.ShortRule;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.geofence.server.GeofenceDatabaseRule;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 /**
@@ -25,9 +26,8 @@ import org.junit.Test;
  */
 public class GeofenceRulesModelTest extends GeoServerWicketTestSupport {
 
-    static {
-        GeofenceTestDatabase.configureAsDatasourceOverride();
-    }
+    @ClassRule
+    public static final GeofenceDatabaseRule database = new GeofenceDatabaseRule();
 
     @Override
     protected void onTearDown(SystemTestData testData) throws Exception {

@@ -7,7 +7,6 @@ package org.geoserver.geofence.server.internal;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.geofence.core.db.GeofenceTestDatabase;
 import org.geofence.core.model.Rule;
 import org.geofence.core.model.RuleLimits;
 import org.geofence.core.model.enums.CatalogMode;
@@ -19,8 +18,10 @@ import org.geofence.core.services.dto.AccessInfo;
 import org.geofence.core.services.dto.RuleFilter;
 import org.geofence.core.services.dto.ShortRule;
 import org.geoserver.geofence.GeofenceBaseTest;
+import org.geoserver.geofence.server.GeofenceDatabaseRule;
 import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.io.ParseException;
@@ -29,10 +30,8 @@ import org.locationtech.jts.io.WKTReader;
 /** @author Niels Charlier */
 public class InternalServicesTest extends GeofenceBaseTest {
 
-    static {
-        // Must run before the Spring context builds, so a static initializer.
-        GeofenceTestDatabase.configureAsDatasourceOverride();
-    }
+    @ClassRule
+    public static final GeofenceDatabaseRule database = new GeofenceDatabaseRule();
 
     protected RuleAdminService adminService;
 

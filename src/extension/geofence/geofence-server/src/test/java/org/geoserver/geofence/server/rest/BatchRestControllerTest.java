@@ -18,15 +18,20 @@ import org.geofence.core.services.dto.ShortRule;
 import org.geofence.core.services.exception.BadRequestServiceEx;
 import org.geofence.core.services.exception.NotFoundServiceEx;
 import org.geoserver.geofence.GeofenceBaseTest;
+import org.geoserver.geofence.server.GeofenceDatabaseRule;
 import org.geoserver.geofence.server.rest.xml.Batch;
 import org.geoserver.geofence.server.rest.xml.BatchOperation;
 import org.geoserver.geofence.server.rest.xml.JaxbAdminRule;
 import org.geoserver.geofence.server.rest.xml.JaxbRule;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 
 public class BatchRestControllerTest extends GeofenceBaseTest {
+
+    @ClassRule
+    public static final GeofenceDatabaseRule database = new GeofenceDatabaseRule();
 
     private BatchRestController controller;
 

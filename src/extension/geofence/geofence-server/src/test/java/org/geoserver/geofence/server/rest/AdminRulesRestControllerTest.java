@@ -20,14 +20,19 @@ import org.geofence.core.services.AdminRuleAdminService;
 import org.geofence.core.services.dto.ShortAdminRule;
 import org.geofence.core.services.exception.NotFoundServiceEx;
 import org.geoserver.geofence.GeofenceBaseTest;
+import org.geoserver.geofence.server.GeofenceDatabaseRule;
 import org.geoserver.geofence.server.rest.xml.JaxbAdminRule;
 import org.geoserver.geofence.server.rest.xml.JaxbAdminRuleList;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public class AdminRulesRestControllerTest extends GeofenceBaseTest {
+
+    @ClassRule
+    public static final GeofenceDatabaseRule database = new GeofenceDatabaseRule();
 
     protected AdminRulesRestController controller;
 

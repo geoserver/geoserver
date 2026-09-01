@@ -17,6 +17,7 @@ import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.ogcapi.LinksBuilder;
+import org.geoserver.ogcapi.ResourceNotFoundException;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wms.WMS;
@@ -52,6 +53,10 @@ public class Tileset extends AbstractDocument {
     public Tileset(
             WMS wms, TileLayer tileLayer, DataType dataType, String tileMatrixId, String styleId, boolean addDetails) {
         GridSubset gridSubset = tileLayer.getGridSubset(tileMatrixId);
+        if (gridSubset == null) {
+            throw new ResourceNotFoundException(
+                    "Tile matrix set " + tileMatrixId + " is not available for collection " + tileLayer.getName());
+        }
         this.gridSubsetId = tileMatrixId;
         this.dataType = dataType;
         this.styleId = styleId;

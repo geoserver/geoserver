@@ -24,24 +24,16 @@ public class SecurityContextUserResolverTest {
 
     @Test
     public void existsUser() {
-        // Given
-        SecurityContextUserResolver securityContextUserResolver = new SecurityContextUserResolver();
-
-        // When and Then
         // TODO: check this
         //        Assert.assertThrows(IllegalStateException.class, () ->
-        // securityContextUserResolver.existsUser("some-user"));
+        // new SecurityContextUserResolver().existsUser("some-user"));
     }
 
     @Test
     public void existsRole() {
-        // Given
-        SecurityContextUserResolver securityContextUserResolver = new SecurityContextUserResolver();
-
-        // When and Then
         // TODO: check this
         //        Assert.assertThrows(IllegalStateException.class, () ->
-        // securityContextUserResolver.existsRole("some-role"));
+        // new SecurityContextUserResolver().existsRole("some-role"));
     }
 
     @Test

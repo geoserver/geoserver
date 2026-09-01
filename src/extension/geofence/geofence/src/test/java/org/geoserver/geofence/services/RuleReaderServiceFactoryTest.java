@@ -10,12 +10,23 @@ import static org.junit.Assert.assertTrue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.geofence.core.services.RuleReaderService;
 import org.geoserver.geofence.utils.RuleReaderServiceAdapter;
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.context.support.GenericApplicationContext;
 
 public class RuleReaderServiceFactoryTest {
 
     private static final String BEAN_NAME = "testRuleReader";
+
+    /** Kept as a field so it outlives factoryFor(), which hands it to the factory. */
+    private GenericApplicationContext context;
+
+    @After
+    public void closeContext() {
+        if (context != null) {
+            context.close();
+        }
+    }
 
     @Test
     public void testDenyUntilRecovered() {
@@ -55,7 +66,7 @@ public class RuleReaderServiceFactoryTest {
     }
 
     private RuleReaderServiceFactory factoryFor(RuleReaderService backend) {
-        GenericApplicationContext context = new GenericApplicationContext();
+        context = new GenericApplicationContext();
         context.registerBean(BEAN_NAME, RuleReaderService.class, () -> backend);
         context.refresh();
 

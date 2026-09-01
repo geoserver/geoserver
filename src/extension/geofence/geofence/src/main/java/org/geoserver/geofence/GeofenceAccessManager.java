@@ -1087,11 +1087,13 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
     /** An helper that avoids duplicating the code to parse the layers parameter */
     static final class LayersParser extends GetMapKvpRequestReader {
 
-        private static LayersParser singleton = null;
+        // lazy, thread-safe init without locking: the JVM guarantees a class is initialized at most once
+        private static final class Holder {
+            private static final LayersParser INSTANCE = new LayersParser();
+        }
 
         public static LayersParser getInstance() {
-            if (singleton == null) singleton = new LayersParser();
-            return singleton;
+            return Holder.INSTANCE;
         }
 
         private LayersParser() {

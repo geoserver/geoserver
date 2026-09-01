@@ -40,7 +40,6 @@ public class RestRuleReaderServiceTest {
 
         assertNull(query.userName);
         assertNull(query.userDefault);
-        assertNull(query.instanceId);
         assertNull(query.instanceName);
         assertNull(query.instanceDefault);
     }
@@ -52,7 +51,6 @@ public class RestRuleReaderServiceTest {
 
         assertNull(query.userName);
         assertTrue(query.userDefault);
-        assertNull(query.instanceId);
         assertNull(query.instanceName);
         assertTrue(query.instanceDefault);
     }

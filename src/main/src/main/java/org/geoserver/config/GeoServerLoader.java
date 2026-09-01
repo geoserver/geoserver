@@ -915,6 +915,7 @@ public abstract class GeoServerLoader {
             @SuppressWarnings("unchecked")
             final List<XStreamServiceLoader<ServiceInfo>> loaders =
                     (List) GeoServerExtensions.extensions(XStreamServiceLoader.class);
+            XStreamServiceLoader.checkFilenameConflicts(loaders);
             loadServices(resourceLoader.get(""), true, loaders, geoServer);
 
             // load services specific to workspace

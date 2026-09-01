@@ -82,6 +82,7 @@ class DataDirectoryWalker {
         this.serviceLoaders = serviceLoaders.stream()
                 .map(l -> (XStreamServiceLoader<ServiceInfo>) l)
                 .collect(Collectors.toList());
+        XStreamServiceLoader.checkFilenameConflicts(this.serviceLoaders);
         this.serviceFileNames = this.serviceLoaders.stream()
                 .map(XStreamServiceLoader::getFilename)
                 .collect(Collectors.toList());

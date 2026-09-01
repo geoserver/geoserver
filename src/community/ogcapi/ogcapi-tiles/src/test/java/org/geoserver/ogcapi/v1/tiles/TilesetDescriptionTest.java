@@ -101,6 +101,15 @@ public class TilesetDescriptionTest extends TilesTestSupport {
     }
 
     @Test
+    public void getTilesetForUnknownTileMatrixSet() throws Exception {
+        String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
+        DocumentContext json = getAsJSONPath("ogc/tiles/v1/collections/" + roadSegments + "/tiles/WorldCRS84Quad", 404);
+        assertEquals("ResourceNotFound", json.read("type"));
+        assertEquals(
+                "Tile matrix set WorldCRS84Quad is not available for collection cite:RoadSegments", json.read("title"));
+    }
+
+    @Test
     public void getDataTilesMetadataHTML() throws Exception {
         String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
         getAsJSoup("ogc/tiles/v1/collections/" + roadSegments + "/tiles?f=text/html");

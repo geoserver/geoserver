@@ -183,6 +183,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat implements Compl
         transformer.setNumDecimals(numDecimals);
         transformer.setPadWithZeros(padWithZeros);
         transformer.setForceDecimalEncoding(forcedDecimal);
+        transformer.setEncodeMeasures(encodeMeasures(results.getFeature(), catalog));
         transformer.setFeatureBounding(wfs.isFeatureBounding());
         transformer.setCollectionBounding(wfs.isFeatureBounding());
         transformer.setEncoding(Charset.forName(settings.getCharset()));

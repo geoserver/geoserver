@@ -10,7 +10,7 @@ volumes:
 services:
 
   acl:
-    image: geoservercloud/geoserver-acl:3.0-SNAPSHOT
+    image: geoservercloud/geoserver-acl:3.0.3
     environment:
       # Basic Auth configuration
       # password for the admin and geoserver users, usually obtained from a secret in a production deployment

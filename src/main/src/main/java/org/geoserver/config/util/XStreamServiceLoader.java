@@ -9,6 +9,11 @@ import java.io.BufferedInputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
@@ -17,6 +22,7 @@ import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
+import org.geotools.util.logging.Logging;
 
 /**
  * Service loader which loads and saves a service configuration with xstream.
@@ -25,10 +31,26 @@ import org.geoserver.platform.resource.Resources;
  */
 public abstract class XStreamServiceLoader<T extends ServiceInfo> implements ServiceLoader<T> {
 
+    private static final Logger LOGGER = Logging.getLogger(XStreamServiceLoader.class);
+
+    /** Resource loader to use for loading/saving config file */
     GeoServerResourceLoader resourceLoader;
+    /** Config file base faile name, without any .xml extension */
     String filenameBase;
+
+    /**
+     * Factory for creating XStreamPersister instances.
+     *
+     * <p>Spring context shared singleton injected via {@link #setXStreamPeristerFactory(XStreamPersisterFactory)}.
+     */
     XStreamPersisterFactory xpf = new XStreamPersisterFactory();
 
+    /**
+     * Extend XStreamServiceLoader to associate your {@code resourceLoader} with a configuration {@code filename}.
+     *
+     * @param resourceLoader Resource loader to use for loading/saving config file
+     * @param filenameBase Config file base faile name, without any .xml extension
+     */
     public XStreamServiceLoader(GeoServerResourceLoader resourceLoader, String filenameBase) {
         this.resourceLoader = resourceLoader;
         this.filenameBase = filenameBase;
@@ -42,11 +64,38 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
         this.xpf = xpf;
     }
 
+    /**
+     * Logs a {@code SEVERE} warning for any config filename claimed by more than one {@code loaders} entry.
+     *
+     * @param loaders List to check for filename conflicts
+     */
+    public static void checkFilenameConflicts(List<? extends XStreamServiceLoader<?>> loaders) {
+        Map<String, List<XStreamServiceLoader<?>>> check =
+                loaders.stream().collect(Collectors.groupingBy(XStreamServiceLoader::getFilename));
+        check.forEach((baseFilename, serviceLoaders) -> {
+            if (serviceLoaders.size() > 1) {
+                String conflicts = serviceLoaders.stream()
+                        .map(l -> l.getServiceClass().getName())
+                        .collect(Collectors.joining(", "));
+                LOGGER.log(Level.SEVERE, "Duplicate config filename ''{0}'' claimed by: {1}", new Object[] {
+                    baseFilename, conflicts
+                });
+            }
+        });
+    }
+
     @Override
     public final T load(GeoServer gs) throws Exception {
         return load(gs, resourceLoader.get(""));
     }
 
+    /**
+     * Loads the service from directory (or create if config file is not found).
+     *
+     * @param gs GeoServer
+     * @param directory Root or workspace directory
+     * @return Loaded ServiceInfo from config file, or new configuration if needed.
+     */
     public final T load(GeoServer gs, Resource directory) throws Exception {
         // look for file matching classname
         Resource file;
@@ -58,6 +107,8 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
                 return initialize(xp.load(in, getServiceClass()));
             }
         } else {
+            LOGGER.config(() -> "No config file '%s' found in %s, creating %s from scratch"
+                    .formatted(getFilename(), directory, getServiceClass().getSimpleName()));
             // create an 'empty' object
             T service = createServiceFromScratch(gs);
             return initialize(service);
@@ -151,5 +202,11 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
         return createServiceFromScratch(gs);
     }
 
+    /**
+     * Used by {@code #load(GeoServer, Resource)} if config file is not found.
+     *
+     * @param gs GeoServer
+     * @return New service, with defaults ready to be saved to config file.
+     */
     protected abstract T createServiceFromScratch(GeoServer gs);
 }

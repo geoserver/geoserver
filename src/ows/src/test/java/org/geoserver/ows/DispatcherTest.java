@@ -713,6 +713,37 @@ public class DispatcherTest {
         return request;
     }
 
+    /**
+     * {@link Dispatcher#findService} tolerates a service id with a leading "prefix/" segment (as produced by
+     * workspace-scoped service URLs), stripping it before matching. {@link Request#getService()} should reflect
+     * whatever service id was actually resolved, not the unstripped value it was looked up with.
+     */
+    @Test
+    public void testServiceStrippedOfWorkspacePrefixIsReflectedOnRequest() throws Exception {
+        URL url = getClass().getResource("applicationContext.xml");
+
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
+            Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+
+            Request req = new Request();
+            req.httpRequest = new MockHttpServletRequest();
+            Map<String, Object> kvp = new java.util.HashMap<>();
+            kvp.put("service", "x/hello");
+            kvp.put("request", "Hello");
+            kvp.put("version", "1.0.0");
+            req.setKvp(kvp);
+
+            Service resolved = dispatcher.service(req);
+
+            assertEquals("hello", resolved.getId());
+            assertEquals(
+                    "Request.getService() must reflect the resolved service id, not the raw value it was "
+                            + "looked up with",
+                    "hello",
+                    req.getService());
+        }
+    }
+
     @Test
     public void testDispatcherCallback() throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
@@ -730,6 +761,71 @@ public class DispatcherTest {
             dispatcher.handleRequest(request, response);
             Assert.assertEquals("Hello world!", response.getContentAsString());
             Assert.assertEquals(TestDispatcherCallback.Status.FINISHED, callback.dispatcherStatus.get());
+        }
+    }
+
+    /**
+     * End-to-end version of {@link #testServiceStrippedOfWorkspacePrefixIsReflectedOnRequest}: dispatches a real POST
+     * request whose XML root element carries a prefixed {@code service='x/hello'} attribute, and asserts that by the
+     * time {@code operationDispatched} callbacks run, {@link Request#getService()} already reflects the resolved
+     * service id rather than the raw value read off the wire.
+     */
+    @Test
+    public void testOperationDispatchedSeesResolvedServiceNotRawPrefixedValue() throws Exception {
+        URL url = getClass().getResource("applicationContextNamespace.xml");
+
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
+            Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+
+            final java.util.concurrent.atomic.AtomicReference<String> observedService =
+                    new java.util.concurrent.atomic.AtomicReference<>();
+            TestDispatcherCallback callback = new TestDispatcherCallback() {
+                @Override
+                public Operation operationDispatched(Request request, Operation operation) {
+                    observedService.set(request.getService());
+                    return super.operationDispatched(request, operation);
+                }
+            };
+            dispatcher.callbacks.add(callback);
+
+            // no "service" kvp at all - the service comes solely from the POST body's root element attribute
+            MockHttpServletRequest request = new MockHttpServletRequest() {
+                String encoding;
+
+                @Override
+                public int getServerPort() {
+                    return 8080;
+                }
+
+                @Override
+                public String getCharacterEncoding() {
+                    return encoding;
+                }
+
+                @Override
+                public void setCharacterEncoding(String encoding) {
+                    this.encoding = encoding;
+                }
+            };
+            request.setScheme("http");
+            request.setServerName("localhost");
+            request.setContextPath("/geoserver");
+            request.setMethod("POST");
+            request.setContentType("application/xml");
+            request.setContent(
+                    "<h:Hello service='x/hello' message='Hello world!' xmlns:h='http://hello.org' />".getBytes(UTF_8));
+            request.setRequestURI("http://localhost/geoserver/hello");
+
+            MockHttpServletResponse response = new MockHttpServletResponse();
+
+            dispatcher.handleRequest(request, response);
+
+            assertEquals("Hello world!", response.getContentAsString());
+            assertEquals(
+                    "operationDispatched callbacks must see the resolved service id, not the raw value "
+                            + "supplied on the wire",
+                    "hello",
+                    observedService.get());
         }
     }
 

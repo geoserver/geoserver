@@ -61,6 +61,15 @@ Catalogue tutorials:
 
 </div>
 
+Security tutorials:
+
+<div class="grid cards" markdown>
+
+- [Workspace administration with the REST API](../security/tutorials/workspaceadmin/index.md)
+- [Authentication tutorials](../security/tutorials/index.md) (LDAP, CAS, X.509, and more)
+
+</div>
+
 Application server tutorials:
 
 <div class="grid cards" markdown>

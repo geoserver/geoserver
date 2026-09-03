@@ -77,6 +77,7 @@ import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.capabilities.CapabilityUtil;
 import org.geoserver.wms.map.GetMapKvpRequestReader;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.FilterFactory;
@@ -836,8 +837,8 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
         if (candidateLayer == null) {
             LayerGroupInfo layerGroup = catalog.getLayerGroupByName(layerName);
             if (layerGroup != null) {
-                boolean emptyStyleName = reqStyle == null || "".equals(reqStyle);
-                layers.addAll(emptyStyleName ? layerGroup.layers() : layerGroup.layers(reqStyle));
+                boolean useNamedGroupStyle = !CapabilityUtil.isDefaultGroupStyleName(WMS.get(), layerGroup, reqStyle);
+                layers.addAll(useNamedGroupStyle ? layerGroup.layers(reqStyle) : layerGroup.layers());
                 addGroupStyles(layerGroup, styles, reqStyle);
             }
         } else {
@@ -1013,9 +1014,8 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
     }
 
     private void addGroupStyles(LayerGroupInfo groupInfo, List<String> requestedStyles, String styleName) {
-        List<StyleInfo> groupStyles;
-        if (styleName != null && !"".equals(styleName)) groupStyles = groupInfo.styles(styleName);
-        else groupStyles = groupInfo.styles();
+        boolean useNamedGroupStyle = !CapabilityUtil.isDefaultGroupStyleName(WMS.get(), groupInfo, styleName);
+        List<StyleInfo> groupStyles = useNamedGroupStyle ? groupInfo.styles(styleName) : groupInfo.styles();
 
         requestedStyles.addAll(groupStyles.stream()
                 .map(s -> s != null ? s.prefixedName() : null)

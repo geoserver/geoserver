@@ -12,13 +12,11 @@ import static org.springframework.http.MediaType.APPLICATION_YAML_VALUE;
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import net.opengis.wcs20.DimensionSliceType;
 import net.opengis.wcs20.DimensionTrimType;
 import net.opengis.wcs20.GetCoverageType;
@@ -27,15 +25,15 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.ResourcePool;
 import org.geoserver.config.GeoServer;
-import org.geoserver.crs.CapabilitiesCRSProvider;
 import org.geoserver.ogcapi.APIBBoxParser;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.APIFilterParser;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.APIService;
+import org.geoserver.ogcapi.CRSURIs;
+import org.geoserver.ogcapi.CollectionExtents;
 import org.geoserver.ogcapi.ConformanceClass;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.DefaultContentType;
@@ -69,7 +67,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class CoveragesService {
 
     static final Pattern INTEGER = Pattern.compile("\\d+");
-    public static final String DEFAULT_CRS = "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
+    public static final String DEFAULT_CRS = CollectionExtents.WGS84;
     public static final String CONF_CLASS_COVERAGE =
             "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/geodata-coverage";
     public static final String CONF_CLASS_GEOTIFF = "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/geotiff";
@@ -92,15 +90,8 @@ public class CoveragesService {
     }
 
     public static List<String> getCoverageCRS(CoverageInfo coverage, List<String> defaultCRS) {
-        if (coverage.getResponseSRS() != null) {
-            List<String> result = coverage.getResponseSRS().stream()
-                    // the GUI allows to enter codes as "EPSG:XYZW"
-                    .map(c -> mapResponseSRS(c))
-                    .collect(Collectors.toList());
-            result.remove(CoveragesService.DEFAULT_CRS);
-            result.add(0, CoveragesService.DEFAULT_CRS);
-            return result;
-        }
+        // the GUI allows to enter codes as "EPSG:XYZW"
+        if (coverage.getResponseSRS() != null) return CRSURIs.list(coverage.getResponseSRS());
         return defaultCRS;
     }
 
@@ -278,43 +269,12 @@ public class CoveragesService {
     }
 
     protected List<String> getServiceCRSList() {
-        List<String> result = getService().getSRS();
-
-        if (result == null || result.isEmpty()) {
-            // consult the referencing database
-            CapabilitiesCRSProvider provider = new CapabilitiesCRSProvider();
-            provider.getAuthorityExclusions().add("CRS");
-            provider.setCodeMapper(CoveragesService::mapCRSCode);
-            result = new ArrayList<>(provider.getCodes());
-        } else {
-            // the configured ones are just numbers, prefix
-            result = result.stream().map(c -> mapResponseSRS(c)).collect(Collectors.toList());
-        }
-        // the Features API default CRS (cannot be contained due to the different prefixing)
-        result.add(0, DEFAULT_CRS);
-        return result;
-    }
-
-    /** Maps authority and code to a CRS URI */
-    static String mapCRSCode(String authority, String code) {
-        return "http://www.opengis.net/def/crs/" + authority + "/0/" + code;
+        return CRSURIs.serviceList(getService().getSRS());
     }
 
     /** Returns the CRS-URI for a given CRS. */
     public static String getCRSURI(CoordinateReferenceSystem crs) throws FactoryException {
-        if (CRS.equalsIgnoreMetadata(crs, DefaultGeographicCRS.WGS84)) {
-            return DEFAULT_CRS;
-        }
-        String identifier = ResourcePool.lookupIdentifier(crs, false);
-        return mapResponseSRS(identifier);
-    }
-
-    private static String mapResponseSRS(String srs) {
-        int idx = srs.indexOf(":");
-        if (idx == -1) return mapCRSCode("EPSG", srs);
-        String authority = srs.substring(0, idx);
-        String code = srs.substring(idx + 1);
-        return mapCRSCode(authority, code);
+        return CRSURIs.uri(crs);
     }
 
     @ResponseBody

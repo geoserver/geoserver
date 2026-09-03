@@ -16,6 +16,7 @@ import org.geoserver.wms.WMSInfo;
 import org.geotools.util.Version;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
+import org.jsoup.nodes.Document;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -31,14 +32,18 @@ public class LandingPageTest extends MapsTestSupport {
         assertThat(
                 service.getOperations(),
                 Matchers.containsInAnyOrder(
-                        // "getApi",
+                        "getApi",
                         "describeCollection",
                         "getCollections",
                         "getCollectionInfo",
+                        "getCollectionLegend",
                         "getCollectionMap",
+                        "getDatasetMap",
+                        "getDatasetInfo",
                         "getLandingPage",
                         "getConformanceDeclaration",
-                        "getStyles"));
+                        "getStyles",
+                        "getQueryables"));
     }
 
     @Test
@@ -76,7 +81,7 @@ public class LandingPageTest extends MapsTestSupport {
 
     @Test
     public void testLandingPageHTML() throws Exception {
-        org.jsoup.nodes.Document document = getAsJSoup("ogc/maps/v1?f=html");
+        Document document = getAsJSoup("ogc/maps/v1?f=html");
         // check a couple of links
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/maps/v1/collections?f=text%2Fhtml",
@@ -87,7 +92,7 @@ public class LandingPageTest extends MapsTestSupport {
     }
 
     void checkJSONLandingPage(DocumentContext json) {
-        assertEquals(12, (int) json.read("links.length()", Integer.class));
+        assertEquals(13, (int) json.read("links.length()", Integer.class));
         // check landing page links
         assertJSONList(
                 json, "links[?(@.type == 'application/json' && @.href =~ /.*ogc\\/maps\\/v1\\/\\?.*/)].rel", "self");

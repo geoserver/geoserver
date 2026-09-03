@@ -91,6 +91,16 @@ public class DimensionWarning {
         return warningType;
     }
 
+    /** The dimension this warning is about, {@code time} and {@code elevation} unprefixed, custom ones by bare name. */
+    public String getDimensionName() {
+        return dimensionName;
+    }
+
+    /** The value actually used, a {@link Date} for time, null when no nearest value was found. */
+    public Object getValue() {
+        return value;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

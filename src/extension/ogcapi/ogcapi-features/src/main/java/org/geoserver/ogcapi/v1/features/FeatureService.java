@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -29,9 +28,7 @@ import net.opengis.wfs20.Wfs20Factory;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.ResourcePool;
 import org.geoserver.config.GeoServer;
-import org.geoserver.crs.CapabilitiesCRSProvider;
 import org.geoserver.ogcapi.APIBBoxParser;
 import org.geoserver.ogcapi.APIConformance;
 import org.geoserver.ogcapi.APIDispatcher;
@@ -40,8 +37,12 @@ import org.geoserver.ogcapi.APIFilterParser;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.APISearchQuery;
 import org.geoserver.ogcapi.APIService;
+import org.geoserver.ogcapi.CQL2Conformance;
+import org.geoserver.ogcapi.CRSURIs;
+import org.geoserver.ogcapi.CollectionExtents;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.DefaultContentType;
+import org.geoserver.ogcapi.ECQLConformance;
 import org.geoserver.ogcapi.FunctionsDocument;
 import org.geoserver.ogcapi.HTMLResponseBody;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
@@ -69,8 +70,6 @@ import org.geotools.api.filter.sort.SortBy;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
@@ -95,7 +94,7 @@ public class FeatureService {
     static final Pattern INTEGER = Pattern.compile("\\d+");
 
     public static final String CRS_PREFIX = "http://www.opengis.net/def/crs/EPSG/0/";
-    public static final String DEFAULT_CRS = "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
+    public static final String DEFAULT_CRS = CollectionExtents.WGS84;
 
     public static String ITEM_ID = "OGCFeatures:ItemId";
 
@@ -117,54 +116,18 @@ public class FeatureService {
     public static List<String> getFeatureTypeCRS(FeatureTypeInfo featureType, List<String> defaultCRS) {
         // by default use the provided list, unless there is an override
         if (featureType.isOverridingServiceSRS()) {
-            List<String> result = featureType.getResponseSRS().stream()
-                    .map(c -> mapResponseSRS(c))
-                    .collect(Collectors.toList());
-            result.remove(FeatureService.DEFAULT_CRS);
-            result.add(0, FeatureService.DEFAULT_CRS);
-            return result;
+            return CRSURIs.list(featureType.getResponseSRS());
         }
         return defaultCRS;
     }
 
-    private static String mapResponseSRS(String srs) {
-        int idx = srs.indexOf(":");
-        if (idx == -1) return mapCRSCode("EPSG", srs);
-        String authority = srs.substring(0, idx);
-        String code = srs.substring(idx + 1);
-        return mapCRSCode(authority, code);
-    }
-
     /** Returns the CRS-URI for a given CRS. */
     public static String getCRSURI(CoordinateReferenceSystem crs) throws FactoryException {
-        if (CRS.equalsIgnoreMetadata(crs, DefaultGeographicCRS.WGS84)) {
-            return FeatureService.DEFAULT_CRS;
-        }
-        String identifier = ResourcePool.lookupIdentifier(crs, false);
-        return mapResponseSRS(identifier);
-    }
-
-    /** Maps authority and code to a CRS URI */
-    static String mapCRSCode(String authority, String code) {
-        return "http://www.opengis.net/def/crs/" + authority + "/0/" + code;
+        return CRSURIs.uri(crs);
     }
 
     protected List<String> getServiceCRSList() {
-        List<String> result = getService().getSRS();
-
-        if (result == null || result.isEmpty()) {
-            // consult the referencing database
-            CapabilitiesCRSProvider provider = new CapabilitiesCRSProvider();
-            provider.getAuthorityExclusions().add("CRS");
-            provider.setCodeMapper(FeatureService::mapCRSCode);
-            result = new ArrayList<>(provider.getCodes());
-        } else {
-            // the configured ones are just numbers, prefix
-            result = result.stream().map(c -> mapResponseSRS(c)).collect(Collectors.toList());
-        }
-        // the Features API default CRS (cannot be contained due to the different prefixing)
-        result.add(0, DEFAULT_CRS);
-        return result;
+        return CRSURIs.serviceList(getService().getSRS());
     }
 
     public WFSInfo getService() {
@@ -422,24 +385,14 @@ public class FeatureService {
             }
         }
         if (filter != null) {
-            CQL2Conformance cql2 = CQL2Conformance.configuration(wfs);
-            ECQLConformance ecql = ECQLConformance.configuration(wfs);
-
             if (features.filter(wfs)) {
-                if (APIFilterParser.ECQL_TEXT.equals(filterLanguage) && !ecql.text(wfs)) {
-                    ignoreFilterLanguage(APIFilterParser.ECQL_TEXT, ECQLConformance.ECQL_TEXT);
-                } else if (APIFilterParser.CQL2_TEXT.equals(filterLanguage) && !cql2.text(wfs)) {
-                    ignoreFilterLanguage(APIFilterParser.CQL2_TEXT, CQL2Conformance.CQL2_TEXT);
-                } else if (APIFilterParser.CQL2_JSON.equals(filterLanguage) && !cql2.json(wfs)) {
-                    ignoreFilterLanguage(APIFilterParser.CQL2_TEXT, CQL2Conformance.CQL2_JSON);
-                } else {
-                    Filter parsedFilter = filterParser.parse(filter, filterLanguage, filterCRS);
-                    filters.add(parsedFilter);
-                }
+                // a language outside the enabled ones is rejected, it is not in the API document either
+                String lang = APIFilterParser.resolveLanguage(filterLanguage, wfs);
+                filters.add(filterParser.parse(filter, lang, filterCRS));
             } else {
-                LOGGER.warning(() -> "The filter parameter is not supported by the service, requires "
+                LOGGER.info(() -> "The filter parameter is not supported by the service, requires "
                         + FeatureConformance.FILTER.getId()
-                        + " conformance to be enabled.");
+                        + " conformance, and one filter language, to be enabled.");
             }
         }
         query.setFilter(mergeFiltersAnd(filters));
@@ -513,16 +466,6 @@ public class FeatureService {
         // build a response tracking both results and request to allow reusing the existing WFS
         // output formats
         return new FeaturesResponse(request.getAdaptee(), response);
-    }
-
-    private static void ignoreFilterLanguage(String filterLanguage, APIConformance conformance) {
-        if (LOGGER.isLoggable(Level.WARNING)) {
-            LOGGER.warning("The filter language '"
-                    + filterLanguage
-                    + "' is not supported by the service, requires "
-                    + conformance.getId()
-                    + " conformance to be enabled.");
-        }
     }
 
     @PostMapping(path = "collections/{collectionId}/search", name = "searchFeatures")

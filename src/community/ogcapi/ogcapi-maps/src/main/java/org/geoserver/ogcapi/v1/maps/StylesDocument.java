@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
@@ -27,17 +26,19 @@ import org.springframework.http.MediaType;
 /** Contains the list of styles for a given collection */
 @JsonPropertyOrder({"styles", "links"})
 public class StylesDocument extends AbstractDocument {
-    private static final String REL_MAP = "map";
+    private static final String REL_LEGEND = "legend";
     private final PublishedInfo published;
+    private final List<MediaType> legendFormats;
 
-    public StylesDocument(PublishedInfo published) {
+    public StylesDocument(PublishedInfo published, List<MediaType> legendFormats) {
         this.published = published;
+        this.legendFormats = legendFormats;
 
         addSelfLinks("ogc/maps/v1/collections/" + ResponseUtils.urlEncode(published.prefixedName()) + "/styles");
     }
 
     public List<StyleDocument> getStyles() {
-        return getStyleInfos().stream().map(this::toDocument).collect(Collectors.toList());
+        return getStyleInfos().stream().map(this::toDocument).toList();
     }
 
     private StyleDocument toDocument(StyleInfo s) {
@@ -60,7 +61,18 @@ public class StylesDocument extends AbstractDocument {
                     Collections.singletonMap("f", format.toString()),
                     URLMangler.URLType.SERVICE);
             String title = getTitle(s, format);
-            result.addLink(new Link(apiUrl, REL_MAP, format.toString(), title, "items"));
+            result.addLink(new Link(apiUrl, CollectionDocument.REL_MAP, format.toString(), title, "items"));
+        }
+
+        // legend links, only present when the GeoServer legend extension class is enabled
+        for (MediaType format : legendFormats) {
+            String apiUrl = ResponseUtils.buildURL(
+                    baseUrl,
+                    "ogc/maps/v1/collections/" + collectionId + "/styles/" + ResponseUtils.urlEncode(styleId)
+                            + "/legend",
+                    Collections.singletonMap("f", format.toString()),
+                    URLMangler.URLType.SERVICE);
+            result.addLink(new Link(apiUrl, REL_LEGEND, format.toString(), "Legend for " + styleId + " as " + format));
         }
 
         return result;

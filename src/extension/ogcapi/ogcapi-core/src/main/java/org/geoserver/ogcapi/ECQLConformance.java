@@ -2,19 +2,16 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.ogcapi.v1.features;
+package org.geoserver.ogcapi;
 
 import static org.geoserver.ogcapi.APIConformance.Level.COMMUNITY_STANDARD;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.geoserver.ogcapi.APIConformance;
-import org.geoserver.ogcapi.ConformanceClass;
-import org.geoserver.ogcapi.ConformanceInfo;
-import org.geoserver.wfs.WFSInfo;
+import org.geoserver.config.ServiceInfo;
 
-/** ECQL Configuration for FeatureService. */
-public class ECQLConformance extends ConformanceInfo<WFSInfo> {
+/** ECQL conformance configuration, shared by any OGC API service that supports the filter parameters. */
+public class ECQLConformance extends ConformanceInfo<ServiceInfo> {
     public static final String METADATA_KEY = "ecql";
 
     public static final APIConformance ECQL_TEXT =
@@ -30,24 +27,24 @@ public class ECQLConformance extends ConformanceInfo<WFSInfo> {
     }
 
     @Override
-    public boolean isEnabled(WFSInfo serviceInfo) {
+    public boolean isEnabled(ServiceInfo serviceInfo) {
         return text(serviceInfo);
     }
 
     /**
-     * Obtain FeatureService configuration for WFSInfo.
+     * Obtain the ECQL configuration for a service.
      *
      * <p>Uses configuration stored in metadata map, or creates default if needed.
      *
-     * @param wfsInfo WFSService configuration
+     * @param serviceInfo the service configuration holding the metadata map
      * @return Feature Service configuration
      */
-    public static ECQLConformance configuration(WFSInfo wfsInfo) {
-        if (wfsInfo.getMetadata().containsKey(METADATA_KEY)) {
-            return (ECQLConformance) wfsInfo.getMetadata().get(METADATA_KEY);
+    public static ECQLConformance configuration(ServiceInfo serviceInfo) {
+        if (serviceInfo.getMetadata().containsKey(METADATA_KEY)) {
+            return (ECQLConformance) serviceInfo.getMetadata().get(METADATA_KEY);
         } else {
             ECQLConformance conf = new ECQLConformance();
-            wfsInfo.getMetadata().put(METADATA_KEY, conf);
+            serviceInfo.getMetadata().put(METADATA_KEY, conf);
             return conf;
         }
     }
@@ -58,10 +55,10 @@ public class ECQLConformance extends ConformanceInfo<WFSInfo> {
     }
 
     @Override
-    public List<APIConformance> conformances(WFSInfo wfsInfo) {
+    public List<APIConformance> conformances(ServiceInfo serviceInfo) {
         List<APIConformance> conformanceList = new ArrayList<>();
-        if (isEnabled(wfsInfo)) {
-            if (text(wfsInfo)) {
+        if (isEnabled(serviceInfo)) {
+            if (text(serviceInfo)) {
                 conformanceList.add(ECQLConformance.ECQL_TEXT);
             }
         }
@@ -81,7 +78,7 @@ public class ECQLConformance extends ConformanceInfo<WFSInfo> {
      *
      * @return Enable ECQL_TEXT conformance, or @{code null} for default.
      */
-    public boolean text(WFSInfo info) {
+    public boolean text(ServiceInfo info) {
         return isEnabled(info, text, ECQL_TEXT);
     }
     /**

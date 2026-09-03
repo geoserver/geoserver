@@ -21,7 +21,7 @@ public class CiteComplianceCallback extends AbstractDispatcherCallback {
 
     @Override
     public Service serviceDispatched(Request request, Service service) throws ServiceException {
-        if ("WMS".equals(request.getService())) {
+        if ("WMS".equalsIgnoreCase(request.getService())) {
             WMSInfo wms = gs.getService(WMSInfo.class);
             // version is mandatory in all requests but GetCapabilities
             if (wms.isCiteCompliant() && !"GetCapabilities".equals(request.getRequest()) && isVersionMissing(request)) {

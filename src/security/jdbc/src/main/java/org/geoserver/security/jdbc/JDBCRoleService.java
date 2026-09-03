@@ -20,6 +20,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.security.BulkLoadableRoleService;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -36,7 +37,7 @@ import org.springframework.util.StringUtils;
  *
  * @author christian
  */
-public class JDBCRoleService extends AbstractJDBCService implements GeoServerRoleService {
+public class JDBCRoleService extends AbstractJDBCService implements GeoServerRoleService, BulkLoadableRoleService {
 
     static final String DEFAULT_DML_FILE = "rolesdml.xml";
     static final String DEFAULT_DDL_FILE = "rolesddl.xml";
@@ -493,6 +494,39 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
             } else props.put(key, roleParams.get(key));
         }
         return personalized ? props : null;
+    }
+
+    /**
+     * Bulk-loads all role properties in a single query using the existing {@code roleprops.all} SQL ({@code SELECT
+     * rolename, propname, propvalue FROM role_props}).
+     *
+     * @return a map from role name to its {@link Properties} object; roles with no properties will not appear in the
+     *     map
+     * @throws IOException if a database error occurs
+     */
+    @Override
+    public Map<String, Properties> getAllRoleProperties() throws IOException {
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Map<String, Properties> map = new HashMap<>();
+        try {
+            con = getConnection();
+            ps = getDMLStatement("roleprops.all", con);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                String roleName = rs.getString(1);
+                String propName = rs.getString(2);
+                Object propValue = rs.getString(3);
+                Properties props = map.computeIfAbsent(roleName, k -> new Properties());
+                props.put(propName, propValue == null ? "" : propValue);
+            }
+        } catch (SQLException ex) {
+            throw new IOException(ex);
+        } finally {
+            closeFinally(con, ps, rs);
+        }
+        return map;
     }
 
     /** The root configuration for the role service. */

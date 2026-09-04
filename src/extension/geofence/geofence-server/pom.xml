@@ -15,18 +15,19 @@
   <name>GeoFence Server</name>
   <description>GeoFence security embedded engine</description>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-core</artifactId>
-    </dependency>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <!-- Hibernate's HQL parser needs 4.13.x; gs-main's Jiffle dependency needs 4.7.1 and the two
+             can't coexist on one classpath, so this is scoped here rather than the root pom. -->
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr4-runtime</artifactId>
+        <version>4.13.2</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
-    <dependency>
-      <groupId>org.opengeo</groupId>
-      <artifactId>geodb</artifactId>
-      <version>${opengeo-geodb.version}</version>
-      <scope>test</scope>
-    </dependency>
+  <dependencies>
 
     <dependency>
       <groupId>org.postgresql</groupId>
@@ -41,6 +42,14 @@
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers-postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- for GeofenceTestDatabase, the shared Testcontainers bootstrap -->
+      <groupId>org.geofence</groupId>
+      <artifactId>geofence-persistence</artifactId>
+      <version>${gf.version}</version>
+      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -74,6 +83,13 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
+      <exclusions>
+        <!-- conflicts with geofence-persistence's org.ehcache:ehcache:jakarta classifier -->
+        <exclusion>
+          <artifactId>ehcache</artifactId>
+          <groupId>org.ehcache</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -82,7 +98,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.geoserver.geofence</groupId>
+      <groupId>org.geofence</groupId>
       <artifactId>geofence-services-impl</artifactId>
       <version>${gf.version}</version>
       <exclusions>
@@ -108,7 +124,7 @@
       <exclusions>
         <exclusion>
           <artifactId>geofence-model</artifactId>
-          <groupId>org.geoserver.geofence</groupId>
+          <groupId>org.geofence</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -153,6 +169,16 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms1_1</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms1_3</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
@@ -182,6 +208,7 @@
         <directory>${basedir}/src/main/java</directory>
         <includes>
           <include>**/*.html</include>
+          <include>**/*.css</include>
         </includes>
       </resource>
       <resource>
@@ -245,8 +272,8 @@
                   <goal>copy-dependencies</goal>
                 </goals>
                 <configuration>
-                  <includeGroupIds>org.postgresql,org.postgis,org.opengeo</includeGroupIds>
-                  <includeArtifactIds>postgresql,postgis-jdbc,geodb</includeArtifactIds>
+                  <includeGroupIds>org.postgresql,org.postgis</includeGroupIds>
+                  <includeArtifactIds>postgresql,postgis-jdbc</includeArtifactIds>
                 </configuration>
               </execution>
             </executions>

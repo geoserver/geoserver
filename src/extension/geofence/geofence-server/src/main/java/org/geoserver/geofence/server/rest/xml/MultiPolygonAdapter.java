@@ -5,8 +5,8 @@
 package org.geoserver.geofence.server.rest.xml;
 
 import jakarta.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.geotools.gml3.v3_2.GMLConfiguration;
+import org.geotools.xml.XMLUtils;
 import org.geotools.xsd.DOMParser;
 import org.geotools.xsd.Encoder;
 import org.locationtech.jts.geom.Geometry;
@@ -40,8 +40,7 @@ public class MultiPolygonAdapter extends XmlAdapter<Object, MultiPolygon> {
     @Override
     public MultiPolygon unmarshal(Object o) throws Exception {
         try {
-            Document doc =
-                    DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+            Document doc = XMLUtils.newDocumentBuilder().newDocument();
             doc.appendChild(doc.importNode(((Element) o).getFirstChild(), true));
             DOMParser parser = new DOMParser(new GMLConfiguration(), doc);
             Geometry geom = (Geometry) parser.parse();

@@ -10,15 +10,16 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.geoserver.geofence.core.model.AdminRule;
+import org.geofence.core.model.AdminRule;
+import org.geofence.core.services.AdminRuleAdminService;
+import org.geofence.core.services.dto.RuleFilter;
+import org.geofence.core.services.dto.RuleFilter.SpecialFilterType;
+import org.geofence.core.services.dto.RuleFilter.TextFilter;
+import org.geofence.core.services.dto.ShortAdminRule;
+import org.geofence.core.services.exception.NotFoundServiceEx;
 import org.geoserver.geofence.server.rest.xml.JaxbAdminRule;
 import org.geoserver.geofence.server.rest.xml.JaxbAdminRuleList;
-import org.geoserver.geofence.services.AdminRuleAdminService;
-import org.geoserver.geofence.services.dto.RuleFilter;
-import org.geoserver.geofence.services.dto.RuleFilter.SpecialFilterType;
-import org.geoserver.geofence.services.dto.RuleFilter.TextFilter;
-import org.geoserver.geofence.services.dto.ShortAdminRule;
-import org.geoserver.geofence.services.exception.NotFoundServiceEx;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestBaseController;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -40,10 +41,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/geofence")
 public class AdminRulesRestController extends RestBaseController {
 
-    private AdminRuleAdminService adminService;
-
-    public AdminRulesRestController(AdminRuleAdminService adminService) {
-        this.adminService = adminService;
+    // Resolved per request, not injected, so this controller doesn't force the lazy engine to boot at startup.
+    private AdminRuleAdminService adminService() {
+        return (AdminRuleAdminService) GeoServerExtensions.bean("adminRuleAdminService");
     }
 
     @ExceptionHandler(NotFoundServiceEx.class)
@@ -67,14 +67,26 @@ public class AdminRulesRestController extends RestBaseController {
             @RequestParam(value = "entries", required = false) Integer entries,
             @RequestParam(value = "full", required = false, defaultValue = "false") boolean full,
             @RequestParam(value = "userName", required = false) String userName,
-            @RequestParam(value = "userAny", required = false) Boolean userDefault,
+            @Deprecated @RequestParam(value = "userAny", required = false) Boolean userAny,
+            @RequestParam(value = "userDefault", required = false) Boolean userDefault,
             @RequestParam(value = "roleName", required = false) String roleName,
-            @RequestParam(value = "roleAny", required = false) Boolean roleDefault,
+            @Deprecated @RequestParam(value = "roleAny", required = false) Boolean roleAny,
+            @RequestParam(value = "roleDefault", required = false) Boolean roleDefault,
             @RequestParam(value = "workspace", required = false) String workspace,
-            @RequestParam(value = "workspaceAny", required = false) Boolean workspaceDefault) {
-        RuleFilter filter = buildFilter(userName, userDefault, roleName, roleDefault, workspace, workspaceDefault);
+            @Deprecated @RequestParam(value = "workspaceAny", required = false) Boolean workspaceAny,
+            @RequestParam(value = "workspaceDefault", required = false) Boolean workspaceDefault) {
+        RuleFilter filter = buildFilter(
+                userName,
+                userAny,
+                userDefault,
+                roleName,
+                roleAny,
+                roleDefault,
+                workspace,
+                workspaceAny,
+                workspaceDefault);
 
-        return new JaxbAdminRuleList(adminService.getListFull(filter, page, entries));
+        return new JaxbAdminRuleList(adminService().getListFull(filter, page, entries));
     }
 
     @RequestMapping(
@@ -82,7 +94,7 @@ public class AdminRulesRestController extends RestBaseController {
             method = RequestMethod.GET,
             produces = {"application/xml", "application/json"})
     public @ResponseBody JaxbAdminRule get(@PathVariable("id") Long id) {
-        return new JaxbAdminRule(adminService.get(id));
+        return new JaxbAdminRule(adminService().get(id));
     }
 
     @RequestMapping(
@@ -91,57 +103,77 @@ public class AdminRulesRestController extends RestBaseController {
             produces = {"application/xml", "application/json"})
     public @ResponseBody JaxbAdminRuleList count(
             @RequestParam(value = "userName", required = false) String userName,
-            @RequestParam(value = "userAny", required = false) Boolean userDefault,
+            @Deprecated @RequestParam(value = "userAny", required = false) Boolean userAny,
+            @RequestParam(value = "userDefault", required = false) Boolean userDefault,
             @RequestParam(value = "roleName", required = false) String roleName,
-            @RequestParam(value = "roleAny", required = false) Boolean roleDefault,
+            @Deprecated @RequestParam(value = "roleAny", required = false) Boolean roleAny,
+            @RequestParam(value = "roleDefault", required = false) Boolean roleDefault,
             @RequestParam(value = "workspace", required = false) String workspace,
-            @RequestParam(value = "workspaceAny", required = false) Boolean workspaceDefault) {
-        RuleFilter filter = buildFilter(userName, userDefault, roleName, roleDefault, workspace, workspaceDefault);
+            @Deprecated @RequestParam(value = "workspaceAny", required = false) Boolean workspaceAny,
+            @RequestParam(value = "workspaceDefault", required = false) Boolean workspaceDefault) {
+        RuleFilter filter = buildFilter(
+                userName,
+                userAny,
+                userDefault,
+                roleName,
+                roleAny,
+                roleDefault,
+                workspace,
+                workspaceAny,
+                workspaceDefault);
 
-        return new JaxbAdminRuleList(adminService.count(filter));
+        return new JaxbAdminRuleList(adminService().count(filter));
     }
 
     @RequestMapping(value = "/adminrules", method = RequestMethod.POST)
     public ResponseEntity<Long> insert(@RequestBody JaxbAdminRule rule) {
 
         long priority = rule.getPriority() == null ? 0 : rule.getPriority();
-        if (adminService.getRuleByPriority(priority) != null) {
-            adminService.shift(priority, 1);
+        if (adminService().getRuleByPriority(priority) != null) {
+            adminService().shift(priority, 1);
         }
 
-        return new ResponseEntity<>(adminService.insert(rule.toRule()), HttpStatus.CREATED);
+        return new ResponseEntity<>(adminService().insert(rule.toRule()), HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/adminrules/id/{id}", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)
     public @ResponseStatus(HttpStatus.OK) void update(@PathVariable("id") Long id, @RequestBody JaxbAdminRule rule) {
         if (rule.getPriority() != null) {
-            ShortAdminRule priorityRule = adminService.getRuleByPriority(rule.getPriority());
+            ShortAdminRule priorityRule = adminService().getRuleByPriority(rule.getPriority());
             if (priorityRule != null && priorityRule.getId().longValue() != id) {
-                adminService.shift(rule.getPriority(), 1);
+                adminService().shift(rule.getPriority(), 1);
             }
         }
-        adminService.update(rule.toRule(adminService.get(id)));
+        adminService().update(rule.toRule(adminService().get(id)));
     }
 
     @RequestMapping(value = "/adminrules/id/{id}", method = RequestMethod.DELETE)
     public @ResponseStatus(HttpStatus.OK) void delete(@PathVariable("id") Long id) {
-        adminService.delete(id);
+        adminService().delete(id);
     }
 
     protected RuleFilter buildFilter(
             String userName,
+            Boolean userAny,
             Boolean userDefault,
             String roleName,
-            Boolean groupDefault,
+            Boolean roleAny,
+            Boolean roleDefault,
             String workspace,
+            Boolean workspaceAny,
             Boolean workspaceDefault) {
 
         RuleFilter filter = new RuleFilter(SpecialFilterType.ANY, true);
 
-        setFilter(filter.getUser(), userName, userDefault);
-        setFilter(filter.getRole(), roleName, groupDefault);
-        setFilter(filter.getWorkspace(), workspace, workspaceDefault);
+        setFilter(filter.getUser(), userName, resolveIncludeDefault(userAny, userDefault));
+        setFilter(filter.getRole(), roleName, resolveIncludeDefault(roleAny, roleDefault));
+        setFilter(filter.getWorkspace(), workspace, resolveIncludeDefault(workspaceAny, workspaceDefault));
         return filter;
+    }
+
+    /** The new {@code *Default} parameter wins when both it and the deprecated {@code *Any} one are set. */
+    private static Boolean resolveIncludeDefault(Boolean deprecatedAny, Boolean byDefault) {
+        return byDefault != null ? byDefault : deprecatedAny;
     }
 
     private void setFilter(TextFilter filter, String name, Boolean includeDefault) {
@@ -177,12 +209,12 @@ public class AdminRulesRestController extends RestBaseController {
             return ResponseEntity.ok().build();
         }
         // shift priorities of rules with a priority equal or lower than the target priority
-        adminService.shift(targetPriority, rules.size());
+        adminService().shift(targetPriority, rules.size());
         // update moved rules priority
         long priority = targetPriority;
         for (AdminRule rule : rules) {
             rule.setPriority(priority);
-            adminService.update(rule);
+            adminService().update(rule);
             priority++;
         }
         // return moved rules with their priority updated
@@ -203,7 +235,7 @@ public class AdminRulesRestController extends RestBaseController {
                 })
                 .map(ruleId -> {
                     // search the rule by id
-                    return adminService.get(ruleId);
+                    return adminService().get(ruleId);
                 })
                 .filter(rule -> rule != null)
                 .sorted((ruleA, ruleB) -> Long.compare(ruleA.getPriority(), ruleB.getPriority()))

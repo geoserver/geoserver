@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copy of PRODUCTION_LOGGING.xml with GeoFence's packages bumped to trace - each profile fully replaces the
+     active config, not an overlay, so PRODUCTION_LOGGING's other settings are reproduced here too. -->
+<Configuration name="GEOFENCE_LOGGING" status="fatal" dest="out">
+    <Appenders>
+        <Console name="stdout" target="SYSTEM_OUT">
+            <PatternLayout pattern="%date{dd MMM HH:mm:ss} %-6level [%logger{2}] - %msg%n%throwable{filters(org.junit,org.apache.maven,sun.reflect,java.lang.reflect)}"/>
+        </Console>
+        <RollingFile name="geoserverlogfile">
+            <filename>logs/geoserver.log</filename>
+            <filePattern>logs/geoserver-%i.log</filePattern>
+            <PatternLayout pattern="%date{dd MMM HH:mm:ss} %-6level [%logger{2}] - %msg%n%throwable{filters(org.junit,org.apache.maven,sun.reflect,java.lang.reflect)}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="3" fileIndex="min"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+
+        <Logger name="org.geotools" level="warn" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
+        <Logger name="org.geotools.factory" level="warn" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
+
+        <Logger name="org.geoserver" level="warn" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
+        <Logger name="org.geoserver.config" level="warn" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
+        <Logger name="org.vfny.geoserver" level="warn" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
+
+        <Logger name="org.springframework" level="error" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
+
+        <Logger name="org.geowebcache" level="error" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
+
+        <!-- the whole point of this profile: everything GeoFence-related, at maximum verbosity -->
+        <Logger name="org.geoserver.geofence" level="trace" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
+        <Logger name="org.geofence" level="trace" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
+
+        <Root level="warn">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Root>
+    </Loggers>
+</Configuration>

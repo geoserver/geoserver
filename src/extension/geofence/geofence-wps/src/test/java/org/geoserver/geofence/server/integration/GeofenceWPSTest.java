@@ -7,22 +7,27 @@ package org.geoserver.geofence.server.integration;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.geofence.core.model.enums.GrantType;
+import org.geofence.core.services.RuleAdminService;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.geofence.cache.CacheManager;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
-import org.geoserver.geofence.core.model.enums.GrantType;
-import org.geoserver.geofence.services.RuleAdminService;
+import org.geoserver.geofence.server.GeofenceDatabaseRule;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wps.WPSTestSupport;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Document;
 
 public class GeofenceWPSTest extends WPSTestSupport {
+
+    @ClassRule
+    public static final GeofenceDatabaseRule database = new GeofenceDatabaseRule();
 
     public GeofenceIntegrationTestSupport support;
 

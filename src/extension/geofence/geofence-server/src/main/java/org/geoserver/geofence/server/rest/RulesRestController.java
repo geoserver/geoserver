@@ -12,25 +12,28 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.geofence.core.model.Rule;
+import org.geofence.core.services.RuleAdminService;
+import org.geofence.core.services.dto.RuleFilter;
+import org.geofence.core.services.dto.RuleFilter.IdNameFilter;
+import org.geofence.core.services.dto.RuleFilter.SpecialFilterType;
+import org.geofence.core.services.dto.RuleFilter.TextFilter;
+import org.geofence.core.services.dto.ShortRule;
+import org.geofence.core.services.exception.BadRequestServiceEx;
+import org.geofence.core.services.exception.NotFoundServiceEx;
 import org.geoserver.config.util.XStreamPersister;
-import org.geoserver.geofence.core.model.Rule;
 import org.geoserver.geofence.server.rest.xml.JaxbRule;
 import org.geoserver.geofence.server.rest.xml.JaxbRuleList;
 import org.geoserver.geofence.server.rest.xml.MultiPolygonAdapter;
-import org.geoserver.geofence.services.RuleAdminService;
-import org.geoserver.geofence.services.dto.RuleFilter;
-import org.geoserver.geofence.services.dto.RuleFilter.IdNameFilter;
-import org.geoserver.geofence.services.dto.RuleFilter.SpecialFilterType;
-import org.geoserver.geofence.services.dto.RuleFilter.TextFilter;
-import org.geoserver.geofence.services.dto.ShortRule;
-import org.geoserver.geofence.services.exception.BadRequestServiceEx;
-import org.geoserver.geofence.services.exception.NotFoundServiceEx;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.catalog.SequentialExecutionController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.util.MediaTypeExtensions;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.geotools.util.logging.Logging;
 import org.springframework.core.MethodParameter;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -53,11 +56,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/geofence")
 public class RulesRestController extends RestBaseController implements SequentialExecutionController {
 
-    private RuleAdminService adminService;
+    private static final Logger LOGGER = Logging.getLogger(RulesRestController.class);
 
-    @Autowired
-    public RulesRestController(RuleAdminService adminService) {
-        this.adminService = adminService;
+    // Resolved per request, not injected, so this controller doesn't force the lazy engine to boot at startup.
+    private RuleAdminService adminService() {
+        return (RuleAdminService) GeoServerExtensions.bean("ruleAdminService");
     }
 
     @Override
@@ -109,50 +112,70 @@ public class RulesRestController extends RestBaseController implements Sequentia
             @RequestParam(value = "entries", required = false) Integer entries,
             @RequestParam(value = "full", required = false, defaultValue = "false") boolean full,
             @RequestParam(value = "userName", required = false) String userName,
-            @RequestParam(value = "userAny", required = false) Boolean userDefault,
+            @Deprecated @RequestParam(value = "userAny", required = false) Boolean userAny,
+            @RequestParam(value = "userDefault", required = false) Boolean userDefault,
             @RequestParam(value = "roleName", required = false) String roleName,
-            @RequestParam(value = "roleAny", required = false) Boolean roleDefault,
-            @RequestParam(value = "instanceId", required = false) Long instanceId,
+            @Deprecated @RequestParam(value = "roleAny", required = false) Boolean roleAny,
+            @RequestParam(value = "roleDefault", required = false) Boolean roleDefault,
+            @Deprecated @RequestParam(value = "instanceId", required = false) Long instanceId,
             @RequestParam(value = "instanceName", required = false) String instanceName,
-            @RequestParam(value = "instanceAny", required = false) Boolean instanceDefault,
+            @Deprecated @RequestParam(value = "instanceAny", required = false) Boolean instanceAny,
+            @RequestParam(value = "instanceDefault", required = false) Boolean instanceDefault,
             @RequestParam(value = "ipAddress", required = false) String ipAddress,
-            @RequestParam(value = "ipAddressAny", required = false) Boolean ipAddressDefault,
+            @Deprecated @RequestParam(value = "ipAddressAny", required = false) Boolean ipAddressAny,
+            @RequestParam(value = "ipAddressDefault", required = false) Boolean ipAddressDefault,
             @RequestParam(value = "date", required = false) String date,
-            @RequestParam(value = "dateAny", required = false) Boolean dateDefault,
+            @Deprecated @RequestParam(value = "dateAny", required = false) Boolean dateAny,
+            @RequestParam(value = "dateDefault", required = false) Boolean dateDefault,
             @RequestParam(value = "service", required = false) String serviceName,
-            @RequestParam(value = "serviceAny", required = false) Boolean serviceDefault,
+            @Deprecated @RequestParam(value = "serviceAny", required = false) Boolean serviceAny,
+            @RequestParam(value = "serviceDefault", required = false) Boolean serviceDefault,
             @RequestParam(value = "request", required = false) String requestName,
-            @RequestParam(value = "requestAny", required = false) Boolean requestDefault,
+            @Deprecated @RequestParam(value = "requestAny", required = false) Boolean requestAny,
+            @RequestParam(value = "requestDefault", required = false) Boolean requestDefault,
             @RequestParam(value = "subfield", required = false) String subfield,
-            @RequestParam(value = "subfieldAny", required = false) Boolean subfieldDefault,
+            @Deprecated @RequestParam(value = "subfieldAny", required = false) Boolean subfieldAny,
+            @RequestParam(value = "subfieldDefault", required = false) Boolean subfieldDefault,
             @RequestParam(value = "workspace", required = false) String workspace,
-            @RequestParam(value = "workspaceAny", required = false) Boolean workspaceDefault,
+            @Deprecated @RequestParam(value = "workspaceAny", required = false) Boolean workspaceAny,
+            @RequestParam(value = "workspaceDefault", required = false) Boolean workspaceDefault,
             @RequestParam(value = "layer", required = false) String layer,
-            @RequestParam(value = "layerAny", required = false) Boolean layerDefault) {
+            @Deprecated @RequestParam(value = "layerAny", required = false) Boolean layerAny,
+            @RequestParam(value = "layerDefault", required = false) Boolean layerDefault) {
         RuleFilter filter = buildFilter(
                 userName,
+                userAny,
                 userDefault,
                 roleName,
+                roleAny,
                 roleDefault,
                 instanceId,
                 instanceName,
+                instanceAny,
                 instanceDefault,
                 ipAddress,
+                ipAddressAny,
                 ipAddressDefault,
                 date,
+                dateAny,
                 dateDefault,
                 serviceName,
+                serviceAny,
                 serviceDefault,
                 requestName,
+                requestAny,
                 requestDefault,
                 subfield,
+                subfieldAny,
                 subfieldDefault,
                 workspace,
+                workspaceAny,
                 workspaceDefault,
                 layer,
+                layerAny,
                 layerDefault);
 
-        return new JaxbRuleList(adminService.getListFull(filter, page, entries));
+        return new JaxbRuleList(adminService().getListFull(filter, page, entries));
     }
 
     @RequestMapping(
@@ -160,7 +183,7 @@ public class RulesRestController extends RestBaseController implements Sequentia
             method = RequestMethod.GET,
             produces = {"application/xml", "application/json"})
     public JaxbRule get(@PathVariable("id") Long id) {
-        return new JaxbRule(adminService.get(id));
+        return new JaxbRule(adminService().get(id));
     }
 
     @RequestMapping(
@@ -169,50 +192,70 @@ public class RulesRestController extends RestBaseController implements Sequentia
             produces = {"application/xml", "application/json"})
     public JaxbRuleList count(
             @RequestParam(value = "userName", required = false) String userName,
-            @RequestParam(value = "userAny", required = false) Boolean userDefault,
+            @Deprecated @RequestParam(value = "userAny", required = false) Boolean userAny,
+            @RequestParam(value = "userDefault", required = false) Boolean userDefault,
             @RequestParam(value = "roleName", required = false) String roleName,
-            @RequestParam(value = "roleAny", required = false) Boolean roleDefault,
-            @RequestParam(value = "instanceId", required = false) Long instanceId,
+            @Deprecated @RequestParam(value = "roleAny", required = false) Boolean roleAny,
+            @RequestParam(value = "roleDefault", required = false) Boolean roleDefault,
+            @Deprecated @RequestParam(value = "instanceId", required = false) Long instanceId,
             @RequestParam(value = "instanceName", required = false) String instanceName,
-            @RequestParam(value = "instanceAny", required = false) Boolean instanceDefault,
+            @Deprecated @RequestParam(value = "instanceAny", required = false) Boolean instanceAny,
+            @RequestParam(value = "instanceDefault", required = false) Boolean instanceDefault,
             @RequestParam(value = "ipAddress", required = false) String ipAddress,
-            @RequestParam(value = "ipAddressAny", required = false) Boolean ipAddressDefault,
+            @Deprecated @RequestParam(value = "ipAddressAny", required = false) Boolean ipAddressAny,
+            @RequestParam(value = "ipAddressDefault", required = false) Boolean ipAddressDefault,
             @RequestParam(value = "date", required = false) String date,
-            @RequestParam(value = "dateAny", required = false) Boolean dateDefault,
+            @Deprecated @RequestParam(value = "dateAny", required = false) Boolean dateAny,
+            @RequestParam(value = "dateDefault", required = false) Boolean dateDefault,
             @RequestParam(value = "service", required = false) String serviceName,
-            @RequestParam(value = "serviceAny", required = false) Boolean serviceDefault,
+            @Deprecated @RequestParam(value = "serviceAny", required = false) Boolean serviceAny,
+            @RequestParam(value = "serviceDefault", required = false) Boolean serviceDefault,
             @RequestParam(value = "request", required = false) String requestName,
-            @RequestParam(value = "requestAny", required = false) Boolean requestDefault,
+            @Deprecated @RequestParam(value = "requestAny", required = false) Boolean requestAny,
+            @RequestParam(value = "requestDefault", required = false) Boolean requestDefault,
             @RequestParam(value = "subfield", required = false) String subfield,
-            @RequestParam(value = "subfieldAny", required = false) Boolean subfieldDefault,
+            @Deprecated @RequestParam(value = "subfieldAny", required = false) Boolean subfieldAny,
+            @RequestParam(value = "subfieldDefault", required = false) Boolean subfieldDefault,
             @RequestParam(value = "workspace", required = false) String workspace,
-            @RequestParam(value = "workspaceAny", required = false) Boolean workspaceDefault,
+            @Deprecated @RequestParam(value = "workspaceAny", required = false) Boolean workspaceAny,
+            @RequestParam(value = "workspaceDefault", required = false) Boolean workspaceDefault,
             @RequestParam(value = "layer", required = false) String layer,
-            @RequestParam(value = "layerAny", required = false) Boolean layerDefault) {
+            @Deprecated @RequestParam(value = "layerAny", required = false) Boolean layerAny,
+            @RequestParam(value = "layerDefault", required = false) Boolean layerDefault) {
         RuleFilter filter = buildFilter(
                 userName,
+                userAny,
                 userDefault,
                 roleName,
+                roleAny,
                 roleDefault,
                 instanceId,
                 instanceName,
+                instanceAny,
                 instanceDefault,
                 ipAddress,
+                ipAddressAny,
                 ipAddressDefault,
                 date,
+                dateAny,
                 dateDefault,
                 serviceName,
+                serviceAny,
                 serviceDefault,
                 requestName,
+                requestAny,
                 requestDefault,
                 subfield,
+                subfieldAny,
                 subfieldDefault,
                 workspace,
+                workspaceAny,
                 workspaceDefault,
                 layer,
+                layerAny,
                 layerDefault);
 
-        return new JaxbRuleList(adminService.count(filter));
+        return new JaxbRuleList(adminService().count(filter));
     }
 
     @RequestMapping(
@@ -228,17 +271,17 @@ public class RulesRestController extends RestBaseController implements Sequentia
     @ResponseStatus(HttpStatus.CREATED)
     public String insert(@RequestBody(required = true) JaxbRule rule) {
         long priority = rule.getPriority() == null ? 0 : rule.getPriority();
-        if (adminService.getRuleByPriority(priority) != null) {
-            adminService.shift(priority, 1);
+        if (adminService().getRuleByPriority(priority) != null) {
+            adminService().shift(priority, 1);
         }
 
-        Long id = adminService.insert(rule.toRule());
+        Long id = adminService().insert(rule.toRule());
 
         if (rule.getLimits() != null && rule.getAccess().equals("LIMIT")) {
-            adminService.setLimits(id, rule.getLimits().toRuleLimits(null));
+            adminService().setLimits(id, rule.getLimits().toRuleLimits(null));
         }
         if (rule.getLayerDetails() != null && !rule.getAccess().equals("LIMIT")) {
-            adminService.setDetails(id, rule.getLayerDetails().toLayerDetails(null));
+            adminService().setDetails(id, rule.getLayerDetails().toLayerDetails(null));
         }
 
         return String.valueOf(id);
@@ -247,85 +290,110 @@ public class RulesRestController extends RestBaseController implements Sequentia
     @RequestMapping(value = "/rules/id/{id}", method = RequestMethod.POST)
     public @ResponseStatus(HttpStatus.OK) void update(@PathVariable("id") Long id, @RequestBody JaxbRule rule) {
         if (rule.getPriority() != null) {
-            ShortRule priorityRule = adminService.getRuleByPriority(rule.getPriority());
+            ShortRule priorityRule = adminService().getRuleByPriority(rule.getPriority());
             if (priorityRule != null && !Objects.equals(priorityRule.getId(), id)) {
-                adminService.shift(rule.getPriority(), 1);
+                adminService().shift(rule.getPriority(), 1);
             }
         }
-        Rule theRule = adminService.get(id);
-        adminService.update(rule.toRule(theRule));
+        Rule theRule = adminService().get(id);
+        adminService().update(rule.toRule(theRule));
         if (rule.getLimits() != null) {
-            adminService.setLimits(id, rule.getLimits().toRuleLimits(theRule.getRuleLimits()));
+            adminService().setLimits(id, rule.getLimits().toRuleLimits(theRule.getRuleLimits()));
         }
         if (rule.getLayerDetails() != null) {
-            adminService.setDetails(id, rule.getLayerDetails().toLayerDetails(theRule.getLayerDetails()));
+            adminService().setDetails(id, rule.getLayerDetails().toLayerDetails(theRule.getLayerDetails()));
         }
     }
 
     @RequestMapping(value = "/rules/id/{id}", method = RequestMethod.PUT)
     public @ResponseStatus(HttpStatus.OK) void clearAndUpdate(@PathVariable("id") Long id, @RequestBody JaxbRule rule) {
         if (rule.getPriority() != null) {
-            ShortRule priorityRule = adminService.getRuleByPriority(rule.getPriority());
+            ShortRule priorityRule = adminService().getRuleByPriority(rule.getPriority());
             if (priorityRule != null && !Objects.equals(priorityRule.getId(), id)) {
-                adminService.shift(rule.getPriority(), 1);
+                adminService().shift(rule.getPriority(), 1);
             }
         }
         Rule theRule = new Rule();
         theRule.setId(id);
-        adminService.update(rule.toRule(theRule));
+        adminService().update(rule.toRule(theRule));
         if (rule.getLimits() != null) {
-            adminService.setLimits(id, rule.getLimits().toRuleLimits(null));
+            adminService().setLimits(id, rule.getLimits().toRuleLimits(null));
         } else {
-            adminService.setLimits(id, null);
+            adminService().setLimits(id, null);
         }
         if (rule.getLayerDetails() != null) {
-            adminService.setDetails(id, rule.getLayerDetails().toLayerDetails(null));
+            adminService().setDetails(id, rule.getLayerDetails().toLayerDetails(null));
         } else {
-            adminService.setDetails(id, null);
+            adminService().setDetails(id, null);
         }
     }
 
     @RequestMapping(value = "/rules/id/{id}", method = RequestMethod.DELETE)
     public @ResponseStatus(HttpStatus.OK) void delete(@PathVariable("id") Long id) {
-        adminService.delete(id);
+        adminService().delete(id);
     }
 
     protected RuleFilter buildFilter(
             String userName,
+            Boolean userAny,
             Boolean userDefault,
             String roleName,
-            Boolean groupDefault,
+            Boolean roleAny,
+            Boolean roleDefault,
             Long instanceId,
             String instanceName,
+            Boolean instanceAny,
             Boolean instanceDefault,
             String ipAddress,
+            Boolean ipAddressAny,
             Boolean ipAddressDefault,
             String date,
+            Boolean dateAny,
             Boolean dateDefault,
             String serviceName,
+            Boolean serviceAny,
             Boolean serviceDefault,
             String requestName,
+            Boolean requestAny,
             Boolean requestDefault,
             String subfield,
+            Boolean subfieldAny,
             Boolean subfieldDefault,
             String workspace,
+            Boolean workspaceAny,
             Boolean workspaceDefault,
             String layer,
+            Boolean layerAny,
             Boolean layerDefault) {
 
         RuleFilter filter = new RuleFilter(SpecialFilterType.ANY, true);
 
-        setFilter(filter.getUser(), userName, userDefault);
-        setFilter(filter.getRole(), roleName, groupDefault);
-        setFilter(filter.getInstance(), instanceId, instanceName, instanceDefault);
-        setFilter(filter.getSourceAddress(), ipAddress, ipAddressDefault);
-        setFilter(filter.getDate(), date, dateDefault);
-        setFilter(filter.getService(), serviceName, serviceDefault);
-        setFilter(filter.getRequest(), requestName, requestDefault);
-        setFilter(filter.getSubfield(), subfield, subfieldDefault);
-        setFilter(filter.getWorkspace(), workspace, workspaceDefault);
-        setFilter(filter.getLayer(), layer, layerDefault);
+        setFilter(filter.getUser(), userName, resolveIncludeDefault(userAny, userDefault));
+        setFilter(filter.getRole(), roleName, resolveIncludeDefault(roleAny, roleDefault));
+        warnIfDeprecatedInstanceIdUsed(instanceId);
+        setFilter(filter.getInstance(), instanceId, instanceName, resolveIncludeDefault(instanceAny, instanceDefault));
+        setFilter(filter.getSourceAddress(), ipAddress, resolveIncludeDefault(ipAddressAny, ipAddressDefault));
+        setFilter(filter.getDate(), date, resolveIncludeDefault(dateAny, dateDefault));
+        setFilter(filter.getService(), serviceName, resolveIncludeDefault(serviceAny, serviceDefault));
+        setFilter(filter.getRequest(), requestName, resolveIncludeDefault(requestAny, requestDefault));
+        setFilter(filter.getSubfield(), subfield, resolveIncludeDefault(subfieldAny, subfieldDefault));
+        setFilter(filter.getWorkspace(), workspace, resolveIncludeDefault(workspaceAny, workspaceDefault));
+        setFilter(filter.getLayer(), layer, resolveIncludeDefault(layerAny, layerDefault));
         return filter;
+    }
+
+    /** The new {@code *Default} parameter wins when both it and the deprecated {@code *Any} one are set. */
+    private static Boolean resolveIncludeDefault(Boolean deprecatedAny, Boolean byDefault) {
+        return byDefault != null ? byDefault : deprecatedAny;
+    }
+
+    /** {@code instanceId} is deprecated in favor of {@code instanceName}; log when a client still sends it. */
+    private void warnIfDeprecatedInstanceIdUsed(Long instanceId) {
+        if (instanceId != null) {
+            LOGGER.log(
+                    Level.WARNING,
+                    "Received deprecated GeoFence rule filter parameter instanceId; use instanceName instead.");
+        }
     }
 
     private void setFilter(IdNameFilter filter, Long id, String name, Boolean includeDefault) {
@@ -387,12 +455,12 @@ public class RulesRestController extends RestBaseController implements Sequentia
         }
         // shift priorities of rules with a priority equal or lower than the target
         // priority
-        adminService.shift(targetPriority, rules.size());
+        adminService().shift(targetPriority, rules.size());
         // update moved rules priority
         long priority = targetPriority;
         for (Rule rule : rules) {
             rule.setPriority(priority);
-            adminService.update(rule);
+            adminService().update(rule);
             priority++;
         }
         // return moved rules with their priority updated
@@ -413,7 +481,7 @@ public class RulesRestController extends RestBaseController implements Sequentia
                 })
                 .map(ruleId -> {
                     // search the rule by id
-                    return adminService.get(ruleId);
+                    return adminService().get(ruleId);
                 })
                 .filter(rule -> rule != null)
                 .sorted((ruleA, ruleB) -> Long.compare(ruleA.getPriority(), ruleB.getPriority()))

@@ -41,13 +41,14 @@
     </dependency>
 
     <dependency>
-      <groupId>org.geoserver.geofence</groupId>
+      <groupId>org.geofence</groupId>
       <artifactId>geofence-services-api</artifactId>
       <version>${gf.version}</version>
     </dependency>
+
     <dependency>
-      <groupId>org.geoserver.geofence</groupId>
-      <artifactId>geofence-model</artifactId>
+      <groupId>org.geofence</groupId>
+      <artifactId>geofence-rest-client</artifactId>
       <version>${gf.version}</version>
     </dependency>
 
@@ -67,16 +68,11 @@
       <artifactId>guava</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>jakarta.servlet</groupId>
-      <artifactId>jakarta.servlet-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.geotools.jdbc</groupId>
-      <artifactId>gt-jdbc-postgis</artifactId>
-    </dependency>
+    <!--    <dependency>-->
+    <!--      <groupId>jakarta.servlet</groupId>-->
+    <!--      <artifactId>jakarta.servlet-api</artifactId>-->
+    <!--      <scope>provided</scope>-->
+    <!--    </dependency>-->
 
     <dependency>
       <groupId>org.springframework</groupId>
@@ -87,7 +83,7 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
     </dependency>
-    
+
     <!-- test dependencies -->
     <dependency>
       <groupId>org.apache.wicket</groupId>
@@ -100,14 +96,36 @@
       <artifactId>gs-wfs1_x</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms1_1</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms1_3</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
-  
+
   <build>
     <resources>
       <resource>
         <directory>${basedir}/src/main/java</directory>
         <includes>
           <include>**/*.html</include>
+          <include>**/*.css</include>
         </includes>
       </resource>
       <resource>
@@ -131,7 +149,7 @@
       </plugin>
     </plugins>
   </build>
-  
+
   <profiles>
     <profile>
       <id>gs-test-dependences</id>
@@ -154,7 +172,7 @@
             </exclusion>
           </exclusions>
         </dependency>
-    
+
         <dependency>
           <groupId>org.geoserver.web</groupId>
           <artifactId>gs-web-core</artifactId>
@@ -162,7 +180,7 @@
           <classifier>tests</classifier>
           <scope>test</scope>
         </dependency>
-    
+
         <dependency>
           <groupId>org.geoserver</groupId>
           <artifactId>gs-restconfig</artifactId>

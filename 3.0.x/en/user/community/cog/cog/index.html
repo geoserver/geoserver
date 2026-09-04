@@ -30531,8 +30531,8 @@
 <td>Optional user name (HTTP) or Access Key ID (S3) or Account Name (Azure) in case the COG dataset requires authentication</td>
 </tr>
 <tr>
-<td><strong>Password / Secret Access Key / Account Key</strong></td>
-<td>Password (HTTP) or Secret Access Key (S3) or Account Key (Azure) for the previous credential</td>
+<td><strong>Password / Secret Access Key / Account Key / SAS Token</strong></td>
+<td>Password (HTTP), Secret Access Key (S3), or an Account Key or SAS Token (Azure) for the previous credential</td>
 </tr>
 </tbody>
 </table>
@@ -30566,7 +30566,7 @@
 <tr>
 <td>CogPassword</td>
 <td>N</td>
-<td>Password for the above user OR Secret Access Key for the above S3 KeyId or AccountKey for the above Azure AccountName.</td>
+<td>Password for the above user, Secret Access Key for the above S3 KeyId, or an Account Key or SAS Token for the above Azure Account Name.</td>
 </tr>
 </tbody>
 </table>
@@ -30700,6 +30700,10 @@ export GOOGLE_APPLICATION_CREDENTIALS
 <td>The Azure Account Key for the above Account</td>
 </tr>
 <tr>
+<td>azure.reader.sasToken</td>
+<td>The Azure Shared Access Signature token. When specified, it takes precedence over the Account Key</td>
+</tr>
+<tr>
 <td>azure.reader.container</td>
 <td>The default container for the above Account</td>
 </tr>
@@ -30713,6 +30717,7 @@ export GOOGLE_APPLICATION_CREDENTIALS
 </tr>
 </tbody>
 </table>
+<p>A container-scoped service SAS with read (<code>r</code>) permission is sufficient for COG range reads. Supply the SAS in the password field, <code>CogPassword</code>, or <code>azure.reader.sasToken</code>; a leading <code>?</code> is optional.</p>
 <h2 id="client-configuration-system-properties">Client configuration (System Properties)<a class="headerlink" href="#client-configuration-system-properties" title="Permanent link">&para;</a></h2>
 <p>Note that all the IIO settings reported in the previous tables can also be specified using System Properties instead of Environment variables. You just need to replace UPPER CASE words with lower case words and underscores with dots. So, the value for Maximum HTTP requests can be specified by setting either a <code>IIO_HTTP_MAX_REQUESTS</code> Environment variable or a <code>iio.http.max.requests</code> Java System Property alternatively (Environment variables are checked first).</p>
 <p>By default, when accessing a COG, an initial chunk of 16 KB is read in attempt to parse the header so that the reader will have the offset and length of the available tiles. When dealing with files hosting many tiles, it is possible that the whole header won't fit in the initial chunk. In this case additional reads (chunks of the same size) will be progressively made to complete loading the header. A <code>it.geosolutions.cog.default.header.length</code> system property can be configured to set the length (in bytes) of the reading chunk. Tuning this so that the header is read with few extra requests can help improve performance. A value too large can cause memory consumption issues and will reduce efficiency, as un-necessary data will be read.</p>

@@ -1,4 +1,4 @@
-# GeoFence Rest API
+# GeoFence REST API
 
 ## Security
 
@@ -139,21 +139,36 @@ All filter parameters are optional.
 | page | number | Used for paging a list of rules. Specifies the number of the page. Leave out for no paging. If specified, `entries` should also be specified. |
 | entries | number | Used for paging a list of rules. Specifies the number of entries per page. Leave out for no paging. If specified, `page` should also be specified. |
 | userName | string | Filter rules on username (excludes all other specific usernames). |
-| userAny | 0 or 1. | Specify whether rules matching any username are included or not. |
+| ~~userAny~~ | 0 or 1. | Use `userDefault` instead. |
+| userDefault | 0 or 1. | Specify whether rules matching any username are included or not. Wins over `userAny` when both are set. |
 | roleName | string | Filter rules on rolename (excludes all other specific rolenames). |
-| roleAny | 0 or 1. | Specify whether rules matching any rolename are included or not. |
+| ~~roleAny~~ | 0 or 1. | Use `roleDefault` instead. |
+| roleDefault | 0 or 1. | Specify whether rules matching any rolename are included or not. Wins over `roleAny` when both are set. |
+| ~~instanceId~~ | number | Use `instanceName` instead. |
+| instanceName | string | Filter rules on GeoServer instance name (excludes all other specific instances). Cannot be combined with `instanceId`. |
+| ~~instanceAny~~ | 0 or 1. | Use `instanceDefault` instead. |
+| instanceDefault | 0 or 1. | Specify whether rules matching any GeoServer instance are included or not. Wins over `instanceAny` when both are set. |
 | ipAddress | string | Filter rules on IP address range (only select rules with an address range that includes the passed IP address). |
-| ipAddressAny | 0 or 1. | Specify whether rules matching any IP address are included or not. |
+| ~~ipAddressAny~~ | 0 or 1. | Use `ipAddressDefault` instead. |
+| ipAddressDefault | 0 or 1. | Specify whether rules matching any IP address are included or not. Wins over `ipAddressAny` when both are set. |
 | date | string | Filter rules by date. Only returns rules where `date` is between `validAfter` and `validBefore`. Format is `yyyy-MM-dd`. |
-| dateAny | 0 or 1. | Specify whether rules with no data range defined are included or not |
+| ~~dateAny~~ | 0 or 1. | Use `dateDefault` instead. |
+| dateDefault | 0 or 1. | Specify whether rules with no data range defined are included or not. Wins over `dateAny` when both are set. |
 | service | string | Filter rules on service (excludes all other specific services). |
-| serviceAny | 0 or 1. | Specify whether rules matching any service are included or not. |
+| ~~serviceAny~~ | 0 or 1. | Use `serviceDefault` instead. |
+| serviceDefault | 0 or 1. | Specify whether rules matching any service are included or not. Wins over `serviceAny` when both are set. |
 | request | string | Filter rules on request (excludes all other specific requests). |
-| requestAny | 0 or 1. | Specify whether rules matching any request are included or not. |
+| ~~requestAny~~ | 0 or 1. | Use `requestDefault` instead. |
+| requestDefault | 0 or 1. | Specify whether rules matching any request are included or not. Wins over `requestAny` when both are set. |
+| subfield | string | Filter rules on subfield (excludes all other specific subfields). |
+| ~~subfieldAny~~ | 0 or 1. | Use `subfieldDefault` instead. |
+| subfieldDefault | 0 or 1. | Specify whether rules matching any subfield are included or not. Wins over `subfieldAny` when both are set. |
 | workspace | string | Filter rules on workspace (excludes all other specific workspaces). |
-| workspaceAny | 0 or 1. | Specify whether rules matching any workspace are included or not. |
+| ~~workspaceAny~~ | 0 or 1. | Use `workspaceDefault` instead. |
+| workspaceDefault | 0 or 1. | Specify whether rules matching any workspace are included or not. Wins over `workspaceAny` when both are set. |
 | layer | string | Filter rules on layer (excludes all other specific layers). |
-| layerAny | 0 or 1. | Specify whether rules matching any layer are included or not. |
+| ~~layerAny~~ | 0 or 1. | Use `layerDefault` instead. |
+| layerDefault | 0 or 1. | Specify whether rules matching any layer are included or not. Wins over `layerAny` when both are set. |
 
 ## Requests
 
@@ -163,7 +178,7 @@ Query all rules or add a new rule.
 
 | Method | Action | Supported parameters | Response |
 |----|----|----|----|
-| GET | List all rules, with respect to any added filters | page, entries, userName, userAny, roleName, roleAny, service, serviceAny, request, requestAny, workspace, workspaceAny, layer, layerAny | 200 OK. List of rules in XML. |
+| GET | List all rules, with respect to any added filters | page, entries, userName, ~~userAny~~, userDefault, roleName, ~~roleAny~~, roleDefault, ~~instanceId~~, instanceName, ~~instanceAny~~, instanceDefault, ipAddress, ~~ipAddressAny~~, ipAddressDefault, date, ~~dateAny~~, dateDefault, service, ~~serviceAny~~, serviceDefault, request, ~~requestAny~~, requestDefault, subfield, ~~subfieldAny~~, subfieldDefault, workspace, ~~workspaceAny~~, workspaceDefault, layer, ~~layerAny~~, layerDefault | 200 OK. List of rules in XML. |
 | POST | Add a new rule | None | 201 Inserted. Created `ID` header. |
 
 ### `/rest/geofence/rules/count`
@@ -172,7 +187,7 @@ Counts (filtered) rules.
 
 | Method | Action | Supported parameters | Response |
 |----|----|----|----|
-| GET | Count all rules, with respect to any added filters | userName, userAny, roleName, roleAny, service, serviceAny, request, requestAny, workspace, workspaceAny, layer, layerAny | 200 OK. Rule list count in XML. |
+| GET | Count all rules, with respect to any added filters | userName, ~~userAny~~, userDefault, roleName, ~~roleAny~~, roleDefault, ~~instanceId~~, instanceName, ~~instanceAny~~, instanceDefault, ipAddress, ~~ipAddressAny~~, ipAddressDefault, date, ~~dateAny~~, dateDefault, service, ~~serviceAny~~, serviceDefault, request, ~~requestAny~~, requestDefault, subfield, ~~subfieldAny~~, subfieldDefault, workspace, ~~workspaceAny~~, workspaceDefault, layer, ~~layerAny~~, layerDefault | 200 OK. Rule list count in XML. |
 
 ### `/rest/geofence/rules/id/<id>`
 

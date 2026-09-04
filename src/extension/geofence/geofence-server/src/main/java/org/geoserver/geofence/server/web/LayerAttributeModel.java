@@ -7,7 +7,7 @@ package org.geoserver.geofence.server.web;
 import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
-import org.geoserver.geofence.core.model.LayerAttribute;
+import org.geofence.core.model.LayerAttribute;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 
 public class LayerAttributeModel extends GeoServerDataProvider<LayerAttribute> {

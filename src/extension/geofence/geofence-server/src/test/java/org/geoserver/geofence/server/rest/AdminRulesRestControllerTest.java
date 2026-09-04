@@ -13,21 +13,26 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
 import org.custommonkey.xmlunit.XMLAssert;
+import org.geofence.core.db.dao.DuplicateKeyException;
+import org.geofence.core.model.AdminRule;
+import org.geofence.core.model.enums.AdminGrantType;
+import org.geofence.core.services.AdminRuleAdminService;
+import org.geofence.core.services.dto.ShortAdminRule;
+import org.geofence.core.services.exception.NotFoundServiceEx;
 import org.geoserver.geofence.GeofenceBaseTest;
-import org.geoserver.geofence.core.dao.DuplicateKeyException;
-import org.geoserver.geofence.core.model.AdminRule;
-import org.geoserver.geofence.core.model.enums.AdminGrantType;
+import org.geoserver.geofence.server.GeofenceDatabaseRule;
 import org.geoserver.geofence.server.rest.xml.JaxbAdminRule;
 import org.geoserver.geofence.server.rest.xml.JaxbAdminRuleList;
-import org.geoserver.geofence.services.AdminRuleAdminService;
-import org.geoserver.geofence.services.dto.ShortAdminRule;
-import org.geoserver.geofence.services.exception.NotFoundServiceEx;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public class AdminRulesRestControllerTest extends GeofenceBaseTest {
+
+    @ClassRule
+    public static final GeofenceDatabaseRule database = new GeofenceDatabaseRule();
 
     protected AdminRulesRestController controller;
 
@@ -116,6 +121,8 @@ public class AdminRulesRestControllerTest extends GeofenceBaseTest {
             conflict = true;
         }
         assertTrue(conflict);
+
+        controller.delete(id2);
     }
 
     @Test
@@ -135,7 +142,8 @@ public class AdminRulesRestControllerTest extends GeofenceBaseTest {
         adminService.insert(
                 new AdminRule(6, prefix + "-user6", prefix + "-role6", null, null, null, AdminGrantType.ADMIN));
         // get the rules so we can access their id
-        JaxbAdminRuleList originalRules = controller.get(0, 6, false, null, null, null, null, null, null);
+        JaxbAdminRuleList originalRules =
+                controller.get(0, 6, false, null, null, null, null, null, null, null, null, null);
         validateRules(originalRules, prefix, "user1", "user2", "user3", "user4", "user5", "user6");
         // check rules per page
         validateRules(0, prefix, "user1", "user2");
@@ -256,7 +264,7 @@ public class AdminRulesRestControllerTest extends GeofenceBaseTest {
 
     /** Helper method that will validate the rules present in a certain page based on the user id. */
     private void validateRules(int page, String prefix, String... expectedUsers) {
-        JaxbAdminRuleList rules = controller.get(page, 2, false, null, null, null, null, null, null);
+        JaxbAdminRuleList rules = controller.get(page, 2, false, null, null, null, null, null, null, null, null, null);
         validateRules(rules, prefix, expectedUsers);
     }
 
@@ -272,7 +280,7 @@ public class AdminRulesRestControllerTest extends GeofenceBaseTest {
 
     /** Helper method that will validate the rules present in a certain page based on the priority. */
     private void validateRules(int page, long... expectedPriorities) {
-        JaxbAdminRuleList rules = controller.get(page, 2, false, null, null, null, null, null, null);
+        JaxbAdminRuleList rules = controller.get(page, 2, false, null, null, null, null, null, null, null, null, null);
         validateRules(rules, expectedPriorities);
     }
 

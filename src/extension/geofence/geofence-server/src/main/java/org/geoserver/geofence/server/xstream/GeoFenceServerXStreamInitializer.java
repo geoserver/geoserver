@@ -16,8 +16,10 @@ import org.geoserver.geofence.server.rest.xml.JaxbAdminRuleList;
 import org.geoserver.geofence.server.rest.xml.JaxbRule;
 import org.geoserver.geofence.server.rest.xml.JaxbRuleList;
 import org.geoserver.geofence.server.rest.xml.MultiPolygonAdapter;
+import org.springframework.stereotype.Component;
 
 /** @author ETj (etj at geo-solutions.it) */
+@Component
 public class GeoFenceServerXStreamInitializer implements XStreamPersisterInitializer {
 
     @Override

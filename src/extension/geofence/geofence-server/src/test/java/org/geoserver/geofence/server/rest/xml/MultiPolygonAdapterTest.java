@@ -10,10 +10,10 @@ import static org.junit.Assert.assertNotNull;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.geotools.gml3.bindings.GML3MockData;
 import org.geotools.gml3.v3_2.GML;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.XMLUtils;
 import org.junit.Test;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.w3c.dom.Document;
@@ -39,8 +39,7 @@ public class MultiPolygonAdapterTest {
     @Test
     public void testUnmarshal() throws Exception {
         GML3MockData.setGML(GML.getInstance());
-        Document document =
-                DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        Document document = XMLUtils.newDocumentBuilder().newDocument();
         Element allowedArea = GML3MockData.element(new QName(null, "allowedArea"), document, document);
         Element multiGeometry = GML3MockData.element(GML3MockData.qName("MultiGeometry"), document, allowedArea);
         Element geometryMember = GML3MockData.element(GML3MockData.qName("geometryMember"), document, multiGeometry);

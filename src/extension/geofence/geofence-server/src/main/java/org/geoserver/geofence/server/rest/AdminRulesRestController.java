@@ -67,12 +67,24 @@ public class AdminRulesRestController extends RestBaseController {
             @RequestParam(value = "entries", required = false) Integer entries,
             @RequestParam(value = "full", required = false, defaultValue = "false") boolean full,
             @RequestParam(value = "userName", required = false) String userName,
-            @RequestParam(value = "userAny", required = false) Boolean userDefault,
+            @Deprecated @RequestParam(value = "userAny", required = false) Boolean userAny,
+            @RequestParam(value = "userDefault", required = false) Boolean userDefault,
             @RequestParam(value = "roleName", required = false) String roleName,
-            @RequestParam(value = "roleAny", required = false) Boolean roleDefault,
+            @Deprecated @RequestParam(value = "roleAny", required = false) Boolean roleAny,
+            @RequestParam(value = "roleDefault", required = false) Boolean roleDefault,
             @RequestParam(value = "workspace", required = false) String workspace,
-            @RequestParam(value = "workspaceAny", required = false) Boolean workspaceDefault) {
-        RuleFilter filter = buildFilter(userName, userDefault, roleName, roleDefault, workspace, workspaceDefault);
+            @Deprecated @RequestParam(value = "workspaceAny", required = false) Boolean workspaceAny,
+            @RequestParam(value = "workspaceDefault", required = false) Boolean workspaceDefault) {
+        RuleFilter filter = buildFilter(
+                userName,
+                userAny,
+                userDefault,
+                roleName,
+                roleAny,
+                roleDefault,
+                workspace,
+                workspaceAny,
+                workspaceDefault);
 
         return new JaxbAdminRuleList(adminService().getListFull(filter, page, entries));
     }
@@ -91,12 +103,24 @@ public class AdminRulesRestController extends RestBaseController {
             produces = {"application/xml", "application/json"})
     public @ResponseBody JaxbAdminRuleList count(
             @RequestParam(value = "userName", required = false) String userName,
-            @RequestParam(value = "userAny", required = false) Boolean userDefault,
+            @Deprecated @RequestParam(value = "userAny", required = false) Boolean userAny,
+            @RequestParam(value = "userDefault", required = false) Boolean userDefault,
             @RequestParam(value = "roleName", required = false) String roleName,
-            @RequestParam(value = "roleAny", required = false) Boolean roleDefault,
+            @Deprecated @RequestParam(value = "roleAny", required = false) Boolean roleAny,
+            @RequestParam(value = "roleDefault", required = false) Boolean roleDefault,
             @RequestParam(value = "workspace", required = false) String workspace,
-            @RequestParam(value = "workspaceAny", required = false) Boolean workspaceDefault) {
-        RuleFilter filter = buildFilter(userName, userDefault, roleName, roleDefault, workspace, workspaceDefault);
+            @Deprecated @RequestParam(value = "workspaceAny", required = false) Boolean workspaceAny,
+            @RequestParam(value = "workspaceDefault", required = false) Boolean workspaceDefault) {
+        RuleFilter filter = buildFilter(
+                userName,
+                userAny,
+                userDefault,
+                roleName,
+                roleAny,
+                roleDefault,
+                workspace,
+                workspaceAny,
+                workspaceDefault);
 
         return new JaxbAdminRuleList(adminService().count(filter));
     }
@@ -130,18 +154,26 @@ public class AdminRulesRestController extends RestBaseController {
 
     protected RuleFilter buildFilter(
             String userName,
+            Boolean userAny,
             Boolean userDefault,
             String roleName,
-            Boolean groupDefault,
+            Boolean roleAny,
+            Boolean roleDefault,
             String workspace,
+            Boolean workspaceAny,
             Boolean workspaceDefault) {
 
         RuleFilter filter = new RuleFilter(SpecialFilterType.ANY, true);
 
-        setFilter(filter.getUser(), userName, userDefault);
-        setFilter(filter.getRole(), roleName, groupDefault);
-        setFilter(filter.getWorkspace(), workspace, workspaceDefault);
+        setFilter(filter.getUser(), userName, resolveIncludeDefault(userAny, userDefault));
+        setFilter(filter.getRole(), roleName, resolveIncludeDefault(roleAny, roleDefault));
+        setFilter(filter.getWorkspace(), workspace, resolveIncludeDefault(workspaceAny, workspaceDefault));
         return filter;
+    }
+
+    /** The new {@code *Default} parameter wins when both it and the deprecated {@code *Any} one are set. */
+    private static Boolean resolveIncludeDefault(Boolean deprecatedAny, Boolean byDefault) {
+        return byDefault != null ? byDefault : deprecatedAny;
     }
 
     private void setFilter(TextFilter filter, String name, Boolean includeDefault) {

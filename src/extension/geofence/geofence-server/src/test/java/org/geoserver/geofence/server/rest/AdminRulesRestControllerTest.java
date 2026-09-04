@@ -142,7 +142,8 @@ public class AdminRulesRestControllerTest extends GeofenceBaseTest {
         adminService.insert(
                 new AdminRule(6, prefix + "-user6", prefix + "-role6", null, null, null, AdminGrantType.ADMIN));
         // get the rules so we can access their id
-        JaxbAdminRuleList originalRules = controller.get(0, 6, false, null, null, null, null, null, null);
+        JaxbAdminRuleList originalRules =
+                controller.get(0, 6, false, null, null, null, null, null, null, null, null, null);
         validateRules(originalRules, prefix, "user1", "user2", "user3", "user4", "user5", "user6");
         // check rules per page
         validateRules(0, prefix, "user1", "user2");
@@ -263,7 +264,7 @@ public class AdminRulesRestControllerTest extends GeofenceBaseTest {
 
     /** Helper method that will validate the rules present in a certain page based on the user id. */
     private void validateRules(int page, String prefix, String... expectedUsers) {
-        JaxbAdminRuleList rules = controller.get(page, 2, false, null, null, null, null, null, null);
+        JaxbAdminRuleList rules = controller.get(page, 2, false, null, null, null, null, null, null, null, null, null);
         validateRules(rules, prefix, expectedUsers);
     }
 
@@ -279,7 +280,7 @@ public class AdminRulesRestControllerTest extends GeofenceBaseTest {
 
     /** Helper method that will validate the rules present in a certain page based on the priority. */
     private void validateRules(int page, long... expectedPriorities) {
-        JaxbAdminRuleList rules = controller.get(page, 2, false, null, null, null, null, null, null);
+        JaxbAdminRuleList rules = controller.get(page, 2, false, null, null, null, null, null, null, null, null, null);
         validateRules(rules, expectedPriorities);
     }
 

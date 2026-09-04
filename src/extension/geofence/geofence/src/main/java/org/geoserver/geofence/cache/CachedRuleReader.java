@@ -8,27 +8,29 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.geofence.cache.RuleCacheLoaderFactory.NamePw;
-import org.geoserver.geofence.services.RuleReaderService;
-import org.geoserver.geofence.services.dto.AccessInfo;
-import org.geoserver.geofence.services.dto.AuthUser;
-import org.geoserver.geofence.services.dto.RuleFilter;
-import org.geoserver.geofence.services.dto.ShortRule;
+import org.geofence.core.services.RuleReaderService;
+import org.geofence.core.services.dto.AccessInfo;
+import org.geofence.core.services.dto.PermsResult;
+import org.geofence.core.services.dto.RuleFilter;
+import org.geofence.core.services.dto.ShortRule;
+import org.geoserver.geofence.services.RuleReaderDecorator;
 import org.geotools.util.logging.Logging;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * A delegating {@link RuleReaderService} with caching capabilities.
  *
  * @author Emanuele Tajariol (etj at geo-solutions.it)
  */
-public class CachedRuleReader implements RuleReaderService {
+@Component
+public class CachedRuleReader implements RuleReaderService, RuleReaderDecorator {
 
     static final Logger LOGGER = Logging.getLogger(CachedRuleReader.class);
 
     private CacheManager cacheManager;
 
-    public CachedRuleReader() {}
-
+    @Autowired
     public CachedRuleReader(CacheManager cacheManager) {
         setCacheManager(cacheManager);
     }
@@ -51,6 +53,16 @@ public class CachedRuleReader implements RuleReaderService {
     }
 
     @Override
+    public PermsResult getPermissionFilter(RuleFilter filter) {
+        if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Perms request for {0}", filter);
+        try {
+            return cacheManager.getPermCache().get(filter);
+        } catch (ExecutionException ex) {
+            throw new RuntimeException(ex); // fixme: handle me
+        }
+    }
+
+    @Override
     public AccessInfo getAdminAuthorization(RuleFilter filter) {
 
         if (LOGGER.isLoggable(Level.FINE)) {
@@ -67,15 +79,5 @@ public class CachedRuleReader implements RuleReaderService {
     @Override
     public List<ShortRule> getMatchingRules(RuleFilter filter) {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public AuthUser authorize(String username, String password) {
-        try {
-            return cacheManager.getUserCache().get(new NamePw(username, password));
-        } catch (ExecutionException ex) {
-            LOGGER.warning(ex.getMessage());
-            return null;
-        }
     }
 }

@@ -7,34 +7,42 @@ package org.geoserver.geofence.server.internal;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.geoserver.geofence.ServicesTest;
-import org.geoserver.geofence.core.model.Rule;
-import org.geoserver.geofence.core.model.RuleLimits;
-import org.geoserver.geofence.core.model.enums.CatalogMode;
-import org.geoserver.geofence.core.model.enums.GrantType;
-import org.geoserver.geofence.server.rest.RulesRestController;
-import org.geoserver.geofence.services.RuleAdminService;
-import org.geoserver.geofence.services.RuleReaderServiceImpl;
-import org.geoserver.geofence.services.dto.AccessInfo;
-import org.geoserver.geofence.services.dto.RuleFilter;
-import org.geoserver.geofence.services.dto.ShortRule;
+import org.geofence.core.model.Rule;
+import org.geofence.core.model.RuleLimits;
+import org.geofence.core.model.enums.CatalogMode;
+import org.geofence.core.model.enums.GrantType;
+import org.geofence.core.services.RuleAdminService;
+import org.geofence.core.services.RuleReaderService;
+import org.geofence.core.services.RuleReaderServiceImpl;
+import org.geofence.core.services.dto.AccessInfo;
+import org.geofence.core.services.dto.RuleFilter;
+import org.geofence.core.services.dto.ShortRule;
+import org.geoserver.geofence.GeofenceBaseTest;
+import org.geoserver.geofence.server.GeofenceDatabaseRule;
+import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
 /** @author Niels Charlier */
-public class InternalServicesTest extends ServicesTest {
+public class InternalServicesTest extends GeofenceBaseTest {
 
-    protected RulesRestController controller;
+    @ClassRule
+    public static final GeofenceDatabaseRule database = new GeofenceDatabaseRule();
 
     protected RuleAdminService adminService;
 
+    protected RuleReaderService geofenceService;
+
     @Before
     public void initGeoFenceControllers() {
-        controller = (RulesRestController) applicationContext.getBean("rulesRestController");
         adminService = (RuleAdminService) applicationContext.getBean("ruleAdminService");
+        geofenceService = applicationContext
+                .getBean("ruleReaderBackendFactory", RuleReaderServiceFactory.class)
+                .getService();
 
         if (adminService.getCountAll() > 0) {
             for (ShortRule r : adminService.getAll()) {
@@ -50,7 +58,8 @@ public class InternalServicesTest extends ServicesTest {
 
     @Test
     public void testConfigurationInternal() {
-        assertTrue(configManager.getConfiguration().isInternal());
+        // ruleReaderBackend, not the legacy isInternal()/servicesUrl convention (no longer kept in sync)
+        assertEquals("ruleReaderServiceImpl", configManager.getConfiguration().getRuleReaderBackend());
         if (geofenceService != null) {
             assertTrue(geofenceService instanceof RuleReaderServiceImpl);
         }

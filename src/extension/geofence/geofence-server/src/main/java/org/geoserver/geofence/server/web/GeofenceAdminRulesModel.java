@@ -14,10 +14,10 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.geoserver.geofence.core.model.AdminRule;
-import org.geoserver.geofence.core.model.enums.AdminGrantType;
-import org.geoserver.geofence.services.AdminRuleAdminService;
-import org.geoserver.geofence.services.dto.ShortAdminRule;
+import org.geofence.core.model.AdminRule;
+import org.geofence.core.model.enums.AdminGrantType;
+import org.geofence.core.services.AdminRuleAdminService;
+import org.geofence.core.services.dto.ShortAdminRule;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 

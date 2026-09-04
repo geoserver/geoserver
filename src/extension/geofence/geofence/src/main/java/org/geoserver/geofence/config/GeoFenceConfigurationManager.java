@@ -8,12 +8,15 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.BooleanUtils;
+import org.geoserver.config.GeoServerPropertyConfigurer;
 import org.geoserver.geofence.GeofenceAccessManager;
 import org.geoserver.geofence.cache.CacheConfiguration;
+import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.InitializingBean;
@@ -23,11 +26,16 @@ public class GeoFenceConfigurationManager implements InitializingBean {
 
     private static final Logger LOGGER = Logging.getLogger(GeofenceAccessManager.class);
 
-    private GeoFencePropertyPlaceholderConfigurer configurer;
+    private GeoServerPropertyConfigurer configurer;
 
     private GeoFenceConfiguration geofenceConfiguration;
 
     private CacheConfiguration cacheConfiguration;
+
+    /** Used to skip persisting ruleReaderBackend/Frontend when they still match their built-in default. */
+    private RuleReaderServiceFactory ruleReaderBackendFactory;
+
+    private RuleReaderServiceFactory ruleReaderFrontendFactory;
 
     private static final String PROP_INSTANCE_NAME = "instanceName";
     private static final String PROP_SERVICES_URL = "servicesUrl";
@@ -35,8 +43,9 @@ public class GeoFenceConfigurationManager implements InitializingBean {
     private static final String PROP_GRANT_WRITE = "grantWriteToWorkspacesToAuthenticatedUsers";
     private static final String PROP_USE_ROLES = "useRolesToFilter";
     private static final String PROP_ACCEPTED_ROLES = "acceptedRoles";
-    private static final String PROP_GWCCONTEXTSUFFIX = "gwc.context.suffix";
     private static final String PROP_ORGGEOSERVERREST = "org.geoserver.rest.DefaultUserGroupServiceName";
+    private static final String PROP_RULEREADER_BACKEND = "ruleReaderBackend";
+    private static final String PROP_RULEREADER_FRONTEND = "ruleReaderFrontend";
     private static final String PROP_CACHE_EXPIRE = "cacheExpire";
     private static final String PROP_CACHE_REFRESH = "cacheRefresh";
     private static final String PROP_CACHE_SIZE = "cacheSize";
@@ -48,8 +57,9 @@ public class GeoFenceConfigurationManager implements InitializingBean {
         PROP_GRANT_WRITE,
         PROP_USE_ROLES,
         PROP_ACCEPTED_ROLES,
-        PROP_GWCCONTEXTSUFFIX,
         PROP_ORGGEOSERVERREST,
+        PROP_RULEREADER_BACKEND,
+        PROP_RULEREADER_FRONTEND,
     };
     private static final String[] ALL_CACHE_PROPS = {
         PROP_CACHE_SIZE, PROP_CACHE_REFRESH, PROP_CACHE_EXPIRE,
@@ -61,10 +71,7 @@ public class GeoFenceConfigurationManager implements InitializingBean {
 
     /** Updates the configuration. */
     public void setConfiguration(GeoFenceConfiguration cfg) {
-
         this.geofenceConfiguration = cfg;
-
-        LOGGER.log(Level.INFO, "GeoFence configuration: instance name is {0}", cfg.getInstanceName());
     }
 
     public CacheConfiguration getCacheConfiguration() {
@@ -73,6 +80,14 @@ public class GeoFenceConfigurationManager implements InitializingBean {
 
     public void setCacheConfiguration(CacheConfiguration cacheConfiguration) {
         this.cacheConfiguration = cacheConfiguration;
+    }
+
+    public void setRuleReaderBackendFactory(RuleReaderServiceFactory ruleReaderBackendFactory) {
+        this.ruleReaderBackendFactory = ruleReaderBackendFactory;
+    }
+
+    public void setRuleReaderFrontendFactory(RuleReaderServiceFactory ruleReaderFrontendFactory) {
+        this.ruleReaderFrontendFactory = ruleReaderFrontendFactory;
     }
 
     public void storeConfiguration() throws IOException {
@@ -90,14 +105,28 @@ public class GeoFenceConfigurationManager implements InitializingBean {
         }
     }
 
-    /** Saves current configuration to disk. */
+    /** Saves current configuration to disk, omitting properties that still match their built-in default. */
     protected void saveConfiguration(Writer writer, GeoFenceConfiguration cfg) throws IOException {
 
         writer.write("### GeoFence main configuration\n\n");
         Properties props = configAsProperties(cfg);
         for (String propname : ALL_GEOFENCE_PROPS) {
+            if (isDefaultValue(propname, props.getProperty(propname))) {
+                continue;
+            }
             saveConfig(writer, propname, props.getProperty(propname));
         }
+    }
+
+    /** Whether the given property currently holds the same value the corresponding factory booted up with. */
+    private boolean isDefaultValue(String propname, String value) {
+        if (PROP_RULEREADER_BACKEND.equals(propname)) {
+            return Objects.equals(value, ruleReaderBackendFactory.getDefaultServiceName());
+        }
+        if (PROP_RULEREADER_FRONTEND.equals(propname)) {
+            return Objects.equals(value, ruleReaderFrontendFactory.getDefaultServiceName());
+        }
+        return false;
     }
 
     public void saveConfiguration(Writer writer, CacheConfiguration cfg) throws IOException {
@@ -113,27 +142,24 @@ public class GeoFenceConfigurationManager implements InitializingBean {
         writer.write(name + "=" + String.valueOf(value) + "\n");
     }
 
-    /** Returns a copy of the configuration. */
-    public void setConfigurer(GeoFencePropertyPlaceholderConfigurer configurer) {
+    public void setConfigurer(GeoServerPropertyConfigurer configurer) {
         this.configurer = configurer;
     }
 
-    /**
-     * The PropertyPlaceholderConfigurer may have race conditions sometimes, so we're going to read the props from the
-     * file and assign them to the GeoFenceConfiguration
-     */
+    /** The configurer this manager reads/writes through - tests use this to redirect the config file location. */
+    public GeoServerPropertyConfigurer getConfigurer() {
+        return configurer;
+    }
+
+    /** Layers the properties file over the configuration built from defaults, so the file wins where it has a value. */
     @Override
     public void afterPropertiesSet() throws Exception {
         LOGGER.log(
                 Level.INFO,
-                "GeoFence configuration: force setting properties from {0}",
+                "GeoFence configuration: reading {0}",
                 configurer.getConfigFile().path());
-
-        if (loadConfiguration())
-            LOGGER.log(
-                    Level.INFO,
-                    "GeoFence configuration: instance name is {0}",
-                    geofenceConfiguration.getInstanceName());
+        loadConfiguration();
+        LOGGER.log(Level.INFO, "GeoFence configuration: instance name is {0}", geofenceConfiguration.getInstanceName());
     }
 
     public boolean loadConfiguration() throws IOException {
@@ -149,8 +175,8 @@ public class GeoFenceConfigurationManager implements InitializingBean {
         } catch (IllegalStateException e) {
 
             LOGGER.log(
-                    Level.INFO,
-                    "GeoFence configuration: could not open property file {0}",
+                    Level.WARNING,
+                    "GeoFence configuration: file {0} not found; using built-in defaults until one is saved",
                     configurer.getConfigFile().path());
             return false;
         }
@@ -167,7 +193,8 @@ public class GeoFenceConfigurationManager implements InitializingBean {
         cfg.setGrantWriteToWorkspacesToAuthenticatedUsers(BooleanUtils.toBoolean(props.getProperty(PROP_GRANT_WRITE)));
         cfg.setUseRolesToFilter(BooleanUtils.toBoolean(props.getProperty(PROP_USE_ROLES)));
         cfg.setAcceptedRoles(props.getProperty(PROP_ACCEPTED_ROLES));
-        cfg.setGwcContextSuffix(props.getProperty(PROP_GWCCONTEXTSUFFIX));
+        cfg.setRuleReaderBackend(props.getProperty(PROP_RULEREADER_BACKEND));
+        cfg.setRuleReaderFrontend(props.getProperty(PROP_RULEREADER_FRONTEND));
     }
 
     private void loadConfiguration(Properties props, CacheConfiguration cfg) {
@@ -184,8 +211,9 @@ public class GeoFenceConfigurationManager implements InitializingBean {
         props.setProperty(PROP_GRANT_WRITE, format_prop(cfg.isGrantWriteToWorkspacesToAuthenticatedUsers()));
         props.setProperty(PROP_USE_ROLES, format_prop(cfg.isUseRolesToFilter()));
         props.setProperty(PROP_ACCEPTED_ROLES, format_prop(cfg.getAcceptedRoles()));
-        props.setProperty(PROP_GWCCONTEXTSUFFIX, format_prop(cfg.getGwcContextSuffix()));
         props.setProperty(PROP_ORGGEOSERVERREST, format_prop(cfg.getDefaultUserGroupServiceName()));
+        props.setProperty(PROP_RULEREADER_BACKEND, format_prop(cfg.getRuleReaderBackend()));
+        props.setProperty(PROP_RULEREADER_FRONTEND, format_prop(cfg.getRuleReaderFrontend()));
         return props;
     }
 

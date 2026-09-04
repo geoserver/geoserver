@@ -1,0 +1,10 @@
+/* Shown when the rule reader backend is down and every request is being denied - uses the theme's
+   danger tokens rather than a literal red, so it follows light/dark mode. */
+.gs-geofence-unavailable {
+  background-color: var(--gs-danger-bg-subtle);
+  color: var(--gs-danger-text-emphasis);
+  border: 1px solid var(--gs-danger-border-subtle);
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-weight: bold;
+}

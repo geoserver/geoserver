@@ -38,6 +38,15 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
+import org.geofence.core.model.LayerAttribute;
+import org.geofence.core.model.LayerDetails;
+import org.geofence.core.model.RuleLimits;
+import org.geofence.core.model.enums.AccessType;
+import org.geofence.core.model.enums.CatalogMode;
+import org.geofence.core.model.enums.LayerType;
+import org.geofence.core.model.enums.SpatialFilterType;
+import org.geofence.core.services.dto.GrantTypeDTO;
+import org.geofence.core.services.dto.ShortRule;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -49,15 +58,6 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
-import org.geoserver.geofence.core.model.LayerAttribute;
-import org.geoserver.geofence.core.model.LayerDetails;
-import org.geoserver.geofence.core.model.RuleLimits;
-import org.geoserver.geofence.core.model.enums.AccessType;
-import org.geoserver.geofence.core.model.enums.CatalogMode;
-import org.geoserver.geofence.core.model.enums.GrantType;
-import org.geoserver.geofence.core.model.enums.LayerType;
-import org.geoserver.geofence.core.model.enums.SpatialFilterType;
-import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.exception.GeoServerRuntimException;
@@ -223,7 +223,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                 RuleFormData ruleFormData = (RuleFormData) getForm().getModelObject();
                 try {
                     rules.save(ruleFormData.rule);
-                    if (ruleFormData.rule.getAccess().equals(GrantType.LIMIT)) {
+                    if (ruleFormData.rule.getAccess().equals(GrantTypeDTO.LIMIT)) {
                         rules.save(
                                 ruleFormData.rule.getId(),
                                 parseAllowedArea(ruleFormData.allowedArea),
@@ -440,7 +440,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         protected TextField<String> validAfter;
         protected TextField<String> validBefore;
 
-        protected DropDownChoice<GrantType> grantTypeChoice;
+        protected DropDownChoice<GrantTypeDTO> grantTypeChoice;
 
         protected DropDownChoice<CatalogMode> catalogModeChoice;
 
@@ -552,14 +552,14 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                     grantTypeChoice = new DropDownChoice<>(
                             "access",
                             ruleFormModel.bind("rule.access"),
-                            Arrays.asList(GrantType.values()),
+                            Arrays.asList(GrantTypeDTO.values()),
                             new GrantTypeRenderer()));
             grantTypeChoice.setRequired(true);
 
             grantTypeChoice.add(new GrantTypeOnChange());
 
             boolean isLimit = form.getModelObject().rule.getAccess() != null
-                    && form.getModelObject().rule.getAccess().equals(GrantType.LIMIT);
+                    && form.getModelObject().rule.getAccess().equals(GrantTypeDTO.LIMIT);
 
             add(allowedAreaLabel = new Label("allowedAreaLabel", new ResourceModel("allowedArea", "Allow area")));
             allowedAreaLabel.setVisible(isLimit);
@@ -591,7 +591,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                     catalogModeChoiceLabel =
                             new Label("catalogModeLabel", new ResourceModel("catalogMode", "Catalog Mode")));
             catalogModeChoiceLabel.setVisible(form.getModelObject().rule.getAccess() != null
-                    && form.getModelObject().rule.getAccess().equals(GrantType.LIMIT));
+                    && form.getModelObject().rule.getAccess().equals(GrantTypeDTO.LIMIT));
             catalogModeChoiceLabel.setOutputMarkupId(true);
             catalogModeChoiceLabel.setOutputMarkupPlaceholderTag(true);
 
@@ -602,7 +602,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                             Arrays.asList(CatalogMode.values()),
                             new CatalogModeRenderer()));
             catalogModeChoice.setVisible(form.getModelObject().rule.getAccess() != null
-                    && form.getModelObject().rule.getAccess().equals(GrantType.LIMIT));
+                    && form.getModelObject().rule.getAccess().equals(GrantTypeDTO.LIMIT));
             catalogModeChoice.setOutputMarkupId(true);
             catalogModeChoice.setOutputMarkupPlaceholderTag(true);
         }
@@ -614,7 +614,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 ruleFormModel.getObject().layerDetailsCheck = ruleFormModel.getObject().layerDetailsCheck
-                        && GrantType.ALLOW.equals(grantTypeChoice.getConvertedInput())
+                        && GrantTypeDTO.ALLOW.equals(grantTypeChoice.getConvertedInput())
                         && layerChoice.getConvertedInput() != null;
 
                 ruleFormModel.getObject().layerDetails.attributes.clear();
@@ -662,7 +662,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                boolean isLimit = grantTypeChoice.getConvertedInput().equals(GrantType.LIMIT);
+                boolean isLimit = grantTypeChoice.getConvertedInput().equals(GrantTypeDTO.LIMIT);
                 allowedAreaLabel.setVisible(isLimit);
                 allowedArea.setVisible(isLimit);
                 spatialFilterTypeLabel.setVisible(isLimit);
@@ -679,7 +679,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
                 ruleFormModel.getObject().layerDetailsCheck = ruleFormModel.getObject().layerDetailsCheck
                         && (grantTypeChoice.getConvertedInput() != null
-                                && grantTypeChoice.getConvertedInput().equals(GrantType.ALLOW))
+                                && grantTypeChoice.getConvertedInput().equals(GrantTypeDTO.ALLOW))
                         && (layerChoice.getConvertedInput() != null
                                 && !layerChoice.getConvertedInput().isEmpty());
             }
@@ -718,7 +718,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                     new CheckBox("layerDetailsCheck", ruleFormModel.bind("layerDetailsCheck"));
             layerDetailsCheck.setOutputMarkupId(true);
             layerDetailsCheck.setEnabled(ruleFormModel.getObject().rule.getLayer() != null
-                    && ruleFormModel.getObject().rule.getAccess().equals(GrantType.ALLOW));
+                    && ruleFormModel.getObject().rule.getAccess().equals(GrantTypeDTO.ALLOW));
             add(layerDetailsCheck);
 
             final WebMarkupContainer container = new WebMarkupContainer("layerDetailsContainer");
@@ -913,17 +913,17 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     }
 
     /** Makes sure we see translated text, by the raw name is used for the model */
-    protected class GrantTypeRenderer extends ChoiceRenderer<GrantType> {
+    protected class GrantTypeRenderer extends ChoiceRenderer<GrantTypeDTO> {
         @Serial
         private static final long serialVersionUID = -7478943956804313995L;
 
         @Override
-        public Object getDisplayValue(GrantType object) {
+        public Object getDisplayValue(GrantTypeDTO object) {
             return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
         @Override
-        public String getIdValue(GrantType object, int index) {
+        public String getIdValue(GrantTypeDTO object, int index) {
             return object.name();
         }
     }

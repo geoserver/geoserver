@@ -28,7 +28,7 @@ This section describes most of the extensions available for GeoServer. Other dat
 - [MongoDB Data Store](mongodb/index.md)
 - [SLD REST Service](sldservice/index.md)
 - [Geofence Plugin](geofence/index.md)
-- [Geofence Internal Server](geofence-server/index.md)
+- [Geofence Embedded Server](geofence-server/index.md)
 - [Geofence WPS Integration](geofence-wps/index.md)
 - [CAS integration](cas/index.md)
 - [Parameters Extractor](params-extractor/index.md)

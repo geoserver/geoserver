@@ -1,4 +1,4 @@
-# AdminRules Rest API
+# REST API: AdminRules
 
 ## Security
 
@@ -59,11 +59,14 @@ All filter parameters are optional.
 | page | number | Used for paging a list of rules. Specifies the number of the page. Leave out for no paging. If specified, `entries` should also be specified. |
 | entries | number | Used for paging a list of rules. Specifies the number of entries per page. Leave out for no paging. If specified, `page` should also be specified. |
 | userName | string | Filter rules on username (excludes all other specified usernames). |
-| userAny | 0 or 1. | Specify whether rules matching any username should be included or not. |
+| ~~userAny~~ | 0 or 1. | Use `userDefault` instead. |
+| userDefault | 0 or 1. | Specify whether rules matching any username should be included or not. Wins over `userAny` when both are set. |
 | roleName | string | Filter rules on rolename (excludes all other specified rolenames). |
-| roleAny | 0 or 1. | Specify whether rules matching any rolename should be included or not. |
+| ~~roleAny~~ | 0 or 1. | Use `roleDefault` instead. |
+| roleDefault | 0 or 1. | Specify whether rules matching any rolename should be included or not. Wins over `roleAny` when both are set. |
 | workspace | string | Filter rules on workspace (excludes all other specified workspaces). |
-| workspaceAny | 0 or 1. | Specify whether rules matching any workspace should be included or not. |
+| ~~workspaceAny~~ | 0 or 1. | Use `workspaceDefault` instead. Specify whether rules matching any workspace should be included or not. |
+| workspaceDefault | 0 or 1. | Specify whether rules matching any workspace should be included or not. Wins over `workspaceAny` when both are set. |
 
 ## Requests
 
@@ -73,7 +76,7 @@ Query all adminrules or add a new adminrule.
 
 | Method | Action | Supported parameters | Response |
 |----|----|----|----|
-| GET | List all adminrules, with respect to any added filters | page, entries, userName, userAny, roleName, roleAny, workspace, workspaceAny | 200 OK. List of adminrules in XML. |
+| GET | List all adminrules, with respect to any added filters | page, entries, userName, ~~userAny~~, userDefault, roleName, ~~roleAny~~, roleDefault, workspace, ~~workspaceAny~~, workspaceDefault | 200 OK. List of adminrules in XML. |
 | POST | Add a new adminrule | None | 201 Inserted. Created `ID` header. |
 
 ### `/geofence/rest/adminrules/count`
@@ -82,7 +85,7 @@ Counts (filtered) adminrules.
 
 | Method | Action | Supported parameters | Response |
 |----|----|----|----|
-| GET | Count all adminrules, with respect to any added filters | userName, userAny, roleName, roleAny, workspace, workspaceAny | 200 OK. Rule list count in XML. |
+| GET | Count all adminrules, with respect to any added filters | userName, ~~userAny~~, userDefault, roleName, ~~roleAny~~, roleDefault, workspace, ~~workspaceAny~~, workspaceDefault | 200 OK. Rule list count in XML. |
 
 ### `/geofence/rest/adminrules/id/<id>`
 

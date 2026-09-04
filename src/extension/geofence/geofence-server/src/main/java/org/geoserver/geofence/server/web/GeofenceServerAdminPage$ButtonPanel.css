@@ -1,0 +1,11 @@
+/* Row of up/down/edit icons, each in its own fixed-width column so up and down stay aligned
+   across rows even where visibility-hidden hides one of them. */
+.gs-panel-GeofenceServerAdminPage_ButtonPanel {
+  display: flex;
+}
+
+.gs-panel-GeofenceServerAdminPage_ButtonPanel > span {
+  display: flex;
+  width: 1.5rem;
+  justify-content: center;
+}

@@ -15,6 +15,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geofence.core.services.dto.ShortRule;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.util.WebUtils;
 import org.geoserver.web.wicket.GeoServerDNDBehavior;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -136,6 +137,15 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
         private ImageAjaxLink<?> upLink;
 
         private ImageAjaxLink<?> downLink;
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            if (!WebUtils.IsWicketCssFileEmpty(getClass())) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new PackageResourceReference(getClass(), WebUtils.toResourceName(getClass(), "css"))));
+            }
+        }
 
         public ButtonPanel(String id, final ShortRule rule) {
             super(id);

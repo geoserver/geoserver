@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.catalog.Catalog;
@@ -83,8 +85,10 @@ import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.referencing.datum.DefaultEllipsoid;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.util.DateRange;
+import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Coordinate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -100,6 +104,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @APIService(service = "Maps", version = "1.0.1", landingPage = "ogc/maps/v1", serviceClass = WMSInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/maps/v1")
 public class MapsService {
+
+    static final Logger LOGGER = Logging.getLogger(MapsService.class);
 
     private static final String DISPLAY_NAME = "OGC API Maps";
 
@@ -802,6 +808,14 @@ public class MapsService {
             if (width == null) width = size[0];
             if (height == null) height = size[1];
         }
+        // with no scale to size the map, a missing dimension follows the shape of the area on the ground; the WMS
+        // defaults keep the CRS unit ratio instead, which deforms the map (/req/scaling/width-definition part H)
+        if (width == null || height == null) {
+            DefaultWebMapService.autoSetBoundsAndSize(request);
+            int[] size = sizeFromAspect(request, width, height);
+            width = size[0];
+            height = size[1];
+        }
         if (width != null) request.setWidth(width);
         if (height != null) request.setHeight(height);
         if (q.orientation() != null) {
@@ -990,12 +1004,99 @@ public class MapsService {
 
     private int[] sizeFromScale(ReferencedEnvelope region, double scaleDenominator, double pixelSizeMeters) {
         double groundResolution = scaleDenominator * pixelSizeMeters; // meters per pixel
-        CoordinateReferenceSystem crs = region.getCoordinateReferenceSystem();
-        double widthMeters = RendererUtilities.toMeters(region.getWidth(), crs);
-        double heightMeters = RendererUtilities.toMeters(region.getHeight(), crs);
-        int width = Math.max(1, (int) Math.round(widthMeters / groundResolution));
-        int height = Math.max(1, (int) Math.round(heightMeters / groundResolution));
+        double[] metersPerUnit = metersPerUnit(region);
+        return new int[] {
+            pixels(region.getWidth() * metersPerUnit[0] / groundResolution),
+            pixels(region.getHeight() * metersPerUnit[1] / groundResolution)
+        };
+    }
+
+    /**
+     * Fills in the dimensions the request left out, so that the pixel ratio matches the ratio of the area on the
+     * ground. A dimension the client asked for is kept as it is. When the request gave neither, the longer side takes
+     * the default map size of the WMS, and the shorter one follows from the ground ratio.
+     */
+    private static int[] sizeFromAspect(GetMapRequest request, Integer width, Integer height) {
+        ReferencedEnvelope drawn = new ReferencedEnvelope(request.getBbox(), request.getCrs());
+        double[] metersPerUnit = metersPerUnit(drawn);
+        double aspect = (drawn.getWidth() * metersPerUnit[0]) / (drawn.getHeight() * metersPerUnit[1]);
+        if (!usable(aspect)) return new int[] {request.getWidth(), request.getHeight()};
+        if (width == null && height == null) {
+            int side = Math.max(request.getWidth(), request.getHeight());
+            if (aspect >= 1) width = side;
+            else height = side;
+        }
+        if (width == null) width = pixels(height * aspect);
+        if (height == null) height = pixels(width / aspect);
         return new int[] {width, height};
+    }
+
+    /** Rounds a computed map side to a pixel count of at least one, without wrapping over on a degenerate area. */
+    private static int pixels(double side) {
+        return (int) Math.min(Integer.MAX_VALUE, Math.max(1, Math.round(side)));
+    }
+
+    /**
+     * Measures the ground meters per CRS unit at the centre of the map, horizontal first. A CRS unit is not a meter on
+     * the ground. A degree of longitude shortens away from the equator, and a projection stretches its own units by an
+     * amount that changes with position. The scale of a map is set against the physical world, not against the units
+     * (OGC API - Maps, /req/scaling/width-definition part H), so the two have to be compared. The measure holds at the
+     * centre only, the deformation changing across the map. A CRS that cannot be compared to WGS84 keeps its units.
+     */
+    private static double[] metersPerUnit(ReferencedEnvelope bbox) {
+        CoordinateReferenceSystem crs = bbox.getCoordinateReferenceSystem();
+        if (crs == null) return crsUnits(null);
+        try {
+            MathTransform toWgs84 = CRS.findMathTransform(crs, DefaultGeographicCRS.WGS84, true);
+            Coordinate centre = JTS.transform(new Coordinate(bbox.getMedian(0), bbox.getMedian(1)), null, toWgs84);
+            return metersPerUnit(crs, centre.x, centre.y);
+        } catch (FactoryException | TransformException e) {
+            LOGGER.log(Level.FINE, e, () -> "Cannot locate the centre of " + bbox + ", using the CRS units");
+            return crsUnits(crs);
+        }
+    }
+
+    /** Measures the ground meters per CRS unit at a longitude and latitude, horizontal first. */
+    private static double[] metersPerUnit(CoordinateReferenceSystem crs, double lon, double lat) {
+        // the probe reaches half a degree away, so keep it on the globe; a map at the pole is degenerate anyway
+        double sample = Math.max(-89.5, Math.min(89.5, lat));
+        double[] horizontal = {lon - 0.5, sample, lon + 0.5, sample};
+        double[] vertical = {lon, sample - 0.5, lon, sample + 0.5};
+        try {
+            MathTransform fromWgs84 = CRS.findMathTransform(DefaultGeographicCRS.WGS84, crs, true);
+            double[] measured = {
+                groundMeters(horizontal) / crsUnitsApart(fromWgs84, horizontal, 0),
+                groundMeters(vertical) / crsUnitsApart(fromWgs84, vertical, 1)
+            };
+            if (usable(measured[0]) && usable(measured[1])) return measured;
+        } catch (FactoryException | TransformException e) {
+            LOGGER.log(Level.FINE, e, () -> "Cannot measure the ground scale at " + lon + "," + lat);
+        }
+        return crsUnits(crs);
+    }
+
+    /** Measures the distance on the ground between two longitude/latitude points, in meters. */
+    private static double groundMeters(double[] points) {
+        return DefaultEllipsoid.WGS84.orthodromicDistance(points[0], points[1], points[2], points[3]);
+    }
+
+    /** Returns the CRS units themselves, used when the ground cannot be measured. */
+    private static double[] crsUnits(CoordinateReferenceSystem crs) {
+        double unit = RendererUtilities.toMeters(1d, crs);
+        return new double[] {unit, unit};
+    }
+
+    /** Measures the distance between the same two points once projected, along the given ordinate. */
+    private static double crsUnitsApart(MathTransform fromWgs84, double[] points, int ordinate)
+            throws TransformException {
+        double[] projected = new double[4];
+        fromWgs84.transform(points, 0, projected, 0, 2);
+        return Math.abs(projected[ordinate + 2] - projected[ordinate]);
+    }
+
+    /** Checks that a scale factor can size a map: it must be finite and positive. */
+    private static boolean usable(double factor) {
+        return Double.isFinite(factor) && factor > 0;
     }
 
     /** A map centre in longitude/latitude order, with the XY twin of the CRS it is expressed in. */
@@ -1065,10 +1166,10 @@ public class MapsService {
                     "center requires width, height and scale-denominator to define the map extent",
                     HttpStatus.BAD_REQUEST);
         }
-        double metersPerUnit = RendererUtilities.toMeters(1d, center.crs());
+        double[] metersPerUnit = metersPerUnit(center.crs(), center.lon(), center.lat());
         double groundResolution = q.scaleDenominator() * pixelSizeMeters(q); // meters per pixel
-        double halfWidth = (width / 2d) * groundResolution / metersPerUnit;
-        double halfHeight = (height / 2d) * groundResolution / metersPerUnit;
+        double halfWidth = (width / 2d) * groundResolution / metersPerUnit[0];
+        double halfHeight = (height / 2d) * groundResolution / metersPerUnit[1];
         return new ReferencedEnvelope(
                 center.lon() - halfWidth,
                 center.lon() + halfWidth,

@@ -416,6 +416,25 @@ public class MapsTest extends MapsTestSupport {
                 "datetime");
     }
 
+    /**
+     * A datetime the parser cannot read is a client error, not a server one: the values below are all outside the
+     * syntax of /req/datetime/datetime-definition, "now" and "current" being WMS keywords the time parser also knows.
+     */
+    @Test
+    public void testInvalidDatetimeSyntaxRejected() throws Exception {
+        setupStartEndTimeDimension(TIME_WITH_START_END, "time", "startTime", "endTime");
+        String base = "ogc/maps/v1/collections/sf:TimeWithStartEnd/map?f=image/png&width=50&height=50&datetime=";
+        for (String datetime : new String[] {
+            "not-a-date", "..", "now", "current", "now,2012-02-11T00:00:00Z", "2012-02-11T00:00:00-04:00"
+        }) {
+            MockHttpServletResponse response = getAsServletResponse(base + datetime);
+            assertEquals(datetime, 400, response.getStatus());
+            DocumentContext json = getAsJSONPath(response);
+            assertEquals(datetime, APIException.INVALID_PARAMETER_VALUE, json.read("type"));
+            assertThat(json.read("title", String.class), containsString(datetime));
+        }
+    }
+
     @Test
     public void testUnknownCollectionRejected() throws Exception {
         MockHttpServletResponse response =

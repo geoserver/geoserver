@@ -1360,15 +1360,30 @@ public class MapsService {
             throw new APIException(
                     INVALID_PARAMETER_VALUE, "Time dimension is not enabled in this coverage", HttpStatus.BAD_REQUEST);
         }
-        @SuppressWarnings("unchecked")
-        Collection<Object> times = timeParser.parse(closeOpenBounds(datetime));
-        if (times.size() != 1) {
+        // the datetime grammar has no list form, while the WMS time parser takes one and breaks on some of its values
+        if (datetime.indexOf(',') >= 0) {
+            throw new APIException(
+                    INVALID_PARAMETER_VALUE, "Invalid datetime, a list of times: " + datetime, HttpStatus.BAD_REQUEST);
+        }
+        Collection<Object> times = parseTime(datetime);
+        // the parser reports the WMS keywords "now" and "current" as a null element; they are not datetime syntax
+        if (times.size() != 1 || times.iterator().next() == null) {
             throw new APIException(
                     INVALID_PARAMETER_VALUE,
-                    "Invalid datetime specification, must be a single time, or a time range",
+                    "Invalid datetime specification, must be a single time, or a time range: " + datetime,
                     HttpStatus.BAD_REQUEST);
         }
         request.setTime(List.copyOf(times));
+    }
+
+    /** Parses a {@code datetime} value with the WMS time parser, turning a syntax error into a 400. */
+    @SuppressWarnings("unchecked")
+    private Collection<Object> parseTime(String datetime) {
+        try {
+            return timeParser.parse(closeOpenBounds(datetime));
+        } catch (ParseException e) {
+            throw new APIException(INVALID_PARAMETER_VALUE, "Invalid datetime: " + datetime, HttpStatus.BAD_REQUEST, e);
+        }
     }
 
     /**

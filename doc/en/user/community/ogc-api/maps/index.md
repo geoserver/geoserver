@@ -99,6 +99,11 @@ A map of a collection is retrieved from `/ogc/maps/v1/collections/{collectionId}
 parameter, PNG and JPEG are always available, TIFF and SVG can be turned off via conformance classes,
 in general, other output formats can be removed in the mapping configuration panel as well.
 
+The format can also be negotiated with the `Accept` header, in place of `f`. A client that lists PNG and JPEG
+with the same quality, and nothing it prefers more, lets the server choose: a map with transparency comes back
+as PNG, an opaque one as JPEG, which compresses it better. Give one of the two a higher quality, for example
+`Accept: image/png, image/jpeg;q=0.5`, to make the choice explicit.
+
 The area, size and appearance of the map are controlled by the parameters of the optional conformance classes:
 
 - `bbox` and `bbox-crs`, `subset` and `subset-crs`, or `center` and `center-crs`, to pick the area. A `center`

@@ -37,6 +37,9 @@ public class EncodingsTest extends MapsTestSupport {
     private static final String MAP =
             "ogc/maps/v1/collections/Lakes/map?bbox=-0.002,-0.003,0.005,0.002&width=100&height=100";
 
+    /** The same map with no transparency, so nothing but the encoding differs. */
+    private static final String OPAQUE_MAP = MAP + "&transparent=false";
+
     private static final int LAKE_X = 50;
     private static final int LAKE_Y = 64;
 
@@ -44,16 +47,45 @@ public class EncodingsTest extends MapsTestSupport {
      * Retrieves the map resource negotiating the encoding through the {@code Accept} header alone, with no {@code f}.
      */
     private MockHttpServletResponse getAccepting(String accept) throws Exception {
-        MockHttpServletRequest request = createRequest(MAP);
+        return getAccepting(accept, MAP);
+    }
+
+    /** The same, on a map request of its own. */
+    private MockHttpServletResponse getAccepting(String accept, String path) throws Exception {
+        MockHttpServletRequest request = createRequest(path);
         request.setMethod("GET");
         request.addHeader("Accept", accept);
         return dispatch(request, null);
     }
 
+    /**
+     * /req/core/map-success B: PNG and JPEG asked for at the same quality let the server pick the better of the two. A
+     * map with transparency is PNG.
+     */
+    @Test
+    public void testJpegPngTiePicksPng() throws Exception {
+        BufferedImage image = readImage(getAccepting("image/png,image/jpeg"), "image/png", "png");
+        // the corner falls outside the lake, so the map really carries transparency
+        assertEquals(0, alpha(image, 0, 0));
+    }
+
+    /** The same tie on an opaque map, which JPEG encodes better. */
+    @Test
+    public void testJpegPngTiePicksJpeg() throws Exception {
+        readImage(getAccepting("image/png,image/jpeg", OPAQUE_MAP), "image/jpeg", "jpeg");
+    }
+
+    /** A quality value the client set higher on one of the two settles the choice, no tie to break. */
+    @Test
+    public void testHigherQualityWinsOverTie() throws Exception {
+        readImage(getAccepting("image/png;q=0.5,image/jpeg", OPAQUE_MAP), "image/jpeg", "jpeg");
+        readImage(getAccepting("image/png,image/jpeg;q=0.5", OPAQUE_MAP), "image/png", "png");
+    }
+
     /** /conf/core/map-op: the media type is negotiated through the Accept header, the f parameter is not required. */
     @Test
     public void testAcceptHeaderNegotiation() throws Exception {
-        MockHttpServletResponse response = getAccepting("image/png,image/jpeg");
+        MockHttpServletResponse response = getAccepting("image/png");
         assertEquals(200, response.getStatus());
         assertEquals("image/png", getBaseMimeType(response.getContentType()));
         assertEquals(100, decode(response).getWidth());

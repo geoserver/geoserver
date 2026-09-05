@@ -73,6 +73,9 @@ import org.geoserver.wms.WebMapService;
 import org.geoserver.wms.capabilities.DimensionHelper;
 import org.geoserver.wms.legendgraphic.GetLegendGraphicKvpReader;
 import org.geoserver.wms.legendgraphic.LegendGraphic;
+import org.geoserver.wms.map.JpegOrPngChooser;
+import org.geoserver.wms.map.JpegPngMapResponse;
+import org.geoserver.wms.map.RenderedImageMap;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.crs.GeographicCRS;
@@ -277,6 +280,15 @@ public class MapsService {
             // checks if the exception is related to a dimension mismatch, otherwise returns it as-is
             throw notFoundOnDimensionMismatch(e);
         }
+        if (JpegPngMapResponse.MIME.equals(encoding) && map instanceof RenderedImageMap image) {
+            // the choice is only possible once the map is drawn, so the concrete encoding replaces the selector here
+            String chosen = JpegOrPngChooser.getFromMap(image).getMime();
+            request.setFormat(chosen);
+            // the chosen type has to reach the response before content negotiation, which would answer
+            // with PNG, the first type the client listed
+            HttpServletResponse response = APIRequestInfo.get().getResponse();
+            if (response != null) response.setContentType(chosen);
+        }
         addContentHeaders(request);
         return map;
     }
@@ -438,12 +450,35 @@ public class MapsService {
         offered.sort(Comparator.comparing(m -> MediaType.IMAGE_PNG.equalsTypeAndSubtype(m) ? 0 : 1));
         // the requested types arrive sorted by specificity and quality, so the first offered match is the best one
         List<MediaType> requestedTypes = APIRequestInfo.get().getRequestedMediaTypes();
+        if (jpegPngTie(requestedTypes, offered)) return JpegPngMapResponse.MIME;
         for (MediaType requested : requestedTypes) {
             for (MediaType candidate : offered) {
                 if (requested.isCompatibleWith(candidate)) return candidate.toString();
             }
         }
         throw notAcceptableFormat(format != null ? format : requestedTypes.toString());
+    }
+
+    /**
+     * Tells if the client asked for PNG and JPEG at the same quality, and for nothing it prefers more. The map then
+     * goes through the WMS format that picks between the two: PNG when the image has transparency or few colors, JPEG
+     * otherwise. See OGC API - Maps 1.0, /req/core/map-success.
+     */
+    private boolean jpegPngTie(List<MediaType> requested, List<MediaType> offered) {
+        if (offered.stream().noneMatch(m -> JpegPngMapResponse.MIME.equals(m.toString()))) return false;
+        double png = quality(requested, MediaType.IMAGE_PNG);
+        if (png < 0 || png != quality(requested, MediaType.IMAGE_JPEG)) return false;
+        return requested.stream()
+                .noneMatch(m -> m.getQualityValue() > png && offered.stream().anyMatch(m::isCompatibleWith));
+    }
+
+    /** The quality the client gave this exact media type, -1 when it did not name it. A wildcard does not count. */
+    private double quality(List<MediaType> requested, MediaType type) {
+        return requested.stream()
+                .filter(type::equalsTypeAndSubtype)
+                .mapToDouble(MediaType::getQualityValue)
+                .findFirst()
+                .orElse(-1);
     }
 
     /**

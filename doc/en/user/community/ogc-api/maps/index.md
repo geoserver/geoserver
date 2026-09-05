@@ -108,8 +108,8 @@ The area, size and appearance of the map are controlled by the parameters of the
   `subset=<dimension>(<value>)`, with `low:high` for a range. The dimensions available on a collection, and
   their ranges, are listed in the collection description under `extent`. An axis that is not a dimension of the
   collection is rejected with a `400` status.
-- `width` and `height`, or `scale-denominator`, to size the image. When only one of width and height is given,
-  the other is computed from the scale denominator.
+- `width` and `height`, or `scale-denominator`, to size the image. If you leave out the width or the height,
+  GeoServer computes it, see [Map size and shape](#map-size-and-shape) below.
 - `mm-per-pixel`, the size of a pixel on the display, 0.28 mm when not given.
 - `datetime`, to select a time in a layer with a time dimension.
 - `crs`, the CRS of the delivered map. Both the extended `http://www.opengis.net/def/crs/EPSG/0/4326` form and the SafeCURIE `[EPSG:4326]` form are
@@ -144,6 +144,31 @@ Two extra resources are GeoServer extensions, not part of the standard:
   Unless otherwise specified, the parameters supported by a WMS GetFeatureInfo are also available in the `.../map/info` resource.
 - `.../legend` and `.../styles/{styleId}/legend`, the legend of a style, with the same `width`, `height`, `scale`,
   `rule`, `lang`, `transparent`, `bgcolor` and `legend-options` parameters as the WMS `GetLegendGraphic` request (as well as other parameters supported by it).
+
+### Map size and shape
+
+When the request gives no `width` or no `height`, the standard requires the missing one to be computed from the size of
+the area on the ground, and not from the span of its coordinates. See parts H of the
+[width](https://docs.ogc.org/is/20-058/20-058.html#req_scaling_width-definition) and
+[height](https://docs.ogc.org/is/20-058/20-058.html#req_scaling_height-definition) requirements, and the
+[scale and aspect ratio considerations](https://docs.ogc.org/is/20-058/20-058.html#scaling-aspect-ratio) that describe
+the computation. The two measures differ: one degree of longitude is about 111 km at the equator and about 56 km at 60
+degrees of latitude, while one degree of latitude is about 111 km everywhere. Projected CRSs have the same problem in
+their own units, a Web Mercator "metre" is a real metre at the equator only.
+
+The results might be surprising for those with a WMS background:
+
+- A geographic map away from the equator comes out taller than its bounding box suggests. A box of 10 by 10 degrees at
+  60 degrees of latitude covers about 558 km east to west and about 1114 km north to south, so the image is about twice
+  as tall as it is wide. The square image a WMS returns for the same box is the stretched one, when ground distances
+  are considered.
+- GeoServer measures at the centre of the map, one of the ways the standard allows. A large map is correct in the
+  middle, and progressively wrong towards its edges. No single image size can be correct everywhere, and the standard
+  warns that two servers may answer the same request with slightly different sizes.
+- GeoServer still computes the scale of a style from the coordinates, the WMS way. On a large map, or far from the
+  equator, the style is drawn with the rules of a somewhat different scale than the `scale-denominator` asked for.
+
+Send `bbox`, `width` and `height` together, as in a WMS request, to keep full control: GeoServer then computes nothing.
 
 ## Installing the GeoServer OGC API - Maps module
 

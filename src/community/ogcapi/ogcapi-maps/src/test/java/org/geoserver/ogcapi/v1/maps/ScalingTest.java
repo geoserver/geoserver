@@ -113,14 +113,14 @@ public class ScalingTest extends MapsTestSupport {
 
     /**
      * /conf/scaling/scale-denominator-definition C: with a spatial extent and no image size the scale sizes the image
-     * instead. A 0.2 by 0.1 degree box is 22263.9 by 11131.9 m wide at the OGC degree to metre ratio, and at 1:100000
-     * with the default 0.28 mm pixel each pixel covers 28 m.
+     * instead. On the ground a 0.2 by 0.1 degree box at the equator is 22263.9 by 11057.4 m, a degree of latitude being
+     * shorter than a degree of longitude there, and at 1:100000 with the default 0.28 mm pixel each pixel covers 28 m.
      */
     @Test
     public void testSizeFromScaleGeographic() throws Exception {
         BufferedImage image = getAsImage(MAP + "&bbox=-0.1,-0.05,0.1,0.05&scale-denominator=100000", "image/png");
         assertEquals(795, image.getWidth());
-        assertEquals(398, image.getHeight());
+        assertEquals(395, image.getHeight());
     }
 
     /** The same 1000 by 500 m ground extent in a metric projected CRS gives the same 28 m pixels. */
@@ -143,6 +143,113 @@ public class ScalingTest extends MapsTestSupport {
                 MAP + "&bbox=0,0,3280.8333,1640.4167&bbox-crs=EPSG:2263&scale-denominator=100000", "image/png");
         assertEquals(36, image.getWidth());
         assertEquals(18, image.getHeight());
+    }
+
+    /**
+     * /conf/scaling/width-definition H and /conf/scaling/height-definition H: a dimension the request leaves out
+     * reflects the size of the area on the ground, not the size of its coordinates. A ten by ten degree box centred on
+     * 60 degrees of latitude covers 558 km east to west and 1114 km north to south, so the map comes out twice as tall
+     * as it is wide.
+     */
+    @Test
+    public void testMissingHeightFollowsGroundShape() throws Exception {
+        BufferedImage image = getAsPNG(MAP + "&bbox=-5,55,5,65&width=200");
+        assertEquals(200, image.getWidth());
+        assertEquals(399, image.getHeight());
+    }
+
+    /** The same shape drives the width when the height is the one given. */
+    @Test
+    public void testMissingWidthFollowsGroundShape() throws Exception {
+        BufferedImage image = getAsPNG(MAP + "&bbox=-5,55,5,65&height=200");
+        assertEquals(100, image.getWidth());
+        assertEquals(200, image.getHeight());
+    }
+
+    /**
+     * With neither dimension given the longer side takes the 768 pixel default map size of the WMS, and the other one
+     * follows the shape of the area on the ground.
+     */
+    @Test
+    public void testDefaultSizeFollowsGroundShape() throws Exception {
+        BufferedImage image = getAsPNG(MAP + "&bbox=-5,55,5,65");
+        assertEquals(385, image.getWidth());
+        assertEquals(768, image.getHeight());
+    }
+
+    /**
+     * The scale is set against the physical world too. The box of {@link #testMissingHeightFollowsGroundShape} spans
+     * 558000 m east to west and 1114122 m north to south, so at 1:10000000 and the default 0.28 mm pixel, which covers
+     * 2800 m, the map is 199 by 398 pixels. Measured in coordinates alone it would be a square 398 pixels wide.
+     */
+    @Test
+    public void testSizeFromScaleAwayFromEquator() throws Exception {
+        BufferedImage image = getAsPNG(MAP + "&bbox=-5,55,5,65&scale-denominator=10000000");
+        assertEquals(199, image.getWidth());
+        assertEquals(398, image.getHeight());
+    }
+
+    /**
+     * A projected CRS needs the same treatment: a Web Mercator metre is a real metre at the equator only. This square
+     * box of 200000 units is centred on 60 degrees of latitude, where each unit is about half a metre of ground, so the
+     * map covers about 100000 m per side and comes out 36 pixels wide at 1:10000000. The raw units would give 71.
+     */
+    @Test
+    public void testSizeFromScaleProjectedAwayFromEquator() throws Exception {
+        BufferedImage image =
+                getAsPNG(MAP + "&bbox=-100000,8299738,100000,8499738&bbox-crs=EPSG:3857&scale-denominator=10000000");
+        assertEquals(36, image.getWidth());
+        assertEquals(36, image.getHeight());
+    }
+
+    /**
+     * The extent built around a centre is measured on the ground too. At 60 degrees of latitude a degree of longitude
+     * covers half of what a degree of latitude covers, so a square map spans twice as many degrees east to west as it
+     * does north to south. Measured in coordinates alone the extent would come out square.
+     */
+    @Test
+    public void testCenterExtentAwayFromEquator() throws Exception {
+        double[] bbox = deliveredBbox("&center=0,60&width=100&height=100&scale-denominator=100000");
+        double longitudeSpan = bbox[2] - bbox[0];
+        double latitudeSpan = bbox[3] - bbox[1];
+        // 100 pixels at 1:100000 and the default 0.28 mm pixel span 2800 m, which at 60 degrees of latitude is
+        // 0.025132 degrees north to south and 0.050179 degrees east to west
+        assertEquals(0.025132, latitudeSpan, 1e-6);
+        assertEquals(0.050179, longitudeSpan, 1e-6);
+    }
+
+    /**
+     * A map crossing the antimeridian is measured like any other: the same 20 by 10 degree area at the equator gives
+     * the same image whether it sits on the prime meridian or on the antimeridian.
+     */
+    @Test
+    public void testGroundShapeAcrossTheDateline() throws Exception {
+        BufferedImage crossing = getAsPNG(MAP + "&bbox=170,-5,-170,5&width=200");
+        BufferedImage plain = getAsPNG(MAP + "&bbox=-10,-5,10,5&width=200");
+        assertEquals(99, crossing.getHeight());
+        assertEquals(plain.getHeight(), crossing.getHeight());
+    }
+
+    /**
+     * A map reaching the pole is measured at its centre, like any other. The 360 by 10 degree cap between 80 degrees of
+     * latitude and the pole covers 3504 km east to west at its middle latitude, and 1117 km north to south, so the
+     * image is about three times wider than it is tall.
+     */
+    @Test
+    public void testGroundShapeAtThePole() throws Exception {
+        BufferedImage image = getAsPNG(MAP + "&bbox=-180,80,180,90&width=768");
+        assertEquals(245, image.getHeight());
+    }
+
+    /**
+     * The world is about 40075 km around the equator and 20004 km from pole to pole, so a global map comes out twice as
+     * wide as it is tall. The measure is taken at the centre, where a degree of latitude is at its shortest, so the
+     * height is 381 pixels instead of the 383 the whole meridian arc would give.
+     */
+    @Test
+    public void testGroundShapeOfTheWholeWorld() throws Exception {
+        BufferedImage image = getAsPNG(MAP + "&bbox=-180,-90,180,90&width=768");
+        assertEquals(381, image.getHeight());
     }
 
     /** A scale-denominator with a single dimension leaves the extent unresolved, and the whole collection is drawn. */

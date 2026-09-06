@@ -194,7 +194,7 @@ Working with a Nightly build is a good way to test community modules and provide
       docker run -it -p 8080:8080 \\
         --env INSTALL_EXTENSIONS=true \\
         --env STABLE_EXTENSIONS="ysld,h2" \\
-        --env COMMUNITY_EXTENSIONS="ogcapi-images,ogcapi-maps,ogcapi-styles,ogcapi-tiles" \\
+        --env COMMUNITY_EXTENSIONS="ogcapi-maps,ogcapi-styles,ogcapi-tiles" \\
         docker.osgeo.org/geoserver:|version|.x
    
    For the current list see GeoServer `build server <https://build.geoserver.org/geoserver/main/community-latest/>`__.
@@ -220,6 +220,6 @@ Working with a Nightly build is a good way to test community modules and provide
        gdal-wps                      notification                    vector-mosaic
        geopkg                        ogcapi-coverages                vsi
        gpx                           ogcapi-dggs                     webp
-       graticule                     ogcapi-images                   wfs-freemarker
-       gsr                           ogcapi-maps                     wps-longitudinal-profile
-       gwc-azure-blobstore           ogcapi-styles
+       graticule                     ogcapi-maps                     wfs-freemarker
+       gsr                           ogcapi-styles                   wps-longitudinal-profile
+       gwc-azure-blobstore

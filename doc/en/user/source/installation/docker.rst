@@ -223,4 +223,3 @@ Working with a Nightly build is a good way to test community modules and provide
        graticule                     ogcapi-images                   wfs-freemarker
        gsr                           ogcapi-maps                     wps-longitudinal-profile
        gwc-azure-blobstore           ogcapi-styles
-                                     ogcapi-tiled-features               

@@ -21,7 +21,6 @@ Community modules:
 - [OGC API - Coverages](coverages/index.md)
 - [OGC API - Processes](processes/index.md)
 - [OGC API - Styles](styles/index.md)
-- [OGC API - Tiled features demonstration](tiled-features/index.md)
 - [OGC API - 3D GeoVolumes](3dgeovolumes/index.md)
 - [OGC Testbed Experiments](testbed.md)
 

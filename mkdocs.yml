@@ -887,7 +887,6 @@ nav:
         - OGC API - Coverages: en/user/community/ogc-api/coverages/index.md
         - OGC API - Processes: en/user/community/ogc-api/processes/index.md
         - OGC API - Styles: en/user/community/ogc-api/styles/index.md
-        - OGC API - Tiled features demonstration: en/user/community/ogc-api/tiled-features/index.md
         - OGC API - 3D GeoVolumes: en/user/community/ogc-api/3dgeovolumes/index.md
         - en/user/community/ogc-api/testbed.md
       - OGR datastore: en/user/community/ogr-store/index.md

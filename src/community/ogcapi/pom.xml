@@ -26,8 +26,6 @@
     <module>ogcapi-tiles-assembly</module>
     <module>ogcapi-images</module>
     <module>ogcapi-images-assembly</module>
-    <module>ogcapi-tiled-features</module>
-    <module>ogcapi-tiled-features-assembly</module>
     <module>dggs</module>
     <module>ogcapi-coverages</module>
     <module>ogcapi-coverages-assembly</module>

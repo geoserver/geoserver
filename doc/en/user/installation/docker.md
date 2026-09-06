@@ -206,7 +206,7 @@ To work with community modules you must be using the GeoServer {{ version }}.x n
 docker run -it -p 8080:8080 \
   --env INSTALL_EXTENSIONS=true \
   --env STABLE_EXTENSIONS="ysld,h2" \
-  --env COMMUNITY_EXTENSIONS="ogcapi-images,ogcapi-maps,ogcapi-styles,ogcapi-tiles" \
+  --env COMMUNITY_EXTENSIONS="ogcapi-maps,ogcapi-styles,ogcapi-tiles" \
   docker.osgeo.org/geoserver:{{ version }}.x
 ```
 {% endif %}
@@ -251,7 +251,6 @@ For the current list see GeoServer [build server](https://build.geoserver.org/ge
 - notification
 - ogcapi-coverages
 - ogcapi-dggs
-- ogcapi-images
 - ogcapi-maps
 - ogcapi-styles
 - ogcapi-tiles

@@ -25,6 +25,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
@@ -632,14 +633,21 @@ public class MapsService {
 
         /**
          * Maps are transparent unless asked otherwise, or unless a background color is given, which would otherwise
-         * never show (OGC API - Maps, {@code /req/background/transparent-definition} C and D). The void settings act as
-         * the fallback, GeoServer having a single background for both the no data areas and the projection void, see
-         * {@link MapsService#applyBackground}.
+         * never show (OGC API - Maps, {@code /req/background/transparent-definition} C and D).
          */
         boolean isTransparent() {
             if (transparent != null) return transparent;
+            return bgcolor == null;
+        }
+
+        /**
+         * The area outside the valid area of the projection follows the map background, unless a void color is given,
+         * which would otherwise never show ({@code /req/background/void-transparent-definition} B).
+         */
+        boolean isVoidTransparent() {
             if (voidTransparent != null) return voidTransparent;
-            return bgcolor == null && voidColor == null;
+            if (voidColor != null) return false;
+            return isTransparent();
         }
 
         /**
@@ -1157,17 +1165,25 @@ public class MapsService {
     }
 
     /**
-     * Applies the background parameters. GeoServer paints the areas with no data and the ones outside the valid area of
-     * the projection with the same colour and opacity, so the {@code void-color} and {@code void-transparent} values
-     * act as the defaults of the background pair rather than the other way around, which is the direction OGC API -
-     * Maps defines them in ({@code /req/background/void-color-definition} C, {@code /req/background/void-transparent-
-     * definition} B). With neither given the renderer paints an opaque map white, as requirement D asks.
+     * Applies the background parameters. The renderer paints one background over the whole map, so only one of the two
+     * pairs can be the map background: the other one becomes a polygon layer that {@link VoidBackgroundCallback} adds
+     * over it. With nothing asked for the map is transparent, and an opaque map with no colour is white, as
+     * {@code /req/background/bgcolor-definition} D asks.
      */
     private static void applyBackground(MapQuery q, GetMapRequest request) {
-        String parameter = q.bgcolor() != null ? "bgcolor" : "void-color";
-        String color = q.bgcolor() != null ? q.bgcolor() : q.voidColor();
-        if (color != null) request.setBgColor(parseColor(parameter, color));
+        if (q.bgcolor() != null) request.setBgColor(parseColor("bgcolor", q.bgcolor()));
         request.setTransparent(q.isTransparent());
+
+        Color background = q.isTransparent() ? null : request.getBgColor();
+        Color voidPaint = q.isVoidTransparent() ? null : voidColor(q, request);
+        if (Objects.equals(background, voidPaint)) return;
+        if (voidPaint != null) {
+            request.getFormatOptions().put(VoidBackgroundCallback.VOID_COLOR, voidPaint);
+        } else {
+            // a fill cannot erase, so the map goes transparent and the background becomes the layer instead
+            request.setTransparent(true);
+            request.getFormatOptions().put(VoidBackgroundCallback.BACKGROUND_COLOR, background);
+        }
     }
 
     /**
@@ -1188,6 +1204,12 @@ public class MapsService {
                     HttpStatus.BAD_REQUEST,
                     e);
         }
+    }
+
+    /** The colour of the area outside the valid area of the projection, defaulting to the map background one. */
+    private static Color voidColor(MapQuery q, GetMapRequest request) {
+        if (q.voidColor() != null) return parseColor("void-color", q.voidColor());
+        return request.getBgColor();
     }
 
     /**

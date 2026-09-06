@@ -124,6 +124,27 @@ public class MapsTestSupport extends OGCApiTestSupport {
     }
 
     /** Reads a map or legend response as PNG, checking the media type and the encoded bytes. */
+    /** Opaque colours as {@link java.awt.image.BufferedImage#getRGB} returns them, alpha in the high byte. */
+    protected static final int RED = 0xFFFF0000;
+
+    protected static final int GREEN = 0xFF00FF00;
+
+    protected static final int BLUE = 0xFF0000FF;
+
+    protected static final int WHITE = 0xFFFFFFFF;
+
+    protected static final int CORNFLOWER_BLUE = 0xFF6495ED;
+
+    protected static final int MID_BLUE = 0xFF3366CC;
+
+    protected static final int BLACK = 0xFF000000;
+
+    /** White with a zero alpha channel: what a transparent map leaves where nothing is drawn. */
+    protected static final int TRANSPARENT_WHITE = 0x00FFFFFF;
+
+    /** Red with a zero alpha channel: the colour a transparent map keeps under the alpha. */
+    protected static final int TRANSPARENT_RED = 0x00FF0000;
+
     protected BufferedImage getAsPNG(String path) throws Exception {
         return readImage(getAsServletResponse(path), "image/png", "png");
     }

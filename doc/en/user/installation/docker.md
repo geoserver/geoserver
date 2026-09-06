@@ -254,7 +254,6 @@ For the current list see GeoServer [build server](https://build.geoserver.org/ge
 - ogcapi-images
 - ogcapi-maps
 - ogcapi-styles
-- ogcapi-tiled-features
 - ogcapi-tiles
 - ogr-datastore
 - opensearch-eo

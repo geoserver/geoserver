@@ -19,26 +19,10 @@ import org.junit.Test;
 
 /**
  * The "Background" conformance class: {@code /conf/background/bgcolor-definition},
- * {@code /conf/background/transparent-definition}, {@code /conf/background/void-color-definition},
- * {@code /conf/background/void-transparent-definition} and {@code /conf/background/map-success}.
+ * {@code /conf/background/transparent-definition} and {@code /conf/background/map-success}. The void parameters of the
+ * same class have their own {@link VoidBackgroundTest}.
  */
 public class BackgroundTest extends MapsTestSupport {
-
-    /** Opaque colours as {@link java.awt.image.BufferedImage#getRGB} returns them, alpha in the high byte. */
-    private static final int RED = 0xFFFF0000;
-
-    private static final int GREEN = 0xFF00FF00;
-
-    private static final int BLUE = 0xFF0000FF;
-
-    private static final int WHITE = 0xFFFFFFFF;
-
-    private static final int CORNFLOWER_BLUE = 0xFF6495ED;
-
-    private static final int MID_BLUE = 0xFF3366CC;
-
-    /** Red with a zero alpha channel: the colour a transparent map keeps under the alpha. */
-    private static final int TRANSPARENT_RED = 0x00FF0000;
 
     /** A map wholly outside the Lakes data, so every pixel of it is a no data pixel showing the background. */
     private static final String EMPTY_MAP =
@@ -159,37 +143,6 @@ public class BackgroundTest extends MapsTestSupport {
         assertThat("red of " + hex, (double) red(actual), closeTo(red(expected), 4));
         assertThat("green of " + hex, (double) green(actual), closeTo(green(expected), 4));
         assertThat("blue of " + hex, (double) blue(actual), closeTo(blue(expected), 4));
-    }
-
-    /**
-     * /conf/background/void-color-definition: the parameter takes the same values as bgcolor. GeoServer paints the no
-     * data areas and the areas outside the valid area of the projection alike, so a void-color on its own drives the
-     * whole background, and a bgcolor takes precedence over it.
-     */
-    @Test
-    public void testVoidColor() throws Exception {
-        assertEquals(RED, background("&void-color=0xFF0000"));
-        assertEquals(CORNFLOWER_BLUE, background("&void-color=CornflowerBlue"));
-        // requirement C, the void defaults to the background colour: both spellings give the same map
-        assertEquals(background("&bgcolor=red"), background("&bgcolor=red&void-color=red"));
-        // a bgcolor and a differing void-color cannot be honoured apart, the background one is used
-        assertEquals(RED, background("&bgcolor=red&void-color=lime"));
-    }
-
-    /**
-     * /conf/background/void-transparent-definition: a boolean, defaulting to the transparent value. With a single
-     * background to paint, it also stands in for transparent when only the void form is given.
-     */
-    @Test
-    public void testVoidTransparent() throws Exception {
-        // requirement B, the default follows transparent: stating both alike changes nothing
-        assertEquals(0, alpha(background("&transparent=true&void-transparent=true")));
-        assertEquals(WHITE, background("&transparent=false&void-transparent=false"));
-        // transparent wins when the two disagree, the void being painted with the map background
-        assertEquals(WHITE, background("&transparent=false&void-transparent=true"));
-        // on its own the void form drives the background, so a void-transparent=false map is opaque
-        assertEquals(WHITE, background("&void-transparent=false"));
-        assertEquals(0, alpha(background("&void-transparent=true")));
     }
 
     /** With the background class disabled every one of its parameters is ignored, not rejected. */

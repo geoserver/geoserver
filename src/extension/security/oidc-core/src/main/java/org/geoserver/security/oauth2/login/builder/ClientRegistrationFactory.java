@@ -134,12 +134,12 @@ public class ClientRegistrationFactory {
         return reg;
     }
 
-    /**
-     * Microsoft Azure (multi-tenant /common). Well-known endpoint:
-     * https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration
-     */
+    /** Microsoft Azure. */
     private ClientRegistration buildMicrosoftRegistration() {
         String[] scopes = ScopeUtils.valueOf(config.getMsScopes());
+        String tenantId = config.getMsTenantId();
+        String tenant = tenantId == null || tenantId.isBlank() ? "common" : tenantId.trim();
+        String baseUri = "https://login.microsoftonline.com/" + tenant;
         ClientRegistration reg = ClientRegistration.withRegistrationId(scopedRegId(config.getName(), REG_ID_MICROSOFT))
                 .clientId(config.getMsClientId())
                 .clientSecret(config.getMsClientSecret())
@@ -148,12 +148,11 @@ public class ClientRegistrationFactory {
                 .clientAuthenticationMethod(CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AUTHORIZATION_CODE)
                 .scope(scopes)
-                .authorizationUri("https://login.microsoftonline.com/common/oauth2/v2.0/authorize")
-                .tokenUri("https://login.microsoftonline.com/common/oauth2/v2.0/token")
+                .authorizationUri(baseUri + "/oauth2/v2.0/authorize")
+                .tokenUri(baseUri + "/oauth2/v2.0/token")
                 .userInfoUri("https://graph.microsoft.com/oidc/userinfo")
-                .jwkSetUri("https://login.microsoftonline.com/common/discovery/v2.0/keys")
-                .providerConfigurationMetadata(singletonMap(
-                        "end_session_endpoint", "https://login.microsoftonline.com/common/oauth2/v2.0/logout"))
+                .jwkSetUri(baseUri + "/discovery/v2.0/keys")
+                .providerConfigurationMetadata(singletonMap("end_session_endpoint", baseUri + "/oauth2/v2.0/logout"))
                 .clientName(REG_ID_MICROSOFT)
                 .build();
         registrationCustomizer.accept(reg);

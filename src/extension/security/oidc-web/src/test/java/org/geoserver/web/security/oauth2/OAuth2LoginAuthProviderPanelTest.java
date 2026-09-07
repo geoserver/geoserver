@@ -393,6 +393,45 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         assertEquals(Boolean.TRUE, panel.getConfigModel().getObject().getAllowAdminLogin());
     }
 
+    @Test
+    public void testMicrosoftTenantId() throws Exception {
+        String filterName = "MicrosoftFilter";
+        navigateToOpenIdPanel(filterName);
+
+        String prefix = "panel:content:";
+        String baseUrl = "https://localhost:9090";
+        formTester.setValue(prefix + "baseRedirectUri", baseUrl + "/geoserver");
+        Component baseUriComponent = formTester.getForm().get(prefix + "baseRedirectUri");
+        tester.executeAjaxEvent(baseUriComponent, "change");
+
+        formTester.select(prefix + "providerSelector", 3);
+        Component providerSelectorComponent = formTester.getForm().get(prefix + "providerSelector");
+        tester.executeAjaxEvent(providerSelectorComponent, "change");
+
+        formTester.setValue(prefix + "baseRedirectUri", baseUrl + "/geoserver");
+        formTester.setValue(prefix + "name", filterName);
+        formTester.select(prefix + "providerSelector", 3);
+
+        prefix = "panel:content:pfv:3:settings:";
+        formTester.setValue(prefix + "clientId", "msClientId");
+        formTester.setValue(prefix + "clientSecret", "msClientSecret");
+        formTester.setValue(prefix + "userNameAttribute", "msUserNameAttribute");
+        formTester.setValue(prefix + "displayOnScopeSupport:scopes", "openid profile email");
+        formTester.setValue(prefix + "displayOnMicrosoft:tenantId", "12345678-1234-1234-1234-123456789abc");
+
+        clickSave();
+
+        tester.assertNoErrorMessage();
+        clickNamedServiceConfig(filterName);
+
+        newFormTester("panel:panel:form");
+        OAuth2LoginAuthProviderPanel panel =
+                (OAuth2LoginAuthProviderPanel) formTester.getForm().get("panel");
+        GeoServerOAuth2LoginFilterConfig config = panel.getConfigModel().getObject();
+        assertTrue(config.isMsEnabled());
+        assertEquals("12345678-1234-1234-1234-123456789abc", config.getMsTenantId());
+    }
+
     @Override
     protected AbstractSecurityPage getBasePage() {
         return new AuthenticationPage();

@@ -2,6 +2,12 @@
 
 We will use Microsoft Entra (Microsoft Azure) for login and either the Azure/Entra ID Token or Microsoft Graph to provide roles.
 
+## Choose the tenant scope
+
+For a GeoServer deployment used by one organization, create a **single-tenant** application and enter its Directory (tenant) ID in GeoServer. Accounts that Entra does not recognize in that tenant cannot sign in.
+
+The Tenant ID field remains optional for multi-tenant applications. Leave it empty only when users from other tenants should be able to sign in; GeoServer then uses Microsoft's shared `common` endpoint.
+
 ## Configure Microsoft Entra
 
 1.  Go to [Microsoft Entra](https://entra.microsoft.com/) and login
@@ -10,7 +16,7 @@ We will use Microsoft Entra (Microsoft Azure) for login and either the Azure/Ent
 
     ![](../img/azure_create_app1.png)
 
-3.  Give the application a name ("gs-azure-app"), set it to the MultiTenant. Use the Redirect URI shown in the GeoServer filter configuration as the "Web" Redirect URI --- it has the form `http://localhost:8080/geoserver/web/login/oauth2/code/<filterName>__microsoft` where `<filterName>` is the name of the GeoServer OIDC filter (e.g. `gs-azure-app__microsoft`). Press "Register".
+3.  Give the application a name ("gs-azure-app") and select **Accounts in this organizational directory only (single tenant)**. Use the Redirect URI shown in the GeoServer filter configuration as the "Web" Redirect URI --- it has the form `http://localhost:8080/geoserver/web/login/oauth2/code/<filterName>__microsoft` where `<filterName>` is the name of the GeoServer OIDC filter (e.g. `gs-azure-app__microsoft`). Press "Register".
 
     !!! tip
         The exact redirect URI that GeoServer will use is shown as the read-only **Redirect URI** field in the filter configuration form --- copy it verbatim. In production, use that value instead of `localhost`. The filter-name prefix lets several OIDC filters share an IDP without colliding on their redirect URIs. See [Redirect Base URI](../configuring.md#oidc_redirect_base_uri).
@@ -25,7 +31,7 @@ We will use Microsoft Entra (Microsoft Azure) for login and either the Azure/Ent
 
     ![](../img/azure_create_app4.png)
 
-6.  Press "Overview" (left column) and record the "Application (client) ID" - you will need this later.
+6.  Press "Overview" (left column) and record the "Application (client) ID" and "Directory (tenant) ID" - you will need these later.
 
     ![](../img/azure_create_app5.png)
 
@@ -53,7 +59,8 @@ Ensure you have the following:
 
 1.  Your Client ID ("Application (client) ID"). This is a guid.
 2.  Your Client Secret. This is a guid.
-3.  Name of the geoserver admin Role ("geoserverAdmin")
+3.  Your Tenant ID ("Directory (tenant) ID"). This is a guid.
+4.  Name of the geoserver admin Role ("geoserverAdmin")
 
 ### Create the OIDC Filter
 
@@ -68,11 +75,20 @@ Ensure you have the following:
 4.  Fill in the required information:
 
     - "Client Id" is the Azure "Application (client) ID"
-    - "Client Secret" which was copied Zzure when you created it.
+    - "Client Secret" which was copied from Azure when you created it.
+    - "Microsoft Entra Tenant ID" is the Azure "Directory (tenant) ID".
+
+    !!! note
+        The **Microsoft Entra Tenant ID** field is optional only for multi-tenant applications. For the single-tenant application configured above, it must contain the Directory (tenant) ID. Leaving it empty uses Microsoft Entra's shared `common` endpoint and allows multi-tenant authentication.
 
     ![](../img/keycloak-gs-filter1.png)
 
 5.  Press Save
+
+### Verify tenant access
+
+1.  Sign in with an account recognized in the configured tenant. GeoServer should complete the login.
+2.  Repeat with an account that is not recognized in the configured tenant. Microsoft should reject the sign-in.
 
 ### Configure Role Source
 

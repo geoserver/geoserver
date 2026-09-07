@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -76,6 +77,7 @@ public class GeoServerOAuth2LoginFilterConfigValidator extends FilterConfigValid
             validateClientId(filterConfig.getMsClientId(), lProviderName);
             validateClientSecret(filterConfig.getMsClientSecret(), lProviderName);
             validateScopes(filterConfig.getMsScopes(), lProviderName);
+            validateMsTenantId(filterConfig.getMsTenantId());
         }
 
         validateRoleSourceMsGraph(filterConfig);
@@ -167,6 +169,20 @@ public class GeoServerOAuth2LoginFilterConfigValidator extends FilterConfigValid
         boolean lMix = Arrays.stream(lScopes).anyMatch(s -> s.contains(" "));
         if (lMix) {
             throw createFilterException(OAuth2FilterConfigException.OAUTH2_SCOPE_DELIMITER_MIXED, pProviderName);
+        }
+    }
+
+    private void validateMsTenantId(String tenantId) throws OAuth2FilterConfigException {
+        if (!StringUtils.hasText(tenantId)) {
+            return;
+        }
+        try {
+            String normalizedTenantId = tenantId.trim();
+            if (!UUID.fromString(normalizedTenantId).toString().equalsIgnoreCase(normalizedTenantId)) {
+                throw new IllegalArgumentException("Tenant ID must use the canonical UUID format");
+            }
+        } catch (IllegalArgumentException e) {
+            throw createFilterException(OAuth2FilterConfigException.MS_TENANT_ID_INVALID);
         }
     }
 

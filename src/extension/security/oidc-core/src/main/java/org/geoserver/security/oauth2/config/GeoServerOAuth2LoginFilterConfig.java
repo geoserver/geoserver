@@ -86,6 +86,11 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
     private String msUserNameAttribute = "sub";
     private String msRedirectUri;
     private String msScopes = "openid profile email";
+    /**
+     * Microsoft Entra directory (tenant) ID. When empty, the Microsoft provider uses the multi-tenant {@code common}
+     * endpoint for backwards compatibility.
+     */
+    private String msTenantId;
 
     // custom OpenID Connect
     private boolean oidcEnabled;
@@ -751,6 +756,16 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
     /** @param pMsScopes the msScopes to set */
     public void setMsScopes(String pMsScopes) {
         msScopes = pMsScopes;
+    }
+
+    /** @return the Microsoft Entra directory (tenant) ID, or {@code null} for the multi-tenant endpoint */
+    public String getMsTenantId() {
+        return msTenantId;
+    }
+
+    /** @param pMsTenantId the Microsoft Entra directory (tenant) ID to set */
+    public void setMsTenantId(String pMsTenantId) {
+        msTenantId = pMsTenantId;
     }
 
     /** @return the oidcDiscoveryURL */

@@ -456,6 +456,15 @@ public class OAuth2LoginAuthProviderPanel
             lScopeContainer.setVisible(false);
         }
 
+        WebMarkupContainer lMicrosoftContainer = new WebMarkupContainer("displayOnMicrosoft");
+        lSHContainer.add(lMicrosoftContainer);
+        if (provider == OAuth2Provider.MICROSOFT) {
+            lMicrosoftContainer.add(createTextField("tenantId", pProviderKey));
+            lMicrosoftContainer.add(new HelpLink("tenantIdHelp", this).setDialog(dialog));
+        } else {
+            lMicrosoftContainer.setVisible(false);
+        }
+
         WebMarkupContainer lOidcContainer = new WebMarkupContainer("displayOnOidc");
         lSHContainer.add(lOidcContainer);
         if (provider.isOidc()) {

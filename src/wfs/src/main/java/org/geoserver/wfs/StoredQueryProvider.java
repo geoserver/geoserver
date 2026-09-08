@@ -22,15 +22,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.LocalWorkspace;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.exception.GeoServerRuntimException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.util.logging.Logging;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
 import org.geotools.xsd.Encoder;
 import org.geotools.xsd.Parser;
+import org.xml.sax.EntityResolver;
 
 /**
  * Extension point for WFS stored queries.
@@ -162,6 +165,22 @@ public class StoredQueryProvider {
         }
     }
 
+    /**
+     * Removes a stored query definition by name, without requiring it to be parsed first.
+     *
+     * @param name Identifying name of the stored query.
+     * @return {@code true} if a definition existed and was removed, {@code false} otherwise.
+     */
+    boolean removeStoredQueryByName(String name) {
+        final String filename = toFilename(name);
+        Resource resource = storedQueryDirByContext().get(filename);
+        if (resource.getType() != Type.RESOURCE) {
+            return false;
+        }
+        resource.delete();
+        return true;
+    }
+
     /** Removes all stored queries. */
     public void removeAll() {
         for (Resource file : storedQueryDirByContext().list()) {
@@ -247,10 +266,19 @@ public class StoredQueryProvider {
 
     StoredQuery parseStoredQuery(Resource file, Parser p) throws Exception {
         p.setRootElementType(WFS.StoredQueryDescriptionType);
+        EntityResolver entityResolver = getEntityResolver();
+        if (entityResolver != null) {
+            p.setEntityResolver(entityResolver);
+        }
         try (InputStream fin = file.in()) {
             StoredQueryDescriptionType q = (StoredQueryDescriptionType) p.parse(new BufferedInputStream(fin));
             return createStoredQuery(q, false);
         }
+    }
+
+    private EntityResolver getEntityResolver() {
+        EntityResolverProvider resolverProvider = GeoServerExtensions.bean(EntityResolverProvider.class);
+        return resolverProvider != null ? resolverProvider.getEntityResolver() : null;
     }
 
     public boolean supportsLanguage(String language) {

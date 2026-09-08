@@ -28,6 +28,8 @@ import net.opengis.wfs20.Wfs20Factory;
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wfs.kvp.QNameKvpParser;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.gml3.v3_2.GML;
@@ -40,6 +42,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
 public class StoredQuery {
@@ -130,7 +133,7 @@ public class StoredQuery {
         DocumentBuilder db;
         try {
             db = dbf.newDocumentBuilder();
-            db.setEntityResolver(catalog.getResourcePool().getEntityResolver());
+            db.setEntityResolver(getEntityResolver());
         } catch (ParserConfigurationException e) {
             throw new IOException(e);
         }
@@ -254,6 +257,10 @@ public class StoredQuery {
 
             // parse
             Parser p = new Parser(new WFSConfiguration());
+            EntityResolver entityResolver = getEntityResolver();
+            if (entityResolver != null) {
+                p.setEntityResolver(entityResolver);
+            }
             // "inject" namespace mappings
             if (catalog != null) {
                 p.getNamespaces().add(new CatalogNamespaceSupport(catalog));
@@ -267,5 +274,17 @@ public class StoredQuery {
             }
         }
         return list;
+    }
+
+    /**
+     * Returns the entity resolver to use when parsing a stored query, falling back to the globally configured one when
+     * this instance isn't backed by a catalog (e.g. the built-in {@link #DEFAULT} query).
+     */
+    private EntityResolver getEntityResolver() {
+        if (catalog != null) {
+            return catalog.getResourcePool().getEntityResolver();
+        }
+        EntityResolverProvider resolverProvider = GeoServerExtensions.bean(EntityResolverProvider.class);
+        return resolverProvider != null ? resolverProvider.getEntityResolver() : null;
     }
 }

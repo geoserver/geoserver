@@ -35,8 +35,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -650,7 +652,7 @@ public class Dispatcher extends AbstractController {
         String service = getServiceFromRequest(req);
         String version = req.getVersion();
 
-        // load from teh context
+        // load from the context
         Service serviceDescriptor = findService(service, version, req.getNamespace());
         if (serviceDescriptor == null) {
             // hack for backwards compatability, try finding the service with the context instead
@@ -672,6 +674,10 @@ public class Dispatcher extends AbstractController {
             }
         }
         req.setServiceDescriptor(serviceDescriptor);
+        // don't set it if it was never provided in the first place
+        if (req.getService() != null) {
+            req.setService(serviceDescriptor.getId());
+        }
         return fireServiceDispatchedCallback(req, serviceDescriptor);
     }
 
@@ -1255,8 +1261,7 @@ public class Dispatcher extends AbstractController {
         return response;
     }
 
-    Service findService(String id, String ver, String namespace) throws ServiceException {
-        Version version = (ver != null) ? new Version(ver) : null;
+    Service findService(String id, String version, String namespace) throws ServiceException {
         Collection<Service> services = RequestUtils.loadServices();
 
         // the id is actually the pathinfo, in case workspace specific services
@@ -1266,77 +1271,54 @@ public class Dispatcher extends AbstractController {
             id = id.substring(id.indexOf("/") + 1);
         }
 
-        // first just match on service,request
-        List<Service> matches = new ArrayList<>();
-
-        for (Service sBean : services) {
-            if (sBean.getId().equalsIgnoreCase(id)) {
-                matches.add(sBean);
-            }
-        }
+        List<Service> matches = findIdMatchingServices(id, services);
 
         if (matches.isEmpty()) {
             return null;
         }
 
-        Service sBean = null;
-
-        // if multiple, use version to filter match
         if (matches.size() > 1) {
-            List<Service> vmatches = new ArrayList<>(matches);
-
-            // match up the version
-            if (version != null) {
-                // version specified, look for a match
-                for (Iterator<Service> itr = vmatches.iterator(); itr.hasNext(); ) {
-                    Service s = itr.next();
-
-                    if (version.equals(s.getVersion())) {
-                        continue;
-                    }
-
-                    itr.remove();
-                }
-
-                if (vmatches.isEmpty()) {
-                    // no matching version found, drop out and next step
-                    // will sort to return highest version
-                    vmatches = new ArrayList<>(matches);
-                }
-            }
-
-            // if still multiple matches use namespace, if available, to filter
-            if (namespace != null && vmatches.size() > 1) {
-                List<Service> nmatches = new ArrayList<>(vmatches);
-                for (Iterator<Service> itr = nmatches.iterator(); itr.hasNext(); ) {
-                    Service s = itr.next();
-                    if (s.getNamespace() != null && !s.getNamespace().equals(namespace)) {
-                        // service declares namespace, kick it out if there is no match, otherwise
-                        // leave it along
-                        itr.remove();
-                    }
-                }
-
-                if (!nmatches.isEmpty()) {
-                    vmatches = nmatches;
-                }
-            }
-
-            // multiple services found, sort by version
-            if (vmatches.size() > 1) {
-                // use the highest version
-                Comparator<Service> comparator = (s1, s2) -> s1.getVersion().compareTo(s2.getVersion());
-
-                Collections.sort(vmatches, comparator);
-            }
-
-            sBean = vmatches.get(vmatches.size() - 1);
+            return resolveMultipleServiceMatches(matches, version, namespace);
         } else {
             // only a single match, that was easy
-            sBean = matches.get(0);
+            return matches.get(0);
+        }
+    }
+
+    private List<Service> findIdMatchingServices(String id, Collection<Service> services) {
+        return services.stream().filter(s -> s.getId().equalsIgnoreCase(id)).toList();
+    }
+
+    private Service resolveMultipleServiceMatches(List<Service> matches, String rawVersion, String namespace) {
+
+        List<Service> resultMatches = new ArrayList<>(matches);
+
+        // filter by version
+        if (rawVersion != null) {
+            Version version = new Version(rawVersion);
+            resultMatches = narrowMatches(resultMatches, s -> version.equals(s.getVersion()));
         }
 
-        return sBean;
+        // if still multiple matches exist, use namespace, if available, to filter
+        if (namespace != null && resultMatches.size() > 1) {
+            resultMatches = narrowMatches(
+                    resultMatches,
+                    s -> s.getNamespace() == null || s.getNamespace().equals(namespace));
+        }
+
+        // multiple services found, sort by version
+        if (resultMatches.size() > 1) {
+            resultMatches.sort(Comparator.comparing(Service::getVersion));
+        }
+
+        // return the highest version
+        return resultMatches.get(resultMatches.size() - 1);
+    }
+
+    private List<Service> narrowMatches(List<Service> matches, Predicate<Service> narrowingPredicate) {
+        List<Service> narrowed =
+                matches.stream().filter(narrowingPredicate).collect(Collectors.toCollection(ArrayList::new));
+        return narrowed.isEmpty() ? matches : narrowed;
     }
 
     public static Collection<KvpRequestReader> loadKvpRequestReaders() {

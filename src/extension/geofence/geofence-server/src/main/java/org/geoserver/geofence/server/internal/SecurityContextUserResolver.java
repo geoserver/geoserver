@@ -25,18 +25,6 @@ import org.springframework.stereotype.Component;
 @PropertySource("classpath*:application.properties")
 public class SecurityContextUserResolver implements UserResolver {
 
-    //    @Override
-    //    @SuppressWarnings("deprecation")
-    //    public boolean existsUser(String username) {
-    //        throw new IllegalStateException("This method is deprecated and should not be invoked");
-    //    }
-    //
-    //    @Override
-    //    @SuppressWarnings("deprecation")
-    //    public boolean existsRole(String rolename) {
-    //        throw new IllegalStateException("This method is deprecated and should not be invoked");
-    //    }
-
     @Override
     public Set<String> getRoles(String username) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

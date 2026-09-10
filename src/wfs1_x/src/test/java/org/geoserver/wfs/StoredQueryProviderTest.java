@@ -5,12 +5,15 @@
 package org.geoserver.wfs;
 
 import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
@@ -22,6 +25,7 @@ import java.io.Writer;
 import java.util.List;
 import net.opengis.wfs20.StoredQueryDescriptionType;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
@@ -34,6 +38,8 @@ import org.junit.rules.TemporaryFolder;
 public class StoredQueryProviderTest {
 
     public static final String MY_STORED_QUERY = "MyStoredQuery";
+
+    public static final String INCLUDE_STORED_QUERY = "XxeStoredQuery";
 
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
@@ -77,6 +83,9 @@ public class StoredQueryProviderTest {
         catalog = createMock(Catalog.class);
         loader = new GeoServerResourceLoader(baseDirectory);
         expect(catalog.getResourceLoader()).andReturn(loader);
+        ResourcePool resourcePool = createNiceMock(ResourcePool.class);
+        replay(resourcePool);
+        expect(catalog.getResourcePool()).andReturn(resourcePool).anyTimes();
         replay(catalog);
         storedQueryProvider = new StoredQueryProvider(catalog, new WFSInfoImpl(), false);
     }
@@ -164,6 +173,35 @@ public class StoredQueryProviderTest {
         assertThat(storedQueryProvider.getLanguage(), is(equalTo(StoredQueryProvider.LANGUAGE_20)));
     }
 
+    @Test
+    public void reloadingAStoredQueryRespectsTheConfiguredEntityResolver() throws IOException {
+        String markerContent = "MARKER-CONTENT-1234567890";
+        File referencedFile = tmpFolder.newFile("referenced.txt");
+        try (Writer writer = new FileWriter(referencedFile)) {
+            writer.write(markerContent);
+        }
+        createIncludeStoredQueryDefinitionFile(storedQueryProvider.storedQueryDir().dir(), referencedFile);
+
+        // either the reload rejects the reference outright, or it succeeds without ever
+        // inlining the referenced file's content into the parsed definition
+        String queryExpressionText;
+        try {
+            storedQueryProvider.listStoredQueries();
+            queryExpressionText = queryExpressionTextOf(storedQueryProvider.getStoredQuery(INCLUDE_STORED_QUERY));
+        } catch (RuntimeException entityResolutionRejected) {
+            queryExpressionText = "";
+        }
+
+        assertThat(queryExpressionText, not(containsString(markerContent)));
+    }
+
+    private String queryExpressionTextOf(StoredQuery query) {
+        if (query == null) {
+            return "";
+        }
+        return query.getQuery().getQueryExpressionText().get(0).getValue();
+    }
+
     private File createMyStoredQueryDefinitionFile(File storedQueryDir) throws IOException {
         File storedQueryDefinition = new File(storedQueryDir, MY_STORED_QUERY + ".xml");
         try (Writer writer = new FileWriter(storedQueryDefinition)) {
@@ -179,6 +217,30 @@ public class StoredQueryProviderTest {
 
             return (StoredQueryDescriptionType) p.parse(reader);
         }
+    }
+
+    private File createIncludeStoredQueryDefinitionFile(File storedQueryDir, File fileToInclude) throws IOException {
+        String definition =
+                """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <wfs:StoredQueryDescription id='%s'\
+                 xmlns:wfs="http://www.opengis.net/wfs/2.0"\
+                 xmlns:xi="http://www.w3.org/2001/XInclude">
+                  <wfs:QueryExpressionText
+                   returnFeatureTypes='topp:states'
+                   language='urn:ogc:def:queryLanguage:OGC-WFS::WFS_QueryExpression'
+                   isPrivate='false'>
+                    <wfs:Query typeNames='topp:states'>
+                      <xi:include href='%s' parse='text'/>
+                    </wfs:Query>
+                  </wfs:QueryExpressionText>
+                </wfs:StoredQueryDescription>"""
+                        .formatted(INCLUDE_STORED_QUERY, fileToInclude.toURI());
+        File storedQueryDefinition = new File(storedQueryDir, INCLUDE_STORED_QUERY + ".xml");
+        try (Writer writer = new FileWriter(storedQueryDefinition)) {
+            writer.write(definition);
+        }
+        return storedQueryDefinition;
     }
 
     private File createMyBogusStoredQueryDefinition() throws IOException {

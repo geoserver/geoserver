@@ -154,6 +154,24 @@
       <id>excel</id>
       <modules>
         <module>excel-core</module>
+        <module>excel-wfs</module>
+        <module>excel-wps</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>excel-wfs</id>
+      <modules>
+        <module>excel-core</module>
+        <module>excel-wfs</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>excel-wps</id>
+      <modules>
+        <module>excel-core</module>
+        <module>excel-wps</module>
       </modules>
     </profile>
 

@@ -128,6 +128,13 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
 
     @Override
     public List<FeatureTypeInfo> getFeatureTypes() {
+        WorkspaceInfo localWorkspace = LocalWorkspace.get();
+        if (localWorkspace != null) {
+            NamespaceInfo ns = super.getNamespaceByPrefix(localWorkspace.getName());
+            if (ns != null) {
+                return getFeatureTypesByNamespace(ns);
+            }
+        }
         return wrapFeatureTypesListIfNeeded(super.getFeatureTypes());
     }
 
@@ -147,8 +154,14 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
 
     @Override
     public List<CoverageInfo> getCoverages() {
-        List<CoverageInfo> coverages = super.getCoverages();
-        return wrapCoverageListIfNeeded(coverages);
+        WorkspaceInfo localWorkspace = LocalWorkspace.get();
+        if (localWorkspace != null) {
+            NamespaceInfo ns = super.getNamespaceByPrefix(localWorkspace.getName());
+            if (ns != null) {
+                return getCoveragesByNamespace(ns);
+            }
+        }
+        return wrapCoverageListIfNeeded(super.getCoverages());
     }
 
     @Override

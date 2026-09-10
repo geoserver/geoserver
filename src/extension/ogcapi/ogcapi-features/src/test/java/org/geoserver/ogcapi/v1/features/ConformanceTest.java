@@ -19,6 +19,8 @@ import static org.geoserver.ogcapi.ConformanceClass.FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.QUERYABLES;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
@@ -26,7 +28,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.geoserver.ogcapi.CQL2Conformance;
 import org.geoserver.ogcapi.ConformanceClass;
+import org.geoserver.ogcapi.ECQLConformance;
 import org.geoserver.wfs.WFSInfo;
 import org.junit.Test;
 
@@ -89,6 +93,31 @@ public class ConformanceTest extends FeaturesTestSupport {
         List<String> classes =
                 document.select("#content li").stream().map(e -> e.text()).collect(Collectors.toList());
         assertThat(classes, containsInAnyOrder(getExpectedConformanceClasses()));
+    }
+
+    /**
+     * The filter class takes a language, so with every language class disabled it cannot be advertised: OGC API -
+     * Features - Part 3 {@code /req/filter/filter-lang-param} binds the two.
+     */
+    @Test
+    public void testNoFilterLanguageEnabled() throws Exception {
+        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
+        CQL2Conformance cql2 = CQL2Conformance.configuration(wfs);
+        ECQLConformance ecql = ECQLConformance.configuration(wfs);
+        cql2.setText(false);
+        cql2.setJSON(false);
+        ecql.setText(false);
+        getGeoServer().save(wfs);
+        try {
+            List<String> classes =
+                    getAsJSONPath("ogc/features/v1/conformance", 200).read("$.conformsTo");
+            assertThat(classes, not(hasItems(FILTER, FEATURES_FILTER, ECQL_TEXT, CQL2_TEXT, CQL2_JSON)));
+        } finally {
+            cql2.setText(null);
+            cql2.setJSON(null);
+            ecql.setText(null);
+            getGeoServer().save(wfs);
+        }
     }
 
     @Test

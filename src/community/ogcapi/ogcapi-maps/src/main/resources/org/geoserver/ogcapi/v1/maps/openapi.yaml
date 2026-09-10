@@ -1,0 +1,663 @@
+openapi: 3.0.3
+info:
+  title: "OGC API - Maps"
+  version: '1.0.0'
+  description: |-
+    API implementing the OGC API - Maps - Part 1: Core standard, serving maps
+    rendered from the collections published by this GeoServer instance. The
+    GetFeatureInfo operation on a map is a GeoServer extension, not part of the
+    standard.
+  contact:
+    name: GeoServer
+    email: geoserver-users@lists.sourceforge.net
+    url: 'https://geoserver.org'
+  license:
+    name: GPL 2.0
+    url: 'https://www.gnu.org/licenses/old-licenses/gpl-2.0.html'
+servers:
+  - url: 'http://localhost:8080/geoserver/ogc/maps/v1'
+    description: This server
+tags:
+  - name: Capabilities
+    description: essential characteristics of this API
+  - name: Data
+    description: access to collections
+  - name: Maps
+    description: rendered maps
+paths:
+  '/':
+    get:
+      tags: [Capabilities]
+      summary: landing page
+      operationId: getLandingPage
+      responses:
+        '200':
+          $ref: '#/components/responses/LandingPage'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/openapi':
+    get:
+      tags: [Capabilities]
+      summary: OpenAPI definition of this API
+      operationId: getApi
+      responses:
+        '200':
+          description: the OpenAPI definition
+          content:
+            application/vnd.oai.openapi+json;version=3.0: {}
+            text/html: {}
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/conformance':
+    get:
+      tags: [Capabilities]
+      summary: information about specifications this API conforms to
+      operationId: getConformanceDeclaration
+      responses:
+        '200':
+          $ref: '#/components/responses/ConformanceDeclaration'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/collections':
+    get:
+      tags: [Data]
+      summary: the collections available in this service
+      operationId: getCollections
+      responses:
+        '200':
+          $ref: '#/components/responses/Collections'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/collections/{collectionId}':
+    get:
+      tags: [Data]
+      summary: describe a single collection
+      operationId: describeCollection
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      responses:
+        '200':
+          $ref: '#/components/responses/Collection'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/collections/{collectionId}/styles':
+    get:
+      tags: [Maps]
+      summary: styles available to render a collection
+      operationId: getStyles
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      responses:
+        '200':
+          $ref: '#/components/responses/Styles'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/collections/{collectionId}/queryables':
+    get:
+      tags: [Data]
+      summary: attributes that can be used in the filter parameter
+      operationId: getQueryables
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      responses:
+        '200':
+          $ref: '#/components/responses/Queryables'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/map':
+    get:
+      tags: [Maps]
+      summary: retrieve a map of this dataset, rendering several collections at once
+      operationId: maps.dataset.getMap
+      parameters:
+        - $ref: '#/components/parameters/f-map'
+        - $ref: '#/components/parameters/collections'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/bbox-crs'
+        - $ref: '#/components/parameters/subset'
+        - $ref: '#/components/parameters/subset-crs'
+        - $ref: '#/components/parameters/center'
+        - $ref: '#/components/parameters/center-crs'
+        - $ref: '#/components/parameters/crs'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/width'
+        - $ref: '#/components/parameters/height'
+        - $ref: '#/components/parameters/scale-denominator'
+        - $ref: '#/components/parameters/mm-per-pixel'
+        - $ref: '#/components/parameters/orientation'
+        - $ref: '#/components/parameters/bgcolor'
+        - $ref: '#/components/parameters/transparent'
+        - $ref: '#/components/parameters/void-color'
+        - $ref: '#/components/parameters/void-transparent'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/filter-lang'
+        - $ref: '#/components/parameters/filter-crs'
+      responses:
+        '200':
+          $ref: '#/components/responses/Map'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/map/info':
+    get:
+      tags: [Maps]
+      summary: GeoServer extension, query the dataset map at a pixel
+      operationId: getDatasetMapInfo
+      parameters:
+        - $ref: '#/components/parameters/f-info'
+        - $ref: '#/components/parameters/collections'
+        - $ref: '#/components/parameters/i'
+        - $ref: '#/components/parameters/j'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/bbox-crs'
+        - $ref: '#/components/parameters/subset'
+        - $ref: '#/components/parameters/subset-crs'
+        - $ref: '#/components/parameters/center'
+        - $ref: '#/components/parameters/center-crs'
+        - $ref: '#/components/parameters/crs'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/width'
+        - $ref: '#/components/parameters/height'
+        - $ref: '#/components/parameters/scale-denominator'
+        - $ref: '#/components/parameters/mm-per-pixel'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/filter-lang'
+        - $ref: '#/components/parameters/filter-crs'
+      responses:
+        '200':
+          description: the feature information at the queried pixel
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/collections/{collectionId}/map':
+    get:
+      tags: [Maps]
+      summary: retrieve a map of a collection in its default style
+      operationId: maps.collection.getMap
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/f-map'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/bbox-crs'
+        - $ref: '#/components/parameters/subset'
+        - $ref: '#/components/parameters/subset-crs'
+        - $ref: '#/components/parameters/center'
+        - $ref: '#/components/parameters/center-crs'
+        - $ref: '#/components/parameters/crs'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/width'
+        - $ref: '#/components/parameters/height'
+        - $ref: '#/components/parameters/scale-denominator'
+        - $ref: '#/components/parameters/mm-per-pixel'
+        - $ref: '#/components/parameters/orientation'
+        - $ref: '#/components/parameters/bgcolor'
+        - $ref: '#/components/parameters/transparent'
+        - $ref: '#/components/parameters/void-color'
+        - $ref: '#/components/parameters/void-transparent'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/filter-lang'
+        - $ref: '#/components/parameters/filter-crs'
+      responses:
+        '200':
+          $ref: '#/components/responses/Map'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/collections/{collectionId}/styles/{styleId}/map':
+    get:
+      tags: [Maps]
+      summary: retrieve a map of a collection in a given style
+      operationId: maps.collection.style.getMap
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/styleId'
+        - $ref: '#/components/parameters/f-map'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/bbox-crs'
+        - $ref: '#/components/parameters/subset'
+        - $ref: '#/components/parameters/subset-crs'
+        - $ref: '#/components/parameters/center'
+        - $ref: '#/components/parameters/center-crs'
+        - $ref: '#/components/parameters/crs'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/width'
+        - $ref: '#/components/parameters/height'
+        - $ref: '#/components/parameters/scale-denominator'
+        - $ref: '#/components/parameters/mm-per-pixel'
+        - $ref: '#/components/parameters/orientation'
+        - $ref: '#/components/parameters/bgcolor'
+        - $ref: '#/components/parameters/transparent'
+        - $ref: '#/components/parameters/void-color'
+        - $ref: '#/components/parameters/void-transparent'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/filter-lang'
+        - $ref: '#/components/parameters/filter-crs'
+      responses:
+        '200':
+          $ref: '#/components/responses/Map'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/collections/{collectionId}/map/info':
+    get:
+      tags: [Maps]
+      summary: GeoServer extension, query the map at a pixel, default style
+      operationId: getCollectionMapInfo
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/f-info'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/bbox-crs'
+        - $ref: '#/components/parameters/subset'
+        - $ref: '#/components/parameters/subset-crs'
+        - $ref: '#/components/parameters/center'
+        - $ref: '#/components/parameters/center-crs'
+        - $ref: '#/components/parameters/crs'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/width'
+        - $ref: '#/components/parameters/height'
+        - $ref: '#/components/parameters/scale-denominator'
+        - $ref: '#/components/parameters/mm-per-pixel'
+        - $ref: '#/components/parameters/i'
+        - $ref: '#/components/parameters/j'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/filter-lang'
+        - $ref: '#/components/parameters/filter-crs'
+      responses:
+        '200':
+          description: the feature information at the queried pixel
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/collections/{collectionId}/styles/{styleId}/map/info':
+    get:
+      tags: [Maps]
+      summary: GeoServer extension, query the map at a pixel, given style
+      operationId: getCollectionStyleMapInfo
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/styleId'
+        - $ref: '#/components/parameters/f-info'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/bbox-crs'
+        - $ref: '#/components/parameters/subset'
+        - $ref: '#/components/parameters/subset-crs'
+        - $ref: '#/components/parameters/center'
+        - $ref: '#/components/parameters/center-crs'
+        - $ref: '#/components/parameters/crs'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/width'
+        - $ref: '#/components/parameters/height'
+        - $ref: '#/components/parameters/scale-denominator'
+        - $ref: '#/components/parameters/mm-per-pixel'
+        - $ref: '#/components/parameters/i'
+        - $ref: '#/components/parameters/j'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/filter-lang'
+        - $ref: '#/components/parameters/filter-crs'
+      responses:
+        '200':
+          description: the feature information at the queried pixel
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/collections/{collectionId}/legend':
+    get:
+      tags: [Maps]
+      summary: GeoServer extension, legend graphic for the default style
+      operationId: getCollectionLegend
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/f-legend'
+        - $ref: '#/components/parameters/width'
+        - $ref: '#/components/parameters/height'
+        - $ref: '#/components/parameters/scale'
+        - $ref: '#/components/parameters/rule'
+        - $ref: '#/components/parameters/lang'
+        - $ref: '#/components/parameters/transparent'
+        - $ref: '#/components/parameters/bgcolor'
+        - $ref: '#/components/parameters/legend-options'
+      responses:
+        '200':
+          description: the legend graphic for the default style
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/collections/{collectionId}/styles/{styleId}/legend':
+    get:
+      tags: [Maps]
+      summary: GeoServer extension, legend graphic for the given style
+      operationId: getCollectionStyleLegend
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/styleId'
+        - $ref: '#/components/parameters/f-legend'
+        - $ref: '#/components/parameters/width'
+        - $ref: '#/components/parameters/height'
+        - $ref: '#/components/parameters/scale'
+        - $ref: '#/components/parameters/rule'
+        - $ref: '#/components/parameters/lang'
+        - $ref: '#/components/parameters/transparent'
+        - $ref: '#/components/parameters/bgcolor'
+        - $ref: '#/components/parameters/legend-options'
+      responses:
+        '200':
+          description: the legend graphic for the given style
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+components:
+  parameters:
+    collectionId:
+      name: collectionId
+      in: path
+      required: true
+      schema: {type: string}
+    collections:
+      name: collections
+      in: query
+      description: |-
+        the collections to render, bottom to top, either by identifier or by the full URL of their
+        collection resource. Defaults to a selection of the contents of this service.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        items: {type: string}
+    styleId:
+      name: styleId
+      in: path
+      required: true
+      schema: {type: string}
+    f-map:
+      name: f
+      in: query
+      required: false
+      schema: {type: string, enum: [image/png, image/jpeg]}
+    f-info:
+      name: f
+      in: query
+      required: false
+      schema: {type: string}
+    limit:
+      name: limit
+      in: query
+      description: maximum number of features to return, across all the layers of the collection
+      required: false
+      schema: {type: integer, minimum: 1, default: 1}
+    f-legend:
+      name: f
+      in: query
+      required: false
+      schema: {type: string, enum: [image/png, image/jpeg, image/gif, application/json]}
+    scale:
+      name: scale
+      in: query
+      required: false
+      schema: {type: number, minimum: 0}
+    rule:
+      name: rule
+      in: query
+      required: false
+      schema: {type: string}
+    lang:
+      name: lang
+      in: query
+      required: false
+      schema: {type: string}
+    legend-options:
+      name: legend-options
+      in: query
+      required: false
+      schema: {type: string}
+    bbox:
+      name: bbox
+      in: query
+      required: false
+      schema: {type: array, minItems: 4, maxItems: 6, items: {type: number}}
+    bbox-crs:
+      name: bbox-crs
+      in: query
+      required: false
+      schema: {type: string, format: uri}
+    subset:
+      name: subset
+      in: query
+      required: false
+      explode: false
+      schema: {type: array, items: {type: string}}
+    subset-crs:
+      name: subset-crs
+      in: query
+      required: false
+      schema: {type: string, format: uri}
+    center:
+      name: center
+      in: query
+      required: false
+      explode: false
+      schema: {type: array, items: {type: number}}
+    center-crs:
+      name: center-crs
+      in: query
+      required: false
+      schema: {type: string, format: uri}
+    crs:
+      name: crs
+      in: query
+      required: false
+      schema: {type: string, format: uri}
+    datetime:
+      name: datetime
+      in: query
+      required: false
+      schema: {type: string}
+    width:
+      name: width
+      in: query
+      required: false
+      schema: {type: integer, minimum: 1}
+    height:
+      name: height
+      in: query
+      required: false
+      schema: {type: integer, minimum: 1}
+    scale-denominator:
+      name: scale-denominator
+      in: query
+      required: false
+      schema: {type: number}
+    mm-per-pixel:
+      name: mm-per-pixel
+      in: query
+      required: false
+      schema: {type: number, default: 0.28}
+    orientation:
+      name: orientation
+      in: query
+      required: false
+      schema: {type: number, default: 0}
+    bgcolor:
+      name: bgcolor
+      in: query
+      required: false
+      schema: {type: string}
+    transparent:
+      name: transparent
+      in: query
+      required: false
+      schema: {type: boolean, default: true}
+    void-color:
+      name: void-color
+      in: query
+      required: false
+      schema: {type: string}
+    void-transparent:
+      name: void-transparent
+      in: query
+      required: false
+      schema: {type: boolean, default: true}
+    filter:
+      name: filter
+      in: query
+      description: attribute filter, in the language declared by filter-lang
+      required: false
+      schema: {type: string}
+    filter-lang:
+      name: filter-lang
+      in: query
+      required: false
+      schema: {type: string, enum: [cql2-text, cql2-json, ecql-text], default: cql2-text}
+    filter-crs:
+      name: filter-crs
+      in: query
+      description: CRS of the geometry literals in the filter, CRS84 when absent
+      required: false
+      schema: {type: string, format: uri}
+    i:
+      name: i
+      in: query
+      required: true
+      schema: {type: integer, minimum: 0}
+    j:
+      name: j
+      in: query
+      required: true
+      schema: {type: integer, minimum: 0}
+  responses:
+    LandingPage:
+      description: the landing page
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/landingPage'}
+    ConformanceDeclaration:
+      description: the conformance classes this API implements
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/confClasses'}
+    Collections:
+      description: the collections available in this service
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/collections'}
+    Collection:
+      description: a single collection
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/collection'}
+    Styles:
+      description: styles available for a collection
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/styles'}
+    Map:
+      description: a rendered map
+      content:
+        image/png: {schema: {type: string, format: binary}}
+        image/jpeg: {schema: {type: string, format: binary}}
+    Queryables:
+      description: the queryable attributes of a collection
+      content:
+        application/schema+json:
+          schema: {$ref: '#/components/schemas/queryables'}
+    NotFound:
+      description: the requested resource does not exist
+    ServerError:
+      description: an internal server error occurred
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/exception'}
+  schemas:
+    link:
+      type: object
+      required: [href, rel]
+      properties:
+        href: {type: string}
+        rel: {type: string}
+        type: {type: string}
+        title: {type: string}
+    landingPage:
+      type: object
+      required: [links]
+      properties:
+        title: {type: string}
+        description: {type: string}
+        links: {type: array, items: {$ref: '#/components/schemas/link'}}
+    confClasses:
+      type: object
+      required: [conformsTo]
+      properties:
+        conformsTo: {type: array, items: {type: string}}
+    extent:
+      type: object
+      properties:
+        spatial:
+          type: object
+          properties:
+            bbox: {type: array, items: {type: array, items: {type: number}}}
+            crs: {type: string}
+        temporal:
+          type: object
+          properties:
+            interval: {type: array, items: {type: array, items: {type: string, nullable: true}}}
+            trs: {type: string}
+    collection:
+      type: object
+      required: [id, links]
+      properties:
+        id: {type: string}
+        title: {type: string}
+        description: {type: string}
+        extent: {$ref: '#/components/schemas/extent'}
+        links: {type: array, items: {$ref: '#/components/schemas/link'}}
+    collections:
+      type: object
+      required: [links, collections]
+      properties:
+        links: {type: array, items: {$ref: '#/components/schemas/link'}}
+        collections: {type: array, items: {$ref: '#/components/schemas/collection'}}
+    styles:
+      type: object
+      required: [styles]
+      properties:
+        styles:
+          type: array
+          items:
+            type: object
+            properties:
+              id: {type: string}
+              title: {type: string}
+              links: {type: array, items: {$ref: '#/components/schemas/link'}}
+    queryables:
+      type: object
+      required: [$schema, $id, type, properties]
+      properties:
+        $schema: {type: string}
+        $id: {type: string}
+        type: {type: string, enum: [object]}
+        title: {type: string}
+        properties: {type: object, additionalProperties: {type: object}}
+    exception:
+      type: object
+      required: [code]
+      properties:
+        code: {type: string}
+        description: {type: string}

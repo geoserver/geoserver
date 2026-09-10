@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -53,13 +51,8 @@ public class StylesTest extends MapsTestSupport {
                 .getProducibleMediaTypes(CollectionsDocument.class, true);
         formats.forEach(format -> {
             // check rel
-            List items = json.read("links[?(@.type=='" + format + "')]", List.class);
-            Map item = (Map) items.get(0);
-            if (defaultFormat.equals(format)) {
-                assertEquals("self", item.get("rel"));
-            } else {
-                assertEquals("alternate", item.get("rel"));
-            }
+            String rel = readSingle(json, "links[?(@.type=='" + format + "')].rel");
+            assertEquals(defaultFormat.equals(format) ? "self" : "alternate", rel);
         });
     }
 }

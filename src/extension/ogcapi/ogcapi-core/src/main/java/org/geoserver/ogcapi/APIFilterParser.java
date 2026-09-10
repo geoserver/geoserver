@@ -4,10 +4,13 @@
  */
 package org.geoserver.ogcapi;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import org.geootols.filter.text.cql_2.CQL2;
+import org.geoserver.config.ServiceInfo;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.referencing.FactoryException;
@@ -33,6 +36,47 @@ public class APIFilterParser {
 
     /** The list of encodings that should go in API documents */
     public static Set<String> SUPPORTED_ENCODINGS = new LinkedHashSet<>(Arrays.asList(ECQL_TEXT, CQL2_TEXT, CQL2_JSON));
+
+    /**
+     * The filter languages enabled on the given service, {@link #CQL2_TEXT} first when available, as it is the default
+     * of OGC API - Features - Part 3 {@code /req/filter/filter-lang-param}. Empty when the service supports none, in
+     * which case the filter parameters cannot be used at all.
+     */
+    public static List<String> enabledLanguages(ServiceInfo service) {
+        CQL2Conformance cql2 = CQL2Conformance.configuration(service);
+        ECQLConformance ecql = ECQLConformance.configuration(service);
+        List<String> languages = new ArrayList<>();
+        if (cql2.text(service)) languages.add(CQL2_TEXT);
+        if (cql2.json(service)) languages.add(CQL2_JSON);
+        if (ecql.text(service)) languages.add(ECQL_TEXT);
+        return languages;
+    }
+
+    /**
+     * The language a filter must be parsed with, resolving the {@code filter-lang} value of a request against
+     * {@link #enabledLanguages(ServiceInfo)}.
+     *
+     * @param filterLang the requested language, {@code null} for the service default
+     * @throws InvalidParameterValueException if the language is not one of the enabled ones, and so not one of those
+     *     the API document advertises
+     * @throws IndexOutOfBoundsException if the service has no language enabled, which callers must have already
+     *     checked, as it means the filter parameters are not available at all
+     */
+    public static String resolveLanguage(String filterLang, ServiceInfo service) {
+        List<String> languages = enabledLanguages(service);
+        // cql-text is a legacy alias the parser maps to ECQL, it is never advertised
+        String lang = CQL_TEXT.equals(filterLang) ? ECQL_TEXT : filterLang;
+        // the default of OGC API - Features - Part 3 /req/filter/filter-lang-param, or the first language left
+        // when cql2-text is disabled, matching what the API document declares
+        if (lang == null) {
+            return languages.get(0);
+        }
+        if (!languages.contains(lang)) {
+            throw new InvalidParameterValueException(
+                    "Invalid filter-lang '" + filterLang + "', supported values are " + languages);
+        }
+        return lang;
+    }
 
     /**
      * Parses the filter over the supported filter languages (right now, only {@link #CQL_TEXT}, {@link #CQL2_JSON} and

@@ -143,8 +143,7 @@
                 // Start GEOS-11585 Changes
                 // Original Code:
                 // html.push('<span title="' + formattedString + '" data-color="' + tiny.toRgbString() + '" class="' + c + '"><span class="sp-thumb-inner" style="' + swatchStyle + ';" /></span>');
-                html.push('<span title="' + formattedString + '" data-color="' + tiny.toRgbString() + '" class="' + c + '"><span class="sp-palette-el sp-thumb-inner" data-css="' + swatchStyle + ';" /></span>');
-                // End GEOS-11585 Changes
+                html.push('<span title="' + formattedString + '" data-color="' + tiny.toRgbString() + '" class="' + c + '"><span class="sp-palette-el sp-thumb-inner" data-css="' + swatchStyle + ';"></span></span>');
             } else {
                 var cls = 'sp-clear-display';
                 html.push($('<div />')

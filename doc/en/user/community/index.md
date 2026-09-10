@@ -58,6 +58,7 @@ Community modules are provided "as is" alongside the [nightly builds](https://bu
 - [JWT Headers](jwt-headers/index.md)
 - [Keycloak Role Service](keycloak/index.md)
 - [Libdeflate](libdeflate/index.md)
+- [MapLibre Tiles (MLT)](mlt/index.md)
 - [MBTiles Extension](mbtiles/index.md)
 - [Monitoring Kafka storage](monitor-kafka/index.md)
 - [Monitoring with Micrometer support](monitor-micrometer/index.md)

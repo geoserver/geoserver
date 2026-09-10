@@ -12,11 +12,15 @@ import static org.junit.Assert.assertTrue;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.decoder.RESTCoverage;
 import it.geosolutions.geoserver.rest.decoder.RESTLayer;
+import it.geosolutions.geoserver.rest.decoder.RESTMetadataList.RESTMetadataElement;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.metadata.data.model.impl.MetadataTemplateImpl;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
@@ -224,13 +228,17 @@ public class MetaDataTemplateSyncTaskTest extends AbstractTaskManagerTest {
         assertEquals(
                 ci.getDimensions().get(0).getName(),
                 cov.getEncodedDimensionsInfoList().get(0).getName());
-        assertEquals("asomething", cov.getMetadataList().get(0).getKey());
-        assertEquals("anything", cov.getMetadataList().get(0).getMetadataElem().getText());
-        assertEquals("adate", cov.getMetadataList().get(1).getKey());
-        assertNotNull(cov.getMetadataList().get(1).getMetadataElem().getChild("date"));
+        List<RESTMetadataElement> metadataElements = StreamSupport.stream(
+                        cov.getMetadataList().spliterator(), false)
+                .sorted(Comparator.comparing(RESTMetadataElement::getKey))
+                .toList();
+        assertEquals("adate", metadataElements.get(0).getKey());
+        assertNotNull(metadataElements.get(0).getMetadataElem().getChild("date"));
+        assertEquals("asomething", metadataElements.get(1).getKey());
+        assertEquals("anything", metadataElements.get(1).getMetadataElem().getText());
         if (SUPPORTS_METADATA) {
-            assertEquals("complex", cov.getMetadataList().get(2).getKey());
-            assertNotNull(cov.getMetadataList().get(2).getMetadataElem().getChild("map"));
+            assertEquals("complex", metadataElements.get(2).getKey());
+            assertNotNull(metadataElements.get(2).getMetadataElem().getChild("map"));
         }
 
         assertEquals("The following layers failed to synchronize: wcs:World", getSuccessMessage());

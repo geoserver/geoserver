@@ -218,7 +218,7 @@ public class BatchJobTest extends AbstractTaskManagerTest {
 
         while (testTaskType.getStatus().get("my_batch:my_config/task3") == null) {}
 
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         batch = dao.initHistory(batch);
         BatchRun br = batch.getBatchRuns().get(batch.getBatchRuns().size() - 1);
         br.setInterruptMe(true);

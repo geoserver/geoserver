@@ -23,9 +23,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.github.dov-vlaanderen</groupId>
+      <groupId>io.github.dov-vlaanderen</groupId>
       <artifactId>geoserver-manager</artifactId>
-      <version>1.8.7</version>
+      <version>1.8.8</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>

@@ -110,7 +110,7 @@ public class InitConfigPageTest extends AbstractWicketTaskManagerTest {
         tester.clickLink("configurationForm:apply");
         tester.assertRenderedPage(InitConfigurationPage.class);
 
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         tester.executeBehavior(tester.getLastRenderedPage()
                 .getBehaviors(AbstractAjaxTimerBehavior.class)

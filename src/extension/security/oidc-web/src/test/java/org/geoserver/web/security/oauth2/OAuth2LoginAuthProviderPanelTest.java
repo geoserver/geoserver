@@ -222,6 +222,9 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         // Re-select OIDC provider so the dropdown value is submitted with the form save
         formTester.select(prefix + "providerSelector", 0);
 
+        // OIDC
+        prefix = "panel:content:pfv:4:";
+        prefix = prefix + "settings:";
         // OIDC provider settings (pfv:4 — the 4th provider panel added by addProviderComponents)
         prefix = "panel:content:pfv:4:settings:";
         formTester.setValue(prefix + "clientId", "oidcClientId");
@@ -324,6 +327,46 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         assertFalse(lConfig.isOidcAllowUnSecureLogging());
         assertNull(lConfig.getOidcResponseMode());
         assertFalse(lConfig.isOidcAuthenticationMethodPostSecret());
+    }
+
+    @Test
+    public void testMicrosoftTenantId() throws Exception {
+        String filterName = "MicrosoftFilter";
+        navigateToOpenIdPanel(filterName);
+
+        String prefix = "panel:content:";
+        String baseUrl = "https://localhost:9090";
+        formTester.setValue(prefix + "baseRedirectUri", baseUrl + "/geoserver");
+        Component baseUriComponent = formTester.getForm().get(prefix + "baseRedirectUri");
+        tester.executeAjaxEvent(baseUriComponent, "change");
+
+        formTester.select(prefix + "providerSelector", 3);
+        Component providerSelectorComponent = formTester.getForm().get(prefix + "providerSelector");
+        tester.executeAjaxEvent(providerSelectorComponent, "change");
+
+        formTester.setValue(prefix + "baseRedirectUri", baseUrl + "/geoserver");
+        formTester.setValue(prefix + "name", filterName);
+        formTester.select(prefix + "providerSelector", 3);
+
+        prefix = "panel:content:pfv:3:";
+        prefix += "settings:";
+        formTester.setValue(prefix + "clientId", "msClientId");
+        formTester.setValue(prefix + "clientSecret", "msClientSecret");
+        formTester.setValue(prefix + "userNameAttribute", "msUserNameAttribute");
+        formTester.setValue(prefix + "displayOnScopeSupport:scopes", "openid profile email");
+        formTester.setValue(prefix + "displayOnMicrosoft:tenantId", "12345678-1234-1234-1234-123456789abc");
+
+        clickSave();
+
+        tester.assertNoErrorMessage();
+        clickNamedServiceConfig(filterName);
+
+        newFormTester("panel:panel:form");
+        OAuth2LoginAuthProviderPanel panel =
+                (OAuth2LoginAuthProviderPanel) formTester.getForm().get("panel");
+        GeoServerOAuth2LoginFilterConfig config = panel.getConfigModel().getObject();
+        assertTrue(config.isMsEnabled());
+        assertEquals("12345678-1234-1234-1234-123456789abc", config.getMsTenantId());
     }
 
     @Override

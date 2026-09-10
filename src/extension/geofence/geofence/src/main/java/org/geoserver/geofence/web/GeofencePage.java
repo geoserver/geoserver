@@ -62,11 +62,10 @@ public class GeofencePage extends GeoServerSecuredPage {
     private CacheConfiguration cacheParams;
 
     /**
-     * Whether the currently active backend is the embedded engine, determined from the active bean name rather than
-     * {@link GeoFenceConfiguration#isInternal()} - that legacy check parses a magic {@code "internal:/"} prefix out of
-     * {@code servicesUrl}, a convention no longer kept in sync with the {@code ruleReaderBackend}-based selection (see
-     * {@code RuleReaderServiceFactory}). Checked by bean name rather than type since {@code RuleReaderServiceImpl} (the
-     * embedded engine's actual class, provided by geofence-server) isn't necessarily on this module's own classpath.
+     * Whether the currently active backend is the embedded engine, determined from the active bean name and the
+     * {@code ruleReaderBackend}-based selection (see {@code RuleReaderServiceFactory}). Checked by bean name rather
+     * than type since {@code RuleReaderServiceImpl} (the embedded engine's actual class, provided by geofence-server)
+     * isn't necessarily on this module's own classpath.
      */
     private final boolean embeddedBackend;
 

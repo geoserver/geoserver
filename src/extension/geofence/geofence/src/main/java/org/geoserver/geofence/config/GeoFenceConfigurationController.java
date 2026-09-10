@@ -43,6 +43,10 @@ public class GeoFenceConfigurationController {
 
     /** Updates the configuration, refreshes the classes that need it, then stores it to disk. */
     public void storeConfiguration(GeoFenceConfiguration gfConfig, CacheConfiguration cacheConfig) throws IOException {
+        // up front, so an unusable rule reader name doesn't leave a half-applied configuration behind
+        ruleReaderBackendFactory.validateServiceName(gfConfig.getRuleReaderBackend());
+        ruleReaderFrontendFactory.validateServiceName(gfConfig.getRuleReaderFrontend());
+
         configurationManager.setConfiguration(gfConfig);
 
         configurationManager.setCacheConfiguration(cacheConfig);

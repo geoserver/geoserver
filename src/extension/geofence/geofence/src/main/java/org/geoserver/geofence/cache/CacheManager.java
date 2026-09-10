@@ -143,19 +143,19 @@ public class CacheManager {
     }
 
     public LoadingCache<RuleFilter, AccessInfo> getRuleCache() {
-        if (ruleCache == null) throw new IllegalStateException("CacheManager is not properly inizialized");
+        if (ruleCache == null) throw new IllegalStateException("CacheManager is not properly initialized");
         logStats();
         return ruleCache;
     }
 
     public LoadingCache<RuleFilter, PermsResult> getPermCache() {
-        if (permCache == null) throw new IllegalStateException("CacheManager is not properly inizialized");
+        if (permCache == null) throw new IllegalStateException("CacheManager is not properly initialized");
         logStats();
         return permCache;
     }
 
     public LoadingCache<RuleFilter, AccessInfo> getAuthCache() {
-        if (authCache == null) throw new IllegalStateException("CacheManager is not properly inizialized");
+        if (authCache == null) throw new IllegalStateException("CacheManager is not properly initialized");
         logStats();
         return authCache;
     }

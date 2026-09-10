@@ -96,13 +96,17 @@ public class RuleReaderServiceFactory implements ApplicationContextAware, SmartI
 
     /**
      * Fails startup fast if the configured active service name doesn't match any registered bean definition.
-     * Deliberately checks only bean-definition existence, not {@link #setActiveServiceName}'s fuller type/eligibility
-     * check - that check can force Spring to actually construct the bean to determine its type, defeating this
-     * factory's whole point of keeping backends lazy until first real use.
+     * Deliberately checks only bean-definition existence: the fuller type/eligibility check can force Spring to
+     * construct the bean to determine its type, defeating this factory's point of keeping backends lazy. That check
+     * runs in {@link #resolve}, on first actual use.
      */
     @Override
     public void afterSingletonsInstantiated() {
-        if (fixedService == null && !context.containsBean(activeServiceName)) {
+        if (fixedService != null) {
+            return;
+        }
+        requireContext();
+        if (activeServiceName == null || !context.containsBean(activeServiceName)) {
             throw new IllegalArgumentException("No such RuleReaderService bean: " + activeServiceName);
         }
     }
@@ -138,14 +142,32 @@ public class RuleReaderServiceFactory implements ApplicationContextAware, SmartI
             // backend unavailable (e.g. no datasource configured) - deny rather than propagate; recovers automatically.
             if (!backendUnavailableWarned) {
                 LOGGER.log(
-                        Level.WARNING,
-                        "GeoFence rule reader backend '" + activeServiceName
-                                + "' is unavailable; denying all access until it recovers",
-                        e);
+                        Level.SEVERE,
+                        "GeoFence rule reader backend ''{0}'' is unavailable; denying all access until it recovers. "
+                                + "Cause: {1}",
+                        new Object[] {activeServiceName, rootCauseMessage(e)});
+                // the full trace is mostly Spring bean-creation frames; keep it for whoever needs to dig
+                LOGGER.log(Level.FINE, "GeoFence rule reader backend resolution failed", e);
                 backendUnavailableWarned = true;
             }
             return denyAll;
         }
+    }
+
+    /**
+     * The deepest cause that carries a message. The layers wrapping the real problem (Spring bean creation, Hikari pool
+     * init) repeat each other, and the innermost one is sometimes message-less, so neither end of the chain reliably
+     * says what went wrong.
+     */
+    private static String rootCauseMessage(Throwable thrown) {
+        String message = thrown.toString();
+        Throwable cause = thrown;
+        for (int depth = 0; cause != null && depth < 20; cause = cause.getCause(), depth++) {
+            if (cause.getMessage() != null && !cause.getMessage().isBlank()) {
+                message = cause.getClass().getSimpleName() + ": " + cause.getMessage();
+            }
+        }
+        return message;
     }
 
     public String getActiveServiceName() {
@@ -165,24 +187,56 @@ public class RuleReaderServiceFactory implements ApplicationContextAware, SmartI
     }
 
     public void setActiveServiceName(String name) {
-        if (!context.containsBean(name) || !context.isTypeMatch(name, RuleReaderService.class) || !isEligible(name)) {
-            throw new IllegalArgumentException(
-                    "No such RuleReaderService bean: " + name + ". Available: " + getAvailableServiceNames());
-        }
+        validateServiceName(name);
         this.activeServiceName = name;
+    }
+
+    /**
+     * Checks that {@code name} can be served by this factory, without switching to it - so a caller applying several
+     * settings at once can reject an invalid one before any of them takes effect.
+     *
+     * @throws IllegalArgumentException if the bean is missing, of the wrong type, or ineligible here
+     */
+    public void validateServiceName(String name) {
+        requireContext();
+        String reason = rejectionReason(name);
+        if (reason != null) {
+            throw new IllegalArgumentException(
+                    "Cannot select GeoFence rule reader: " + reason + ". Available: " + getAvailableServiceNames());
+        }
     }
 
     private boolean isEligible(String name) {
         return allowDecorators || !context.isTypeMatch(name, RuleReaderDecorator.class);
     }
 
-    private RuleReaderService resolve(String name) {
+    /** Why {@code name} can't be served by this factory, or {@code null} if it can. */
+    private String rejectionReason(String name) {
+        if (name == null || !context.containsBean(name)) {
+            return "no such bean: " + name;
+        }
+        if (!context.isTypeMatch(name, RuleReaderService.class)) {
+            return "bean '" + name + "' is not a RuleReaderService";
+        }
+        if (!isEligible(name)) {
+            // a decorator selected as backend would recurse into this factory on every cache miss
+            return "bean '" + name + "' is a decorator, usable only as a frontend";
+        }
+        return null;
+    }
+
+    private void requireContext() {
         if (context == null) {
             throw new IllegalStateException("ApplicationContext was not injected into the factory.");
         }
-        if (name == null || !context.containsBean(name)) {
+    }
+
+    private RuleReaderService resolve(String name) {
+        requireContext();
+        String reason = rejectionReason(name);
+        if (reason != null) {
             throw new IllegalStateException(
-                    "No active RuleReaderService selected [" + name + "]. Available: " + getAvailableServiceNames());
+                    "Cannot resolve GeoFence rule reader: " + reason + ". Available: " + getAvailableServiceNames());
         }
         return context.getBean(name, RuleReaderService.class);
     }

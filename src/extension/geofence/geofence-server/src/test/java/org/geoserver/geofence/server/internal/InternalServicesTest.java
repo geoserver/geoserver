@@ -58,7 +58,6 @@ public class InternalServicesTest extends GeofenceBaseTest {
 
     @Test
     public void testConfigurationInternal() {
-        // ruleReaderBackend, not the legacy isInternal()/servicesUrl convention (no longer kept in sync)
         assertEquals("ruleReaderServiceImpl", configManager.getConfiguration().getRuleReaderBackend());
         if (geofenceService != null) {
             assertTrue(geofenceService instanceof RuleReaderServiceImpl);

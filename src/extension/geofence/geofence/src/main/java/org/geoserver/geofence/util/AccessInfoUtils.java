@@ -95,17 +95,16 @@ public class AccessInfoUtils {
         for (LayerAttributeDTO[] arr : map.values()) {
             if (arr[0] == null) {
                 ret.add(arr[1]);
-            }
-            if (arr[1] == null) {
+            } else if (arr[1] == null) {
                 ret.add(arr[0]);
+            } else {
+                LayerAttributeDTO la = new LayerAttributeDTO();
+                la.setName(arr[0].getName());
+                la.setDatatype(arr[0].getDatatype());
+                la.setAccess(getStricter(arr[0].getAccess(), arr[1].getAccess()));
+
+                ret.add(la);
             }
-
-            LayerAttributeDTO la = new LayerAttributeDTO();
-            la.setName(arr[0].getName());
-            la.setDatatype(arr[0].getDatatype());
-            la.setAccess(getStricter(arr[0].getAccess(), arr[1].getAccess()));
-
-            ret.add(la);
         }
         return ret;
     }

@@ -1,0 +1,798 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer GeoFence Embedded Server extension
+  description: >
+    Management API for the rules and admin rules of GeoFence's embedded rule engine: rules
+    (data-access), admin rules (workspace-admin access) and batch operations over both. Only
+    accessible to users with the `ROLE_ADMIN` role.
+  contact:
+    name: GeoServer
+    email: 'geoserver-user@discourse.osgeo.org'
+    url: 'https://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
+
+paths:
+  /geofence/rules:
+    get:
+      operationId: getRules
+      tags:
+        - GeoFence Rules
+      summary: List rules
+      description: List all rules, with respect to any added filters.
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - $ref: "#/parameters/page"
+        - $ref: "#/parameters/entries"
+        - $ref: "#/parameters/userName"
+        - $ref: "#/parameters/userAny"
+        - $ref: "#/parameters/userDefault"
+        - $ref: "#/parameters/roleName"
+        - $ref: "#/parameters/roleAny"
+        - $ref: "#/parameters/roleDefault"
+        - $ref: "#/parameters/instanceId"
+        - $ref: "#/parameters/instanceName"
+        - $ref: "#/parameters/instanceAny"
+        - $ref: "#/parameters/instanceDefault"
+        - $ref: "#/parameters/ipAddress"
+        - $ref: "#/parameters/ipAddressAny"
+        - $ref: "#/parameters/ipAddressDefault"
+        - $ref: "#/parameters/date"
+        - $ref: "#/parameters/dateAny"
+        - $ref: "#/parameters/dateDefault"
+        - $ref: "#/parameters/service"
+        - $ref: "#/parameters/serviceAny"
+        - $ref: "#/parameters/serviceDefault"
+        - $ref: "#/parameters/request"
+        - $ref: "#/parameters/requestAny"
+        - $ref: "#/parameters/requestDefault"
+        - $ref: "#/parameters/subfield"
+        - $ref: "#/parameters/subfieldAny"
+        - $ref: "#/parameters/subfieldDefault"
+        - $ref: "#/parameters/workspace"
+        - $ref: "#/parameters/workspaceAny"
+        - $ref: "#/parameters/workspaceDefault"
+        - $ref: "#/parameters/layer"
+        - $ref: "#/parameters/layerAny"
+        - $ref: "#/parameters/layerDefault"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Rules"
+
+    post:
+      operationId: postRule
+      tags:
+        - GeoFence Rules
+      summary: Add a new rule
+      consumes:
+        - application/xml
+        - application/json
+      parameters:
+        - name: rule
+          description: The rule to add. `priority` and `access` are mandatory.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Rule"
+      responses:
+        201:
+          description: Created
+          schema:
+            type: string
+            description: The id of the newly created rule.
+          headers:
+            ID:
+              description: The id of the newly created rule.
+              type: string
+
+  /geofence/rules/count:
+    get:
+      operationId: countRules
+      tags:
+        - GeoFence Rules
+      summary: Count rules
+      description: Count all rules, with respect to any added filters.
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - $ref: "#/parameters/userName"
+        - $ref: "#/parameters/userAny"
+        - $ref: "#/parameters/userDefault"
+        - $ref: "#/parameters/roleName"
+        - $ref: "#/parameters/roleAny"
+        - $ref: "#/parameters/roleDefault"
+        - $ref: "#/parameters/instanceId"
+        - $ref: "#/parameters/instanceName"
+        - $ref: "#/parameters/instanceAny"
+        - $ref: "#/parameters/instanceDefault"
+        - $ref: "#/parameters/ipAddress"
+        - $ref: "#/parameters/ipAddressAny"
+        - $ref: "#/parameters/ipAddressDefault"
+        - $ref: "#/parameters/date"
+        - $ref: "#/parameters/dateAny"
+        - $ref: "#/parameters/dateDefault"
+        - $ref: "#/parameters/service"
+        - $ref: "#/parameters/serviceAny"
+        - $ref: "#/parameters/serviceDefault"
+        - $ref: "#/parameters/request"
+        - $ref: "#/parameters/requestAny"
+        - $ref: "#/parameters/requestDefault"
+        - $ref: "#/parameters/subfield"
+        - $ref: "#/parameters/subfieldAny"
+        - $ref: "#/parameters/subfieldDefault"
+        - $ref: "#/parameters/workspace"
+        - $ref: "#/parameters/workspaceAny"
+        - $ref: "#/parameters/workspaceDefault"
+        - $ref: "#/parameters/layer"
+        - $ref: "#/parameters/layerAny"
+        - $ref: "#/parameters/layerDefault"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Rules"
+
+  /geofence/rules/id/{id}:
+    get:
+      operationId: getRule
+      tags:
+        - GeoFence Rules
+      summary: Get a rule
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Rule"
+        404:
+          description: Rule not found
+
+    post:
+      operationId: updateRule
+      tags:
+        - GeoFence Rules
+      summary: Modify a rule
+      description: Unspecified fields remain unchanged.
+      consumes:
+        - application/xml
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+        - name: rule
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Rule"
+      responses:
+        200:
+          description: OK
+        404:
+          description: Rule not found
+
+    delete:
+      operationId: deleteRule
+      tags:
+        - GeoFence Rules
+      summary: Delete a rule
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: OK
+        404:
+          description: Rule not found
+
+  /geofence/adminrules:
+    get:
+      operationId: getAdminRules
+      tags:
+        - GeoFence AdminRules
+      summary: List admin rules
+      description: List all admin rules, with respect to any added filters.
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - $ref: "#/parameters/page"
+        - $ref: "#/parameters/entries"
+        - $ref: "#/parameters/userName"
+        - $ref: "#/parameters/userAny"
+        - $ref: "#/parameters/userDefault"
+        - $ref: "#/parameters/roleName"
+        - $ref: "#/parameters/roleAny"
+        - $ref: "#/parameters/roleDefault"
+        - $ref: "#/parameters/workspace"
+        - $ref: "#/parameters/workspaceAny"
+        - $ref: "#/parameters/workspaceDefault"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/AdminRules"
+
+    post:
+      operationId: postAdminRule
+      tags:
+        - GeoFence AdminRules
+      summary: Add a new admin rule
+      consumes:
+        - application/xml
+        - application/json
+      parameters:
+        - name: adminRule
+          description: The admin rule to add. `priority` and `access` are mandatory.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/AdminRule"
+      responses:
+        201:
+          description: Created
+          schema:
+            type: string
+            description: The id of the newly created admin rule.
+          headers:
+            ID:
+              description: The id of the newly created admin rule.
+              type: string
+
+  /geofence/adminrules/count:
+    get:
+      operationId: countAdminRules
+      tags:
+        - GeoFence AdminRules
+      summary: Count admin rules
+      description: Count all admin rules, with respect to any added filters.
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - $ref: "#/parameters/userName"
+        - $ref: "#/parameters/userAny"
+        - $ref: "#/parameters/userDefault"
+        - $ref: "#/parameters/roleName"
+        - $ref: "#/parameters/roleAny"
+        - $ref: "#/parameters/roleDefault"
+        - $ref: "#/parameters/workspace"
+        - $ref: "#/parameters/workspaceAny"
+        - $ref: "#/parameters/workspaceDefault"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/AdminRules"
+
+  /geofence/adminrules/id/{id}:
+    get:
+      operationId: getAdminRule
+      tags:
+        - GeoFence AdminRules
+      summary: Get an admin rule
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/AdminRule"
+        404:
+          description: Admin rule not found
+
+    post:
+      operationId: updateAdminRule
+      tags:
+        - GeoFence AdminRules
+      summary: Modify an admin rule
+      description: Unspecified fields remain unchanged.
+      consumes:
+        - application/xml
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+        - name: adminRule
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/AdminRule"
+      responses:
+        200:
+          description: OK
+        404:
+          description: Admin rule not found
+
+    delete:
+      operationId: deleteAdminRule
+      tags:
+        - GeoFence AdminRules
+      summary: Delete an admin rule
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: OK
+        404:
+          description: Admin rule not found
+
+  /geofence/batch/exec:
+    post:
+      operationId: execBatch
+      tags:
+        - GeoFence Batch
+      summary: Execute a batch of rule/admin rule operations
+      description: >
+        Runs a list of insert/update/delete operations over rules and/or admin rules in a single
+        transaction: either all operations succeed, or all are rolled back.
+      consumes:
+        - application/xml
+        - application/json
+      parameters:
+        - name: batch
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Batch"
+      responses:
+        200:
+          description: OK
+        400:
+          description: "BadRequest: malformed request body, or duplicate rule/admin rule"
+        404:
+          description: "NotFound: referenced rule or admin rule not found"
+        500:
+          description: "InternalServerError: unexpected error"
+
+parameters:
+  page:
+    name: page
+    in: query
+    required: false
+    type: integer
+    description: Used for paging a list of rules. Specifies the number of the page. Leave out
+      for no paging. If specified, `entries` should also be specified.
+  entries:
+    name: entries
+    in: query
+    required: false
+    type: integer
+    description: Used for paging a list of rules. Specifies the number of entries per page.
+      Leave out for no paging. If specified, `page` should also be specified.
+  userName:
+    name: userName
+    in: query
+    required: false
+    type: string
+    description: Filter rules on username (excludes all other specific usernames).
+  userAny:
+    name: userAny
+    in: query
+    required: false
+    type: boolean
+    description: "**Deprecated.** Use `userDefault` instead."
+  userDefault:
+    name: userDefault
+    in: query
+    required: false
+    type: boolean
+    description: Specify whether rules matching any username are included or not. Wins over
+      `userAny` when both are set.
+  roleName:
+    name: roleName
+    in: query
+    required: false
+    type: string
+    description: Filter rules on rolename (excludes all other specific rolenames).
+  roleAny:
+    name: roleAny
+    in: query
+    required: false
+    type: boolean
+    description: "**Deprecated.** Use `roleDefault` instead."
+  roleDefault:
+    name: roleDefault
+    in: query
+    required: false
+    type: boolean
+    description: Specify whether rules matching any rolename are included or not. Wins over
+      `roleAny` when both are set.
+  instanceId:
+    name: instanceId
+    in: query
+    required: false
+    type: integer
+    description: "**Deprecated.** Use `instanceName` instead."
+  instanceName:
+    name: instanceName
+    in: query
+    required: false
+    type: string
+    description: Filter rules on GeoServer instance name (excludes all other specific
+      instances). Cannot be combined with `instanceId`.
+  instanceAny:
+    name: instanceAny
+    in: query
+    required: false
+    type: boolean
+    description: "**Deprecated.** Use `instanceDefault` instead."
+  instanceDefault:
+    name: instanceDefault
+    in: query
+    required: false
+    type: boolean
+    description: Specify whether rules matching any GeoServer instance are included or not.
+      Wins over `instanceAny` when both are set.
+  ipAddress:
+    name: ipAddress
+    in: query
+    required: false
+    type: string
+    description: Filter rules on IP address range (only select rules with an address range
+      that includes the passed IP address).
+  ipAddressAny:
+    name: ipAddressAny
+    in: query
+    required: false
+    type: boolean
+    description: "**Deprecated.** Use `ipAddressDefault` instead."
+  ipAddressDefault:
+    name: ipAddressDefault
+    in: query
+    required: false
+    type: boolean
+    description: Specify whether rules matching any IP address are included or not. Wins over
+      `ipAddressAny` when both are set.
+  date:
+    name: date
+    in: query
+    required: false
+    type: string
+    description: Filter rules by date. Only returns rules where `date` is between `validAfter`
+      and `validBefore`. Format is `yyyy-MM-dd`.
+  dateAny:
+    name: dateAny
+    in: query
+    required: false
+    type: boolean
+    description: "**Deprecated.** Use `dateDefault` instead."
+  dateDefault:
+    name: dateDefault
+    in: query
+    required: false
+    type: boolean
+    description: Specify whether rules with no date range defined are included or not. Wins
+      over `dateAny` when both are set.
+  service:
+    name: service
+    in: query
+    required: false
+    type: string
+    description: Filter rules on service (excludes all other specific services).
+  serviceAny:
+    name: serviceAny
+    in: query
+    required: false
+    type: boolean
+    description: "**Deprecated.** Use `serviceDefault` instead."
+  serviceDefault:
+    name: serviceDefault
+    in: query
+    required: false
+    type: boolean
+    description: Specify whether rules matching any service are included or not. Wins over
+      `serviceAny` when both are set.
+  request:
+    name: request
+    in: query
+    required: false
+    type: string
+    description: Filter rules on request (excludes all other specific requests).
+  requestAny:
+    name: requestAny
+    in: query
+    required: false
+    type: boolean
+    description: "**Deprecated.** Use `requestDefault` instead."
+  requestDefault:
+    name: requestDefault
+    in: query
+    required: false
+    type: boolean
+    description: Specify whether rules matching any request are included or not. Wins over
+      `requestAny` when both are set.
+  subfield:
+    name: subfield
+    in: query
+    required: false
+    type: string
+    description: Filter rules on subfield (excludes all other specific subfields). At the
+      moment only used to specify WPS processes in WPS calls.
+  subfieldAny:
+    name: subfieldAny
+    in: query
+    required: false
+    type: boolean
+    description: "**Deprecated.** Use `subfieldDefault` instead."
+  subfieldDefault:
+    name: subfieldDefault
+    in: query
+    required: false
+    type: boolean
+    description: Specify whether rules matching any subfield are included or not. Wins over
+      `subfieldAny` when both are set.
+  workspace:
+    name: workspace
+    in: query
+    required: false
+    type: string
+    description: Filter rules on workspace (excludes all other specific workspaces).
+  workspaceAny:
+    name: workspaceAny
+    in: query
+    required: false
+    type: boolean
+    description: "**Deprecated.** Use `workspaceDefault` instead."
+  workspaceDefault:
+    name: workspaceDefault
+    in: query
+    required: false
+    type: boolean
+    description: Specify whether rules matching any workspace are included or not. Wins over
+      `workspaceAny` when both are set.
+  layer:
+    name: layer
+    in: query
+    required: false
+    type: string
+    description: Filter rules on layer (excludes all other specific layers).
+  layerAny:
+    name: layerAny
+    in: query
+    required: false
+    type: boolean
+    description: "**Deprecated.** Use `layerDefault` instead."
+  layerDefault:
+    name: layerDefault
+    in: query
+    required: false
+    type: boolean
+    description: Specify whether rules matching any layer are included or not. Wins over
+      `layerAny` when both are set.
+
+definitions:
+  Rule:
+    type: object
+    description: >
+      A GeoFence data-access rule. A field left out (or, on update, explicitly emptied or set to
+      a single asterisk `*`) means "any value" for that field.
+    required:
+      - priority
+      - access
+    properties:
+      id:
+        type: integer
+        readOnly: true
+      priority:
+        type: integer
+        description: Rule priority.
+      userName:
+        type: string
+        description: The user this rule should be applied to.
+      roleName:
+        type: string
+        description: The role/group this rule should be applied to.
+      addressRange:
+        type: string
+        description: "The range of calling IP addresses this rule should be applied to, in IPv4
+          CIDR notation. Example: `192.168.0.0/16`."
+      validAfter:
+        type: string
+        description: Date after which the rule is applied. Format is `yyyy-MM-dd`, example
+          `2025-02-27`. If `validBefore` is also given, the rule is valid in the date range
+          between the two.
+      validBefore:
+        type: string
+        description: Date before which the rule is applied. See also `validAfter`. Format is
+          `yyyy-MM-dd`, example `2025-02-27`.
+      service:
+        type: string
+        description: The OGC service this rule should be applied to.
+      request:
+        type: string
+        description: The OGC request this rule should be applied to.
+      subfield:
+        type: string
+        description: An additional generic field for filtering rules. At the moment only used
+          to specify WPS processes in WPS calls.
+      workspace:
+        type: string
+        description: The workspace this rule should be applied to.
+      layer:
+        type: string
+        description: The layer this rule should be applied to.
+      access:
+        type: string
+        enum: [ALLOW, DENY, LIMIT]
+        description: The type of access granted. When `LIMIT`, `limits` should be declared.
+      limits:
+        $ref: "#/definitions/RuleLimits"
+      layerDetails:
+        $ref: "#/definitions/LayerDetails"
+
+  RuleLimits:
+    type: object
+    description: Mandatory when `access=LIMIT`, allowed when `access=ALLOW`. Tells how the
+      access should be limited.
+    properties:
+      allowedArea:
+        type: string
+        description: EWKT geometry. Limits the geographic area that will be returned.
+      catalogMode:
+        type: string
+        enum: [HIDE, CHALLENGE, MIXED]
+        description: GeoServer catalog mode to be applied.
+
+  LayerDetails:
+    type: object
+    description: Only allowed when `layer` is specified. Sets further limitations on the data
+      access when the rule is matched.
+    properties:
+      layerType:
+        type: string
+        enum: [VECTOR, RASTER, LAYERGROUP]
+      defaultStyle:
+        type: string
+        description: If not null, forces a different style.
+      cqlFilterRead:
+        type: string
+        description: CQL filter applied to the returned data.
+      cqlFilterWrite:
+        type: string
+        description: CQL filter limiting the features that can be modified.
+      allowedArea:
+        type: string
+        description: EWKT geometry. Limits the geographic area that will be returned.
+      catalogMode:
+        type: string
+        enum: [HIDE, CHALLENGE, MIXED]
+        description: GeoServer catalog mode to be applied.
+      allowedStyle:
+        type: array
+        items:
+          type: string
+      attribute:
+        type: array
+        items:
+          $ref: "#/definitions/RuleAttribute"
+
+  RuleAttribute:
+    type: object
+    description: Sets read/write privileges on a single attribute.
+    properties:
+      name:
+        type: string
+      datatype:
+        type: string
+      accessType:
+        type: string
+        enum: [NONE, READONLY, READWRITE]
+
+  Rules:
+    type: object
+    description: A (possibly filtered) list of rules. The `count` attribute reflects the total
+      number of matching rules, regardless of paging; the `Rule` elements are omitted for a
+      `/rules/count` response.
+    properties:
+      count:
+        type: integer
+      rule:
+        type: array
+        items:
+          $ref: "#/definitions/Rule"
+
+  AdminRule:
+    type: object
+    description: >
+      A GeoFence workspace-admin rule. A field left out (or, on update, explicitly emptied or
+      set to a single asterisk `*`) means "any value" for that field.
+    required:
+      - priority
+      - access
+    properties:
+      id:
+        type: integer
+        readOnly: true
+      priority:
+        type: integer
+        description: Rule priority.
+      userName:
+        type: string
+        description: The user this rule should be applied to.
+      roleName:
+        type: string
+        description: The role/group this rule should be applied to.
+      addressRange:
+        type: string
+        description: "IPv4 CIDR notation, e.g. `127.0.0.1/32`."
+      workspace:
+        type: string
+        description: The workspace this rule should be applied to.
+      access:
+        type: string
+        enum: [ADMIN, USER]
+
+  AdminRules:
+    type: object
+    description: A (possibly filtered) list of admin rules. The `count` attribute reflects the
+      total number of matching admin rules, regardless of paging; the `AdminRule` elements are
+      omitted for an `/adminrules/count` response.
+    properties:
+      count:
+        type: integer
+      adminrule:
+        type: array
+        items:
+          $ref: "#/definitions/AdminRule"
+
+  Batch:
+    type: object
+    description: A list of insert/update/delete operations to run in a single transaction over
+      rules and/or admin rules.
+    required:
+      - operations
+    properties:
+      operations:
+        type: array
+        items:
+          $ref: "#/definitions/BatchOperation"
+
+  BatchOperation:
+    type: object
+    description: >
+      A single batch operation. `id` is required for `update`/`delete`. A `Rule` or `AdminRule`
+      payload is required for `insert`/`update`, matching the declared `service`.
+    required:
+      - service
+      - type
+    properties:
+      service:
+        type: string
+        enum: [rules, adminrules]
+      type:
+        type: string
+        enum: [insert, update, delete]
+      id:
+        type: integer
+      payload:
+        description: A `Rule` object when `service=rules`, an `AdminRule` object when
+          `service=adminrules`. Omitted for `delete`.

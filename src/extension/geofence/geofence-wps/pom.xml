@@ -15,6 +15,18 @@
   <name>GeoFence WPS extension</name>
   <description>GeoFence auth at process level</description>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <!-- Hibernate's HQL parser needs 4.13.x; gs-main's Jiffle dependency needs 4.7.1 and the two
+             can't coexist on one classpath, so this is scoped here rather than the root pom. -->
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr4-runtime</artifactId>
+        <version>4.13.2</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
 
     <dependency>
@@ -38,6 +50,13 @@
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-wps-core</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <!-- conflicts with geofence-persistence's org.ehcache:ehcache:jakarta classifier -->
+        <exclusion>
+          <artifactId>ehcache</artifactId>
+          <groupId>org.ehcache</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- test dependencies -->
@@ -66,6 +85,15 @@
     </dependency>
 
     <dependency>
+      <!-- for GeofenceTestDatabase, the shared Testcontainers bootstrap -->
+      <groupId>org.geofence</groupId>
+      <artifactId>geofence-persistence</artifactId>
+      <version>${gf.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-wps-core</artifactId>
       <version>${project.version}</version>
@@ -74,7 +102,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.geoserver.geofence</groupId>
+      <groupId>org.geofence</groupId>
       <artifactId>geofence-model</artifactId>
       <version>${gf.version}</version>
       <scope>test</scope>

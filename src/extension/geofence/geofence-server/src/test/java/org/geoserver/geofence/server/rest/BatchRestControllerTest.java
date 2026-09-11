@@ -6,26 +6,32 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.geofence.core.model.AdminRule;
+import org.geofence.core.model.Rule;
+import org.geofence.core.model.enums.AdminGrantType;
+import org.geofence.core.model.enums.GrantType;
+import org.geofence.core.services.AdminRuleAdminService;
+import org.geofence.core.services.RuleAdminService;
+import org.geofence.core.services.dto.GrantTypeDTO;
+import org.geofence.core.services.dto.ShortAdminRule;
+import org.geofence.core.services.dto.ShortRule;
+import org.geofence.core.services.exception.BadRequestServiceEx;
+import org.geofence.core.services.exception.NotFoundServiceEx;
 import org.geoserver.geofence.GeofenceBaseTest;
-import org.geoserver.geofence.core.model.AdminRule;
-import org.geoserver.geofence.core.model.Rule;
-import org.geoserver.geofence.core.model.enums.AdminGrantType;
-import org.geoserver.geofence.core.model.enums.GrantType;
+import org.geoserver.geofence.server.GeofenceDatabaseRule;
 import org.geoserver.geofence.server.rest.xml.Batch;
 import org.geoserver.geofence.server.rest.xml.BatchOperation;
 import org.geoserver.geofence.server.rest.xml.JaxbAdminRule;
 import org.geoserver.geofence.server.rest.xml.JaxbRule;
-import org.geoserver.geofence.services.AdminRuleAdminService;
-import org.geoserver.geofence.services.RuleAdminService;
-import org.geoserver.geofence.services.dto.ShortAdminRule;
-import org.geoserver.geofence.services.dto.ShortRule;
-import org.geoserver.geofence.services.exception.BadRequestServiceEx;
-import org.geoserver.geofence.services.exception.NotFoundServiceEx;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 
 public class BatchRestControllerTest extends GeofenceBaseTest {
+
+    @ClassRule
+    public static final GeofenceDatabaseRule database = new GeofenceDatabaseRule();
 
     private BatchRestController controller;
 
@@ -116,7 +122,7 @@ public class BatchRestControllerTest extends GeofenceBaseTest {
 
             // rule was inserted.
             ShortRule inserted = ruleService.getRuleByPriority(99L);
-            assertEquals(GrantType.DENY, inserted.getAccess());
+            assertEquals(GrantTypeDTO.DENY, inserted.getAccess());
             assertEquals("ROLE_ANONYMOUS", inserted.getRoleName());
 
             // clean up.

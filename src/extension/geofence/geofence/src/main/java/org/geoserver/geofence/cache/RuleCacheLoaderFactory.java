@@ -9,10 +9,10 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.geofence.services.RuleReaderService;
-import org.geoserver.geofence.services.dto.AccessInfo;
-import org.geoserver.geofence.services.dto.AuthUser;
-import org.geoserver.geofence.services.dto.RuleFilter;
+import org.geofence.core.services.dto.AccessInfo;
+import org.geofence.core.services.dto.PermsResult;
+import org.geofence.core.services.dto.RuleFilter;
+import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -24,22 +24,22 @@ public class RuleCacheLoaderFactory {
 
     static final Logger LOGGER = Logging.getLogger(RuleCacheLoaderFactory.class);
 
-    private RuleReaderService realRuleReaderService;
+    private final RuleReaderServiceFactory rrsFactory;
 
-    public RuleCacheLoaderFactory(RuleReaderService realRuleReaderService) {
-        this.realRuleReaderService = realRuleReaderService;
+    public RuleCacheLoaderFactory(RuleReaderServiceFactory rrsFactory) {
+        this.rrsFactory = rrsFactory;
     }
 
     public RuleLoader createRuleLoader() {
         return new RuleLoader();
     }
 
-    public AuthLoader createAuthLoader() {
-        return new AuthLoader();
+    public PermLoader createPermLoader() {
+        return new PermLoader();
     }
 
-    public UserLoader createUserLoader() {
-        return new UserLoader();
+    public AuthLoader createAuthLoader() {
+        return new AuthLoader();
     }
 
     class RuleLoader extends CacheLoader<RuleFilter, AccessInfo> {
@@ -51,7 +51,7 @@ public class RuleCacheLoaderFactory {
             if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Loading {0}", filter);
             // the service, when integrated, may modify the filter
             RuleFilter clone = filter.clone();
-            return realRuleReaderService.getAccessInfo(clone);
+            return rrsFactory.getService().getAccessInfo(clone);
         }
 
         @Override
@@ -62,7 +62,7 @@ public class RuleCacheLoaderFactory {
             RuleFilter clone = filter.clone();
 
             // this is a sync implementation
-            AccessInfo ret = realRuleReaderService.getAccessInfo(clone);
+            AccessInfo ret = rrsFactory.getService().getAccessInfo(clone);
             return Futures.immediateFuture(ret);
 
             // next there is an asynchronous implementation, but in tests it seems to hang
@@ -77,6 +77,29 @@ public class RuleCacheLoaderFactory {
         }
     }
 
+    class PermLoader extends CacheLoader<RuleFilter, PermsResult> {
+
+        private PermLoader() {}
+
+        @Override
+        public PermsResult load(RuleFilter filter) throws Exception {
+            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Loading perms for {0}", filter);
+            RuleFilter clone = filter.clone();
+            return rrsFactory.getService().getPermissionFilter(clone);
+        }
+
+        @Override
+        public ListenableFuture<PermsResult> reload(final RuleFilter filter, PermsResult perms) throws Exception {
+            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Reloading perms for {0}", filter);
+
+            RuleFilter clone = filter.clone();
+
+            // this is a sync implementation
+            PermsResult ret = rrsFactory.getService().getPermissionFilter(clone);
+            return Futures.immediateFuture(ret);
+        }
+    }
+
     class AuthLoader extends CacheLoader<RuleFilter, AccessInfo> {
 
         private AuthLoader() {}
@@ -86,7 +109,7 @@ public class RuleCacheLoaderFactory {
             if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Loading {0}", filter);
             // the service, when integrated, may modify the filter
             RuleFilter clone = filter.clone();
-            return realRuleReaderService.getAdminAuthorization(clone);
+            return rrsFactory.getService().getAdminAuthorization(clone);
         }
 
         @Override
@@ -97,105 +120,8 @@ public class RuleCacheLoaderFactory {
             RuleFilter clone = filter.clone();
 
             // this is a sync implementation
-            AccessInfo ret = realRuleReaderService.getAdminAuthorization(clone);
+            AccessInfo ret = rrsFactory.getService().getAdminAuthorization(clone);
             return Futures.immediateFuture(ret);
-        }
-    }
-
-    class UserLoader extends CacheLoader<NamePw, AuthUser> {
-
-        private UserLoader() {}
-
-        @Override
-        public AuthUser load(NamePw user) throws NoAuthException {
-            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Loading user '" + user.getName() + "'");
-            AuthUser auth = realRuleReaderService.authorize(user.getName(), user.getPw());
-            if (auth == null) throw new NoAuthException("Can't auth user [" + user.getName() + "]");
-            return auth;
-        }
-
-        @Override
-        public ListenableFuture<AuthUser> reload(final NamePw user, AuthUser authUser) throws NoAuthException {
-            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Reloading user '" + user.getName() + "'");
-
-            // this is a sync implementation
-            AuthUser auth = realRuleReaderService.authorize(user.getName(), user.getPw());
-            if (auth == null) throw new NoAuthException("Can't auth user [" + user.getName() + "]");
-            return Futures.immediateFuture(auth);
-
-            // todo: we may want a asynchronous implementation
-        }
-    }
-
-    public static class NamePw {
-        private String name;
-
-        private String pw;
-
-        public NamePw() {}
-
-        public NamePw(String name, String pw) {
-            this.name = name;
-            this.pw = pw;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getPw() {
-            return pw;
-        }
-
-        public void setPw(String pw) {
-            this.pw = pw;
-        }
-
-        @Override
-        public int hashCode() {
-            int hash = 7;
-            hash = 89 * hash + (this.name != null ? this.name.hashCode() : 0);
-            hash = 89 * hash + (this.pw != null ? this.pw.hashCode() : 0);
-            return hash;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-            final NamePw other = (NamePw) obj;
-            if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
-                return false;
-            }
-            if ((this.pw == null) ? (other.pw != null) : !this.pw.equals(other.pw)) {
-                return false;
-            }
-            return true;
-        }
-    }
-
-    static class NoAuthException extends Exception {
-
-        public NoAuthException() {}
-
-        public NoAuthException(String message) {
-            super(message);
-        }
-
-        public NoAuthException(String message, Throwable cause) {
-            super(message, cause);
-        }
-
-        public NoAuthException(Throwable cause) {
-            super(cause);
         }
     }
 }

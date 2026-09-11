@@ -1,15 +1,19 @@
 # GeoFence Admin GUI
 
-The GeoFence Admin Page is a component of the GeoServer web interface. You can access it from the GeoServer web interface by clicking the **GeoFence** link, found on the left side of the screen after logging in.
+The GeoFence Admin Page is a component of the GeoServer web interface. You can access it from the GeoServer web interface by clicking the **GeoFence** link, found under the "security" entry in the top menu after logging in.
 
-![](images/configuration.png)
+![](images/mainpage.png)
 
 ## General Settings
 
 Configure the following settings here:
 
-- GeoServer instance name: the name under which this GeoServer is known by the GeoFence server. This is useful for when you use an external GeoFence server with multiple GeoServer servers.
-- GeoServer services URL: this is how GeoServer knows how to connect to the external GeoFence server. When using an internal GeoFence server, this is not configurable. For example "http://localhost:9191/geofence/remoting/RuleReader" for an external GeoFence server on localhost.
+- GeoServer instance name: the name under which this GeoServer is known by the GeoFence server. This is useful when you use an external GeoFence server with multiple GeoServer servers.
+- Active engine (read-only field): the current engine GeoServer is talking to. Using the `geofence` plugin, it's "*Remote standalone GeoFence server (REST)*". 
+- GeoServer services URL: this is how GeoServer knows how to connect to the external GeoFence server. When using an internal GeoFence server, this is not configurable. For example "http://localhost:9191/geofence/rest" for an external GeoFence server on localhost.
+
+The **Test connection** button will check whether GeoServer is able to can communicate to GeoFence using the current URL.
+
 
 ## Options
 
@@ -45,64 +49,3 @@ Configure the following settings here:
 
 Collected data about the cache can be retrieved here. Per cache (rules, admin rules and users) we retrieve the cache size, hits, misses, load successes, load failures, load times and evictions. The cache can be manually invalidated (cleared).
 
-## Basic GeoServer configuration
-
-- Login with the default administrative credentials `admin / geoserver` (or whatever you have configured before).
-
-![](images/basic_001.png)
-
-- In the security panel you'll find the GeoFence link to the GeoFence security admin page
-
-![](images/basic_002.png)
-
-- Open the GeoFence admin page; you'll get to this page:
-
-  You can notice here the information that allow the GeoFence probe inside GeoServer to communicate with the GeoFence engine:
-
-    - the URL that the probe shall use to communicate with GeoFence;
-    - the name (default is `default-gs`) this instance will use to identify itself to GeoFence. This instance name should be equal to the one we set into GeoFence.
-
-- Testing connection to GeoFence.
-
-  We already performed a connection test from GeoFence to GeoServer. Using the button **Test connection** we can also test that GeoServer can communicate to GeoFence. If everything is ok, you'll get this message:
-
-  ![](images/basic_003.png)
-
-- Open the **Authentication** page under the **Security** settings:
-
-![](images/basic_004.png)
-
-- Add the GeoFence authenticator and **put it as the first in the list** otherwise you will not be able to login as `admin/admin`:
-
-![](images/basic_005.png)
-
-- Now that we added GeoFence as authentication provider, we'll be able to log into GeoServer using the credentials we added in GeoFence (user `admin` and user `tiger`). Try and log in using user `tiger`.
-
-## Testing authorization
-
-- Logging into GeoServer as admin you will be able to see all the defined layers:
-
-![](images/basic_006.png)
-
-- Logging into GeoServer as a non-admin user, the defined rules will be examined; since we defined no rules yet, the default behaviour is to deny access to all resources:
-
-![](images/basic_007.png)
-
-- Get back to GeoFence, and add a rule which allows all layers in workspace tiger for user `tiger`; create a rule defining:
-
-    - user `tiger`
-    - instance `default-gs`
-    - workspace `tiger` (you will get a dropdown menu containing all the workspaces available in the selected instance)
-    - grant type: `allow` You'll get a line like this one:
-
-  ![](images/basic_008.png)
-
-- Verify the new authorizations.
-
-  Since the probe caches the GeoFence responses, you may need to login again as administrator (or you may keep an admin session open in another browser) and clear the probe cache. You can do it by pressing the "Invalidate" button in the bottom of the GeoFence admin page:
-
-  ![](images/basic_009.png)
-
-- Login again in GeoServer as user tiger and you will see in **Browse Layers** all the layers in the `tiger` workspace:
-
-![](images/basic_010.png)

@@ -145,7 +145,13 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature> exte
         return collection;
     }
 
-    private static Geometry reprojectToCollectionCRS(Geometry geometry, CoordinateReferenceSystem targetCRS)
+    /**
+     * The geometry in the target CRS, unchanged when it declares no SRID, the access limits geometries carrying no CRS
+     * of their own then being read as already in the data one.
+     *
+     * @throws IOException if the transform cannot be built, failing closed rather than comparing raw ordinates
+     */
+    static Geometry reprojectToCollectionCRS(Geometry geometry, CoordinateReferenceSystem targetCRS)
             throws IOException {
         if (geometry == null || targetCRS == null || geometry.getSRID() == 0) return geometry;
         try {
@@ -156,7 +162,7 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature> exte
             }
         } catch (FactoryException | TransformException e) {
             // fail closed to avoid exposing data
-            throw new IOException("Could not reproject clip geometry to collection CRS", e);
+            throw new IOException("Could not reproject the access limits geometry to the data CRS", e);
         }
         return geometry;
     }

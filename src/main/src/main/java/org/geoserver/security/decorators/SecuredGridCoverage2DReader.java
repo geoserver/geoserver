@@ -85,10 +85,25 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
 
     @Override
     public GridCoverage2D read(GeneralParameterValue... parameters) throws IllegalArgumentException, IOException {
-        return SecuredGridCoverage2DReader.read(delegate, policy, parameters);
+        return SecuredGridCoverage2DReader.read(delegate, policy, null, parameters);
     }
 
-    static GridCoverage2D read(GridCoverage2DReader delegate, WrapperPolicy policy, GeneralParameterValue... parameters)
+    @Override
+    public GridCoverage2D read(String coverageName, GeneralParameterValue... parameters)
+            throws IllegalArgumentException, IOException {
+        return SecuredGridCoverage2DReader.read(delegate, policy, coverageName, parameters);
+    }
+
+    /**
+     * @param coverageName the coverage to read, {@code null} to read the only/default one
+     * @throws IOException if a read filter applies but the format has no FILTER read parameter to carry it, the read
+     *     failing closed rather than serving the unrestricted coverage
+     */
+    static GridCoverage2D read(
+            GridCoverage2DReader delegate,
+            WrapperPolicy policy,
+            String coverageName,
+            GeneralParameterValue... parameters)
             throws IllegalArgumentException, IOException {
         // Package private static method to share reading code with Structured reader
         MultiPolygon rasterFilter = null;
@@ -102,7 +117,8 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
             // update the read params
             final GeneralParameterValue[] limitParams = limits.getParams();
             if (parameters == null || parameters.length == 0) { // beware a no-args call means an empty array
-                parameters = limitParams;
+                // limits without params leave nothing to read with, and the filter scan below would walk a null array
+                parameters = limitParams != null ? limitParams : new GeneralParameterValue[0];
             } else if (limitParams != null) {
                 // scan the input params, add and overwrite with the limits params as needed
                 List<GeneralParameterValue> params = new ArrayList<>(Arrays.asList(parameters));
@@ -129,29 +145,31 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
                 List<GeneralParameterDescriptor> descriptors =
                         readParameters.getDescriptor().descriptors();
 
-                // scan all the params looking for the one we want to add
+                // the caller owns the array and the parameters in it, so the restricted filter goes into a copy:
+                // writing it back would leave it there and AND it again on the next read with the same objects
+                parameters = parameters.clone();
                 boolean replacedOriginalFilter = false;
-                for (GeneralParameterValue pv : parameters) {
-                    String pdCode = pv.getDescriptor().getName().getCode();
+                for (int i = 0; i < parameters.length; i++) {
+                    String pdCode = parameters[i].getDescriptor().getName().getCode();
                     if ("FILTER".equals(pdCode) || "Filter".equals(pdCode)) {
                         replacedOriginalFilter = true;
-                        ParameterValue pvalue = (ParameterValue) pv;
-                        Filter originalFilter = (Filter) pvalue.getValue();
-                        if (originalFilter == null || Filter.INCLUDE.equals(originalFilter)) {
-                            pvalue.setValue(readFilter);
-                        } else {
-                            Filter combined = Predicates.and(originalFilter, readFilter);
-                            pvalue.setValue(combined);
-                        }
+                        parameters[i] = restricted((ParameterValue) parameters[i], readFilter);
                     }
                 }
                 if (!replacedOriginalFilter) {
+                    // mergeParameter is a no-op when the format declares no such parameter, and the whole coverage
+                    // would then be served: fail rather than hand out data the restrictions meant to hide
+                    if (!supportsFilterParameter(descriptors)) {
+                        throw new IOException("Cannot apply the read restrictions " + readFilter + " to the data, "
+                                + "format " + format.getName() + " has no FILTER read parameter to pass them through");
+                    }
                     parameters = CoverageUtils.mergeParameter(descriptors, parameters, readFilter, "FILTER", "Filter");
                 }
             }
         }
 
-        GridCoverage2D grid = delegate.read(parameters);
+        GridCoverage2D grid =
+                coverageName == null ? delegate.read(parameters) : delegate.read(coverageName, parameters);
 
         // crop if necessary
         if (rasterFilter != null && grid != null) {
@@ -193,6 +211,24 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
             }
         }
         return grid;
+    }
+
+    /** A copy of the FILTER read parameter with the security read filter ANDed into the caller's own filter. */
+    private static ParameterValue restricted(ParameterValue parameter, Filter readFilter) {
+        Filter originalFilter = (Filter) parameter.getValue();
+        ParameterValue copy = parameter.getDescriptor().createValue();
+        copy.setValue(
+                originalFilter == null || Filter.INCLUDE.equals(originalFilter)
+                        ? readFilter
+                        : Predicates.and(originalFilter, readFilter));
+        return copy;
+    }
+
+    /** True when the format declares the read parameter the security read filter is passed through. */
+    private static boolean supportsFilterParameter(List<GeneralParameterDescriptor> descriptors) {
+        return descriptors.stream()
+                .map(descriptor -> descriptor.getName().getCode())
+                .anyMatch(code -> "FILTER".equals(code) || "Filter".equals(code));
     }
 
     private static RequestedMapArea getRequestedMapArea() {

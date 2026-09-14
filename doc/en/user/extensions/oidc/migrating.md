@@ -17,6 +17,8 @@ Before opening the data directory with GeoServer 3.x, make sure you have a worki
 
 With a password login in place, a disabled OAuth filter or role service becomes a recoverable migration step rather than a lockout: sign in with the password account, then follow the [migration procedure](#migration-procedure) to reconfigure the new connector.
 
+The built-in `root` account is never assertable by an identity provider, so it stays a password-only recovery login whatever the connector is configured to do. The built-in `admin` account is assertable by default --- see [Built-in administrator accounts](configuring.md#oidc_admin_accounts) if you would rather the IDP could not claim it.
+
 ## Reusing a GeoServer 2.x data directory
 
 GeoServer 3.x **does not fail to start** when it finds security filters or role services created by a removed or uninstalled plugin. Instead it degrades gracefully:

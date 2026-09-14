@@ -19,6 +19,11 @@ The `oidc` module allows for providing user roles with the standard GeoServer ro
 | Microsoft Graph | [Microsoft Graph](https://learn.microsoft.com/en-us/graph/overview) is a Microsoft product for use with their cloud IDP. Only use this if you are using a Microsoft product like Microsoft Entra ID (formerly Azure AD). |
 | Keycloak Admin API | Server-side fetch of the logged-in user's role assignments via Keycloak's [Admin REST API](https://www.keycloak.org/docs-api/latest/rest-api/index.html). Use this when you need to surface roles assigned to the user **through groups** (not just direct realm-role assignments) or when composite-role expansion needs to happen server-side. Only valid against a Keycloak IDP. See [Configuring with Keycloak](oauth2/keycloak.md#oidc_keycloak_admin_api) for the prerequisite Keycloak-side setup. |
 
+!!! note
+    Whatever role source you pick, the built-in `root` account is never granted roles from an identity provider,
+    and the built-in `admin` account can be put in the same position with a single setting. See
+    [Built-in administrator accounts](configuring.md#oidc_admin_accounts).
+
 ## Role Configuration Overview
 
 1.  Choose a role source - typically `ID Token`, but can also be `Access Token` or `UserInfo`.

@@ -55,48 +55,6 @@ public class KeyCloakExtendedIntegrationTest extends KeyCloakIntegrationTestSupp
         return "VERBOSE_LOGGING";
     }
 
-    // ==================== Token Acquisition Helper ====================
-
-    /**
-     * Get an access token from Keycloak using the Resource Owner Password Credentials Grant. This is useful for testing
-     * bearer token authentication without going through the browser flow.
-     *
-     * @param username the username
-     * @param password the password
-     * @return JSON response containing access_token, refresh_token, id_token, etc.
-     */
-    protected JSONObject getTokenFromKeycloak(String username, String password) throws Exception {
-        String tokenUrl = authServerUrl + "/realms/gs-realm/protocol/openid-connect/token";
-
-        URL url = new URL(tokenUrl);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("POST");
-        connection.setDoOutput(true);
-        connection.setConnectTimeout(10_000);
-        connection.setReadTimeout(10_000);
-        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-        String body = "grant_type=password"
-                + "&client_id=" + oidcClient
-                + "&client_secret=" + oidcClientSecret
-                + "&username=" + username
-                + "&password=" + password
-                + "&scope=openid profile email";
-
-        try (OutputStream os = connection.getOutputStream()) {
-            os.write(body.getBytes(StandardCharsets.UTF_8));
-        }
-
-        String response;
-        try (InputStream is = connection.getInputStream()) {
-            response = IOUtils.toString(is, StandardCharsets.UTF_8);
-        } finally {
-            connection.disconnect();
-        }
-
-        return JSONObject.fromObject(response);
-    }
-
     // ==================== Token Introspection Tests ====================
 
     /** Test token introspection with a valid access token from Keycloak. */

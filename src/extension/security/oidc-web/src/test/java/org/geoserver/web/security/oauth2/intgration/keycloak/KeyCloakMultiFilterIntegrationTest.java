@@ -10,8 +10,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import jakarta.servlet.ServletRequestEvent;
-import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -20,9 +18,7 @@ import java.util.logging.Logger;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.net.URIBuilder;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityFilterChain;
-import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.RequestFilterChain;
 import org.geoserver.security.config.SecurityManagerConfig;
@@ -34,10 +30,8 @@ import org.geoserver.web.security.oauth2.login.OAuth2LoginAuthProviderPanel;
 import org.geotools.util.logging.Logging;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.web.context.request.RequestContextListener;
 
 /**
  * Verifies that two GeoServer OAuth2/OIDC filter instances backed by the same Keycloak realm produce two
@@ -297,27 +291,5 @@ public class KeyCloakMultiFilterIntegrationTest extends KeyCloakIntegrationTestS
                         || location.endsWith("/web")
                         || location.contains("/web/")
                         || location.contains("/web?"));
-    }
-
-    /**
-     * Execute a web request through the GeoServer security filter chain (mirrors
-     * {@code KeyCloakIntegrationTest.executeOnSecurityFilters}; copied locally rather than refactoring the existing
-     * helper into a base class so this test stays self-contained).
-     */
-    private MockHttpServletResponse executeOnSecurityFilters(MockHttpServletRequest request)
-            throws IOException, jakarta.servlet.ServletException {
-        RequestContextListener listener = new RequestContextListener();
-        ServletRequestEvent event = new ServletRequestEvent(request.getServletContext(), request);
-        listener.requestInitialized(event);
-        try {
-            MockFilterChain chain = new MockFilterChain();
-            MockHttpServletResponse response = new MockHttpServletResponse();
-            GeoServerSecurityFilterChainProxy filterChainProxy =
-                    GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class);
-            filterChainProxy.doFilter(request, response, chain);
-            return response;
-        } finally {
-            listener.requestDestroyed(event);
-        }
     }
 }

@@ -2669,14 +2669,12 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     }
 
     /**
-     * Checks if the current build is running as a Github action, using the <code>GITHUB_ACTIONS</code> environment
-     * variable. See the <a
+     * Checks if the current build is running as a Github action. The <code>GITHUB_ACTIONS</code> value is looked up as
+     * a system property first, then as an environment variable, which is how Github sets it. See the <a
      * href="https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables">
      * default variables available in Github</a> too.
-     *
-     * @return
      */
     public static final boolean isGitHubAction() {
-        return Boolean.getBoolean("GITHUB_ACTIONS");
+        return Boolean.parseBoolean(GeoServerExtensions.getProperty("GITHUB_ACTIONS"));
     }
 }

@@ -4,6 +4,14 @@ Keycloak
 These are the keycloak configuration files.
 
 
+Hand-edited entries
+-------------------
+
+`gs-realm-realm.json` carries a `root` user that was added by hand rather than exported, with a plain-text
+credential (`root`/`root`). It exists so `KeyCloakAdminPrincipalIntegrationTest` can prove that a provider-asserted
+`root` is refused GeoServer roles. It has the same `geoserverAdmin` client role as `admin`, so that test fails loudly
+if the guard ever stops firing. If you regenerate the realm by exporting from a container, add the user back.
+
 Create New Realm Export Files
 -----------------------------
 

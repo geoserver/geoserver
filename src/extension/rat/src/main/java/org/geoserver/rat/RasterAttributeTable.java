@@ -20,6 +20,8 @@ import static it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand.FieldUsage.Re
 import static it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand.FieldUsage.RedMax;
 import static it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand.FieldUsage.RedMin;
 
+import it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand.FieldDefn;
+import it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand.FieldType;
 import it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand.FieldUsage;
 import it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand.GDALRasterAttributeTable;
 import it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand.Row;
@@ -65,7 +67,7 @@ public abstract class RasterAttributeTable {
         this.rat = rat;
         this.bandIdx = bandIdx;
         this.classifications = rat.getFieldDefn().stream()
-                .filter(fd -> fd.getUsage() == Name || fd.getUsage() == Generic)
+                .filter(RasterAttributeTable::isClassification)
                 .collect(Collectors.toMap(fd -> fd.getName(), fd -> fd.getIndex()));
         this.minField = rat.getFieldDefn().stream()
                 .filter(fd -> fd.getUsage() == MinMax || fd.getUsage() == Min)
@@ -81,6 +83,11 @@ public abstract class RasterAttributeTable {
         // TODO: make null safe?
         Collections.sort(rows, (r1, r2) -> Double.valueOf(r1.getF().get(minField))
                 .compareTo(Double.valueOf(r2.getF().get(minField))));
+    }
+
+    /** Checks if the field can be used as a classification. Geometries are not used for classification. */
+    static boolean isClassification(FieldDefn field) {
+        return (field.getUsage() == Name || field.getUsage() == Generic) && field.getType() != FieldType.WKBGeometry;
     }
 
     protected int getClassificationIndex(String classification) {

@@ -10,6 +10,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import io.tileverse.geoserver.web.storage.Select2ChoiceParamPanel;
+import io.tileverse.geoserver.web.storage.StorageParamsPanel;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -67,9 +69,8 @@ public class PMTilesDataStoreEditPanelTest extends GeoServerWicketTestSupport {
 
         assertVisibility(panels, "namespace", true);
         assertVisibility(panels, "pmtiles", true);
-        assertVisibility(panels, PROVIDER, true);
-        assertVisibility(panels, CACHING_ENABLED, false);
-        PROVIDER_REPRESENTATIVE_PARAMS.forEach(param -> assertVisibility(panels, param, false));
+        assertStorageVisibility(CACHING_ENABLED, false);
+        PROVIDER_REPRESENTATIVE_PARAMS.forEach(param -> assertStorageVisibility(param, false));
     }
 
     @Test
@@ -84,13 +85,12 @@ public class PMTilesDataStoreEditPanelTest extends GeoServerWicketTestSupport {
             DataStoreInfo store = addStore("pmtiles-" + provider, Map.of(PROVIDER, provider));
             login();
             tester.startPage(new DataAccessEditPage(store.getId()));
-            Map<String, Component> panels = paramPanelsByName();
 
             boolean cacheable = !"file".equals(provider);
-            assertVisibility(panels, CACHING_ENABLED, cacheable);
+            assertStorageVisibility(CACHING_ENABLED, cacheable);
             for (String param : PROVIDER_REPRESENTATIVE_PARAMS) {
                 boolean expected = param.equals(representativeParam.get(provider));
-                assertVisibility(panels, param, expected);
+                assertStorageVisibility(param, expected);
             }
         }
     }
@@ -113,11 +113,24 @@ public class PMTilesDataStoreEditPanelTest extends GeoServerWicketTestSupport {
         assertEquals("s3", params.get(PROVIDER));
         assertEquals("us-west-2", params.get(S3_REGION));
 
-        Map<String, Component> panels = paramPanelsByName();
-        ParamPanel<?> regionPanel = (ParamPanel<?>) panels.get(S3_REGION);
+        ParamPanel<?> regionPanel = (ParamPanel<?>) storageSection().fieldFor(S3_REGION);
         assertEquals("us-west-2", regionPanel.getFormComponent().getDefaultModelObject());
-        assertVisibility(panels, S3_REGION, true);
-        assertVisibility(panels, AZURE_ENDPOINT, false);
+        assertStorageVisibility(S3_REGION, true);
+        assertStorageVisibility(AZURE_ENDPOINT, false);
+    }
+
+    /** The group headers come from the storage-web bundle and the widgets from its factory, not from this module. */
+    @Test
+    public void storageSectionUsesTheSharedLabelsAndWidgets() {
+        DataStoreInfo store = addStore("pmtiles-labels", Map.of(PROVIDER, "s3"));
+        login();
+        tester.startPage(new DataAccessEditPage(store.getId()));
+
+        assertTrue(
+                "missing the S3 group header", tester.getLastResponseAsString().contains("AWS S3 parameters"));
+        assertTrue(
+                "the region is not a searchable dropdown",
+                storageSection().fieldFor(S3_REGION) instanceof Select2ChoiceParamPanel);
     }
 
     @Test
@@ -153,21 +166,19 @@ public class PMTilesDataStoreEditPanelTest extends GeoServerWicketTestSupport {
         startNewPage();
 
         selectProvider("s3");
-        Map<String, Component> panels = paramPanelsByName();
-        assertVisibility(panels, S3_REGION, true);
-        assertVisibility(panels, CACHING_ENABLED, true);
-        assertVisibility(panels, AZURE_ENDPOINT, false);
+        assertStorageVisibility(S3_REGION, true);
+        assertStorageVisibility(CACHING_ENABLED, true);
+        assertStorageVisibility(AZURE_ENDPOINT, false);
 
         selectProvider("file");
-        panels = paramPanelsByName();
-        assertVisibility(panels, S3_REGION, false);
-        assertVisibility(panels, CACHING_ENABLED, false);
+        assertStorageVisibility(S3_REGION, false);
+        assertStorageVisibility(CACHING_ENABLED, false);
     }
 
     /**
-     * URI-typed params like storage.s3.endpoint go through GeoServer's data-directory Wicket converter, which turns
+     * URI-typed params like the PMTiles location go through GeoServer's data-directory Wicket converter, which turns
      * anything that isn't a data-directory file into null. The panel keeps them String-typed; this guards against the
-     * endpoint silently vanishing on save.
+     * location and the endpoint silently vanishing on save.
      */
     @Test
     public void savePreservesUriTypedParams() {
@@ -176,22 +187,24 @@ public class PMTilesDataStoreEditPanelTest extends GeoServerWicketTestSupport {
 
         FormTester form = tester.newFormTester("dataStoreForm", false);
         form.setValue("dataStoreNamePanel:border:border_body:paramValue", "s3-endpoint-store");
-        setParam(form, "pmtiles", "s3://shortbread/europe.pmtiles");
-        setParam(form, S3_ENDPOINT, "http://localhost:1");
-        setParam(form, "storage.s3.aws-access-key-id", "demo");
-        setParam(form, "storage.s3.aws-secret-access-key", "demo");
+        setParam(form, paramPanelsByName().get("pmtiles"), "s3://shortbread/europe.pmtiles");
+        setParam(form, storageSection().fieldFor(S3_ENDPOINT), "http://localhost:1");
+        setParam(form, storageSection().fieldFor("storage.s3.aws-access-key-id"), "demo");
+        setParam(form, storageSection().fieldFor("storage.s3.aws-secret-access-key"), "demo");
 
         tester.executeAjaxEvent("dataStoreForm:save", "click");
 
         Form<?> dataStoreForm = (Form<?>) tester.getComponentFromLastRenderedPage("dataStoreForm");
         DataStoreInfo info = (DataStoreInfo) dataStoreForm.getModelObject();
         assertEquals(
+                "s3://shortbread/europe.pmtiles",
+                String.valueOf(info.getConnectionParameters().get("pmtiles")));
+        assertEquals(
                 "http://localhost:1",
                 String.valueOf(info.getConnectionParameters().get(S3_ENDPOINT)));
     }
 
-    private void setParam(FormTester form, String paramName, String value) {
-        Component panel = paramPanelsByName().get(paramName);
+    private void setParam(FormTester form, Component panel, String value) {
         FormComponent<?> formComponent = ((ParamPanel<?>) panel).getFormComponent();
         String relativePath = formComponent.getPageRelativePath().substring("dataStoreForm:".length());
         form.setValue(relativePath, value);
@@ -227,15 +240,31 @@ public class PMTilesDataStoreEditPanelTest extends GeoServerWicketTestSupport {
         return panels;
     }
 
+    /** The shared storage section, hosted by the row of the first {@code storage.*} parameter. */
+    private StorageParamsPanel storageSection() {
+        MarkupContainer paramsList = (MarkupContainer) tester.getComponentFromLastRenderedPage(PARAMS_PATH);
+        StorageParamsPanel section = paramsList.visitChildren(
+                StorageParamsPanel.class, (panel, visit) -> visit.stop((StorageParamsPanel) panel));
+        assertNotNull("no storage section on the page", section);
+        return section;
+    }
+
     private void assertVisibility(Map<String, Component> panels, String paramName, boolean expectedVisible) {
         Component panel = panels.get(paramName);
         assertNotNull("no panel for param " + paramName, panel);
         assertEquals("visibility of " + paramName, expectedVisible, panel.isVisible());
     }
 
+    private void assertStorageVisibility(String paramName, boolean expectedVisible) {
+        Component row = storageSection().rowFor(paramName);
+        assertNotNull("no row for param " + paramName, row);
+        assertEquals("visibility of " + paramName, expectedVisible, row.isVisible());
+    }
+
     private void selectProvider(String providerId) {
-        Component providerPanel = paramPanelsByName().get(PROVIDER);
-        RadioGroup<?> group = (RadioGroup<?>) providerPanel.get("group");
+        RadioGroup<?> group = storageSection()
+                .visitChildren(RadioGroup.class, (radioGroup, visit) -> visit.stop((RadioGroup<?>) radioGroup));
+        assertNotNull("no provider selector on the page", group);
 
         List<Radio<?>> radios = new ArrayList<>();
         group.visitChildren(Radio.class, (radio, visit) -> radios.add((Radio<?>) radio));

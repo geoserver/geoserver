@@ -14,7 +14,6 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.MockTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.resource.Resource;
@@ -27,18 +26,24 @@ import org.junit.Test;
 public class RasterAttributeTableConfigTest extends GeoServerWicketTestSupport {
 
     QName RAT = new QName(MockTestData.CITE_URI, "rat", MockTestData.CITE_PREFIX);
+    QName GEOMETRY_ONLY = new QName(MockTestData.CITE_URI, "geomonly", MockTestData.CITE_PREFIX);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
         testData.addRasterLayer(RAT, "rat.tiff", "tiff", null, getClass(), getCatalog());
-        GeoServerDataDirectory dd = getDataDirectory();
-        Resource aux = dd.get("rat", "rat.tiff.aux.xml");
-        try (InputStream is = getClass().getResourceAsStream("rat.tiff.aux.xml");
+        copySidecar("rat", "rat.tiff.aux.xml");
+        testData.addRasterLayer(GEOMETRY_ONLY, "geomonly.tiff", "tiff", null, getClass(), getCatalog());
+        copySidecar("geomonly", "geomonly.tiff.aux.xml");
+    }
+
+    /** Copies a sidecar next to the coverage, the readers pick it up from there. */
+    private void copySidecar(String store, String name) throws Exception {
+        Resource aux = getDataDirectory().get(store, name);
+        try (InputStream is = getClass().getResourceAsStream(name);
                 OutputStream os = aux.out()) {
             IOUtils.copy(is, os);
-            os.close();
         }
     }
 
@@ -83,5 +88,17 @@ public class RasterAttributeTableConfigTest extends GeoServerWicketTestSupport {
         // actual style contents checked elsewhere
         StyleInfo style = getCatalog().getStyleByName(styleName);
         assertNotNull(style);
+    }
+
+    @Test
+    public void testGeometryOnlyTableHidesPanel() {
+        // the only generic field is a geometry, so there is nothing to classify on and no toolbar
+        FormTestPage page = new FormTestPage((ComponentBuilder) id -> {
+            LayerInfo layer = getCatalog().getLayerByName(getLayerId(GEOMETRY_ONLY));
+            return new RasterAttributeTableConfig(id, new Model<>(layer));
+        });
+        tester.startPage(page);
+        tester.assertRenderedPage(FormTestPage.class);
+        tester.assertInvisible(FormTestPage.FORM + ":" + FormTestPage.PANEL);
     }
 }

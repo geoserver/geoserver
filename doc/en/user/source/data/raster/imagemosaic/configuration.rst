@@ -274,6 +274,12 @@ In addition to the required envelope and location attributes, the schema for the
    * - SkipExternalOverviews
      - Optional
      - Boolean value to specify whether to skip checks for external overviews. Default is ``false``. When enabled, the ImageMosaic will not look for external overview files.
+   * - CollectAttributeTables
+     - Optional
+     - Boolean value to enable collection of the :ref:`raster attribute tables <community_rat>` of the granules into a single table for the mosaic. Default is ``false``. The granule tables must agree: rows sharing the same key must carry the same values, or the collection stops with an error.
+   * - AttributeTableGeometries
+     - Optional
+     - How a geometry column of the attribute table is handled when the granules disagree on its value, which happens when the source clips the geometry to each granule. ``off``, the default, leaves the cell empty, ``merge`` unions the granule geometries, ``collect`` compares the column like any other one, so disagreeing granules stop the collection. Only read when ``CollectAttributeTables`` is ``true``. ``merge`` is not the default because unioning extents that follow the data coverage can build very large geometries, which can trigger an OOM or a very long harvest, when dealing with many granules.
 
 .. note:: ImageMosaic also supports the ``-Dit.geosolutions.skip.external.files.lookup`` system property (default: false). This property is used as a fallback only when the ``SkipExternalOverviews`` setting is not specified in the mosaic configuration.
 

@@ -15,11 +15,17 @@ allows to generate styles based on the table contents:
 
 * The :guilabel:`Band` dropdown allows to select a raster band.
 * The :guilabel:`Classification` dropdown allows to select a column to use for classification.
+  Geometry columns are not listed, as each row holds a different geometry, so it groups nothing.
 * The :guilabel:`Style name` controls the name of the style to be generated. It's automatically filled
   with a naming convention of ``<layer>_b<band>_<classification>``, but can be customized.
 * The :guilabel:`Create style` button generates the style based on the chosen classification, eventually using colors if available in the table, otherwise generating random colors. The generated style will also be included among the "alternate styles" of the layer.
 
 The generated style will match all the values in the raster attribute table, and ensure the chosen classification column is used for both styling, legend generation, and ``GetFeatureInfo`` output.
+
+In the ``GetFeatureInfo`` output the table columns keep their type: a number stays a number, a boolean
+stays a boolean, and a date and time column is reported as a date, converted to UTC. An empty cell is
+reported as no value at all, unless the column holds text, where it stays an empty text. Geometry
+columns are reported as text, in the well known text form.
 
 Here is an example style:
 
@@ -55,6 +61,14 @@ as an extra attribute:
 
 .. image:: images/rat_map.png
 
+
+Mosaics
+-------
+
+An ImageMosaic can build one attribute table out of the tables of its granules. It is off by default,
+enabled with the ``CollectAttributeTables`` indexer property, while ``AttributeTableGeometries``
+controls what happens to a geometry column the granules disagree on. See
+:ref:`ImageMosaic configuration <data_imagemosaic_config>`.
 
 REST API
 --------

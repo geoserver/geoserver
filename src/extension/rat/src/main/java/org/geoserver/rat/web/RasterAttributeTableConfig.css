@@ -20,3 +20,22 @@ Your css selectors should look like this to avoid modifying styles outside the p
       justify-content: space-between;
       align-items: baseline;
 }
+
+/* the table scrolls sideways instead of stretching the page: a RAT can carry long
+   geometry cells and long field names */
+.gs-panel-RasterAttributeTableConfig .ratTable table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+      max-width: 100%;
+      max-height: 70vh;
+      padding: 0 0 0.5em;
+}
+
+/* keep the field names in view while scrolling a long table */
+.gs-panel-RasterAttributeTableConfig .ratTable table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background-color: var(--gs-body-bg);
+}

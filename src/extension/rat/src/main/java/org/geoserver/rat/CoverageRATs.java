@@ -4,11 +4,9 @@
  */
 package org.geoserver.rat;
 
-import static it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand.FieldUsage.Generic;
 import static it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand.FieldUsage.Max;
 import static it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand.FieldUsage.Min;
 import static it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand.FieldUsage.MinMax;
-import static it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand.FieldUsage.Name;
 
 import it.geosolutions.imageio.pam.PAMDataset;
 import java.io.IOException;
@@ -126,7 +124,7 @@ public class CoverageRATs {
         Set<PAMDataset.PAMRasterBand.FieldUsage> fieldUsages =
                 fields.stream().map(f -> f.getUsage()).collect(Collectors.toSet());
 
-        if (!fieldUsages.contains(Name) && !fieldUsages.contains(Generic)) {
+        if (fields.stream().noneMatch(RasterAttributeTable::isClassification)) {
             LOGGER.fine("No classification names and no generic fields found in RAT for band " + bandIdx);
             return null;
         }

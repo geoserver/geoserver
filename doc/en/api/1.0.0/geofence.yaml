@@ -1,0 +1,79 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer GeoFence extension
+  description: >
+    The GeoFence extension integrates GeoServer with GeoFence, a fine-grained access control
+    system. This is the API exposed by the GeoFence extension itself (instance info and rule
+    cache management); it is available regardless of whether GeoFence is configured to use its
+    embedded rule engine or a remote GeoFence server. See the "GeoFence Embedded Server" API for
+    the rules/adminrules/batch management API exposed by the embedded engine.
+  contact:
+    name: GeoServer
+    email: 'geoserver-user@discourse.osgeo.org'
+    url: 'https://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
+
+paths:
+  /geofence/info:
+    get:
+      operationId: getGeofenceInfo
+      tags:
+        - GeoFence
+      summary: Get the configured GeoFence instance name
+      description: Returns the instance name this GeoServer is configured with, as used to filter
+        rules on the `instanceName` field.
+      produces:
+        - text/plain
+      responses:
+        200:
+          description: OK
+          schema:
+            type: string
+          examples:
+            text/plain: "geoserver1"
+
+  /geofence/ruleCache/info:
+    get:
+      operationId: getRuleCacheInfo
+      tags:
+        - GeoFence
+      summary: Get rule cache statistics
+      description: >
+        Returns a plain-text dump of the rule/authorization/container cache statistics
+        (size, hit/miss/load counts, eviction count). Also reachable, for backwards
+        compatibility, at `/rest/ruleCache/info` and `/rest/geofence/cache/info`.
+      produces:
+        - text/plain
+      responses:
+        200:
+          description: OK
+          schema:
+            type: string
+          examples:
+            text/plain: |
+              RuleStats[ size:3/1000 hitCount:10 missCount:3 loadSuccessCount:3 loadExceptionCount:0 totalLoadTime:1234 evictionCount:0]
+              AdminAuthStats[ size:1/1000 hitCount:5 missCount:1 loadSuccessCount:1 loadExceptionCount:0 totalLoadTime:456 evictionCount:0]
+              ContStats[ size:1/1000 hitCount:5 missCount:1 loadSuccessCount:1 loadExceptionCount:0 totalLoadTime:456 evictionCount:0]
+
+  /geofence/ruleCache/invalidate:
+    put:
+      operationId: invalidateRuleCache
+      tags:
+        - GeoFence
+      summary: Invalidate the rule cache
+      description: >
+        Forces invalidation of all cache entries (rule, authorization and container caches).
+        Also reachable, for backwards compatibility, at `/rest/ruleCache/invalidate` and
+        `/rest/geofence/cache/invalidate`.
+      produces:
+        - text/plain
+      responses:
+        200:
+          description: OK
+          schema:
+            type: string
+          examples:
+            text/plain: "OK"

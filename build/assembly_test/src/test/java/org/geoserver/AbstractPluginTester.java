@@ -45,6 +45,17 @@ abstract class AbstractPluginTester {
     }
 
     /**
+     * Called after the spawned GeoServer process has been shut down, symmetric with {@link #prepareTestDirectory}.
+     * Subclasses override to release resources acquired there (e.g. stop a database container). By default does
+     * nothing.
+     *
+     * @param testWorkDir The same directory passed to {@link #prepareTestDirectory}, still present at this point.
+     */
+    protected void cleanupTestDirectory(Path testWorkDir) {
+        // Default no-op.
+    }
+
+    /**
      * Extra {@code -D} system properties to pass to the spawned GeoServer JVM via {@code JAVA_OPTS}. Subclasses
      * override to configure plugins that require system properties to reach a healthy startup state (e.g. remote
      * service URLs, credentials, feature toggles). Returned values are not shell-quoted — keep them simple.

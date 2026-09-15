@@ -35,4 +35,4 @@ When the regular sandbox is set:
 - The GeoServer administrator will still be able to access the full file system, as well as change the sandbox configuration if they so desire.
 - The GeoServer workspace administrators will be sandboxed into `<sandbox>/<workspace>`, where `<workspace>` is the name of any workspace they can access.
 
-The regular sandbox is best suited in multi-tenant environments where the main GeoServer administrator also has access to the server operating system, while each tenant is modelled as a workspace administrator and should be able to manage its own data, but not access the data of other tenants.
+The regular sandbox is best suited in multi-tenant environments where the main GeoServer administrator also has access to the server operating system, while each tenant is modelled as a [workspace administrator](workspaceadmin/index.md) and should be able to manage its own data, but not access the data of other tenants.

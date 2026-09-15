@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -23,7 +24,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -268,14 +268,25 @@ public abstract class DimensionHelper {
     }
 
     private Map<String, DimensionInfo> getCustomDimensions(final FeatureTypeInfo typeInfo) {
-        return typeInfo.getMetadata().entrySet().stream()
-                .filter(e -> e.getValue() instanceof DimensionInfo
-                        && e.getKey() != null
-                        && e.getKey().startsWith(DIM_)
-                        && !ResourceInfo.ELEVATION.equals(e.getKey())
-                        && !ResourceInfo.TIME.equals(e.getKey()))
-                .map(e -> Pair.of(e.getKey().replaceFirst(DIM_, ""), (DimensionInfo) e.getValue()))
-                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+        return getCustomDimensions((ResourceInfo) typeInfo);
+    }
+
+    /**
+     * Enabled custom dimensions of a resource, that is every dimension beyond space and time, keyed by public dimension
+     * name. Handles both the vector ({@code dim_}) and raster ({@code custom_dimension_}) metadata key prefixes.
+     */
+    public static Map<String, DimensionInfo> getCustomDimensions(ResourceInfo resource) {
+        Map<String, DimensionInfo> dimensions = new LinkedHashMap<>();
+        for (Entry<String, Serializable> e : resource.getMetadata().entrySet()) {
+            if (!(e.getValue() instanceof DimensionInfo dim) || !dim.isEnabled()) continue;
+            String key = e.getKey();
+            if (key.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX)) {
+                dimensions.put(key.substring(ResourceInfo.CUSTOM_DIMENSION_PREFIX.length()), dim);
+            } else if (key.startsWith(ResourceInfo.VECTOR_CUSTOM_DIMENSION_PREFIX)) {
+                dimensions.put(key.substring(ResourceInfo.VECTOR_CUSTOM_DIMENSION_PREFIX.length()), dim);
+            }
+        }
+        return dimensions;
     }
 
     void handleWMTSLayerDimensions(LayerInfo layerInfo) {

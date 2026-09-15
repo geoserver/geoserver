@@ -256,11 +256,12 @@ public class ApiTest extends FeaturesTestSupport {
 
         assertThat(itemGetParamNames, containsInAnyOrder(expectedItemsParams.toArray(String[]::new)));
 
-        // filter languages
+        // filter languages, cql2-text first as it is also the declared default
         Parameter langs = api.getComponents().getParameters().get("filter-lang");
         assertEquals(
-                Arrays.asList(APIFilterParser.ECQL_TEXT, APIFilterParser.CQL2_TEXT, APIFilterParser.CQL2_JSON),
+                Arrays.asList(APIFilterParser.CQL2_TEXT, APIFilterParser.CQL2_JSON, APIFilterParser.ECQL_TEXT),
                 langs.getSchema().getEnum());
+        assertEquals(APIFilterParser.CQL2_TEXT, langs.getSchema().getDefault());
 
         // ... feature
         PathItem item = paths.get("/collections/{collectionId}/items/{featureId}");

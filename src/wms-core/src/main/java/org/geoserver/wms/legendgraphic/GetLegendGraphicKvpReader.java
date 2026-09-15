@@ -254,7 +254,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      * @param request should be instance of GetLegendGraphicRequest
      * @return GetCascadedLegendGraphicRequest
      */
-    private LegendRequest getCascadeLegendRequest(LayerInfo layerInfo, GetLegendGraphicRequest request)
+    public LegendRequest getCascadeLegendRequest(LayerInfo layerInfo, GetLegendGraphicRequest request)
             throws IOException {
         WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) layerInfo.getResource();
         WMSStoreInfo wmsStoreInfo = wmsLayerInfo.getStore();
@@ -400,7 +400,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      * @param layerInfo vector or raster layer
      * @return the FeatureType for the given layer
      */
-    private FeatureType getLayerFeatureType(LayerInfo layerInfo)
+    public FeatureType getLayerFeatureType(LayerInfo layerInfo)
             throws IOException, FactoryRegistryException, TransformException, SchemaException {
         MapLayerInfo mli = new MapLayerInfo(layerInfo);
         if (layerInfo.getType() == PublishedType.VECTOR) {

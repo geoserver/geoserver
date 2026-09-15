@@ -55,5 +55,8 @@
   </bean>
   
   <bean id="apiFilterParser" class="org.geoserver.ogcapi.APIFilterParser"/>
+
+  <bean id="filterConformanceXStreamInitializer"
+        class="org.geoserver.ogcapi.FilterConformanceXStreamPersisterInitializer"/>
   
 </beans>

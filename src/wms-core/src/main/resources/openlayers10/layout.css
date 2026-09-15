@@ -191,6 +191,45 @@
   right: 1rem;
 }
 
+/* the collection palette of the OGC API - Maps dataset map preview: candidates, selection, and its ordering */
+.collection-palette {
+  margin-bottom: 0.75rem;
+}
+
+.collection-hint {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.8em;
+  opacity: 0.75;
+}
+
+.collection-warning {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.8em;
+  color: var(--gs-warning-text-emphasis);
+}
+
+.collection-lists {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.collection-list {
+  flex: 1;
+  min-width: 0;
+}
+
+.collection-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.collection-buttons button {
+  padding: 0.1rem 0.4rem;
+  line-height: 1.2;
+}
+
 .filter-container .gs-input-group {
   padding-bottom: 0;
 }

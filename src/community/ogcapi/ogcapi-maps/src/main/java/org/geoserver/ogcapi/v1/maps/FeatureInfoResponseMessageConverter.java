@@ -7,7 +7,6 @@ package org.geoserver.ogcapi.v1.maps;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSExtensions;
 import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
@@ -64,7 +63,7 @@ public class FeatureInfoResponseMessageConverter
                     }
                 })
                 .filter(mt -> mt != null)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

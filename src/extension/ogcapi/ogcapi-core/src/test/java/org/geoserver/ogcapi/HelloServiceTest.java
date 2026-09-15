@@ -11,6 +11,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.springframework.http.MediaType.APPLICATION_YAML_VALUE;
 
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -90,6 +92,22 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
         assertEquals(APPLICATION_YAML_VALUE, response.getContentType());
         assertEquals("inline; filename=\"Message.yaml\"", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
         assertEquals("message: hello\n", response.getContentAsString());
+    }
+
+    /** An f parameter that is not a media type is a bad parameter value, reported as such and not as a 500. */
+    @Test
+    public void testInvalidFormatQueryParameter() throws Exception {
+        APIDispatcher dispatcher = getAPIDispatcher();
+
+        MockHttpServletRequest request = setupHelloRequest("f", "garbage");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        dispatcher.handleRequest(request, response);
+
+        assertEquals(400, response.getStatus());
+        assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
+        DocumentContext json = JsonPath.parse(response.getContentAsString());
+        assertEquals(APIException.INVALID_PARAMETER_VALUE, json.read("type"));
+        assertEquals("Invalid format requested: garbage", json.read("title"));
     }
 
     @Test

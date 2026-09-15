@@ -1,5 +1,5 @@
 <assembly>
-  <id>taskmanager-s3-plugin</id>
+  <id>taskmanager-metadata-plugin</id>
   <formats>
     <format>zip</format>
   </formats>
@@ -16,8 +16,7 @@
       <directory>target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>gs-taskmanager-s3*.jar</include>
-        <include>aws-java-sdk-s3*.jar</include>
+        <include>gs-taskmanager-metadata*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

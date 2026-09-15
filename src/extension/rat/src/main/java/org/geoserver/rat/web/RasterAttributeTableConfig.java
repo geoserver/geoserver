@@ -198,6 +198,8 @@ public class RasterAttributeTableConfig extends PublishedConfigurationPanel<Laye
         return bands.stream()
                 .filter(b -> b.getGdalRasterAttributeTable() != null)
                 .map(b -> b.getBand() - 1) // convert to 0-based
+                // a table with no field to classify on cannot drive the toolbar
+                .filter(idx -> rats.getRasterAttributeTable(idx) != null)
                 .collect(Collectors.toList());
     }
 

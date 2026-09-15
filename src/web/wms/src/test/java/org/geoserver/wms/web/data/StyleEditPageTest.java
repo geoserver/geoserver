@@ -293,6 +293,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
                 new org.apache.wicket.util.file.File(URLs.urlToFile(getClass().getResource("GeoServer_75.png")));
         formTester.setFile("userPanel:upload", file, "image/png");
         formTester.submit("submit");
+        tester.assertNoErrorMessage();
 
         assertTrue(Resources.exists(dd.getStyles().get("GeoServer_75.png")));
 

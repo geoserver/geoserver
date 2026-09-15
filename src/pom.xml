@@ -101,6 +101,7 @@
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
     <spring.ldap.version>4.1.1</spring.ldap.version>
     <spring-integration.version>7.1.1</spring-integration.version>
+    <tika.version>4.0.0</tika.version>
     <wicket.version>10.11.0</wicket.version>
     <!-- WicketStuff provides additional components and extensions for the Wicket framework,
     such as select2 integration, which is used in GeoServer's admin interface.
@@ -790,7 +791,12 @@
       <dependency>
         <groupId>org.apache.tika</groupId>
         <artifactId>tika-core</artifactId>
-        <version>3.3.2</version>
+        <version>${tika.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tika</groupId>
+        <artifactId>tika-serialization</artifactId>
+        <version>${tika.version}</version>
       </dependency>
       <dependency>
         <groupId>org.mapfish.print</groupId>

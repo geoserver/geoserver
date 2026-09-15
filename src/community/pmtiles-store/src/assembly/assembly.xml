@@ -21,6 +21,7 @@
       <scope>compile</scope>
       <includes>
         <include>org.geotools:gt-pmtiles</include>
+        <include>io.tileverse.geoserver:tileverse-geoserver-storage-web</include>
       </includes>
       <useTransitiveDependencies>true</useTransitiveDependencies>
       <useTransitiveFiltering>true</useTransitiveFiltering>
@@ -30,6 +31,7 @@
       <scope>runtime</scope>
       <includes>
         <include>org.geotools:gt-pmtiles</include>
+        <include>io.tileverse.geoserver:tileverse-geoserver-storage-web</include>
       </includes>
       <useTransitiveDependencies>true</useTransitiveDependencies>
       <useTransitiveFiltering>true</useTransitiveFiltering>

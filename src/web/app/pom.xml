@@ -1133,6 +1133,17 @@
       </dependencies>
     </profile>
     <profile>
+      <!-- gs-mlt needs Java 21, see src/community/mlt -->
+      <id>mlt</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-mlt</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>gdal-translate</id>
       <dependencies>
         <dependency>

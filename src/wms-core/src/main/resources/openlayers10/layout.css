@@ -133,14 +133,18 @@
 }
 
 #popup-content {
-  max-height: 300px; 
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: 10px; 
+  /* the resize handle sits on the content box so the arrow drawn on .ol-popup is not clipped */
+  resize: both;
+  width: 420px;
+  max-width: 80vw;
+  max-height: 300px;
+  overflow: auto;
+  padding-right: 10px;
 }
 
 #popup-content::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 #popup-content::-webkit-scrollbar-thumb {
   background: var(--gs-secondary-border-subtle); 
@@ -229,7 +233,8 @@
 }
 
 .popup-attribute-table {
-    width: 100%;
+    width: auto;
+    min-width: 100%;
     border-collapse: collapse;
     font-size: 0.85rem;
     background-color: var(--gs-body-bg);
@@ -240,18 +245,22 @@
     padding: 0.4rem 0.6rem;
     border: var(--gs-border-width) var(--gs-border-style) var(--gs-border-color);
     text-align: left;
+    vertical-align: top;
 }
 
 .popup-attribute-table th {
     background-color: var(--gs-tertiary-bg);
     color: var(--gs-secondary-text-emphasis);
-    width: 40%;
+    white-space: nowrap;
     font-weight: 600;
 }
 
 .popup-attribute-table td {
     color: var(--gs-body-color);
-    word-break: break-all;
+    /* a WKB geometry cell can be thousands of characters: cap it so the table stays scrollable */
+    min-width: 32ch;
+    max-width: 60ch;
+    overflow-wrap: anywhere;
 }
 
 .popup-title {

@@ -25,7 +25,7 @@
     
     
       
-        <title>Batch Rest API - Documentation</title>
+        <title>REST API: Batch - Documentation</title>
       
     
     
@@ -132,7 +132,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#batch-rest-api" class="md-skip">
+        <a href="#rest-api-batch" class="md-skip">
           Skip to content
         </a>
       
@@ -182,7 +182,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Batch Rest API
+              REST API: Batch
             
           </span>
         </div>
@@ -18229,6 +18229,8 @@
       
         
       
+        
+      
     
     
     
@@ -18365,6 +18367,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../geofence/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating GeoFence configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -18424,7 +18454,7 @@
   <span class="md-ellipsis">
     
   
-    Geofence Internal Server
+    Geofence Embedded Server
   
 
     
@@ -18446,7 +18476,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Geofence Internal Server
+    Geofence Embedded Server
   
 
           </label>
@@ -18468,7 +18498,7 @@
   <span class="md-ellipsis">
     
   
-    Installing the GeoServer GeoFence Server extension
+    Install the plugin
   
 
     
@@ -18524,7 +18554,7 @@
   <span class="md-ellipsis">
     
   
-    GeoFence Rest API
+    GeoFence REST API
   
 
     
@@ -18552,7 +18582,7 @@
   <span class="md-ellipsis">
     
   
-    AdminRules Rest API
+    REST API: AdminRules
   
 
     
@@ -18589,7 +18619,7 @@
   <span class="md-ellipsis">
     
   
-    Batch Rest API
+    REST API: Batch
   
 
     
@@ -18607,7 +18637,7 @@
   <span class="md-ellipsis">
     
   
-    Batch Rest API
+    REST API: Batch
   
 
     
@@ -18722,7 +18752,7 @@
   <span class="md-ellipsis">
     
   
-    Using the Internal GeoFence server (Tutorial)
+    Using the Embedded GeoFence server (Tutorial)
   
 
     
@@ -30304,7 +30334,7 @@
   
 
 
-<h1 id="batch-rest-api">Batch Rest API<a class="headerlink" href="#batch-rest-api" title="Permanent link">&para;</a></h1>
+<h1 id="rest-api-batch">REST API: Batch<a class="headerlink" href="#rest-api-batch" title="Permanent link">&para;</a></h1>
 <p>Batch operations allow to run multiple insert, update and delete at the same time over rules and admin rules. All the operations are executed in a single transaction: this means that either all of them are successful or all the operations are rolled back.</p>
 <h2 id="security">Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h2>
 <p>The Geofence REST API is only accessible to users with the role <code>ROLE_ADMIN</code>.</p>
@@ -30333,12 +30363,12 @@
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="nt">&lt;/operations&gt;</span>
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="nt">&lt;operations</span><span class="w"> </span><span class="na">service=</span><span class="s">"rules"</span><span class="w"> </span><span class="na">id=</span><span class="s">"5"</span><span class="w"> </span><span class="na">type=</span><span class="s">"delete"</span><span class="w"> </span><span class="nt">/&gt;</span>
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="nt">&lt;operations</span><span class="w"> </span><span class="na">service=</span><span class="s">"adminrules"</span><span class="w"> </span><span class="na">type=</span><span class="s">"insert"</span><span class="nt">&gt;</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">  </span><span class="nt">&lt;RuleAdmin&gt;</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">  </span><span class="nt">&lt;AdminRule&gt;</span>
 <a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">     </span><span class="nt">&lt;priority&gt;</span>2<span class="nt">&lt;/priority&gt;</span>
 <a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">     </span><span class="nt">&lt;roleName&gt;</span>ROLE_USER<span class="nt">&lt;/roleName&gt;</span>
 <a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">     </span><span class="nt">&lt;workspace&gt;</span>ws<span class="nt">&lt;/workspace&gt;</span>
 <a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">     </span><span class="nt">&lt;access&gt;</span>ADMIN<span class="nt">&lt;/access&gt;</span>
-<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">  </span><span class="nt">&lt;/RuleAdmin&gt;</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">  </span><span class="nt">&lt;/AdminRule&gt;</span>
 <a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="nt">&lt;/operations&gt;</span>
 <a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="nt">&lt;/Batch&gt;</span>
 </code></pre></div>
@@ -30347,9 +30377,9 @@
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nt">"Batch"</span><span class="p">:{</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">"operations"</span><span class="p">:[</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">     </span><span class="p">{</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">        </span><span class="nt">"@service"</span><span class="p">:</span><span class="s2">"adminrules"</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">        </span><span class="nt">"@service"</span><span class="p">:</span><span class="s2">"rules"</span><span class="p">,</span>
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">        </span><span class="nt">"@type"</span><span class="p">:</span><span class="s2">"update"</span><span class="p">,</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">        </span><span class="nt">"@id"</span><span class="p">:</span><span class="s2">"3"</span><span class="p">,</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">        </span><span class="nt">"@id"</span><span class="p">:</span><span class="s2">"2"</span><span class="p">,</span>
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">        </span><span class="nt">"Rule"</span><span class="p">:{</span>
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">           </span><span class="nt">"access"</span><span class="p">:</span><span class="s2">"ALLOW"</span><span class="p">,</span>
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">           </span><span class="nt">"layer"</span><span class="p">:</span><span class="s2">"layer"</span><span class="p">,</span>
@@ -30455,7 +30485,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../rest-adminrule/" class="md-footer__link md-footer__link--prev" aria-label="Previous: AdminRules Rest API">
+          <a href="../rest-adminrule/" class="md-footer__link md-footer__link--prev" aria-label="Previous: REST API: AdminRules">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -30465,20 +30495,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                AdminRules Rest API
+                REST API: AdminRules
               </div>
             </div>
           </a>
         
         
           
-          <a href="../tutorial/" class="md-footer__link md-footer__link--next" aria-label="Next: Using the Internal GeoFence server (Tutorial)">
+          <a href="../tutorial/" class="md-footer__link md-footer__link--next" aria-label="Next: Using the Embedded GeoFence server (Tutorial)">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Using the Internal GeoFence server (Tutorial)
+                Using the Embedded GeoFence server (Tutorial)
               </div>
             </div>
             <div class="md-footer__button md-icon">

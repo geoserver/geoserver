@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://docs.geoserver.org/3.1.x/latest/en/user/extensions/geofence-server/">
       
       
-        <link rel="prev" href="../geofence/cache/">
+        <link rel="prev" href="../geofence/migration/">
       
       
         <link rel="next" href="installing/">
@@ -25,7 +25,7 @@
     
     
       
-        <title>Geofence Internal Server - Documentation</title>
+        <title>Geofence Embedded Server - Documentation</title>
       
     
     
@@ -132,7 +132,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#geofence-internal-server" class="md-skip">
+        <a href="#geofence-embedded-server" class="md-skip">
           Skip to content
         </a>
       
@@ -182,7 +182,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Geofence Internal Server
+              Geofence Embedded Server
             
           </span>
         </div>
@@ -18229,6 +18229,8 @@
       
         
       
+        
+      
     
     
     
@@ -18365,6 +18367,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../geofence/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating GeoFence configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -18424,7 +18454,7 @@
   <span class="md-ellipsis">
     
   
-    Geofence Internal Server
+    Geofence Embedded Server
   
 
     
@@ -18446,7 +18476,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Geofence Internal Server
+    Geofence Embedded Server
   
 
           </label>
@@ -18468,7 +18498,7 @@
   <span class="md-ellipsis">
     
   
-    Installing the GeoServer GeoFence Server extension
+    Install the plugin
   
 
     
@@ -18524,7 +18554,7 @@
   <span class="md-ellipsis">
     
   
-    GeoFence Rest API
+    GeoFence REST API
   
 
     
@@ -18552,7 +18582,7 @@
   <span class="md-ellipsis">
     
   
-    AdminRules Rest API
+    REST API: AdminRules
   
 
     
@@ -18580,7 +18610,7 @@
   <span class="md-ellipsis">
     
   
-    Batch Rest API
+    REST API: Batch
   
 
     
@@ -18608,7 +18638,7 @@
   <span class="md-ellipsis">
     
   
-    Using the Internal GeoFence server (Tutorial)
+    Using the Embedded GeoFence server (Tutorial)
   
 
     
@@ -30115,18 +30145,18 @@
   
 
 
-<h1 id="geofence-internal-server">Geofence Internal Server<a class="headerlink" href="#geofence-internal-server" title="Permanent link">&para;</a></h1>
+<h1 id="geofence-embedded-server">Geofence Embedded Server<a class="headerlink" href="#geofence-embedded-server" title="Permanent link">&para;</a></h1>
 <p>This plugin runs a <a href="https://github.com/geoserver/geofence/">GeoFence</a> server integrated internally in GeoServer. Geofence allows far more advanced security configurations than the default GeoServer <a href="../../security/">Security</a> subsystem, such as rules that combine data and service restrictions.</p>
 <p>In the integrated version, the users and roles service configured in geoserver are associated with the geofence rule database. The integrated geofence server can be configured using its WebGUI page or REST configuration.</p>
 <div class="grid cards">
 <ul>
-<li><a href="installing/">Installing the GeoServer GeoFence Server extension</a></li>
+<li><a href="installing/">Installing the plugin</a></li>
 <li><a href="gui/">GeoFence Server GUI</a></li>
-<li><a href="rest/">GeoFence Rest API</a></li>
-<li><a href="rest-adminrule/">AdminRules Rest API</a></li>
-<li><a href="rest-batch-op/">Batch Rest API</a></li>
-<li><a href="tutorial/">Using the Internal GeoFence server (Tutorial)</a></li>
-<li><a href="migration/">Migrating GeoFence configuration</a></li>
+<li><a href="rest/">GeoFence REST API</a></li>
+<li><a href="rest-adminrule/">REST API: AdminRules</a></li>
+<li><a href="rest-batch-op/">REST API: Batch</a></li>
+<li><a href="tutorial/">Using the Embedded GeoFence server (Tutorial)</a></li>
+<li><a href="migration/">Migrating configuration</a></li>
 </ul>
 </div>
 
@@ -30166,7 +30196,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../geofence/cache/" class="md-footer__link md-footer__link--prev" aria-label="Previous: GeoFence Cache REST">
+          <a href="../geofence/migration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Migrating GeoFence configuration">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -30176,20 +30206,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                GeoFence Cache REST
+                Migrating GeoFence configuration
               </div>
             </div>
           </a>
         
         
           
-          <a href="installing/" class="md-footer__link md-footer__link--next" aria-label="Next: Installing the GeoServer GeoFence Server extension">
+          <a href="installing/" class="md-footer__link md-footer__link--next" aria-label="Next: Install the plugin">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Installing the GeoServer GeoFence Server extension
+                Install the plugin
               </div>
             </div>
             <div class="md-footer__button md-icon">

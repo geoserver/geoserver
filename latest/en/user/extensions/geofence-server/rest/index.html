@@ -25,7 +25,7 @@
     
     
       
-        <title>GeoFence Rest API - Documentation</title>
+        <title>GeoFence REST API - Documentation</title>
       
     
     
@@ -182,7 +182,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              GeoFence Rest API
+              GeoFence REST API
             
           </span>
         </div>
@@ -18229,6 +18229,8 @@
       
         
       
+        
+      
     
     
     
@@ -18365,6 +18367,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../geofence/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating GeoFence configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -18424,7 +18454,7 @@
   <span class="md-ellipsis">
     
   
-    Geofence Internal Server
+    Geofence Embedded Server
   
 
     
@@ -18446,7 +18476,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Geofence Internal Server
+    Geofence Embedded Server
   
 
           </label>
@@ -18468,7 +18498,7 @@
   <span class="md-ellipsis">
     
   
-    Installing the GeoServer GeoFence Server extension
+    Install the plugin
   
 
     
@@ -18533,7 +18563,7 @@
   <span class="md-ellipsis">
     
   
-    GeoFence Rest API
+    GeoFence REST API
   
 
     
@@ -18551,7 +18581,7 @@
   <span class="md-ellipsis">
     
   
-    GeoFence Rest API
+    GeoFence REST API
   
 
     
@@ -18710,7 +18740,7 @@
   <span class="md-ellipsis">
     
   
-    AdminRules Rest API
+    REST API: AdminRules
   
 
     
@@ -18738,7 +18768,7 @@
   <span class="md-ellipsis">
     
   
-    Batch Rest API
+    REST API: Batch
   
 
     
@@ -18766,7 +18796,7 @@
   <span class="md-ellipsis">
     
   
-    Using the Internal GeoFence server (Tutorial)
+    Using the Embedded GeoFence server (Tutorial)
   
 
     
@@ -30392,7 +30422,7 @@
   
 
 
-<h1 id="geofence-rest-api">GeoFence Rest API<a class="headerlink" href="#geofence-rest-api" title="Permanent link">&para;</a></h1>
+<h1 id="geofence-rest-api">GeoFence REST API<a class="headerlink" href="#geofence-rest-api" title="Permanent link">&para;</a></h1>
 <h2 id="security">Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h2>
 <p>The Geofence Rest API is only accessible to users with the role ROLE_ADMIN.</p>
 <h2 id="inputoutput">Input/Output<a class="headerlink" href="#inputoutput" title="Permanent link">&para;</a></h2>
@@ -30649,9 +30679,14 @@
 <td>Filter rules on username (excludes all other specific usernames).</td>
 </tr>
 <tr>
-<td>userAny</td>
+<td><del>userAny</del></td>
 <td>0 or 1.</td>
-<td>Specify whether rules matching any username are included or not.</td>
+<td>Use <code>userDefault</code> instead.</td>
+</tr>
+<tr>
+<td>userDefault</td>
+<td>0 or 1.</td>
+<td>Specify whether rules matching any username are included or not. Wins over <code>userAny</code> when both are set.</td>
 </tr>
 <tr>
 <td>roleName</td>
@@ -30659,9 +30694,34 @@
 <td>Filter rules on rolename (excludes all other specific rolenames).</td>
 </tr>
 <tr>
-<td>roleAny</td>
+<td><del>roleAny</del></td>
 <td>0 or 1.</td>
-<td>Specify whether rules matching any rolename are included or not.</td>
+<td>Use <code>roleDefault</code> instead.</td>
+</tr>
+<tr>
+<td>roleDefault</td>
+<td>0 or 1.</td>
+<td>Specify whether rules matching any rolename are included or not. Wins over <code>roleAny</code> when both are set.</td>
+</tr>
+<tr>
+<td><del>instanceId</del></td>
+<td>number</td>
+<td>Use <code>instanceName</code> instead.</td>
+</tr>
+<tr>
+<td>instanceName</td>
+<td>string</td>
+<td>Filter rules on GeoServer instance name (excludes all other specific instances). Cannot be combined with <code>instanceId</code>.</td>
+</tr>
+<tr>
+<td><del>instanceAny</del></td>
+<td>0 or 1.</td>
+<td>Use <code>instanceDefault</code> instead.</td>
+</tr>
+<tr>
+<td>instanceDefault</td>
+<td>0 or 1.</td>
+<td>Specify whether rules matching any GeoServer instance are included or not. Wins over <code>instanceAny</code> when both are set.</td>
 </tr>
 <tr>
 <td>ipAddress</td>
@@ -30669,9 +30729,14 @@
 <td>Filter rules on IP address range (only select rules with an address range that includes the passed IP address).</td>
 </tr>
 <tr>
-<td>ipAddressAny</td>
+<td><del>ipAddressAny</del></td>
 <td>0 or 1.</td>
-<td>Specify whether rules matching any IP address are included or not.</td>
+<td>Use <code>ipAddressDefault</code> instead.</td>
+</tr>
+<tr>
+<td>ipAddressDefault</td>
+<td>0 or 1.</td>
+<td>Specify whether rules matching any IP address are included or not. Wins over <code>ipAddressAny</code> when both are set.</td>
 </tr>
 <tr>
 <td>date</td>
@@ -30679,9 +30744,14 @@
 <td>Filter rules by date. Only returns rules where <code>date</code> is between <code>validAfter</code> and <code>validBefore</code>. Format is <code>yyyy-MM-dd</code>.</td>
 </tr>
 <tr>
-<td>dateAny</td>
+<td><del>dateAny</del></td>
 <td>0 or 1.</td>
-<td>Specify whether rules with no data range defined are included or not</td>
+<td>Use <code>dateDefault</code> instead.</td>
+</tr>
+<tr>
+<td>dateDefault</td>
+<td>0 or 1.</td>
+<td>Specify whether rules with no data range defined are included or not. Wins over <code>dateAny</code> when both are set.</td>
 </tr>
 <tr>
 <td>service</td>
@@ -30689,9 +30759,14 @@
 <td>Filter rules on service (excludes all other specific services).</td>
 </tr>
 <tr>
-<td>serviceAny</td>
+<td><del>serviceAny</del></td>
 <td>0 or 1.</td>
-<td>Specify whether rules matching any service are included or not.</td>
+<td>Use <code>serviceDefault</code> instead.</td>
+</tr>
+<tr>
+<td>serviceDefault</td>
+<td>0 or 1.</td>
+<td>Specify whether rules matching any service are included or not. Wins over <code>serviceAny</code> when both are set.</td>
 </tr>
 <tr>
 <td>request</td>
@@ -30699,9 +30774,29 @@
 <td>Filter rules on request (excludes all other specific requests).</td>
 </tr>
 <tr>
-<td>requestAny</td>
+<td><del>requestAny</del></td>
 <td>0 or 1.</td>
-<td>Specify whether rules matching any request are included or not.</td>
+<td>Use <code>requestDefault</code> instead.</td>
+</tr>
+<tr>
+<td>requestDefault</td>
+<td>0 or 1.</td>
+<td>Specify whether rules matching any request are included or not. Wins over <code>requestAny</code> when both are set.</td>
+</tr>
+<tr>
+<td>subfield</td>
+<td>string</td>
+<td>Filter rules on subfield (excludes all other specific subfields).</td>
+</tr>
+<tr>
+<td><del>subfieldAny</del></td>
+<td>0 or 1.</td>
+<td>Use <code>subfieldDefault</code> instead.</td>
+</tr>
+<tr>
+<td>subfieldDefault</td>
+<td>0 or 1.</td>
+<td>Specify whether rules matching any subfield are included or not. Wins over <code>subfieldAny</code> when both are set.</td>
 </tr>
 <tr>
 <td>workspace</td>
@@ -30709,9 +30804,14 @@
 <td>Filter rules on workspace (excludes all other specific workspaces).</td>
 </tr>
 <tr>
-<td>workspaceAny</td>
+<td><del>workspaceAny</del></td>
 <td>0 or 1.</td>
-<td>Specify whether rules matching any workspace are included or not.</td>
+<td>Use <code>workspaceDefault</code> instead.</td>
+</tr>
+<tr>
+<td>workspaceDefault</td>
+<td>0 or 1.</td>
+<td>Specify whether rules matching any workspace are included or not. Wins over <code>workspaceAny</code> when both are set.</td>
 </tr>
 <tr>
 <td>layer</td>
@@ -30719,9 +30819,14 @@
 <td>Filter rules on layer (excludes all other specific layers).</td>
 </tr>
 <tr>
-<td>layerAny</td>
+<td><del>layerAny</del></td>
 <td>0 or 1.</td>
-<td>Specify whether rules matching any layer are included or not.</td>
+<td>Use <code>layerDefault</code> instead.</td>
+</tr>
+<tr>
+<td>layerDefault</td>
+<td>0 or 1.</td>
+<td>Specify whether rules matching any layer are included or not. Wins over <code>layerAny</code> when both are set.</td>
 </tr>
 </tbody>
 </table>
@@ -30741,7 +30846,7 @@
 <tr>
 <td>GET</td>
 <td>List all rules, with respect to any added filters</td>
-<td>page, entries, userName, userAny, roleName, roleAny, service, serviceAny, request, requestAny, workspace, workspaceAny, layer, layerAny</td>
+<td>page, entries, userName, <del>userAny</del>, userDefault, roleName, <del>roleAny</del>, roleDefault, <del>instanceId</del>, instanceName, <del>instanceAny</del>, instanceDefault, ipAddress, <del>ipAddressAny</del>, ipAddressDefault, date, <del>dateAny</del>, dateDefault, service, <del>serviceAny</del>, serviceDefault, request, <del>requestAny</del>, requestDefault, subfield, <del>subfieldAny</del>, subfieldDefault, workspace, <del>workspaceAny</del>, workspaceDefault, layer, <del>layerAny</del>, layerDefault</td>
 <td>200 OK. List of rules in XML.</td>
 </tr>
 <tr>
@@ -30767,7 +30872,7 @@
 <tr>
 <td>GET</td>
 <td>Count all rules, with respect to any added filters</td>
-<td>userName, userAny, roleName, roleAny, service, serviceAny, request, requestAny, workspace, workspaceAny, layer, layerAny</td>
+<td>userName, <del>userAny</del>, userDefault, roleName, <del>roleAny</del>, roleDefault, <del>instanceId</del>, instanceName, <del>instanceAny</del>, instanceDefault, ipAddress, <del>ipAddressAny</del>, ipAddressDefault, date, <del>dateAny</del>, dateDefault, service, <del>serviceAny</del>, serviceDefault, request, <del>requestAny</del>, requestDefault, subfield, <del>subfieldAny</del>, subfieldDefault, workspace, <del>workspaceAny</del>, workspaceDefault, layer, <del>layerAny</del>, layerDefault</td>
 <td>200 OK. Rule list count in XML.</td>
 </tr>
 </tbody>
@@ -30858,13 +30963,13 @@
         
         
           
-          <a href="../rest-adminrule/" class="md-footer__link md-footer__link--next" aria-label="Next: AdminRules Rest API">
+          <a href="../rest-adminrule/" class="md-footer__link md-footer__link--next" aria-label="Next: REST API: AdminRules">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                AdminRules Rest API
+                REST API: AdminRules
               </div>
             </div>
             <div class="md-footer__button md-icon">

@@ -18229,6 +18229,8 @@
       
         
       
+        
+      
     
     
     
@@ -18365,6 +18367,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../geofence/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating GeoFence configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -18424,7 +18454,7 @@
   <span class="md-ellipsis">
     
   
-    Geofence Internal Server
+    Geofence Embedded Server
   
 
     
@@ -18446,7 +18476,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Geofence Internal Server
+    Geofence Embedded Server
   
 
           </label>
@@ -18468,7 +18498,7 @@
   <span class="md-ellipsis">
     
   
-    Installing the GeoServer GeoFence Server extension
+    Install the plugin
   
 
     
@@ -18524,7 +18554,7 @@
   <span class="md-ellipsis">
     
   
-    GeoFence Rest API
+    GeoFence REST API
   
 
     
@@ -18552,7 +18582,7 @@
   <span class="md-ellipsis">
     
   
-    AdminRules Rest API
+    REST API: AdminRules
   
 
     
@@ -18580,7 +18610,7 @@
   <span class="md-ellipsis">
     
   
-    Batch Rest API
+    REST API: Batch
   
 
     
@@ -18608,7 +18638,7 @@
   <span class="md-ellipsis">
     
   
-    Using the Internal GeoFence server (Tutorial)
+    Using the Embedded GeoFence server (Tutorial)
   
 
     
@@ -18687,6 +18717,111 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#geoserver-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GeoServer 3.0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GeoServer 3.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#h2-compatibility-no-longer-available" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H2 compatibility no longer available
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#datasource-configuration-file-renamed-no-more-bundled-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Datasource configuration file renamed, no more bundled default
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geofence-authentication-provider-removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GeoFence authentication provider removed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geofence-default-overrideproperties-propertyoverrideconfigurer-replaced-for-datasource-tuning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        geofence-default-override.properties (PropertyOverrideConfigurer) replaced for datasource tuning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rest-api-any-query-parameters-are-deprecated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REST API: *Any query parameters are deprecated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rest-api-instanceid-query-parameter-is-deprecated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REST API: instanceId query parameter is deprecated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rest-api-validafterstringvalidbeforestring-are-now-iso-8601" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REST API: validAfterString/validBeforeString are now ISO-8601
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specific-java-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specific Java options:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#geoserver-227" class="md-nav__link">
@@ -30168,6 +30303,111 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#geoserver-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GeoServer 3.0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GeoServer 3.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#h2-compatibility-no-longer-available" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H2 compatibility no longer available
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#datasource-configuration-file-renamed-no-more-bundled-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Datasource configuration file renamed, no more bundled default
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geofence-authentication-provider-removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GeoFence authentication provider removed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geofence-default-overrideproperties-propertyoverrideconfigurer-replaced-for-datasource-tuning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        geofence-default-override.properties (PropertyOverrideConfigurer) replaced for datasource tuning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rest-api-any-query-parameters-are-deprecated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REST API: *Any query parameters are deprecated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rest-api-instanceid-query-parameter-is-deprecated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REST API: instanceId query parameter is deprecated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rest-api-validafterstringvalidbeforestring-are-now-iso-8601" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REST API: validAfterString/validBeforeString are now ISO-8601
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specific-java-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specific Java options:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#geoserver-227" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30215,6 +30455,73 @@
 
 
 <h1 id="migrating-geofence-configuration">Migrating GeoFence configuration<a class="headerlink" href="#migrating-geofence-configuration" title="Permanent link">&para;</a></h1>
+<h2 id="geoserver-30">GeoServer 3.0<a class="headerlink" href="#geoserver-30" title="Permanent link">&para;</a></h2>
+<h3 id="h2-compatibility-no-longer-available">H2 compatibility no longer available<a class="headerlink" href="#h2-compatibility-no-longer-available" title="Permanent link">&para;</a></h3>
+<p>The embedded GeoFence engine no longer bundles an H2 driver or dialect; <code>postgresql</code>/<code>postgis-jdbc</code> are the
+only supported database drivers. If your <code>geofence-datasource.properties</code> (or the previous
+<code>geofence-datasource-ovr.properties</code>) pointed at an H2 database, you must migrate your data to
+PostgreSQL/PostGIS before upgrading - this was already discouraged as of GeoServer 2.27, see below.</p>
+<h3 id="datasource-configuration-file-renamed-no-more-bundled-default">Datasource configuration file renamed, no more bundled default<a class="headerlink" href="#datasource-configuration-file-renamed-no-more-bundled-default" title="Permanent link">&para;</a></h3>
+<p>The embedded GeoFence engine's database configuration file has been renamed from
+<code>geofence-datasource-ovr.properties</code> to <code>geofence-datasource.properties</code>, and is no longer looked up on the
+classpath. GeoServer now looks for it, in order:</p>
+<ol>
+<li>An absolute path given by the <code>GEOFENCE_DATASOURCE_FILE</code> system property or environment variable.</li>
+<li>A relative filename given by the same property/variable, resolved against <code>&lt;data directory&gt;/geofence/</code>.</li>
+<li>The plain filename <code>geofence-datasource.properties</code>, resolved against <code>&lt;data directory&gt;/geofence/</code> or the
+   current working directory.</li>
+</ol>
+<p>There is no built-in default database anymore. If you previously relied on the bundled default connection
+(no config file present at all), you must now create a <code>geofence-datasource.properties</code> file yourself before
+starting GeoServer, or startup will fail fast with an error listing every path that was checked.</p>
+<h3 id="geofence-authentication-provider-removed">GeoFence authentication provider removed<a class="headerlink" href="#geofence-authentication-provider-removed" title="Permanent link">&para;</a></h3>
+<p>Installing <code>geofence</code>/<code>geofence-server</code> on 2.x registered GeoFence as an available authentication provider,
+leaving a config entry for it under <code>&lt;DATADIR&gt;/security/auth/</code> (by default
+<code>security/auth/geofence/config.xml</code>). The GeoFence authentication provider has been intentionally removed
+in this porting, and this leftover config is not compatible with it.</p>
+<p>Before upgrading, delete that config entry from the data directory - the whole <code>geofence</code> provider
+directory, not just <code>config.xml</code> - otherwise it is silently left behind, unused and incompatible, rather
+than causing a visible error.</p>
+<h3 id="geofence-default-overrideproperties-propertyoverrideconfigurer-replaced-for-datasource-tuning"><code>geofence-default-override.properties</code> (<code>PropertyOverrideConfigurer</code>) replaced for datasource tuning<a class="headerlink" href="#geofence-default-overrideproperties-propertyoverrideconfigurer-replaced-for-datasource-tuning" title="Permanent link">&para;</a></h3>
+<p>The old <code>geofence-default-override.properties</code> mechanism allowed overriding arbitrary Spring bean
+properties (a Spring <code>PropertyOverrideConfigurer</code>, e.g. <code>geofenceDataSource.url=...</code>). For datasource/JPA
+tuning, this has been replaced by two explicit, narrower property prefixes read directly from
+<code>geofence-datasource.properties</code>:</p>
+<ul>
+<li><code>geofence.hibernate.*</code> — passed through to Hibernate/JPA, with the prefix stripped (e.g.
+  <code>geofence.hibernate.hbm2ddl.auto=validate</code>).</li>
+<li><code>geofence.datasource.hikari.*</code> — passed through to HikariCP's connection pool configuration, with the
+  prefix stripped.</li>
+</ul>
+<p>If you were using <code>geofence-default-override.properties</code> to tune Hibernate or connection-pool settings,
+move those settings into <code>geofence-datasource.properties</code> under the prefixes above. This does <strong>not</strong> cover
+overriding LDAP-related beans (DAO selection, connection settings, attribute mappers) - that older use of
+<code>PropertyOverrideConfigurer</code> has not been replaced yet.</p>
+<h3 id="rest-api-any-query-parameters-are-deprecated">REST API: <code>*Any</code> query parameters are deprecated<a class="headerlink" href="#rest-api-any-query-parameters-are-deprecated" title="Permanent link">&para;</a></h3>
+<p>On <code>GET /rules</code>, <code>GET /rules/count</code> and the equivalent <code>/adminrules</code> endpoints, every <code>*Any</code> filter
+parameter (e.g. <code>userAny</code>, <code>roleAny</code>, <code>workspaceAny</code>) is deprecated in favor of an equivalently-named
+<code>*Default</code> parameter (e.g. <code>userDefault</code>, <code>roleDefault</code>, <code>workspaceDefault</code>) - same meaning, renamed for
+clarity. See <a href="../rest/#filter-parameters">Filter Parameters</a> for the full list. The old <code>*Any</code> names still
+work as a fallback when the matching <code>*Default</code> isn't set; new clients should use <code>*Default</code>.</p>
+<p>Note: some GeoFence REST clients send <code>groupAny</code>/<code>groupDefault</code> for the role filter instead of
+<code>roleAny</code>/<code>roleDefault</code> - older terminology from when GeoFence managed its own users and groups, before
+most deployments moved to GeoServer's roles. This embedded engine's REST API only accepts <code>role*</code>.</p>
+<h3 id="rest-api-instanceid-query-parameter-is-deprecated">REST API: <code>instanceId</code> query parameter is deprecated<a class="headerlink" href="#rest-api-instanceid-query-parameter-is-deprecated" title="Permanent link">&para;</a></h3>
+<p><code>instanceId</code>, which filters on a GeoServer instance's internal numeric id, is deprecated in favor of
+<code>instanceName</code>. A request that still sends <code>instanceId</code> logs a warning. <code>instanceId</code> and <code>instanceName</code>
+remain mutually exclusive - specifying both is still rejected, currently with a <code>500</code> error rather than a
+<code>400</code> (a pre-existing issue, not addressed here).</p>
+<h3 id="rest-api-validafterstringvalidbeforestring-are-now-iso-8601">REST API: <code>validAfterString</code>/<code>validBeforeString</code> are now ISO-8601<a class="headerlink" href="#rest-api-validafterstringvalidbeforestring-are-now-iso-8601" title="Permanent link">&para;</a></h3>
+<p>The bulk-configuration REST endpoints (<code>RESTRule</code>, and by extension <code>RESTFullRuleList</code>/
+<code>RESTFullConfiguration</code>) previously rendered the <code>validAfterString</code>/<code>validBeforeString</code> JSON fields using
+Java's free-form <code>Date.toString()</code> format (e.g. <code>"Thu Jan 01 01:00:00 CET 2026"</code>), which also varied with
+the server's local timezone. These now render as ISO-8601 UTC instants (e.g. <code>"2026-01-01T00:00:00Z"</code>,
+matching the <code>validAfter</code>/<code>validBefore</code> XML representation). Any client parsing the old free-form string
+needs to be updated; the <code>validAfter</code>/<code>validBefore</code> fields themselves (epoch millis in JSON, <code>dateTime</code> in
+XML) are unchanged.</p>
+<h3 id="specific-java-options">Specific Java options:<a class="headerlink" href="#specific-java-options" title="Permanent link">&para;</a></h3>
+<p>In previous versions there was a conflict with GWC, so the <code>-Dgwc.context.suffix=gwc</code> was recommended.
+This is no longer needed.</p>
 <h2 id="geoserver-227">GeoServer 2.27<a class="headerlink" href="#geoserver-227" title="Permanent link">&para;</a></h2>
 <p>In GeoServer 2.27, GeoFence dependency for H2 moved from major version 1 to 2.3.</p>
 <p>The file format in the new version is not fully compatible with the previous one, so you may want to follow the instructions on the <a href="https://www.h2database.com/html/migration-to-v2.md">H2 migration page</a> to use the new H2 version.</p>
@@ -30260,7 +30567,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../tutorial/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Using the Internal GeoFence server (Tutorial)">
+          <a href="../tutorial/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Using the Embedded GeoFence server (Tutorial)">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -30270,7 +30577,7 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Using the Internal GeoFence server (Tutorial)
+                Using the Embedded GeoFence server (Tutorial)
               </div>
             </div>
           </a>

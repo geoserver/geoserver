@@ -25,7 +25,7 @@
     
     
       
-        <title>Installing the GeoServer GeoFence Server extension - Documentation</title>
+        <title>Install the plugin - Documentation</title>
       
     
     
@@ -132,7 +132,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#installing-the-geoserver-geofence-server-extension" class="md-skip">
+        <a href="#install-the-plugin" class="md-skip">
           Skip to content
         </a>
       
@@ -182,7 +182,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Installing the GeoServer GeoFence Server extension
+              Install the plugin
             
           </span>
         </div>
@@ -18229,6 +18229,8 @@
       
         
       
+        
+      
     
     
     
@@ -18365,6 +18367,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../geofence/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating GeoFence configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -18424,7 +18454,7 @@
   <span class="md-ellipsis">
     
   
-    Geofence Internal Server
+    Geofence Embedded Server
   
 
     
@@ -18446,7 +18476,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Geofence Internal Server
+    Geofence Embedded Server
   
 
           </label>
@@ -18477,7 +18507,7 @@
   <span class="md-ellipsis">
     
   
-    Installing the GeoServer GeoFence Server extension
+    Install the plugin
   
 
     
@@ -18495,7 +18525,7 @@
   <span class="md-ellipsis">
     
   
-    Installing the GeoServer GeoFence Server extension
+    Install the plugin
   
 
     
@@ -18521,10 +18551,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#select-the-plugin-you-need" class="md-nav__link">
+  <a href="#download-the-plugin" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Select the plugin you need
+        Download the plugin
       
     </span>
   </a>
@@ -18532,10 +18562,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#install-the-plugin" class="md-nav__link">
+  <a href="#install-the-files" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Install the plugin
+        Install the files
       
     </span>
   </a>
@@ -18553,28 +18583,6 @@
   
     <nav class="md-nav" aria-label="Configure the plugin">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#h2-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        H2 configuration
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#postgresql-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        PostgreSQL configuration
-      
-    </span>
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#other-info" class="md-nav__link">
@@ -18643,7 +18651,7 @@
   <span class="md-ellipsis">
     
   
-    GeoFence Rest API
+    GeoFence REST API
   
 
     
@@ -18671,7 +18679,7 @@
   <span class="md-ellipsis">
     
   
-    AdminRules Rest API
+    REST API: AdminRules
   
 
     
@@ -18699,7 +18707,7 @@
   <span class="md-ellipsis">
     
   
-    Batch Rest API
+    REST API: Batch
   
 
     
@@ -18727,7 +18735,7 @@
   <span class="md-ellipsis">
     
   
-    Using the Internal GeoFence server (Tutorial)
+    Using the Embedded GeoFence server (Tutorial)
   
 
     
@@ -30218,10 +30226,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#select-the-plugin-you-need" class="md-nav__link">
+  <a href="#download-the-plugin" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Select the plugin you need
+        Download the plugin
       
     </span>
   </a>
@@ -30229,10 +30237,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#install-the-plugin" class="md-nav__link">
+  <a href="#install-the-files" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Install the plugin
+        Install the files
       
     </span>
   </a>
@@ -30250,28 +30258,6 @@
   
     <nav class="md-nav" aria-label="Configure the plugin">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#h2-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        H2 configuration
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#postgresql-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        PostgreSQL configuration
-      
-    </span>
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#other-info" class="md-nav__link">
@@ -30314,82 +30300,80 @@
   
 
 
-<h1 id="installing-the-geoserver-geofence-server-extension">Installing the GeoServer GeoFence Server extension<a class="headerlink" href="#installing-the-geoserver-geofence-server-extension" title="Permanent link">&para;</a></h1>
+<h1 id="install-the-plugin">Install the plugin<a class="headerlink" href="#install-the-plugin" title="Permanent link">&para;</a></h1>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>the plugins <code>geofence-server</code> and <code>geofence</code> should <strong>not</strong> be both installed at the same time.</p>
-<p>Please install either one according to your setup.</p>
+<p>the plugins <code>geofence-server</code> and <code>geofence</code> are about two different architectural configurations. 
+Please install either one according to your setup.</p>
+<p>It is recommended to <strong>not</strong> install both of them at the same time.    </p>
 <p><code>geofence-server</code> will run the GeoFence engine internally, and you won't need an external GeoFence webapp.</p>
 </div>
-<h2 id="select-the-plugin-you-need">Select the plugin you need<a class="headerlink" href="#select-the-plugin-you-need" title="Permanent link">&para;</a></h2>
-<p>GeoFence Server extension is provided as two mutually exclusive packages, to be used according to your setup:</p>
-<ul>
-<li>
-<p>GeoFence Server PostgreSQL: (strongly recommended choice) contains all the libraries to run geofence-server, using as backend an externally configured PostgreSQL DB.</p>
-</li>
-<li>
-<p>GeoFence Server H2: (Quick demo choice) contains all the libraries to run geofence-server, using as backend an embedded H2 DB.</p>
-</li>
-</ul>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>this plugin will install a version of the <a href="http://www.h2database.com">H2</a> library that <strong>is not compatible</strong> with other plugins using H2 (e.g. grib/netcdf).</p>
-<p>This package is purely for demo purposes, allowing you to run the GeoFence plugin without the need to configure an external DB backend.</p>
-</div>
-<h2 id="install-the-plugin">Install the plugin<a class="headerlink" href="#install-the-plugin" title="Permanent link">&para;</a></h2>
+<h2 id="download-the-plugin">Download the plugin<a class="headerlink" href="#download-the-plugin" title="Permanent link">&para;</a></h2>
 <ol>
 <li>
 <p>Login, and navigate to <strong>About &amp; Status &gt; About GeoServer</strong> and check <strong>Build Information</strong> to determine the exact version of GeoServer you are running.</p>
 </li>
 <li>
 <p>Visit the <a href="https://geoserver.org/download">website download</a> page, change the <strong>Archive</strong> tab, and locate your release.</p>
-<p>Recommended: From the list of <strong>Security</strong> extensions download <strong>GeoFence Server (Postgres)</strong>:</p>
+<p>From the list of <strong>Security</strong> extensions download <strong>GeoFence Server</strong>:</p>
 <ul>
-<li>3.1.0 <a href="https://sourceforge.net/projects/geoserver/files/GeoServer/3.1.0/extensions/geoserver-3.1.0-geofence-server-postgres-plugin.zip">geoserver-3.1.0-geofence-server-postgres-plugin.zip</a></li>
-<li>3.1.0-SNAPSHOT <a href="https://build.geoserver.org/geoserver/main/ext-latest/geoserver-3.1.0-SNAPSHOT-geofence-server-postgres-plugin.zip">geoserver-3.1.0-SNAPSHOT-geofence-server-postgres-plugin.zip</a></li>
-</ul>
-<p>Quick Demo: From the list of <strong>Security</strong> extensions download <strong>GeoFence Server (H2)</strong>:</p>
-<ul>
-<li>3.1.0 <a href="https://sourceforge.net/projects/geoserver/files/GeoServer/3.1.0/extensions/geoserver-3.1.0-geofence-server-h2-plugin.zip">geoserver-3.1.0-geofence-server-h2-plugin.zip</a></li>
-<li>3.1.0-SNAPSHOT <a href="https://build.geoserver.org/geoserver/main/ext-latest/geoserver-3.1.0-SNAPSHOT-geofence-server-h2-plugin.zip">geoserver-3.1.0-SNAPSHOT-geofence-server-h2-plugin.zip</a></li>
+<li>3.1.0: <a href="https://sourceforge.net/projects/geoserver/files/GeoServer/3.1.0/extensions/geoserver-3.1.0-geofence-server-plugin.zip">geoserver-3.1.0-geofence-server-plugin.zip</a></li>
+<li>3.1.0-SNAPSHOT: <a href="https://build.geoserver.org/geoserver/main/ext-latest/geoserver-3.1.0-SNAPSHOT-geofence-server-plugin.zip">geoserver-3.1.0-SNAPSHOT-geofence-server-plugin.zip</a></li>
 </ul>
 <p>Make sure to match the plugin version (e.g. 3.1.0 above) to the version of the GeoServer instance.</p>
 </li>
-<li>
-<p>Extract the files in this archive to the <strong><code>WEB-INF/lib</code></strong> directory of your GeoServer installation.</p>
-</li>
-<li>Add the following system variable among the JVM startup options (location varies depending on installation type): <code>-Dgwc.context.suffix=gwc</code> to avoid conflicts with GWC pages.</li>
+</ol>
+<h2 id="install-the-files">Install the files<a class="headerlink" href="#install-the-files" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Extract the files in this archive to the <strong><code>WEB-INF/lib</code></strong> directory of your GeoServer installation.</li>
 <li><a href="#configure-the-plugin">Configure the plugin</a></li>
 <li>Restart GeoServer</li>
 </ol>
 <h2 id="configure-the-plugin">Configure the plugin<a class="headerlink" href="#configure-the-plugin" title="Permanent link">&para;</a></h2>
-<h3 id="h2-configuration">H2 configuration<a class="headerlink" href="#h2-configuration" title="Permanent link">&para;</a></h3>
-<p>If you are using the H2 flavour of the plugin, you don't need to configure anything. By default, GeoFence will use H2 as a backend database and will work out of the box with the internal default configuration.</p>
-<p>As reported above, you are strongly encouraged to move to PostgreSQL/PostGIS.</p>
-<h3 id="postgresql-configuration">PostgreSQL configuration<a class="headerlink" href="#postgresql-configuration" title="Permanent link">&para;</a></h3>
-<p>In order to instruct GeoFence to use PostgreSQL, you need to create the file <strong><code>&lt;DATADIR&gt;/geofence/geofence-datasource-ovr.properties</code></strong> with a content like this:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="na">geofenceVendorAdapter.databasePlatform</span><span class="o">=</span><span class="s">org.hibernate.spatial.dialect.postgis.PostgisDialect</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="na">geofenceDataSource.driverClassName</span><span class="o">=</span><span class="s">org.postgresql.Driver</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="na">geofenceDataSource.url</span><span class="o">=</span><span class="s">jdbc:postgresql://&lt;HOST&gt;:&lt;PORT&gt;/&lt;DATABASE&gt;</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="na">geofenceDataSource.username</span><span class="o">=</span><span class="s">&lt;USERNAME&gt;</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="na">geofenceDataSource.password</span><span class="o">=</span><span class="s">&lt;PASSWORD&gt;</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="na">geofenceEntityManagerFactory.jpaPropertyMap[hibernate.default_schema]</span><span class="o">=</span><span class="s">&lt;SCHEMA&gt;</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="c1"># avoid hibernate transaction issues</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="na">geofenceDataSource.testOnBorrow</span><span class="o">=</span><span class="s">true</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="na">geofenceDataSource.validationQuery</span><span class="o">=</span><span class="s">SELECT 1</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="na">geofenceEntityManagerFactory.jpaPropertyMap[hibernate.testOnBorrow]</span><span class="o">=</span><span class="s">true</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="na">geofenceEntityManagerFactory.jpaPropertyMap[hibernate.validationQuery]</span><span class="o">=</span><span class="s">SELECT 1</span>
+<p>You need a properties file containing the information to connect to the DB where GeoFence will store its data.</p>
+<p>If the file is not present, the problem will be logged out to the GeoServer log:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>01 set 17:24:13 WARN   [config.GeofencePersistenceConfig] - GeoFence embedded engine will be unavailable until this is fixed
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>java.lang.IllegalStateException: No geofence datasource configuration found. Checked:
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  - &lt;your geoserver data dir&gt;/data/geofence/geofence-datasource.properties
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  - &lt;container working dir&gt;/geofence-datasource.properties
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>Wrote a sample file to &lt;your geoserver data dir&gt;/data/geofence/geofence-datasource.properties.sample - copy it to geofence-datasource.properties in the same directory and fill in real credentials.
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    at org.geofence.core.db.config.DatasourcePropertiesLoader.load(DatasourcePropertiesLoader.java:79)
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    at org.geofence.core.db.config.DatasourcePropertiesLoader.load(DatasourcePropertiesLoader.java:57)
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    at org.geofence.core.db.config.GeofencePersistenceConfig.&lt;init&gt;(GeofencePersistenceConfig.java:48)
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    &lt;long stacktrace here&gt;
+</code></pre></div></p>
+<p>and, as reported in the log, a sample file will be created for you. You need to copy the sample into the file <strong><code>&lt;DATADIR&gt;/geofence/geofence-datasource.properties</code></strong> and edit it with the real info.</p>
+<p>This is the sample file content:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Sample GeoFence datasource configuration.</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1">#</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># Copy this file to the same name without the ".sample" suffix, in the same directory, and</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># fill in real credentials. All four properties are required; there is no built-in default.</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="na">geofence.datasource.url</span><span class="o">=</span><span class="s">jdbc:postgresql://localhost:5432/geofence</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="na">geofence.datasource.username</span><span class="o">=</span><span class="s">geofence</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="c1"># Plain text here. When GeoFence runs embedded in GeoServer, the value may instead be encrypted with</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="c1"># GeoServer's config-password encryption (same scheme as store connection passwords) and is decrypted</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c1"># transparently on startup. To have a clear-text password encrypted at rest, prefix it with 'plain:'</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="c1"># (e.g. plain:mysecret): on next startup GeoFence encrypts it and rewrites this line with the result.</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="na">geofence.datasource.password</span><span class="o">=</span><span class="s">geofence</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="na">geofence.datasource.driver</span><span class="o">=</span><span class="s">org.postgresql.Driver</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="c1"># Optional: any geofence.hibernate.* property is passed through to Hibernate/JPA, with the</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="c1"># prefix stripped, e.g.:</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="c1"># geofence.hibernate.hbm2ddl.auto=validate</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="c1"># geofence.hibernate.default_schema=public</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="c1"># Optional: any geofence.datasource.hikari.* property is passed through to the connection pool</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="c1"># (HikariCP), with the prefix stripped - must be a real Hikari property name, an unrecognized one</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="c1"># fails fast at startup. keepaliveTime periodically pings idle pooled connections so a dead one</span>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="c1"># (e.g. after a DB restart) is detected and evicted instead of causing a transaction failure later.</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="c1"># geofence.datasource.hikari.keepaliveTime=30000</span>
 </code></pre></div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The <code>PostgisDialect</code> is deprecated and should be replaced according to the PostgreSQL version used. Please use the proper dialect as reported in the <a href="https://docs.hibernate.org/orm/5.6/javadocs/org/hibernate/spatial/dialect/postgis/package-summary.html">hibernate summary page</a></p>
-</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>By default GeoFence will create the initial schema or update the DB schema by itself when needed. In case you want to manage the schema by yourself, you may want to use the SQL file located <a href="https://github.com/geoserver/geofence/tree/main/doc/setup/sql">here</a></p>
 <p>Also, you need to set this property to <code>validate</code> (default value is <code>update</code>).</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="na">geofenceEntityManagerFactory.jpaPropertyMap[hibernate.hbm2ddl.auto]</span><span class="o">=</span><span class="s">validate</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="na">geofence.hibernate.hbm2ddl.auto</span><span class="o">=</span><span class="s">validate</span>
 </code></pre></div>
 </div>
 <h3 id="other-info">Other info<a class="headerlink" href="#other-info" title="Permanent link">&para;</a></h3>
@@ -30434,7 +30418,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Geofence Internal Server">
+          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Geofence Embedded Server">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -30444,7 +30428,7 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Geofence Internal Server
+                Geofence Embedded Server
               </div>
             </div>
           </a>

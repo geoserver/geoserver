@@ -18227,6 +18227,8 @@
       
         
       
+        
+      
     
     
     
@@ -18363,6 +18365,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../extensions/geofence/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating GeoFence configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -18420,7 +18450,7 @@
   <span class="md-ellipsis">
     
   
-    Geofence Internal Server
+    Geofence Embedded Server
   
 
     
@@ -18442,7 +18472,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Geofence Internal Server
+    Geofence Embedded Server
   
 
           </label>
@@ -18464,7 +18494,7 @@
   <span class="md-ellipsis">
     
   
-    Installing the GeoServer GeoFence Server extension
+    Install the plugin
   
 
     
@@ -18520,7 +18550,7 @@
   <span class="md-ellipsis">
     
   
-    GeoFence Rest API
+    GeoFence REST API
   
 
     
@@ -18548,7 +18578,7 @@
   <span class="md-ellipsis">
     
   
-    AdminRules Rest API
+    REST API: AdminRules
   
 
     
@@ -18576,7 +18606,7 @@
   <span class="md-ellipsis">
     
   
-    Batch Rest API
+    REST API: Batch
   
 
     
@@ -18604,7 +18634,7 @@
   <span class="md-ellipsis">
     
   
-    Using the Internal GeoFence server (Tutorial)
+    Using the Embedded GeoFence server (Tutorial)
   
 
     
@@ -30282,7 +30312,7 @@
 <p>With SpatialJSON, each feature's <code>"properties"</code> map becomes an <em>ordered list</em> (array) whose index corresponds to the <code>"propertyNames"</code> array that holds the attribute names in the new <code>"schemaInformation"</code> object. Additionally, the repeated property <code>"geometry_name"</code> is replaced by a single property named <code>"geometryName"</code> in the new schema information object.</p>
 <h2 id="evaluation">Evaluation<a class="headerlink" href="#evaluation" title="Permanent link">&para;</a></h2>
 <p>In the above example, without whitespaces and line breaks, savings in space are only about 5%. With much more features savings could reach almost 27% (the ratio of the sizes of a GeoJSON and a SpatialJSON feature object), that is, the size of the SpatialJSON response is only 73% of the size of a traditional GeoJSON response. More savings are possible with more attributes per feature. Savings basically depend on the ratio between schema information size and data size. In tests requesting several thousands of simple features with 200+ columns/attributes savings up to 70% have been achieved.</p>
-<p>These savings drop to between \~50% and \~3% when a compressing content encoding method (like gzip, deflate or brotli) is used on the wire. However, it's not all about transfer size. The smaller the uncompressed JSON response, the lesser characters the client has to parse. Smaller uncompressed responses are also much more memory-friendly on both the server and the client side.</p>
+<p>These savings drop to between ~50% and ~3% when a compressing content encoding method (like gzip, deflate or brotli) is used on the wire. However, it's not all about transfer size. The smaller the uncompressed JSON response, the lesser characters the client has to parse. Smaller uncompressed responses are also much more memory-friendly on both the server and the client side.</p>
 
 
 

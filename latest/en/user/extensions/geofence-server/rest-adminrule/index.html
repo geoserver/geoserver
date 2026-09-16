@@ -25,7 +25,7 @@
     
     
       
-        <title>AdminRules Rest API - Documentation</title>
+        <title>REST API: AdminRules - Documentation</title>
       
     
     
@@ -132,7 +132,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#adminrules-rest-api" class="md-skip">
+        <a href="#rest-api-adminrules" class="md-skip">
           Skip to content
         </a>
       
@@ -182,7 +182,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              AdminRules Rest API
+              REST API: AdminRules
             
           </span>
         </div>
@@ -18229,6 +18229,8 @@
       
         
       
+        
+      
     
     
     
@@ -18365,6 +18367,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../geofence/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating GeoFence configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -18424,7 +18454,7 @@
   <span class="md-ellipsis">
     
   
-    Geofence Internal Server
+    Geofence Embedded Server
   
 
     
@@ -18446,7 +18476,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Geofence Internal Server
+    Geofence Embedded Server
   
 
           </label>
@@ -18468,7 +18498,7 @@
   <span class="md-ellipsis">
     
   
-    Installing the GeoServer GeoFence Server extension
+    Install the plugin
   
 
     
@@ -18524,7 +18554,7 @@
   <span class="md-ellipsis">
     
   
-    GeoFence Rest API
+    GeoFence REST API
   
 
     
@@ -18561,7 +18591,7 @@
   <span class="md-ellipsis">
     
   
-    AdminRules Rest API
+    REST API: AdminRules
   
 
     
@@ -18579,7 +18609,7 @@
   <span class="md-ellipsis">
     
   
-    AdminRules Rest API
+    REST API: AdminRules
   
 
     
@@ -18727,7 +18757,7 @@
   <span class="md-ellipsis">
     
   
-    Batch Rest API
+    REST API: Batch
   
 
     
@@ -18755,7 +18785,7 @@
   <span class="md-ellipsis">
     
   
-    Using the Internal GeoFence server (Tutorial)
+    Using the Embedded GeoFence server (Tutorial)
   
 
     
@@ -30370,7 +30400,7 @@
   
 
 
-<h1 id="adminrules-rest-api">AdminRules Rest API<a class="headerlink" href="#adminrules-rest-api" title="Permanent link">&para;</a></h1>
+<h1 id="rest-api-adminrules">REST API: AdminRules<a class="headerlink" href="#rest-api-adminrules" title="Permanent link">&para;</a></h1>
 <h2 id="security">Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h2>
 <p>The Geofence Rest API is only accessible to users with the role ROLE_ADMIN.</p>
 <h2 id="inputoutput">Input/Output<a class="headerlink" href="#inputoutput" title="Permanent link">&para;</a></h2>
@@ -30431,9 +30461,14 @@
 <td>Filter rules on username (excludes all other specified usernames).</td>
 </tr>
 <tr>
-<td>userAny</td>
+<td><del>userAny</del></td>
 <td>0 or 1.</td>
-<td>Specify whether rules matching any username should be included or not.</td>
+<td>Use <code>userDefault</code> instead.</td>
+</tr>
+<tr>
+<td>userDefault</td>
+<td>0 or 1.</td>
+<td>Specify whether rules matching any username should be included or not. Wins over <code>userAny</code> when both are set.</td>
 </tr>
 <tr>
 <td>roleName</td>
@@ -30441,9 +30476,14 @@
 <td>Filter rules on rolename (excludes all other specified rolenames).</td>
 </tr>
 <tr>
-<td>roleAny</td>
+<td><del>roleAny</del></td>
 <td>0 or 1.</td>
-<td>Specify whether rules matching any rolename should be included or not.</td>
+<td>Use <code>roleDefault</code> instead.</td>
+</tr>
+<tr>
+<td>roleDefault</td>
+<td>0 or 1.</td>
+<td>Specify whether rules matching any rolename should be included or not. Wins over <code>roleAny</code> when both are set.</td>
 </tr>
 <tr>
 <td>workspace</td>
@@ -30451,9 +30491,14 @@
 <td>Filter rules on workspace (excludes all other specified workspaces).</td>
 </tr>
 <tr>
-<td>workspaceAny</td>
+<td><del>workspaceAny</del></td>
 <td>0 or 1.</td>
-<td>Specify whether rules matching any workspace should be included or not.</td>
+<td>Use <code>workspaceDefault</code> instead. Specify whether rules matching any workspace should be included or not.</td>
+</tr>
+<tr>
+<td>workspaceDefault</td>
+<td>0 or 1.</td>
+<td>Specify whether rules matching any workspace should be included or not. Wins over <code>workspaceAny</code> when both are set.</td>
 </tr>
 </tbody>
 </table>
@@ -30473,7 +30518,7 @@
 <tr>
 <td>GET</td>
 <td>List all adminrules, with respect to any added filters</td>
-<td>page, entries, userName, userAny, roleName, roleAny, workspace, workspaceAny</td>
+<td>page, entries, userName, <del>userAny</del>, userDefault, roleName, <del>roleAny</del>, roleDefault, workspace, <del>workspaceAny</del>, workspaceDefault</td>
 <td>200 OK. List of adminrules in XML.</td>
 </tr>
 <tr>
@@ -30499,7 +30544,7 @@
 <tr>
 <td>GET</td>
 <td>Count all adminrules, with respect to any added filters</td>
-<td>userName, userAny, roleName, roleAny, workspace, workspaceAny</td>
+<td>userName, <del>userAny</del>, userDefault, roleName, <del>roleAny</del>, roleDefault, workspace, <del>workspaceAny</del>, workspaceDefault</td>
 <td>200 OK. Rule list count in XML.</td>
 </tr>
 </tbody>
@@ -30573,7 +30618,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../rest/" class="md-footer__link md-footer__link--prev" aria-label="Previous: GeoFence Rest API">
+          <a href="../rest/" class="md-footer__link md-footer__link--prev" aria-label="Previous: GeoFence REST API">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -30583,20 +30628,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                GeoFence Rest API
+                GeoFence REST API
               </div>
             </div>
           </a>
         
         
           
-          <a href="../rest-batch-op/" class="md-footer__link md-footer__link--next" aria-label="Next: Batch Rest API">
+          <a href="../rest-batch-op/" class="md-footer__link md-footer__link--next" aria-label="Next: REST API: Batch">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Batch Rest API
+                REST API: Batch
               </div>
             </div>
             <div class="md-footer__button md-icon">

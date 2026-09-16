@@ -14,6 +14,24 @@ The following standard CSW operations are currently supported:
 
 The Internal Catalog Store supports filtering on both full x-paths as well as the "Queryables" specified in GetCapabilities.
 
+## Vendor parameters
+
+### includeUnadvertised
+
+Layers and layer groups that are not advertised are left out of the records returned by `GetRecords` and `GetRecordById`. If the current user had administrative powers, `includeUnadvertised=true` can be added to the request to also get non advertised layers. For example:
+
+```
+http://localhost:8080/geoserver/csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results
+    &includeUnadvertised=true
+```
+
+The parameter works only for an administrator (someone with ``ROLE_ADMINISTRATOR``):
+* A full administrator can use it on any CSW request.
+* A workspace administrator can use it only inside the virtual service of a workspace they administer, for example `/geoserver/topp/csw`, and still sees only the layers of that workspace.
+
+For anyone else the parameter is ignored and the response stays the same as without it.
+The parameter does not change security: layers the caller is not allowed to see stay hidden either way.
+
 ## Catalog stores
 
 The default catalog store is the Internal Catalog Store, which retrieves information from the GeoServer's internal catalog. The Simple Catalog Store (`simple-store` module) adds an alternative simple store which reads the catalog data directly from files (mainly used for testing).

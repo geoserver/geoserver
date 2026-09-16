@@ -940,7 +940,7 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-compress</artifactId>
         <!-- version override for version included in Apache POI 5.2.5 (which is 1.25.0) -->
-        <version>1.26.1</version>
+        <version>1.28.0</version>
       </dependency>
       <dependency>
         <groupId>org.jfree</groupId>

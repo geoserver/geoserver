@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-public class ServicesTest extends GeofenceBaseTest {
+public class ServicesTest extends GeofenceRestBaseTest {
 
     void loginAsCite() {
         login("cite", "cite", "ROLE_CITE_ADMIN");
@@ -43,6 +43,7 @@ public class ServicesTest extends GeofenceBaseTest {
         // check from the caps he can access everything
         Document dom = getAsDOM("wms?request=GetCapabilities&version=1.1.1&service=WMS");
         // print(dom);
+        assertNotExceptionReport(dom);
 
         assertXpathEvaluatesTo("11", "count(//Layer[starts-with(Name, 'cite:')])", dom);
         assertXpathEvaluatesTo("3", "count(//Layer[starts-with(Name, 'sf:')])", dom);
@@ -60,6 +61,7 @@ public class ServicesTest extends GeofenceBaseTest {
         // check from the caps he can access cite and sf, but not others
         Document dom = getAsDOM("wms?request=GetCapabilities&version=1.1.1&service=WMS");
         print(dom);
+        assertNotExceptionReport(dom);
 
         assertXpathEvaluatesTo("11", "count(//Layer[starts-with(Name, 'cite:')])", dom);
         assertXpathEvaluatesTo("3", "count(//Layer[starts-with(Name, 'sf:')])", dom);

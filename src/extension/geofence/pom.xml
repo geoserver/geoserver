@@ -16,7 +16,6 @@
 
   <modules>
     <module>geofence</module>
-    <module>geofence-assembly</module>
   </modules>
 
   <profiles>
@@ -65,5 +64,4 @@
     </profile>
 
   </profiles>
-
 </project>

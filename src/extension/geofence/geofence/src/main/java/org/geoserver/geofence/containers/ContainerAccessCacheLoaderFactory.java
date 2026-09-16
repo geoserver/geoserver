@@ -17,19 +17,23 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.geofence.config.GeoFenceConfiguration;
 import org.geoserver.security.impl.LayerGroupContainmentCache;
 import org.geotools.util.logging.Logging;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 
 /**
  * Provide the CacheLoader that computes the Containers access.
  *
  * @author Emanuele Tajariol- GeoSolutions
  */
+@Component
 public class ContainerAccessCacheLoaderFactory {
 
     static final Logger LOGGER = Logging.getLogger(ContainerAccessCacheLoaderFactory.class);
 
     private final DefaultContainerAccessResolver resolver;
 
+    @Autowired
     public ContainerAccessCacheLoaderFactory(DefaultContainerAccessResolver resolver) {
         this.resolver = resolver;
     }

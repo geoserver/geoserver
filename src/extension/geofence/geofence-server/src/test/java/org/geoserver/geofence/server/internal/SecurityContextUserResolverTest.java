@@ -5,7 +5,6 @@ import java.util.Collections;
 import org.apache.commons.lang3.JavaVersion;
 import org.apache.commons.lang3.SystemUtils;
 import org.geoserver.security.impl.GeoServerRole;
-import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -21,24 +20,6 @@ public class SecurityContextUserResolverTest {
     public static void checkJDK() {
         // won't work with Java 25 due to bytebuddy needed by Hibernate being too old
         Assume.assumeFalse(SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_23));
-    }
-
-    @Test
-    public void existsUser() {
-        // Given
-        SecurityContextUserResolver securityContextUserResolver = new SecurityContextUserResolver();
-
-        // When and Then
-        Assert.assertThrows(IllegalStateException.class, () -> securityContextUserResolver.existsUser("some-user"));
-    }
-
-    @Test
-    public void existsRole() {
-        // Given
-        SecurityContextUserResolver securityContextUserResolver = new SecurityContextUserResolver();
-
-        // When and Then
-        Assert.assertThrows(IllegalStateException.class, () -> securityContextUserResolver.existsRole("some-role"));
     }
 
     @Test

@@ -6,8 +6,10 @@ package org.geoserver.geofence.wps;
 
 import org.geoserver.geofence.wpscommon.ExecutionIdRetriever;
 import org.geoserver.wps.resource.WPSResourceManager;
+import org.springframework.stereotype.Component;
 
 /** @author etj (Emanuele Tajariol @ GeoSolutions) */
+@Component
 public class DefaultExecutionIdRetriever implements ExecutionIdRetriever {
     WPSResourceManager wpsManager;
 

@@ -49,6 +49,7 @@ public class CacheController extends AbstractCatalogController {
         StringBuilder sb = new StringBuilder();
 
         appendStats(sb, "RuleStats", cacheManager.getRuleCache());
+        appendStats(sb, "PermStats", cacheManager.getPermCache());
         appendStats(sb, "AdminAuthStats", cacheManager.getAuthCache());
         appendStats(sb, "ContStats", cacheManager.getContainerCache());
 

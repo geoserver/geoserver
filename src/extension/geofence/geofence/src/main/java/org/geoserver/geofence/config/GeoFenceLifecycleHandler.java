@@ -66,7 +66,8 @@ public class GeoFenceLifecycleHandler implements GeoServerLifecycleHandler {
     @Override
     public void onReload() {
         if (!applyConfiguration()) {
-            // fail closed rather than keep serving the superseded configuration
+            // fail closed: cache hits never reach the backend, so denying there alone isn't enough
+            cacheManager.invalidateAll();
             ruleReaderBackendFactory.denyUntilRecovered("geofence.properties", this::applyConfiguration);
         }
     }

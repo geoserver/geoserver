@@ -6,6 +6,7 @@ package org.geoserver.geofence.server.config;
 
 import org.geofence.core.db.config.GeofencePersistenceConfig;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
+import org.geoserver.geofence.cache.CacheManager;
 import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,13 +22,16 @@ public class GeoFenceDatasourceLifecycleHandler implements GeoServerLifecycleHan
 
     private final GeofencePersistenceConfig persistenceConfig;
     private final RuleReaderServiceFactory ruleReaderBackendFactory;
+    private final CacheManager cacheManager;
 
     @Autowired
     public GeoFenceDatasourceLifecycleHandler(
             GeofencePersistenceConfig persistenceConfig,
-            @Qualifier("ruleReaderBackendFactory") RuleReaderServiceFactory ruleReaderBackendFactory) {
+            @Qualifier("ruleReaderBackendFactory") RuleReaderServiceFactory ruleReaderBackendFactory,
+            CacheManager cacheManager) {
         this.persistenceConfig = persistenceConfig;
         this.ruleReaderBackendFactory = ruleReaderBackendFactory;
+        this.cacheManager = cacheManager;
     }
 
     @Override
@@ -47,6 +51,8 @@ public class GeoFenceDatasourceLifecycleHandler implements GeoServerLifecycleHan
 
     @Override
     public void onReload() {
+        // the datasource may now point at another database, and cache hits never reach the backend
+        cacheManager.invalidateAll();
         if (!persistenceConfig.reloadDatasource()) {
             // fail closed, like core disables a store whose password won't decrypt
             ruleReaderBackendFactory.denyUntilRecovered(

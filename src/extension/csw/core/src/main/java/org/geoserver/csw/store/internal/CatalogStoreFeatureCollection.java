@@ -55,6 +55,7 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
     protected CatalogStoreMapping mapping;
     protected RecordDescriptor rd;
     protected Map<String, String> interpolationProperties = new HashMap<>();
+    protected boolean includeUnadvertised;
 
     /**
      * Create new CatalogStoreFeatureCollection
@@ -66,6 +67,7 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
      * @param catalog The GeoServer Catalog
      * @param mapping The Mapping
      * @param rd Record Descriptor
+     * @param includeUnadvertised Whether non advertised layers take part in the results
      */
     public CatalogStoreFeatureCollection(
             int offset,
@@ -75,7 +77,8 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
             Catalog catalog,
             CatalogStoreMapping mapping,
             RecordDescriptor rd,
-            Map<String, String> interpolationProperties) {
+            Map<String, String> interpolationProperties,
+            boolean includeUnadvertised) {
         super(rd.getFeatureType());
         this.offset = offset;
         this.count = count;
@@ -85,6 +88,7 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
         this.sortOrder = sortOrder;
         this.interpolationProperties = interpolationProperties;
         this.rd = rd;
+        this.includeUnadvertised = includeUnadvertised;
     }
 
     @Override
@@ -109,20 +113,23 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
     }
 
     private Filter catalogFilter() {
-        Filter filter = Predicates.and(
-                // ignore catalog info's that are not enabled
-                Predicates.equal("enabled", true),
-                // ignore catalog info's that are not advertised
-                Predicates.equal("advertised", true),
-                // ignore catalog info's without id
-                ff.not(ff.isNull(this.mapping.getIdentifierElement().getContent())));
-        filter = Predicates.and(this.filter, filter);
+        List<Filter> filters = new ArrayList<>();
+        // ignore catalog info's that are not enabled
+        filters.add(Predicates.equal("enabled", true));
+        // ignore catalog info's without id
+        filters.add(ff.not(ff.isNull(this.mapping.getIdentifierElement().getContent())));
+        // skip unadvertised layers unless requested otherwise
+        if (!includeUnadvertised) {
+            // ignore catalog info's that are not advertised
+            filters.add(Predicates.equal("advertised", true));
+        }
+        Filter filter = Predicates.and(this.filter, Predicates.and(filters));
         // build filter compatible with layers
         List<Filter> filtersL = new ArrayList<>();
         filtersL.add(Predicates.isInstanceOf(LayerInfo.class));
         filtersL.addAll(((And) filter.accept(new ResourceFilterVisitor(), null)).getChildren());
         // ignore layer info's from stores that are not enabled
-        filtersL.add(filtersL.size() - 2, Predicates.equal("resource.store.enabled", true));
+        filtersL.add(Predicates.equal("resource.store.enabled", true));
         // build filter compatible with layer groups
         List<Filter> filtersG = new ArrayList<>();
         filtersG.add(Predicates.isInstanceOf(LayerGroupInfo.class));

@@ -144,6 +144,8 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
             interpolationProperties.put("url.base", ResponseUtils.buildURL(baseUrl, null, null, URLType.SERVICE));
         }
 
+        boolean includeUnadvertised = Boolean.TRUE.equals(query.getHints().get(GetRecords.KEY_INCLUDE_UNADVERTISED));
+
         Collection<CatalogStoreMapping> mappings = getMappings(query.getTypeName());
         Collection<CatalogStoreMapping> outputMappings =
                 getMappings(rdOutput.getFeatureDescriptor().getName().getLocalPart());
@@ -177,7 +179,8 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
                             geoServer.getCatalog(),
                             outputMapping,
                             rdOutput,
-                            interpolationProperties);
+                            interpolationProperties,
+                            includeUnadvertised);
 
                     if (unmapper.needsPostFilter()) {
                         collection = new FilteringFeatureCollection<>(collection, query.getFilter());

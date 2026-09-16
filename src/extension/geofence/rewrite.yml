@@ -1,0 +1,17 @@
+type: specs.openrewrite.org/v1beta/recipe
+name: geofence.migrate
+displayName: GeoFence - Jakarta + Spring 6 + Hibernate 6.x
+recipeList:
+  # Move javax → jakarta and common EE artifacts
+  - org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta
+
+  # Spring Framework 6.x (stacked so you get the full set of fixers)
+  - org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_0
+  - org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_1
+  - org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_2
+
+  # Spring Security 6 (safe even if a submodule doesn’t use it)
+  - org.openrewrite.java.spring.security6.UpgradeSpringSecurity_6_0
+
+  # Hibernate → 6.6 (closest landing before doing 7.x manual tweaks)
+  - org.openrewrite.hibernate.MigrateToHibernate65

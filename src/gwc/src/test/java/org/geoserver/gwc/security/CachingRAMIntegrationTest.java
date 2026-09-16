@@ -105,13 +105,12 @@ public class CachingRAMIntegrationTest extends WMSTestSupport {
         assertEquals("image/png", response.getContentType());
         int hitCalls = CountingResourceAccessManager.CALL_COUNT.get();
 
-        // Both requests produce 2 inner-RAM calls: one for computeSecurityKey() and one for the
-        // catalog security check. In the tile-miss case the WMS sub-dispatch runs on the same thread
-        // and inherits the same request scope, so the catalog check is already cached when the
-        // sub-dispatch runs -- no extra inner call. Without caching every catalog access in both
-        // the outer request and the sub-dispatch would invoke the inner RAM independently,
-        // bringing the total to 5+.
+        // The cached tile needs 2 inner-RAM calls: one for computeSecurityKey() and one for the
+        // catalog security check. The tile miss adds one more, because the WMS sub-dispatch replaces
+        // the OWS request and the cache keys on it, so the catalog check is computed again under the
+        // sub-dispatch key. Without caching every catalog access in both the outer request and the
+        // sub-dispatch would invoke the inner RAM independently, bringing the total to 5+.
         assertEquals("cached tile: inner RAM calls", 2, hitCalls);
-        assertEquals("tile miss: inner RAM calls with caching", 2, missCalls);
+        assertEquals("tile miss: inner RAM calls with caching", 3, missCalls);
     }
 }

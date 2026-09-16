@@ -14,8 +14,10 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.config.GeoServerPropertyConfigurer;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.geofence.config.GeoFencePropertyPlaceholderConfigurer;
+import org.geoserver.geofence.config.GeoFenceConfigurationManager;
+import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geoserver.geofence.utils.GeofenceTestUtils;
 import org.geoserver.geofence.web.GeofencePage;
 import org.geoserver.web.GeoServerHomePage;
@@ -26,14 +28,15 @@ import org.springframework.core.io.UrlResource;
 
 public class GeofencePageTest extends GeoServerWicketTestSupport {
 
-    static GeoFencePropertyPlaceholderConfigurer configurer;
+    static GeoServerPropertyConfigurer configurer;
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
         // get the beans we use for testing
-        configurer = (GeoFencePropertyPlaceholderConfigurer) applicationContext.getBean("geofence-configurer");
+        configurer =
+                applicationContext.getBean(GeoFenceConfigurationManager.class).getConfigurer();
         configurer.setLocation(new UrlResource(this.getClass().getResource("/test-config.properties")));
     }
 
@@ -97,7 +100,7 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
 
         tester.clickLink("form:test", true);
 
-        tester.assertContains("RemoteAccessException");
+        tester.assertContains("Invalid GeoFence REST URL");
     }
 
     @Test
@@ -125,5 +128,21 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
         tester.clickLink("form:invalidate", true);
         String success = new StringResourceModel(GeofencePage.class.getSimpleName() + ".cacheInvalidated").getObject();
         tester.assertInfoMessages(success);
+    }
+
+    /** A denying backend must be called out visually, not just worded differently. */
+    @Test
+    public void testUnavailableBackendIsHighlighted() {
+        RuleReaderServiceFactory backendFactory =
+                applicationContext.getBean("ruleReaderBackendFactory", RuleReaderServiceFactory.class);
+        backendFactory.denyUntilRecovered("test", () -> false);
+        try {
+            tester.startPage(GeofencePage.class);
+            tester.assertContains("gs-geofence-unavailable");
+            tester.assertContains(
+                    new StringResourceModel(GeofencePage.class.getSimpleName() + ".ruleReaderUnavailable").getObject());
+        } finally {
+            backendFactory.denyUntilRecovered("test", () -> true);
+        }
     }
 }

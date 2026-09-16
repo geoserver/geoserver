@@ -7,14 +7,13 @@ package org.geoserver.geofence.cache;
 import com.google.common.base.Ticker;
 import java.io.Serializable;
 
-/** @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it" */
 public class CacheConfiguration implements Serializable, Cloneable {
 
-    private long size = 100;
+    private volatile long size = 100;
 
-    private long refreshMilliSec = 15000;
+    private volatile long refreshMilliSec = 15000;
 
-    private long expireMilliSec = 30000;
+    private volatile long expireMilliSec = 30000;
 
     private volatile Ticker customTicker = null; // testing only
 

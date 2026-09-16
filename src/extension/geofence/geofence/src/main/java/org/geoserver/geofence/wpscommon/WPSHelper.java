@@ -7,31 +7,36 @@ package org.geoserver.geofence.wpscommon;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
-import org.geoserver.geofence.core.model.enums.GrantType;
-import org.geoserver.geofence.services.RuleReaderService;
-import org.geoserver.geofence.services.dto.AccessInfo;
-import org.geoserver.geofence.services.dto.RuleFilter;
+import org.geofence.core.services.dto.AccessInfo;
+import org.geofence.core.services.dto.GrantTypeDTO;
+import org.geofence.core.services.dto.RuleFilter;
+import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geoserver.geofence.util.AccessInfoUtils;
 import org.geoserver.ows.Request;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
 /** @author etj (Emanuele Tajariol @ GeoSolutions) */
+@Component
 public class WPSHelper implements ApplicationContextAware {
 
     private static final Logger LOGGER = Logging.getLogger(WPSHelper.class);
 
-    private RuleReaderService ruleService;
+    private RuleReaderServiceFactory ruleServiceFactory;
 
     ChainStatusHolder statusHolder = null;
     ExecutionIdRetriever executionIdRetriever = null;
     private boolean helperAvailable = false;
 
-    public WPSHelper(RuleReaderService ruleService) {
-        this.ruleService = ruleService;
+    @Autowired
+    public WPSHelper(@Qualifier("ruleReaderFrontendFactory") RuleReaderServiceFactory ruleServiceFactory) {
+        this.ruleServiceFactory = ruleServiceFactory;
     }
 
     @Override
@@ -71,8 +76,8 @@ public class WPSHelper implements ApplicationContextAware {
             RuleFilter r = filter.clone();
             r.setSubfield(procName);
 
-            AccessInfo accessInfo = ruleService.getAccessInfo(r);
-            if (accessInfo.getGrant() == GrantType.DENY) {
+            AccessInfo accessInfo = ruleServiceFactory.getService().getAccessInfo(r);
+            if (accessInfo.getGrant() == GrantTypeDTO.DENY) {
                 // shortcut: if at least one process is not allowed for current resource, do
                 // not evaluate the other procs
                 LOGGER.fine("Process " + procName + " not allowed to operate on layer");

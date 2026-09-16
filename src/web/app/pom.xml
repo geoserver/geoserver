@@ -194,6 +194,14 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-geotiff</artifactId>
+      <exclusions>
+        <!-- plain ehcache conflicts with geofence-persistence's jakarta-classifier one; can't scope an
+             exclusion to a profile, but this jar is only used by gt-geotiff's opt-in COG support. -->
+        <exclusion>
+          <artifactId>ehcache</artifactId>
+          <groupId>org.ehcache</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
@@ -1098,6 +1106,66 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-jms-geoserver</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>geofence</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-geofence</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>geofence-server</id>
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <!-- Hibernate's HQL parser needs 4.13.x; Eclipse Imagen's Jiffle needs 4.7.1 and can't
+                 coexist with it, so Jiffle raster band-math breaks whenever this profile is active. -->
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>4.13.2</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-geofence-server</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.postgresql</groupId>
+          <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.postgis</groupId>
+          <artifactId>postgis-jdbc</artifactId>
+          <version>${postgis.jdbc.version}</version>
+          <exclusions>
+            <exclusion>
+              <artifactId>postgis-stubs</artifactId>
+              <groupId>org.postgis</groupId>
+            </exclusion>
+            <exclusion>
+              <artifactId>postgresql</artifactId>
+              <groupId>postgresql</groupId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>geofence-wps</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-geofence-wps</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

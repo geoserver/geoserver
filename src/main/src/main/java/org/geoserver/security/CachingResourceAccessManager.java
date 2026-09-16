@@ -16,6 +16,8 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geotools.api.filter.Filter;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.context.request.RequestAttributes;
@@ -43,7 +45,11 @@ public class CachingResourceAccessManager extends ResourceAccessManagerWrapper {
         IS_WS_ADMIN
     }
 
-    private record Key(Kind kind, String user, String target, String containers) {}
+    /**
+     * The cache lives in the request scope, so the {@code owsRequest} component is not there to separate one HTTP
+     * request from the next, see {@link #owsRequestKey()}.
+     */
+    private record Key(Kind kind, String user, String target, String containers, String owsRequest) {}
 
     @Override
     public WorkspaceAccessLimits getAccessLimits(Authentication user, WorkspaceInfo workspace) {
@@ -127,13 +133,32 @@ public class CachingResourceAccessManager extends ResourceAccessManagerWrapper {
             return loader.get();
         }
 
-        Key key = new Key(kind, userKey(auth), targetId, containers);
+        Key key = new Key(kind, userKey(auth), targetId, containers, owsRequestKey());
         if (cache.containsKey(key)) {
             return (T) cache.get(key);
         }
         T result = loader.get();
         cache.put(key, result);
         return result;
+    }
+
+    /**
+     * The OWS service and request name, as a cache key component, or the empty string when the Dispatcher has not set
+     * up the request yet.
+     *
+     * <p>A single HTTP request can hit the access manager both before and after the Dispatcher sets up the OWS request:
+     * the security checks that resolve a virtual service run first, the service call runs later. Access managers that
+     * read the OWS request answer differently in the two phases. GeoFence returns no limits at all in the first one
+     * (see {@code GeofenceAccessManager.getAccessLimits}), which means full access, and real limits in the second. Left
+     * out of the key, the early answer would be reused for the whole request and grant access GeoFence denies.
+     *
+     * <p>Nested dispatch is the other case: a GWC tile miss runs {@code gwc/dispatch} and then a WMS GetMap on the same
+     * thread and request scope, and GeoFence rules can single out either one.
+     */
+    private static String owsRequestKey() {
+        Request request = Dispatcher.REQUEST.get();
+        if (request == null) return "";
+        return request.getService() + ":" + request.getRequest();
     }
 
     private static String userKey(Authentication auth) {

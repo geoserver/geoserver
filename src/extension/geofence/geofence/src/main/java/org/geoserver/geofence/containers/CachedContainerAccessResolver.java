@@ -14,19 +14,23 @@ import org.geoserver.geofence.cache.CacheManager;
 import org.geoserver.geofence.config.GeoFenceConfiguration;
 import org.geoserver.security.impl.LayerGroupContainmentCache;
 import org.geotools.util.logging.Logging;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 
 /**
  * Provides the Container access results using the cache.
  *
  * @author Emanuele Tajariol- GeoSolutions
  */
+@Component("cachedContainerAccessResolver")
 public class CachedContainerAccessResolver implements ContainerAccessResolver {
 
     static final Logger LOGGER = Logging.getLogger(CachedContainerAccessResolver.class);
 
     private CacheManager cacheManager;
 
+    @Autowired
     public CachedContainerAccessResolver(CacheManager cacheManager) {
         this.cacheManager = cacheManager;
     }

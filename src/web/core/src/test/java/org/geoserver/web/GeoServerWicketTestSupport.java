@@ -75,7 +75,7 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
     @Override
     protected void onTearDown(SystemTestData testData) throws Exception {
         super.onTearDown(testData);
-        tester.destroy();
+        if (tester != null) tester.destroy();
     }
 
     public GeoServerApplication getGeoServerApplication() {
@@ -211,17 +211,21 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
 
     /** Execute Ajax Event Behavior with attached value. */
     protected void executeExactAjaxEventBehavior(String path, String event, String value) {
-        tester.getRequest().setParameter(path, value);
-        tester.getRequest().setMethod("GET");
-        tester.executeAjaxEvent(path, event);
+        if (tester != null) {
+            tester.getRequest().setParameter(path, value);
+            tester.getRequest().setMethod("GET");
+            tester.executeAjaxEvent(path, event);
+        }
     }
     /** Execute Ajax Event Behavior with attached value. */
     protected void executeAjaxEventBehavior(String path, String event, String value) {
-        String[] ids = path.split(":");
-        String id = ids[ids.length - 1];
-        tester.getRequest().setParameter(id, value);
-        tester.getRequest().setMethod("GET");
-        tester.executeAjaxEvent(path, event);
+        if (tester != null) {
+            String[] ids = path.split(":");
+            String id = ids[ids.length - 1];
+            tester.getRequest().setParameter(id, value);
+            tester.getRequest().setMethod("GET");
+            tester.executeAjaxEvent(path, event);
+        }
     }
     /**
      * Sets the value of a form component that might not be included in a form (because maybe we are using it via Ajax).

@@ -1,4 +1,4 @@
-# Batch Rest API
+# REST API: Batch
 
 Batch operations allow to run multiple insert, update and delete at the same time over rules and admin rules. All the operations are executed in a single transaction: this means that either all of them are successful or all the operations are rolled back.
 
@@ -36,12 +36,12 @@ Encoding of a Batch in XML:
 </operations>
 <operations service="rules" id="5" type="delete" />
 <operations service="adminrules" type="insert">
-  <RuleAdmin>
+  <AdminRule>
      <priority>2</priority>
      <roleName>ROLE_USER</roleName>
      <workspace>ws</workspace>
      <access>ADMIN</access>
-  </RuleAdmin>
+  </AdminRule>
 </operations>
 </Batch>
 ```
@@ -53,9 +53,9 @@ Encoding of a Batch in JSON:
 "Batch":{
   "operations":[
      {
-        "@service":"adminrules",
+        "@service":"rules",
         "@type":"update",
-        "@id":"3",
+        "@id":"2",
         "Rule":{
            "access":"ALLOW",
            "layer":"layer",

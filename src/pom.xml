@@ -114,7 +114,7 @@
     <compress-lzf.version>1.0.3</compress-lzf.version>
     <eclipse.emf.version>2.15.0</eclipse.emf.version>
     <errorProne.version>2.31.0</errorProne.version>
-    <gf.version>3.8.2</gf.version>
+    <gf.version>3.9-SNAPSHOT</gf.version>
     <hazelcast.version>5.3.8</hazelcast.version>
     <cors.version>3.1</cors.version>
     <!-- BouncyCastle coordinates. Kept as properties because the regular and the
@@ -210,6 +210,15 @@
       <dependency>
         <groupId>jakarta.xml.bind</groupId>
         <artifactId>jakarta.xml.bind-api</artifactId>
+        <version>4.0.5</version>
+        <scope>compile</scope>
+      </dependency>
+      <!-- GeoTools' gt-platform-dependencies BOM (imported below) still pins jaxb-runtime to the older
+           4.0.4, matching its own older jakarta.xml.bind-api pin - override it here too, to stay paired
+           with the jakarta.xml.bind-api bump above rather than mixing a 4.0.5 API with a 4.0.4 runtime. -->
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
         <version>4.0.5</version>
         <scope>compile</scope>
       </dependency>
@@ -561,11 +570,6 @@
         <version>2.14.0</version>
       </dependency>
       <dependency>
-        <groupId>com.googlecode.genericdao</groupId>
-        <artifactId>search-jpa-hibernate</artifactId>
-        <version>${hibernate-generic-dao-version}</version>
-      </dependency>
-      <dependency>
         <groupId>net.sf.opencsv</groupId>
         <artifactId>opencsv</artifactId>
         <version>2.3</version>
@@ -577,20 +581,19 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.hibernate</groupId>
+        <groupId>org.hibernate.orm</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>${hibernate-version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hibernatespatial</groupId>
-        <artifactId>hibernate-spatial</artifactId>
-        <version>${hibernate-spatial-version}</version>
-        <!-- fork: https://github.com/geosolutions-it/hibernate-spatial -->
+        <groupId>org.hibernate.orm</groupId>
+        <artifactId>hibernate-jcache</artifactId>
+        <version>${hibernate-version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hibernatespatial</groupId>
-        <artifactId>hibernate-spatial-h2-geodb</artifactId>
-        <version>${hibernate-spatial-version}</version>
+        <groupId>org.hibernate.orm</groupId>
+        <artifactId>hibernate-spatial</artifactId>
+        <version>${hibernate-version}</version>
       </dependency>
       <dependency>
         <groupId>xmlunit</groupId>
@@ -978,8 +981,8 @@
             <groupId>commons-logging</groupId>
           </exclusion>
         </exclusions>
-        <!-- Needed to solve NamespaceHandler class org.apache.xbean.spring.context.v2.XBeanNamespaceHandler 
-             for namespace [http://activemq.apache.org/schema/core] not found ClassNotFoundException: 
+        <!-- Needed to solve NamespaceHandler class org.apache.xbean.spring.context.v2.XBeanNamespaceHandler
+             for namespace [http://activemq.apache.org/schema/core] not found ClassNotFoundException:
              org.apache.xbean.spring.context.v2.XBeanNamespaceHandler
         -->
       </dependency>
@@ -1473,7 +1476,7 @@
           <!-- Adding opens for build to work.
                Needed for mock frameworks: java.base/java.lang
                Additional needs for XStream:  java.base/java.util, java.base/java.lang.reflect, java.base/java.text, java.desktop/java.awt.font
-               Additional needs for JAI: java.desktop/sun.awt.image 
+               Additional needs for JAI: java.desktop/sun.awt.image
                Additional needs for LDAP tests:  java.naming/com.sun.jndi.ldap
             -->
           <argLine>@{argLine} -XX:+IgnoreUnrecognizedVMOptions -Dfile.encoding=UTF-8 --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED  --add-opens=java.desktop/sun.awt.image=ALL-UNNAMED --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED ${fips.argLine}</argLine>

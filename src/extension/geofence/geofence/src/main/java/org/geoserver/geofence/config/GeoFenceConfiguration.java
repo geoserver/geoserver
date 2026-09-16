@@ -17,8 +17,6 @@ import java.util.List;
  */
 public class GeoFenceConfiguration implements Serializable, Cloneable {
 
-    public static final String URL_INTERNAL = "internal:/";
-
     @Serial
     private static final long serialVersionUID = 3L;
 
@@ -36,9 +34,11 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
 
     private List<String> roles = new ArrayList<>();
 
-    private String gwcContextSuffix;
-
     private String defaultUserGroupServiceName;
+
+    private String ruleReaderBackend;
+
+    private String ruleReaderFrontend;
 
     /** Remote GeoFence services url. */
     public String getServicesUrl() {
@@ -143,20 +143,6 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
         return roles;
     }
 
-    public boolean isInternal() {
-        return servicesUrl.startsWith(URL_INTERNAL);
-    }
-
-    /** @return */
-    public String getGwcContextSuffix() {
-        return gwcContextSuffix;
-    }
-
-    /** @param gwcContextSuffix the gwcContextSuffix to set */
-    public void setGwcContextSuffix(String gwcContextSuffix) {
-        this.gwcContextSuffix = gwcContextSuffix;
-    }
-
     /** @param defaultUserGroupServiceName the defaultUserGroupServiceName to set */
     public void setDefaultUserGroupServiceName(String defaultUserGroupServiceName) {
         this.defaultUserGroupServiceName = defaultUserGroupServiceName;
@@ -165,6 +151,26 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
     /** @return */
     public String getDefaultUserGroupServiceName() {
         return defaultUserGroupServiceName;
+    }
+
+    /** Name of the active RuleReaderService bean (see RuleReaderServiceFactory). */
+    public String getRuleReaderBackend() {
+        return ruleReaderBackend;
+    }
+
+    /** Name of the active RuleReaderService bean (see RuleReaderServiceFactory). */
+    public void setRuleReaderBackend(String ruleReaderBackend) {
+        this.ruleReaderBackend = ruleReaderBackend;
+    }
+
+    /** Name of the active frontend RuleReaderService bean (cached or direct; see RuleReaderServiceFactory). */
+    public String getRuleReaderFrontend() {
+        return ruleReaderFrontend;
+    }
+
+    /** Name of the active frontend RuleReaderService bean (cached or direct; see RuleReaderServiceFactory). */
+    public void setRuleReaderFrontend(String ruleReaderFrontend) {
+        this.ruleReaderFrontend = ruleReaderFrontend;
     }
 
     /** Creates a copy of the configuration object. */

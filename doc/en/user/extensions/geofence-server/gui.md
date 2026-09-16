@@ -1,16 +1,36 @@
 # GeoFence Server GUI
 
-The GeoFence user interface is a component of the GeoServer web interface. You can access it from the GeoServer web interface by clicking the **GeoFence Data Rules** link, found on the left side of the screen after logging in.
+You can access the GeoFence GUI pages from the GeoServer web interface by clicking one of the **GeoFence** links found under the "Security" entry in the top menu after logging in:
+
+![](images/menu.png)
+
+## GeoFence main page
+
+By clicking on the "GeoFence" item, you'll get into the main page. This page is also available on the [`geofence` plugin](../geofence/configuration.md), presenting a different "Active engine".
+In this case you can see "Embedded engine":
+
+![](images/geofence_embedded.png)
+
+
+In case you are missing the configuration file, or the credential in the file are wrong, the GUI will show the problem, and the engine will reject all data requests:
+
+![](images/geofence_unavailable.png)
+
 
 ## Rules page
 
-An overview of all rules is provided with priority, the rule's scope specifications (role, user, service, request, workspace and layer) and its access behaviour. The '*' symbol means that the rule applies to all possible values of that specification. Rules are always ordered by priority, but the order can be reversed by pressing the 'P' priority column header.
+You can access the Rules page from the GeoServer web interface by clicking the **GeoFence Data Rules**.
+
+
+An overview of all rules is provided with priority, the rule's scope specifications (role, user, service, request, workspace and layer, IP of the caller, date range) and its access behaviour.  
+The '\*' symbol means that the rule applies for any value of that specification.  
+Rules are always ordered by priority, but the order can be reversed by pressing the 'P' priority column header.
 
 ![](images/rulespage.png)
 
 A new rule can be added with the "Add new rule" link. Any number of rules can be deleted by selecting them and then clicking on the "Remove selected rules" link.
 
-Rule priority order can be easily on this page through the up and down arrows on the right side. Rules can be modified using the pencil symbol, which opens the rule page.
+Rule priority order can be easily modified on this page through the up and down arrows on the right side. Rules can be modified using the pencil symbol, which opens the rule page.
 
 ## Rule page
 
@@ -18,7 +38,7 @@ This page is displayed both when creating a new rule and modifying an existing r
 
 ![](images/rulepage.png)
 
-Priority can be changed manually by specifying a priority number. If this priority number is already occupied by another rule, this will cause that rule and all rules after it to shift one place to a lower priority.
+Priority can be changed manually by specifying a priority number. If this priority number is already used by another rule, this will cause that rule and all rules after it to shift one place to a lower priority.
 
 If using the IP Address range to limit access then on Linux (and other systems with IPv6 enabled) add the `-Djava.net.preferIPv4Stack=true` flag to the GeoServer startup options to make sure that the IP range matching works with IPv4 style addresses. Currently, IPv6 style address ranges are not supported by GeoFence.
 

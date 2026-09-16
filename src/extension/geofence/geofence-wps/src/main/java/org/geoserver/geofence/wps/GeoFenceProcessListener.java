@@ -8,8 +8,10 @@ import java.util.logging.Logger;
 import org.geoserver.geofence.wpscommon.ChainStatusHolder;
 import org.geoserver.wps.ChainedProcessListener;
 import org.geotools.util.logging.Logging;
+import org.springframework.stereotype.Component;
 
 /** @author etj (Emanuele Tajariol @ GeoSolutions) */
+@Component
 public class GeoFenceProcessListener implements ChainedProcessListener {
 
     private static final Logger LOGGER = Logging.getLogger(GeoFenceProcessListener.class);

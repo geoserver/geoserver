@@ -10,9 +10,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.logging.Level;
+import org.geofence.core.services.RuleAdminService;
+import org.geofence.core.services.dto.ShortRule;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.geofence.services.dto.ShortRule;
+import org.geoserver.geofence.server.GeofenceDatabaseRule;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 /**
@@ -21,6 +25,9 @@ import org.junit.Test;
  * @author Niels Charlier
  */
 public class GeofenceRulesModelTest extends GeoServerWicketTestSupport {
+
+    @ClassRule
+    public static final GeofenceDatabaseRule database = new GeofenceDatabaseRule();
 
     @Override
     protected void onTearDown(SystemTestData testData) throws Exception {
@@ -38,6 +45,11 @@ public class GeofenceRulesModelTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testRulesModel() {
+        // this test asserts on absolute priorities/ordering, so start from an empty table
+        RuleAdminService ruleAdminService =
+                (RuleAdminService) GeoServerApplication.get().getBean("ruleAdminService");
+        ruleAdminService.getAll().forEach(r -> ruleAdminService.delete(r.getId()));
+
         GeofenceRulesModel model = new GeofenceRulesModel();
 
         ShortRule rule1 = model.newRule();

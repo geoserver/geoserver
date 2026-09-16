@@ -5,11 +5,15 @@
  */
 package org.geoserver.security;
 
+import static org.geoserver.security.SecurityUtils.scramble;
+import static org.geoserver.security.SecurityUtils.toChars;
+
 import java.io.IOException;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.function.Function;
 import javax.crypto.SecretKey;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.password.PasswordValidator;
@@ -77,6 +81,23 @@ public interface KeyStoreProvider {
 
     /** Tests if the password is the key store password */
     boolean isKeyStorePassword(char[] password) throws IOException;
+
+    /**
+     * Derives a key from the secret stored under the alias, and keeps it until that secret changes. Deriving takes
+     * hundreds of milliseconds, and callers cannot cache it themselves: they get a new encoder for every operation.
+     *
+     * <p>The default implementation derives every time, since it cannot know when the keystore changed.
+     *
+     * @param derivation applied to the stored secret, only when no key can be reused
+     */
+    default SecretKey getDerivedKey(String alias, Function<char[], SecretKey> derivation) throws IOException {
+        char[] secret = toChars(getSecretKey(alias).getEncoded());
+        try {
+            return derivation.apply(secret);
+        } finally {
+            scramble(secret);
+        }
+    }
 
     /** Adds/replaces a {@link SecretKey} with its alias */
     void setSecretKey(String alias, char[] key) throws IOException;

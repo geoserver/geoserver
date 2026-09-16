@@ -11,19 +11,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
+import org.eclipse.imagen.media.range.NoDataContainer;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.util.IOUtils;
-import org.geotools.api.coverage.grid.Format;
-import org.geotools.api.parameter.ParameterValue;
-import org.geotools.api.parameter.ParameterValueGroup;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.gce.image.WorldImageWriter;
+import org.geotools.coverage.util.CoverageUtilities;
+import org.geotools.image.ImageWorker;
 
 /**
- * Encodes coverages in "world image" formats, png, jpeg and gif.
- *
- * <p>Notice that depending on the underlying coverage structure this is not always possible.
+ * Encodes coverages as plain PNG and JPEG images. The output carries no georeferencing: the client gets the pixels
+ * only.
  *
  * @author $Author: Alessio Fabiani (alessio.fabiani@gmail.com) $ (last modification)
  * @author $Author: Simone Giannecchini (simboss1@gmail.com) $ (last modification)
@@ -51,39 +48,29 @@ public class IMGCoverageResponseDelegate extends BaseCoverageResponseDelegate im
     }
 
     @Override
-    @SuppressWarnings("PMD.UseTryWithResources")
     public void encode(
             GridCoverage2D sourceCoverage,
             String outputFormat,
-            Map<String, String> econdingParameters,
+            Map<String, String> encodingParameters,
             OutputStream output)
             throws ServiceException, IOException {
         if (sourceCoverage == null) {
             throw new IllegalStateException("It seems prepare() has not been called or has not succeed");
         }
 
-        final WorldImageWriter writer = new WorldImageWriter(output);
-
-        // writing parameters for Image
-        final Format writerParams = writer.getFormat();
-        final ParameterValueGroup writeParameters = writerParams.getWriteParameters();
-        final ParameterValue<?> format = writeParameters.parameter("Format");
-        format.setValue(getFileExtension(outputFormat));
-
         try {
-            // writing
-            writer.write(sourceCoverage, format);
-            output.flush();
-        } finally {
-
-            // freeing everything
-            IOUtils.closeQuietly(output);
-
-            try {
-                writer.dispose();
-            } catch (Throwable e) {
-                // eat me
+            ImageWorker worker = new ImageWorker(sourceCoverage.getRenderedImage());
+            worker.setROI(CoverageUtilities.getROIProperty(sourceCoverage));
+            NoDataContainer noData = CoverageUtilities.getNoDataProperty(sourceCoverage);
+            worker.setNoData(noData != null ? noData.getAsRange() : null);
+            if ("jpeg".equals(getFileExtension(outputFormat))) {
+                // 0.75 is the JPEG quality the JDK writer uses by default
+                worker.writeJPEG(output, "JPEG", 0.75f);
+            } else {
+                // writePNG ignores the compression arguments, it always uses the writer defaults
+                worker.writePNG(output, "FILTERED", 0.75f, false);
             }
+        } finally {
             sourceCoverage.dispose(true);
         }
     }

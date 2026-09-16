@@ -54,6 +54,8 @@ For a reversible password to provide a meaningful level of security, access to t
 
 GeoServer uses its own keystore for this purpose named `geoserver.jceks` which is located in the `security` directory in the GeoServer data directory. This file is stored in the JCEKS format rather than the default JKS. JKS does not support storing shared keys.
 
+The file is named after the format it holds. A deployment that cannot use JCEKS, such as one configured for [FIPS](../community/fips/index.md), gets a keystore of another type and another name, for example `geoserver.bcfks`. Use that name and that type in the commands below.
+
 The GeoServer keystore is password protected with a [Keystore password](#security_master_passwd). It is possible to access the contents of the keystore with external tools such as [keytool](https://docs.oracle.com/en/java/javase/17/docs/specs/man/keytool.md). For example, this following command would prompt for the keystore password and list the contents of the keystore:
 
 ```bash

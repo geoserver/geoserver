@@ -76,7 +76,7 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
     public void testMasterConfigValidation() throws Exception {
         SecurityManagerConfig config = new SecurityManagerConfig();
         config.setRoleServiceName(XMLRoleService.DEFAULT_NAME);
-        config.setConfigPasswordEncrypterName(getPBEPasswordEncoder().getName());
+        config.setConfigPasswordEncrypterName(getReversiblePasswordEncoder().getName());
         config.getAuthProviderNames().add(GeoServerAuthenticationProvider.DEFAULT_NAME);
 
         SecurityConfigValidator validator = new SecurityConfigValidator(getSecurityManager());
@@ -108,7 +108,7 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
             }
         }
 
-        config.setConfigPasswordEncrypterName(getPBEPasswordEncoder().getName());
+        config.setConfigPasswordEncrypterName(getReversiblePasswordEncoder().getName());
         config.setRoleServiceName("XX");
 
         try {

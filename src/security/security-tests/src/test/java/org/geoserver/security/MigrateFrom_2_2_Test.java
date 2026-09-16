@@ -11,6 +11,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
 import org.geoserver.data.test.Security_2_2_TestData;
@@ -19,6 +20,7 @@ import org.geoserver.security.config.RoleFilterConfig;
 import org.geoserver.security.config.SSLFilterConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.util.StringUtils;
 
@@ -28,6 +30,15 @@ import org.springframework.util.StringUtils;
  * @author mcr
  */
 public class MigrateFrom_2_2_Test extends GeoServerSystemTestSupport {
+
+    @BeforeClass
+    public static void checkAlgorithms() {
+        // the 2.2 directory this migrates uses a JCEKS keystore and the legacy encoders, so the check has to
+        // run before the base class sets that directory up
+        assumeTrue(
+                "this crypto provider cannot read a GeoServer 2.2 security directory",
+                SystemTestData.canReadCannedSecurityDirectory());
+    }
 
     @Override
     protected SystemTestData createTestData() throws Exception {

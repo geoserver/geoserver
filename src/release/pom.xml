@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
  Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
@@ -68,6 +68,7 @@
     <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>commons-el</groupId>
@@ -218,8 +219,8 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputDirectory>${project.basedir}/../../licenses</inputDirectory>
-              <outputDirectory>${project.build.directory}/html/licenses</outputDirectory>
+              <inputDirectory>${project.basedir}/../../licenses/</inputDirectory>
+              <outputDirectory>${project.build.directory}/html/licenses/</outputDirectory>
             </configuration>
           </execution>
           <execution>
@@ -229,8 +230,8 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputDirectory>${project.basedir}/src/markdown</inputDirectory>
-              <outputDirectory>${project.build.directory}/html/release</outputDirectory>
+              <inputDirectory>${project.basedir}/src/markdown/</inputDirectory>
+              <outputDirectory>${project.build.directory}/html/release/</outputDirectory>
             </configuration>
           </execution>
           <execution>
@@ -243,13 +244,13 @@
               <!-- Renders the shared README.md / LICENSE*.md at src/release/extensions/ root.
                    Per-extension docs are now rendered locally by each module's assembly profile;
                    recursion would re-render any stray file accidentally left behind. -->
-              <inputDirectory>${project.basedir}/extensions</inputDirectory>
-              <outputDirectory>${project.build.directory}/html/extensions</outputDirectory>
-              <recursiveInput>false</recursiveInput>
+              <inputDirectory>${project.basedir}/extensions/</inputDirectory>
+              <outputDirectory>${project.build.directory}/html/extensions/</outputDirectory>
             </configuration>
           </execution>
         </executions>
         <configuration>
+          <inputEncoding>UTF-8</inputEncoding>
           <recursiveInput>false</recursiveInput>
           <transformRelativeMarkdownLinks>true</transformRelativeMarkdownLinks>
           <headerHtmlFile>${project.basedir}/target/html-template/header.html</headerHtmlFile>

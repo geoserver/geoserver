@@ -16,6 +16,7 @@ import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.geoserver.data.test.TestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
+import org.geoserver.security.RestrictedJdkProviders;
 import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
 import org.geotools.util.Version;
@@ -66,6 +67,13 @@ import org.junit.rules.TestRule;
  * @param <T>
  */
 public abstract class GeoServerBaseTestSupport<T extends TestData> {
+
+    static {
+        // covers the modules RestrictedJdkProvidersListener cannot reach, see its javadoc
+        if (Boolean.getBoolean("geoserver.fips.test")) {
+            RestrictedJdkProviders.apply();
+        }
+    }
 
     /** Common logger for test cases */
     protected static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.test");

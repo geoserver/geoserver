@@ -12,6 +12,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Function;
 import javax.crypto.SecretKey;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerSecurityManager;
@@ -138,6 +139,16 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         readLock();
         try {
             return provider.getSecretKey(name);
+        } finally {
+            readUnLock();
+        }
+    }
+
+    @Override
+    public SecretKey getDerivedKey(String alias, Function<char[], SecretKey> derivation) throws IOException {
+        readLock();
+        try {
+            return provider.getDerivedKey(alias, derivation);
         } finally {
             readUnLock();
         }

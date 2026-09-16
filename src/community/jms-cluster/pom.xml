@@ -17,15 +17,7 @@
     <amq.version>6.2.5</amq.version>
   </properties>
 
-  <repositories>
-    <repository>
-      <!-- needed for JMS deps -->
-      <id>apache</id>
-      <name>Apache Maven Repository</name>
-      <url>https://repository.apache.org/content/repositories/releases/</url>
-    </repository>
-
-  </repositories>
+  <!-- Apache Maven Repository needed for JMS dependencies cached in OSGeo Relesaes -->
   <profiles>
     <profile>
       <id>cluster</id>

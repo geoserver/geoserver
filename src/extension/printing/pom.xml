@@ -60,6 +60,12 @@
           <artifactId>xalan</artifactId>
           <groupId>xalan</groupId>
         </exclusion>
+        <!-- the Swing PDF Debugger, unused here, and the only thing dragging in the regular
+             BouncyCastle jars, which cannot share the classpath with the FIPS ones -->
+        <exclusion>
+          <artifactId>pdfbox-debugger</artifactId>
+          <groupId>org.apache.pdfbox</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>

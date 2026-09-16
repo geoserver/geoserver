@@ -16,6 +16,7 @@ import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.WicketTester;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
+import org.geoserver.web.wicket.WicketSecureRandomSupplier;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,6 +30,14 @@ public class PasswordParamPanelTest {
             @Override
             public Class<? extends Page> getHomePage() {
                 return null;
+            }
+
+            @Override
+            protected void init() {
+                super.init();
+                // this test does not run GeoServerApplication, so it has to install the same
+                // supplier. Wicket's own default asks for SHA1PRNG, which FIPS systems lack
+                getSecuritySettings().setRandomSupplier(new WicketSecureRandomSupplier());
             }
         });
     }

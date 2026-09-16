@@ -4,9 +4,9 @@
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
 	<!--  
 		Map producers and responses
 	 -->
@@ -37,7 +37,7 @@
   <bean id="wmsGeoJsonBuilderFactory" class="org.geoserver.wms.geojson.GeoJsonBuilderFactory">
   </bean>
 
-  <bean id="wmsGeoJsonMapOutputFormat" class="org.geoserver.wms.vector.VectorTileMapOutputFormat">
+  <bean id="wmsGeoJsonMapOutputFormat" class="org.geoserver.wms.vector.GeoJsonVectorTileMapOutputFormat">
     <constructor-arg ref="wmsGeoJsonBuilderFactory" />
     <property name="clipToMapBounds" value="true"/>
     <property name="transformToScreenCoordinates" value="false">

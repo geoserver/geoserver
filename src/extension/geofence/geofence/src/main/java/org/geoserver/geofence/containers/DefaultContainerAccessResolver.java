@@ -7,16 +7,20 @@ package org.geoserver.geofence.containers;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
+import org.geofence.core.services.RuleReaderService;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.geofence.config.GeoFenceConfiguration;
-import org.geoserver.geofence.services.RuleReaderService;
+import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geoserver.geofence.util.GeomHelper;
 import org.geoserver.security.impl.LayerGroupContainmentCache;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 
 /**
  * Compute the containers auth access.
@@ -25,20 +29,17 @@ import org.springframework.security.core.Authentication;
  *
  * @author Emanuele Tajariol- GeoSolutions
  */
+@Component
 public class DefaultContainerAccessResolver implements ContainerAccessResolver {
 
     static final Logger LOGGER = Logging.getLogger(DefaultContainerAccessResolver.class);
 
-    private RuleReaderService ruleReaderService;
+    private final RuleReaderServiceFactory ruleReaderServiceFactory;
 
-    public DefaultContainerAccessResolver() {}
-
-    public DefaultContainerAccessResolver(RuleReaderService rulesService) {
-        this.ruleReaderService = rulesService;
-    }
-
-    public void setRuleReaderService(RuleReaderService ruleReaderService) {
-        this.ruleReaderService = ruleReaderService;
+    @Autowired
+    public DefaultContainerAccessResolver(
+            @Qualifier("ruleReaderFrontendFactory") RuleReaderServiceFactory ruleReaderServiceFactory) {
+        this.ruleReaderServiceFactory = ruleReaderServiceFactory;
     }
 
     @Override
@@ -51,6 +52,7 @@ public class DefaultContainerAccessResolver implements ContainerAccessResolver {
             Authentication user,
             List<LayerGroupInfo> containers,
             Collection<LayerGroupContainmentCache.LayerGroupSummary> summaries) {
+        RuleReaderService ruleReaderService = ruleReaderServiceFactory.getService();
         ContainerLimitResolver resolver;
         if (summaries != null) {
             resolver = new ContainerLimitResolver(

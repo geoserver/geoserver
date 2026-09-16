@@ -84,6 +84,7 @@ public class GeoServerPBEPasswordEncoder extends AbstractGeoserverPasswordEncode
         try {
             stringEncrypter = new StandardPBEStringEncryptor();
             stringEncrypter.setPasswordCharArray(chars);
+            stringEncrypter.setSaltGenerator(SecureRandomGenerator.INSTANCE);
 
             if (getProviderName() != null && !getProviderName().isEmpty()) {
                 stringEncrypter.setProviderName(getProviderName());
@@ -107,6 +108,7 @@ public class GeoServerPBEPasswordEncoder extends AbstractGeoserverPasswordEncode
 
         byteEncrypter = new StandardPBEByteEncryptor();
         byteEncrypter.setPasswordCharArray(chars);
+        byteEncrypter.setSaltGenerator(SecureRandomGenerator.INSTANCE);
 
         if (getProviderName() != null && !getProviderName().isEmpty()) {
             byteEncrypter.setProviderName(getProviderName());

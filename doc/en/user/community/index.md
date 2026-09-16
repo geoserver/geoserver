@@ -37,6 +37,7 @@ Community modules are provided "as is" alongside the [nightly builds](https://bu
 - [Elasticsearch data store](elasticsearch/index.md)
 - [Features-Autopopulate Extension](features-autopopulate/index.md)
 - [Features-Templating Extension](features-templating/index.md)
+- [FIPS 140-3 support](fips/index.md)
 - [WFS FlatGeobuf input and output format](flatgeobuf/index.md)
 - [GDAL based WCS Output Format](gdal/index.md)
 - [GeoParquet](geoparquet/index.md)

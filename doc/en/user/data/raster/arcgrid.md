@@ -38,8 +38,8 @@ Once the extension is properly installed **ArcGrid** will be an option in the **
 
 | **Option**         | **Description** |
 |--------------------|-----------------|
-| `Workspace`        |                 |
-| `Data Source Name` |                 |
-| `Description`      |                 |
-| `Enabled`          |                 |
-| `URL`              |                 |
+| `Workspace`        | Name of the workspace to contain the ArcGrid coverage store. This will also be the prefix of the raster layers created from the store.|
+| `Data Source Name` | Name of the ArcGrid coverage store as it will be known to GeoServer. (This can be different from the filename. )|
+| `Description`      | A full free-form description of the ArcGrid coverage store.                |
+| `Enabled`          | If checked, it enables the store. If unchecked (disabled), no data in the ArcGrid coverage store will be served from GeoServer.|
+| `URL`              | Location of the ArcGrid file. This can be an absolute path (such as **`file:C:\Data\raster.asc`**) or a path relative to GeoServer's data directory (such as **`file:data/raster.asc`**). |

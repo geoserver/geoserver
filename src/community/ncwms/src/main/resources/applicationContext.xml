@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
-    "http://www.springframework.org/dtd.spring-beans.dtd">
-<!-- Copyright (C) 2014-2016 - Open Source Geospatial Foundation. All rights reserved. This code is licensed 
+<!-- Copyright (C) 2014-2016 - Open Source Geospatial Foundation. All rights reserved. This code is licensed
   under the GPL 2.0 license, available at the root application directory. -->
-
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
     <bean id="paletteStyleHandler" class="org.geoserver.wms.style.PaletteStyleHandler"/>
 
     <bean id="ncWmsDatasetCallback" class="org.geoserver.wms.ncwms.NcWmsDatasetCallback">

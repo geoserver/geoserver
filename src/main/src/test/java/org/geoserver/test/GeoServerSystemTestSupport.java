@@ -123,6 +123,7 @@ import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.password.GeoServerDigestPasswordEncoder;
 import org.geoserver.security.password.GeoServerPBEPasswordEncoder;
+import org.geoserver.security.password.GeoServerPasswordEncoder;
 import org.geoserver.security.password.GeoServerPlainTextPasswordEncoder;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.data.SimpleFeatureSource;
@@ -445,6 +446,14 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         return getSecurityManager().loadPasswordEncoder(GeoServerDigestPasswordEncoder.class);
     }
 
+    /**
+     * The reversible encoder a user group service gets by default. It is not the password based one on every
+     * deployment.
+     */
+    protected GeoServerPasswordEncoder getReversiblePasswordEncoder() {
+        return getSecurityManager().loadDefaultUserGroupPasswordEncoder();
+    }
+
     /** Accessor for regular (weak encryption) pbe password encoder. */
     protected GeoServerPBEPasswordEncoder getPBEPasswordEncoder() {
         return getSecurityManager().loadPasswordEncoder(GeoServerPBEPasswordEncoder.class, null, false);
@@ -746,8 +755,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * (otherwise no authentication will take place):
      *
      * <pre>
-     * protected List&lt;javax.servlet.Filter&gt; getFilters() {
-     *     return Collections.singletonList((javax.servlet.Filter) GeoServerExtensions
+     * protected List&lt;jakarta.servlet.Filter&gt; getFilters() {
+     *     return Collections.singletonList((jakarta.servlet.Filter) GeoServerExtensions
      *             .bean(&quot;filterChainProxy&quot;));
      * }
      * </pre>
@@ -2032,7 +2041,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         MockHttpServletResponse response = getAsServletResponse(url);
         assertEquals(200, response.getStatus());
         assertContentType("text/html", response);
-        LOGGER.log(Level.INFO, "Last request returned\n:" + response.getContentAsString());
+        LOGGER.fine("Last request returned\n:" + response.getContentAsString());
 
         // parse the HTML
         org.jsoup.nodes.Document document = Jsoup.parse(response.getContentAsString());

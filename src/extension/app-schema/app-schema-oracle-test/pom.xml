@@ -233,7 +233,7 @@
           </excludes>
           <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts}
                         -Djava.awt.headless=${java.awt.headless} -DquietTests=${quietTests}
-                        -Dapp-schema.joining=true -DtestDatabase=oracle</argLine>
+                        -Dapp-schema.joining=true -DtestDatabase=oracle ${fips.argLine}</argLine>
         </configuration>
       </plugin>
     </plugins>

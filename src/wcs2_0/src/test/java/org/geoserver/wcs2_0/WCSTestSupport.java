@@ -16,17 +16,23 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.Multipart;
 import jakarta.mail.internet.MimeMessage;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadataNode;
+import javax.imageio.stream.ImageInputStream;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -417,6 +423,27 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
             }
         }
         return null;
+    }
+
+    /**
+     * Decodes the response body as an image, checking that the bytes are really in the expected format (the format name
+     * an ImageIO reader reports for them, lower case, e.g. "png", "jpeg", "tif").
+     */
+    protected BufferedImage getResponseAsImage(MockHttpServletResponse response, String expectedFormat)
+            throws IOException {
+        byte[] bytes = response.getContentAsByteArray();
+        try (ImageInputStream is = ImageIO.createImageInputStream(new ByteArrayInputStream(bytes))) {
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(is);
+            assertTrue("No image reader found for the response bytes", readers.hasNext());
+            ImageReader reader = readers.next();
+            try {
+                assertEquals(expectedFormat, reader.getFormatName().toLowerCase(Locale.ROOT));
+                reader.setInput(is);
+                return reader.read(0);
+            } finally {
+                reader.dispose();
+            }
+        }
     }
 
     protected void setInputLimit(int kbytes) {

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>gs-fips-container</artifactId>
+    <version>3.1.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>gs-fips-provider</artifactId>
+  <packaging>jar</packaging>
+
+  <name>GeoServer FIPS crypto provider</name>
+
+  <!-- Only gs-platform, for the CryptoProviderSupplier interface, and the FIPS-validated
+       BouncyCastle jars. Adding gs-main here would create a cycle: the fips build profile
+       makes gs-main depend on this module. -->
+  <dependencies>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-platform</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bc-fips</artifactId>
+      <version>${bc.fips.prov.version}</version>
+    </dependency>
+    <!-- Not used by this module: it is here so the plugin archive holds all the FIPS
+         BouncyCastle jars, which replace the regular ones an installation ships. GeoServer core
+         uses this one to build certificates, and a deployment that removes bcpkix-lts8on without
+         putting bcpkix-fips in its place loses that. -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcpkix-fips</artifactId>
+      <version>${bc.fips.pkix.version}</version>
+    </dependency>
+  </dependencies>
+</project>

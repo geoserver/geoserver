@@ -21,6 +21,7 @@
     <configDirectory>${basedir}/../../../data</configDirectory>
     <webappSourceDirectory>${basedir}/src/main/webapp</webappSourceDirectory>
     <jetty.port>8080</jetty.port>
+    <jetty.stopPort>9966</jetty.stopPort>
     <jetty.run.daemon>false</jetty.run.daemon>
   </properties>
   <dependencies>
@@ -193,6 +194,14 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-geotiff</artifactId>
+      <exclusions>
+        <!-- plain ehcache conflicts with geofence-persistence's jakarta-classifier one; can't scope an
+             exclusion to a profile, but this jar is only used by gt-geotiff's opt-in COG support. -->
+        <exclusion>
+          <artifactId>ehcache</artifactId>
+          <groupId>org.ehcache</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
@@ -234,21 +243,20 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.jetty.ee10</groupId>
-      <artifactId>jetty-ee10-webapp</artifactId>
+      <groupId>org.eclipse.jetty.ee11</groupId>
+      <artifactId>jetty-ee11-webapp</artifactId>
       <version>${jetty.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.jetty.ee10</groupId>
-      <artifactId>jetty-ee10-servlet</artifactId>
+      <groupId>org.eclipse.jetty.ee11</groupId>
+      <artifactId>jetty-ee11-servlet</artifactId>
       <version>${jetty.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcpkix-lts8on</artifactId>
-      <version>2.73.10</version>
+      <artifactId>${bc.pkix.artifactId}</artifactId>
     </dependency>
     <dependency>
       <groupId>jakarta.servlet</groupId>
@@ -299,8 +307,8 @@
       </plugin>
 
       <plugin>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-maven-plugin</artifactId>
+        <groupId>org.eclipse.jetty.ee11</groupId>
+        <artifactId>jetty-ee11-maven-plugin</artifactId>
         <configuration>
           <webApp>
             <contextPath>/geoserver</contextPath>
@@ -341,7 +349,7 @@
         <configuration>
           <warName>geoserver</warName>
           <webappDirectory>${project.build.directory}/geoserver</webappDirectory>
-          <packagingExcludes>WEB-INF/lib/javax.servlet-api*.jar,WEB-INF/lib/javax.activation-api*.jar</packagingExcludes>
+          <packagingExcludes>WEB-INF/lib/jakarta.servlet-api*.jar</packagingExcludes>
           <archive>
             <manifest>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
@@ -411,6 +419,19 @@
       </properties>
     </profile>
 
+    <profile>
+      <!-- Same id as the fips profile in the root pom, so a single -Pfips also puts the status page
+           tab in the war. gs-fips-provider needs no entry here: the fips profile of gs-main pulls
+           it in and every module inherits it, which a web module cannot rely on. -->
+      <id>fips</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-fips</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
     <profile>
       <id>graticule</id>
       <dependencies>
@@ -1090,6 +1111,66 @@
       </dependencies>
     </profile>
     <profile>
+      <id>geofence</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-geofence</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>geofence-server</id>
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <!-- Hibernate's HQL parser needs 4.13.x; Eclipse Imagen's Jiffle needs 4.7.1 and can't
+                 coexist with it, so Jiffle raster band-math breaks whenever this profile is active. -->
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>4.13.2</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-geofence-server</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.postgresql</groupId>
+          <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.postgis</groupId>
+          <artifactId>postgis-jdbc</artifactId>
+          <version>${postgis.jdbc.version}</version>
+          <exclusions>
+            <exclusion>
+              <artifactId>postgis-stubs</artifactId>
+              <groupId>org.postgis</groupId>
+            </exclusion>
+            <exclusion>
+              <artifactId>postgresql</artifactId>
+              <groupId>postgresql</groupId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>geofence-wps</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-geofence-wps</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>sldService</id>
       <dependencies>
         <dependency>
@@ -1492,16 +1573,6 @@
         </dependency>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-ogcapi-images</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-ogcapi-tiled-features</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
           <artifactId>gs-ogcapi-dggs</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -1543,11 +1614,6 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-web-features</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-web-images</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>

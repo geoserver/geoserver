@@ -111,6 +111,7 @@ public class GeoServerDigestPasswordEncoderTest {
 
     @Test
     public void testJasyptCompatibility() {
+        JasyptDefaults.assumeUsable();
         StandardByteDigester jasyptDigester = new StandardByteDigester();
         jasyptDigester.setAlgorithm("SHA-256");
         jasyptDigester.setIterations(100000);
@@ -131,6 +132,7 @@ public class GeoServerDigestPasswordEncoderTest {
 
     @Test
     public void testJasyptStringEncoderDecomposedUnicode() {
+        JasyptDefaults.assumeUsable();
         // Old string path went through StrongPasswordEncryptor -> StandardStringDigester,
         // which NFC-normalizes the message before digesting. A password typed in decomposed
         // form was stored as if precomposed. The string encoder must keep normalizing so such
@@ -149,6 +151,7 @@ public class GeoServerDigestPasswordEncoderTest {
 
     @Test
     public void testJasyptCompatibilityExoticPassword() {
+        JasyptDefaults.assumeUsable();
         StandardByteDigester jasyptDigester = new StandardByteDigester();
         jasyptDigester.setAlgorithm("SHA-256");
         jasyptDigester.setIterations(100000);

@@ -256,6 +256,10 @@ public class MemoryLockProviderTest {
 
             allowHolderToRelease.countDown();
             awaitFuture(holder);
+
+            // the failed acquire() above must not have left its own counter increment stuck: once the
+            // real holder also releases, the entry must be fully cleaned up
+            awaitForLockCleanup(provider, "k");
         } finally {
             shutdownNow(exec);
         }

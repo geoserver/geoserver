@@ -124,13 +124,12 @@ public class JsonWriterTest {
         builder.evaluate(writer, new TemplateBuilderContext(sf));
         writer.close();
 
-        String jsonString = new String(baos.toByteArray());
-        System.out.println(jsonString);
+        String jsonString = baos.toString();
         JSONObject json = (JSONObject) JSONSerializer.toJSON(jsonString);
 
         // straight array expansion tests
         JSONArray intArray = json.getJSONArray("intArray");
-        assertThat(intArray, Matchers.hasItems(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(2)));
+        assertThat(intArray, Matchers.hasItems(0, 1, 2));
 
         JSONArray strArray = json.getJSONArray("strArray");
         assertThat(strArray, Matchers.hasItems("one", "two", "three"));

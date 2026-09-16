@@ -36,7 +36,7 @@ public class UserGroupStoreValidationWrapperTest extends GeoServerSecurityTestSu
     protected UserGroupStoreValidationWrapper createStore(String name) throws IOException {
         MemoryUserGroupServiceConfigImpl config = new MemoryUserGroupServiceConfigImpl();
         config.setName(name);
-        config.setPasswordEncoderName(getPBEPasswordEncoder().getName());
+        config.setPasswordEncoderName(getReversiblePasswordEncoder().getName());
         config.setPasswordPolicyName(PasswordValidator.DEFAULT_NAME);
         GeoServerUserGroupService service = new MemoryUserGroupService();
         service.setSecurityManager(getSecurityManager());

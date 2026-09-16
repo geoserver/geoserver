@@ -20,7 +20,6 @@ import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.MathTransform;
-import org.geotools.api.referencing.operation.MathTransform2D;
 import org.geotools.api.referencing.operation.OperationNotFoundException;
 import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.api.util.ProgressListener;
@@ -243,10 +242,10 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
                         if (transformer == null) {
                             transformer = new GeometryCoordinateSequenceTransformer();
 
-                            MathTransform2D tx;
+                            MathTransform tx;
 
                             try {
-                                tx = (MathTransform2D) ReferencingFactoryFinder.getCoordinateOperationFactory(hints)
+                                tx = ReferencingFactoryFinder.getCoordinateOperationFactory(hints)
                                         .createOperation(crs, target)
                                         .getMathTransform();
                             } catch (Exception e) {

@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -196,9 +197,9 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
 
         // Avoid saving the Layer
         FormTester formTester = tester.newFormTester("form");
-        formTester.setValue("panel:tileLayerEditor:container:configs:createTileLayer", false);
+        formTester.setValue("panel:tileLayerEditor:container:createTileLayer", false);
 
-        tester.executeAjaxEvent("form:panel:tileLayerEditor:container:configs:createTileLayer", "change");
+        tester.executeAjaxEvent("form:panel:tileLayerEditor:container:createTileLayer", "change");
 
         tester.isInvisible("form:panel:tileLayerEditor:container:configs");
 
@@ -251,7 +252,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         // mimic what the editor does to remove a tile layer associated with a layer info
         // print(tester.getComponentFromLastRenderedPage("form:panel"), true, true);
         FormTester formTester = tester.newFormTester("form");
-        formTester.setValue("panel:tileLayerEditor:container:configs:createTileLayer", false);
+        formTester.setValue("panel:tileLayerEditor:container:createTileLayer", false);
 
         formTester.submit();
 
@@ -261,6 +262,9 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         panel.save();
 
         assertNull(mediator.getTileLayer(layerModel.getObject()));
+
+        // restore, tests can run in any order
+        addTileLayer(layerInfo);
     }
 
     @Test
@@ -340,5 +344,38 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         assertThat(
                 tileLayer.getInfo().getCacheWarningSkips(),
                 Matchers.containsInAnyOrder(WarningType.Default, WarningType.FailedNearest));
+    }
+
+    @Test
+    public void testCreateCheckboxShownWhenLayerHasNoCache() {
+        // an existing layer with no cached layer yet: the creation checkbox is the only control shown
+        LayerInfo lakes = getCatalog().getLayerByName(getLayerId(MockData.LAKES));
+        GeoServerTileLayer lakesLayer = GWC.get().getTileLayer(lakes);
+        if (lakesLayer != null) GWC.get().removeTileLayers(Arrays.asList(tileLayerName(lakes)));
+        assertNull(GWC.get().getTileLayer(lakes));
+        layerModel = new Model<>(lakes);
+        tileLayerModel = new GeoServerTileLayerInfoModel(new GeoServerTileLayerInfoImpl(), false);
+        tester.startPage(new FormTestPage(id -> new LayerCacheOptionsTabPanel(id, layerModel, tileLayerModel)));
+
+        String editor = "form:panel:tileLayerEditor";
+        tester.assertVisible(editor + ":container:createTileLayer");
+        tester.assertInvisible(editor + ":container:configs");
+
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("panel:tileLayerEditor:container:createTileLayer", true);
+        tester.executeAjaxEvent(editor + ":container:createTileLayer", "change");
+
+        tester.assertVisible(editor + ":container:configs");
+        tester.assertVisible(editor + ":container:configs:cachedGridsets");
+
+        // restore, tests can run in any order
+        if (lakesLayer != null) addTileLayer(lakes);
+    }
+
+    /** Recreates the tile layer of the given layer with the default settings */
+    private void addTileLayer(LayerInfo layerInfo) {
+        GWC mediator = GWC.get();
+        GeoServerTileLayerInfo info = TileLayerInfoUtil.loadOrCreate(layerInfo, mediator.getConfig());
+        mediator.add(new GeoServerTileLayer(layerInfo, mediator.getGridSetBroker(), info));
     }
 }

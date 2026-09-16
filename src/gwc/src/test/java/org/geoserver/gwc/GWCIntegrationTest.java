@@ -94,6 +94,8 @@ import org.geoserver.ows.URLMangler;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.password.GeoServerPasswordEncoder;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.util.DimensionWarning;
 import org.geoserver.wfs.xml.WFSURIHandler;
@@ -248,7 +250,14 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     public void cleanup() throws Exception {
         SystemTestData testData = getTestData();
         for (File f : testData.getDataDirectoryRoot().listFiles()) {
-            FileUtils.deleteQuietly(f);
+            // everything else here can be deleted and built again, the security directory cannot.
+            // GeoServer creates it once while the Spring context starts, and a catalog reload does
+            // not create it again, so the security manager would go on using files that are no
+            // longer on disk. Any test that stores a password, such as the disk quota JDBC one,
+            // then fails when the encoder looks for the master password or the keystore.
+            if (!"security".equals(f.getName())) {
+                FileUtils.deleteQuietly(f);
+            }
         }
         testData.setUp();
         testData.setUpDefault();
@@ -1340,8 +1349,12 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
             // print(dom);
             String storedPassword =
                     XMLUnit.newXpathEngine().evaluate("/gwcJdbcConfiguration/connectionPool/password", dom);
-            // check the password has been encoded properly
-            assertTrue(storedPassword.startsWith("crypt1:"));
+            // check the password has been encoded properly, with the encoder the configuration
+            // names; that is not the password based one on every crypto provider
+            GeoServerSecurityManager securityManager = getSecurityManager();
+            GeoServerPasswordEncoder encoder = securityManager.loadPasswordEncoder(
+                    securityManager.getSecurityConfig().getConfigPasswordEncrypterName());
+            assertTrue(storedPassword.startsWith(encoder.getPrefix() + GeoServerPasswordEncoder.PREFIX_DELIMTER));
         }
         JDBCQuotaStoreFactory.ENABLE_HSQL_AUTO_SHUTDOWN = false;
     }

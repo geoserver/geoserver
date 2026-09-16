@@ -22,7 +22,14 @@ If you encounter a security vulnerability in GeoServer please take care to repor
 
 1. Keep exploit details out of public forums, mailing lists, and issue tracker.
 
-2. There are two options to report a security vulnerability:
+2. AI assistance to locate issues is allowed. Please read the [AI policy](https://geoserver.org/ai/) and make sure to follow it.
+
+   Be advised that GeoServer is a community project with a clear coordinated vulnerability disclosure
+   policy allowing the members of our community to update prior to public disclosure.
+
+   Reports linking to their own disclosure policy are not appropriate.
+
+3. There are two options to report a security vulnerability:
 
    * To report via email:
 
@@ -37,9 +44,9 @@ If you encounter a security vulnerability in GeoServer please take care to repor
 
      For more information see [GitHub documentation](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability#privately-reporting-a-security-vulnerability).
 
-3. There is no expected response time. Be prepared to work with geoserver-security email list volunteers on a solution.
+4. There is no expected response time. Be prepared to work with geoserver-security email list volunteers on a solution.
 
-4. Keep in mind participants are volunteering their time, an extensive fix may require fundraising/resources.
+5. Keep in mind participants are volunteering their time, an extensive fix may require fundraising/resources.
 
 For more information see [Community Support](http://geoserver.org/comm/).
 
@@ -56,3 +63,6 @@ Disclosure policy:
 This represents a balance between transparency and participation that does not overwhelm participants. 
 Those seeking greater visibility are encouraged to volunteer with the geoserver-security list;
 or work with one of the [commercial support providers](https://geoserver.org/support/) who participate on behalf of their customers.
+
+We advise security researchers and national agencies that linking to or attempting to enforce their own disclosure policies or timelines is unwelcome and inappropriate conduct.
+The recommended course of action is to direct your clients to collaborate on, provide, or resource a fix.

@@ -322,7 +322,8 @@
                 <exclude>**/NoIdExpressionTest.java</exclude>
               </excludes>
               <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts}
-                                -Djava.awt.headless=${java.awt.headless} -DquietTests=${quietTests}</argLine>
+                                -Djava.awt.headless=${java.awt.headless} -DquietTests=${quietTests}
+                                ${fips.argLine}</argLine>
             </configuration>
           </plugin>
         </plugins>

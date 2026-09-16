@@ -106,12 +106,12 @@ The configuration options for the JDBC authentication provider are illustrated b
 
 *Configuring the JDBC authentication provider*
 
-| Option | Description |
-|----|----|
-| Name | Name of the JDBC connection in GeoServer |
-| User Group Service | Name of the user/group service to use to load user information after the user is authenticated |
-| Driver class name | JDBC driver to use for the database connection |
-| Connection URL | JDBC URL to use when creating the database connection |
+| Option | Description                                                                                                                                                                                                              |
+|----|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Name | Name of the JDBC connection in GeoServer                                                                                                                                                                                 |
+| User Group Service | Name of the user/group service to use to load user information after the user is authenticated                                                                                                                           |
+| Driver class name | JDBC driver to use for the database connection                                                                                                                                                                           |
+| Connection URL | JDBC URL to use when creating the database connection. The field suggests template URLs for the JDBC drivers installed in GeoServer, pick one and replace the placeholders with the actual host, port, and database name |
 
 ### LDAP provider
 

@@ -118,7 +118,8 @@ def define_env(env):
     else:
         release = _guess_release(branch, version, default='3.1.0')
 
-    snapshot = f"{version}-SNAPSHOT"
+    # nightly artifacts carry the full Maven version (3.1.0-SNAPSHOT), not the 3.1 series
+    snapshot = f"{_guess_release(branch, version)}-SNAPSHOT"
 
     env.variables['branch'] = branch
     env.variables['is_snapshot'] = is_snapshot

@@ -8,13 +8,6 @@ package org.geoserver.gwc.web.diskquota;
 import static org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty;
 
 import java.io.Serial;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteTextRenderer;
-import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteBehavior;
-import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -22,6 +15,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.web.data.store.PasswordTextFieldWriteOnlyModel;
+import org.geoserver.web.wicket.ContainsAutoCompleteBehavior;
+import org.geoserver.web.wicket.JDBCUrlTemplates;
 import org.geowebcache.diskquota.jdbc.JDBCConfiguration.ConnectionPoolConfiguration;
 
 public class JDBCConnectionPoolPanel extends Panel {
@@ -47,19 +42,13 @@ public class JDBCConnectionPoolPanel extends Panel {
 
         TextField<String> driver = new TextField<>("jdbcDriver", new PropertyModel<>(model, "driver"));
         driver.setRequired(true);
-        AutoCompleteSettings as = new AutoCompleteSettings();
-        as.setPreselect(true).setShowListOnEmptyInput(true).setShowCompleteListOnFocusGain(true);
         driver.add(new ContainsAutoCompleteBehavior(
-                "org.postgresql.Driver", "oracle.jdbc.driver.OracleDriver", "org.h2.Driver", "org.hsqldb.jdbcDriver"));
+                "org.postgresql.Driver", "oracle.jdbc.driver.OracleDriver", "org.hsqldb.jdbcDriver"));
         add(driver);
 
         TextField<String> url = new TextField<>("jdbcUrl", new PropertyModel<>(model, "url"));
         url.setRequired(true);
-        url.add(new ContainsAutoCompleteBehavior(
-                "jdbc:h2://{server}:{9092}/{db-name}",
-                "jdbc:hsqldb:hsql//{server}:{9001}/{db-name}",
-                "jdbc:postgresql:[{//host}[:{5432}/]]{database}",
-                "jdbc:oracle:thin:@{server}[:{1521}]:{database_name}"));
+        url.add(new ContainsAutoCompleteBehavior(JDBCUrlTemplates.forRegisteredDrivers()));
 
         add(url);
 
@@ -98,48 +87,5 @@ public class JDBCConnectionPoolPanel extends Panel {
         maxOpenPreparedStatements.setRequired(true);
         maxOpenPreparedStatements.add(RangeValidator.minimum(0));
         add(maxOpenPreparedStatements);
-    }
-
-    /**
-     * Matches any of the specified choices provided they contain the text typed by the user (in a case insensitive way)
-     *
-     * @author Andrea Aime - GeoSolutions
-     */
-    private static class ContainsAutoCompleteBehavior extends AutoCompleteBehavior<String> {
-        @Serial
-        private static final long serialVersionUID = 993566054116148859L;
-
-        private List<String> choices;
-
-        public ContainsAutoCompleteBehavior(List<String> choices) {
-            super(new AbstractAutoCompleteTextRenderer<>() {
-                @Serial
-                private static final long serialVersionUID = 3192368880726583011L;
-
-                @Override
-                protected String getTextValue(String object) {
-                    return object;
-                }
-            });
-            settings.setPreselect(true).setShowListOnEmptyInput(true).setShowCompleteListOnFocusGain(true);
-            this.choices = new ArrayList<>(choices);
-        }
-
-        public ContainsAutoCompleteBehavior(String... choices) {
-            this(Arrays.asList(choices));
-        }
-
-        @Override
-        protected Iterator<String> getChoices(String input) {
-            String ucInput = input.toUpperCase();
-            List<String> result = new ArrayList<>();
-            for (String choice : choices) {
-                if (choice.toUpperCase().contains(ucInput)) {
-                    result.add(choice);
-                }
-            }
-
-            return result.iterator();
-        }
     }
 }

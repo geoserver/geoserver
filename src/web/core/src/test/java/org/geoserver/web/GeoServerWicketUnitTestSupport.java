@@ -14,6 +14,7 @@ import org.apache.wicket.settings.ResourceSettings;
 import org.apache.wicket.util.tester.WicketTester;
 import org.geoserver.test.GeoServerBaseTestSupport;
 import org.geoserver.web.wicket.WicketHierarchyPrinter;
+import org.geoserver.web.wicket.WicketSecureRandomSupplier;
 import org.junit.Before;
 
 /**
@@ -58,6 +59,9 @@ public class GeoServerWicketUnitTestSupport {
         @Override
         protected void init() {
             super.init();
+
+            // same as GeoServerApplication: Wicket asks for SHA1PRNG by name, which a FIPS system does not have
+            getSecuritySettings().setRandomSupplier(new WicketSecureRandomSupplier());
 
             // this setup allows the GeoServer i18n to work in unit tests
             ResourceSettings resourceSettings = getResourceSettings();

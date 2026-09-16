@@ -71,7 +71,7 @@ public class FeatureEncoderTest extends GeoServerSystemTestSupport {
         Feature encodedFeature = FeatureEncoder.feature(feature, true, new SpatialReferenceWKID(32615), "id");
         String featureJson = mapper.writeValueAsString(encodedFeature);
 
-        System.out.println(featureJson);
+        LOGGER.fine(featureJson);
         // Check the JSON to ensure attributes for the feature are encoded with the correct types
         assertTrue(featureJson.contains("\"stringfield\":\"" + stringValue));
         assertTrue(featureJson.contains("\"intfield\":" + intValue));

@@ -30,7 +30,6 @@ import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.config.SecurityManagerConfig;
-import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wms.WMSInfo;
 import org.junit.Test;
@@ -93,10 +92,8 @@ public class AuthenticationKeyOWSTest extends GeoServerSystemTestSupport {
         GeoServerRoleService rservice = getSecurityManager().loadRoleService("default");
         GeoServerRoleStore rstore = rservice.createStore();
         rstore.load();
-        GeoServerRole no_one = rstore.createRoleObject("NO_ONE");
-        rstore.addRole(no_one);
-        GeoServerRole rcite = rstore.createRoleObject("cite");
-        rstore.addRole(rcite);
+        addRoleIfMissing(rstore, "NO_ONE");
+        addRoleIfMissing(rstore, "cite");
         rstore.associateRoleToUser(rstore.createRoleObject("cite"), "cite");
         rstore.store();
 
@@ -128,6 +125,14 @@ public class AuthenticationKeyOWSTest extends GeoServerSystemTestSupport {
         }
         if (adminKey == null) throw new RuntimeException("Missing admin key");
         if (citeKey == null) throw new RuntimeException("Missing cite key");
+    }
+
+    /**
+     * The role may be there already. When the security directory is built from scratch, instead of unpacked from the
+     * canned one, GeoServer creates the roles named in {@code layers.properties} itself.
+     */
+    private void addRoleIfMissing(GeoServerRoleStore store, String name) throws IOException {
+        if (store.getRoleByName(name) == null) store.addRole(store.createRoleObject(name));
     }
 
     /** Enable the Spring Security authentication filters, we want the test to be complete and realistic */

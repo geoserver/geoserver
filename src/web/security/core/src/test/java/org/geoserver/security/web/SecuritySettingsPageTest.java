@@ -33,7 +33,7 @@ public class SecuritySettingsPageTest extends AbstractSecurityWicketTestSupport 
         tester.assertModelValue("form:encryption:encryptingUrlParams", config.isEncryptingUrlParams());
         tester.assertModelValue(
                 "form:encryption:configPasswordEncrypterName",
-                getPBEPasswordEncoder().getName());
+                getReversiblePasswordEncoder().getName());
 
         FormTester form = tester.newFormTester("form");
 

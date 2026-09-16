@@ -69,14 +69,14 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
         }
     }
 
-    private final List<ZoomContextFinder> zoomContextFinders;
+    private final GeoServerExtensions extensions;
 
     private SLDHandler sldHandler;
 
     public CssHandler(GeoServerExtensions extensions, SLDHandler sldHandler) {
         super("CSS", FORMAT);
         this.sldHandler = sldHandler;
-        this.zoomContextFinders = extensions.extensions(ZoomContextFinder.class);
+        this.extensions = extensions;
     }
 
     @Override
@@ -138,7 +138,9 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
     private StyledLayerDescriptor convertToSLD(Reader cssReader) throws IOException {
         Stylesheet styleSheet = CssParser.parse(IOUtils.toString(cssReader));
         CssTranslator translator = new CssTranslator();
-        translator.setZoomContextFinders(zoomContextFinders);
+        // Do not look this up in the constructor: it builds the GWC gridset beans, and through them
+        // the catalog, while this bean is still being created, and Spring fails on the circular reference.
+        translator.setZoomContextFinders(extensions.extensions(ZoomContextFinder.class));
         StyledLayerDescriptor sld = translator.translateMultilayer(styleSheet);
         return sld;
     }

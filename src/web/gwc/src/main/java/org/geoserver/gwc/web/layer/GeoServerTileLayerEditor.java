@@ -208,8 +208,9 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         configs.setOutputMarkupId(true);
         container.add(configs);
 
-        configs.add(new Label("createTileLayerLabel", createTileLayerLabelModel));
-        configs.add(createLayer = new CheckBox("createTileLayer", new Model<>(doCreateTileLayer)));
+        // outside "configs" on purpose: "configs" gets hidden when the box is unchecked
+        container.add(new Label("createTileLayerLabel", createTileLayerLabelModel));
+        container.add(createLayer = new CheckBox("createTileLayer", new Model<>(doCreateTileLayer)));
         createLayer.add(new AttributeModifier("title", new ResourceModel("createTileLayer.title")));
 
         enabled = new CheckBox("enabled", new PropertyModel<>(getModel(), "enabled"));

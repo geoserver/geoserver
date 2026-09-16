@@ -7,9 +7,8 @@
 package org.geoserver.security.password;
 
 import java.io.IOException;
-import java.security.Security;
 import java.util.logging.Logger;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.geoserver.security.CryptoProviders;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geotools.util.logging.Logging;
@@ -35,7 +34,9 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
     private String prefix;
 
     static {
-        Security.addProvider(new BouncyCastleProvider());
+        // encoders are built while the security subsystem starts, before the Spring context is
+        // refreshed, so this is the last moment at which the provider can still be chosen
+        CryptoProviders.getProvider();
     }
 
     @Override

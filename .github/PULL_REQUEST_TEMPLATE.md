@@ -8,6 +8,7 @@ Ask in a comment if you have troubles with any of them. -->
 
 - [ ] I have read the [contribution guidelines](https://github.com/geoserver/geoserver/blob/main/CONTRIBUTING.md).
 - [ ] I have sent a [Contribution Licence Agreement](https://docs.geoserver.org/latest/en/developer/policies/committing.html) (not required for small changes, e.g., fixing typos in documentation).
+- [ ] I have read and applied the [AI policy](https://geoserver.org/ai)
 - [ ] First PR targets the `main` branch (backports managed later; ignore for branch specific issues).
 
 For core and extension modules:

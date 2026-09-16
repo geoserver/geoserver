@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--  <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">-->
-
 <beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:sec="http://www.springframework.org/schema/security"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans
-          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-          http://www.springframework.org/schema/security
-          http://www.springframework.org/schema/security/spring-security-3.0.4.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
 
   <bean id="filterChainProxy" class="org.geoserver.security.GeoServerSecurityFilterChainProxy">
     <constructor-arg ref="authenticationManager"/>
@@ -65,7 +59,13 @@
     <property name="algorithm" value="PBEWITHSHA256AND256BITAES-CBC-BC" />
     <property name="availableWithoutStrongCryptogaphy" value="false" />
   </bean>  
-  <bean id="digestPasswordEncoder"    
+  <!-- Reversible, and the only one of these usable in a FIPS installation. Not a default:
+       existing data directories keep whatever encoder wrote their passwords. -->
+  <bean id="aesGcmPasswordEncoder"
+    class="org.geoserver.security.password.GeoServerAesGcmPasswordEncoder" scope="prototype">
+    <property name="prefix" value="crypt3" />
+  </bean>
+  <bean id="digestPasswordEncoder"
     class="org.geoserver.security.password.GeoServerDigestPasswordEncoder" scope="prototype">
     <property name="prefix" value="digest1" />    
   </bean>
@@ -139,9 +139,15 @@
 
 
 
-  <bean id="urlMasterPasswordProvider" 
+  <bean id="urlMasterPasswordProvider"
     class="org.geoserver.security.password.URLMasterPasswordProvider$SecurityProvider"/>
-  
+
+  <!-- Stores the password at a url like the provider above, but encrypts it with algorithms every
+       crypto provider offers. Not a default: existing data directories keep the provider they were
+       set up with. -->
+  <bean id="aesGcmMasterPasswordProvider"
+    class="org.geoserver.security.password.AesGcmMasterPasswordProvider$SecurityProvider"/>
+
   <!-- The dao used to deal with layer level security -->
   <bean id="accessRulesDao" class="org.geoserver.security.impl.DataAccessRuleDAO">
   	<constructor-arg ref="dataDirectory"/>

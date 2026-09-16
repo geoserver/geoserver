@@ -82,12 +82,6 @@
       </modules>
     </profile>
     <profile>
-      <id>rest</id>
-      <modules>
-        <module>rest</module>
-      </modules>
-    </profile>
-    <profile>
       <id>dds</id>
       <modules>
         <module>dds</module>
@@ -175,6 +169,7 @@
         <module>pmtiles-store</module>
         <module>wps-openai</module>
         <module>png-wind</module>
+        <module>fips</module>
       </modules>
     </profile>
     <profile>
@@ -269,6 +264,16 @@
       </modules>
     </profile>
 
+    <profile>
+      <!-- Shares the id with the fips profile in the root pom on purpose: -Pfips must switch
+           GeoServer to the FIPS BouncyCastle jars and add these modules at the same time. Without
+           the profile, gs-main pulls the regular jars and this module the FIPS ones, so both end
+           up on the classpath. -->
+      <id>fips</id>
+      <modules>
+        <module>fips</module>
+      </modules>
+    </profile>
     <profile>
       <id>jms-cluster</id>
       <modules>
@@ -661,13 +666,14 @@
                   <goal>generate</goal>
                 </goals>
                 <configuration>
-                  <inputDirectory>${project.basedir}/../../licenses</inputDirectory>
-                  <outputDirectory>${project.build.directory}/html/licenses</outputDirectory>
+                  <inputDirectory>${project.basedir}/../../licenses/</inputDirectory>
+                  <outputDirectory>${project.build.directory}/html/licenses/</outputDirectory>
                 </configuration>
               </execution>
             </executions>
             <inherited>false</inherited>
             <configuration>
+              <inputEncoding>UTF-8</inputEncoding>
               <recursiveInput>false</recursiveInput>
               <transformRelativeMarkdownLinks>true</transformRelativeMarkdownLinks>
               <headerHtmlFile>${project.build.directory}/html-template/header.html</headerHtmlFile>

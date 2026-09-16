@@ -67,6 +67,7 @@ public class LegacyPasswordByteDigesterTest {
 
     @Test
     public void testJasyptCompatibility() {
+        JasyptDefaults.assumeUsable();
         StandardByteDigester jasyptDigester = new StandardByteDigester();
         jasyptDigester.setAlgorithm("SHA-256");
         jasyptDigester.setIterations(100000);

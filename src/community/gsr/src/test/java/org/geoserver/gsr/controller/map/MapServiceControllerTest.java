@@ -11,6 +11,7 @@ package org.geoserver.gsr.controller.map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.geoserver.gsr.JsonSchemaTest;
@@ -43,7 +44,7 @@ public class MapServiceControllerTest extends ControllerTest {
     @Test
     public void testLayerGet() throws Exception {
         JSONObject result = (JSONObject) getAsJSON(getBaseURL() + "cite/MapServer/0");
-        System.out.println(result.toString());
+        assertNotNull(result);
     }
 
     @Test
@@ -53,7 +54,7 @@ public class MapServiceControllerTest extends ControllerTest {
                 + "&geometryType=esriGeometryPoint&geometry={x: 0, y: 0}"
                 + "&layers=all:0&imageDisplay=718,610,96&mapExtent=-126.175461,11.400420,-65.525810,"
                 + "62.927282&tolerance=10 ");
-        System.out.println(result.toString());
+        assertNotNull(result);
         assertFalse(result.has("error"));
         assertTrue("Result validates against schema", JsonSchemaTest.validateJSON(result, "/gsr-ms/1.0/identify.json"));
 
@@ -75,8 +76,8 @@ public class MapServiceControllerTest extends ControllerTest {
                 + "&geometryType=esriGeometryPoint&geometry={x: 0, y: 0}"
                 + "&layers=all:0&imageDisplay=718,610,96&mapExtent=-126.175461,11.400420,-65.525810,"
                 + "62.927282&tolerance=10 ");
+        assertNotNull(result);
         assertFalse(result.has("error"));
-        print(result);
 
         assertEquals(2, result.getJSONArray("results").size());
         assertEquals(
@@ -113,7 +114,7 @@ public class MapServiceControllerTest extends ControllerTest {
     public void testFind() throws Exception {
         JSONObject result =
                 (JSONObject) getAsJSON(getBaseURL() + "/cite/MapServer/find?f=json&searchText=Ash&layers=8");
-        System.out.println(result.toString());
+        assertNotNull(result);
         JSONArray results = (JSONArray) result.get("results");
         assertEquals("Results should have one element", 1, results.size());
     }

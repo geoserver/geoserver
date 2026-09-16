@@ -651,7 +651,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         WebServiceBodyResponseUserGroupServiceConfig config = new WebServiceBodyResponseUserGroupServiceConfig();
         config.setName("testWebServiceAuthKey3");
         config.setClassName(WebServiceBodyResponseUserGroupService.class.getName());
-        config.setPasswordEncoderName(getPBEPasswordEncoder().getName());
+        config.setPasswordEncoderName(getReversiblePasswordEncoder().getName());
         config.setPasswordPolicyName(PasswordValidator.DEFAULT_NAME);
         config.setSearchRoles("^.*?\"roles\"\\s*:\\s*\"([^\"]+)\".*$");
         config.setAvailableGroups("GROUP_MYROLE_1, GROUP_MYROLE_2");
@@ -847,7 +847,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         WebServiceBodyResponseUserGroupServiceConfig config = new WebServiceBodyResponseUserGroupServiceConfig();
         config.setName("testWebServiceAuthKey4");
         config.setClassName(WebServiceBodyResponseUserGroupService.class.getName());
-        config.setPasswordEncoderName(getPBEPasswordEncoder().getName());
+        config.setPasswordEncoderName(getReversiblePasswordEncoder().getName());
         config.setPasswordPolicyName(PasswordValidator.DEFAULT_NAME);
         config.setSearchRoles("wrong_regex");
         config.setAvailableGroups("GROUP_MYROLE_1, GROUP_MYROLE_2");

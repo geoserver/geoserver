@@ -844,8 +844,8 @@ public class FeatureLayerControllerTest extends ControllerTest {
                         .getIdentifier()
                         .getID());
 
-        System.out.println(
-                fti.getFeatureSource(null, null).getFeatures().features().next().getProperty("id"));
+        //        System.out.println(
+        //                fti.getFeatureSource(null, null).getFeatures().features().next().getProperty("id"));
         // verify feature was added
         JSONObject resultObj2 = json.getJSONArray("addResults").getJSONObject(0);
         assertTrue(resultObj2.getBoolean("success"));
@@ -861,7 +861,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         JSONObject resultObj3 = json.getJSONArray("updateResults").getJSONObject(0);
         assertTrue(resultObj3.getBoolean("success"));
 
-        System.out.println(json);
+        //        System.out.println(json);
     }
 
     @Test
@@ -989,11 +989,11 @@ public class FeatureLayerControllerTest extends ControllerTest {
                         .getIdentifier()
                         .getID());
 
-        System.out.println(ftiLines.getFeatureSource(null, null)
-                .getFeatures()
-                .features()
-                .next()
-                .getProperty("id"));
+        //        System.out.println(ftiLines.getFeatureSource(null, null)
+        //                .getFeatures()
+        //                .features()
+        //                .next()
+        //                .getProperty("id"));
         // verify feature was added
         JSONObject resultLineAdd = resultLineLayer.getJSONArray("addResults").getJSONObject(0);
         assertTrue(resultLineAdd.getBoolean("success"));
@@ -1027,12 +1027,12 @@ public class FeatureLayerControllerTest extends ControllerTest {
                         .getIdentifier()
                         .getID());
 
-        System.out.println(ftiPoints
-                .getFeatureSource(null, null)
-                .getFeatures()
-                .features()
-                .next()
-                .getProperty("id"));
+        //        System.out.println(ftiPoints
+        //                .getFeatureSource(null, null)
+        //                .getFeatures()
+        //                .features()
+        //                .next()
+        //                .getProperty("id"));
         // verify feature was added
         JSONObject resultPointAdd = resultPointLayer.getJSONArray("addResults").getJSONObject(0);
         assertTrue(resultPointAdd.getBoolean("success"));
@@ -1050,7 +1050,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
                 resultPointLayer.getJSONArray("updateResults").getJSONObject(0);
         assertTrue(resultPointUpdate.getBoolean("success"));
 
-        System.out.println(json);
+        //        System.out.println(json);
     }
 
     protected JSON postServiceLayerEditsAsForm(String path, String deletes, String adds, String updates)

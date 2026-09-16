@@ -19,11 +19,8 @@ package org.geoserver.wcs2_0;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -55,20 +52,6 @@ public class ResourceAccessManagerWCSTest extends WCSTestSupport {
     @Override
     protected List<jakarta.servlet.Filter> getFilters() {
         return Collections.singletonList((jakarta.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
-    }
-
-    /** Add the users */
-    @Override
-    protected void setUpTestData(SystemTestData testData) throws Exception {
-        super.setUpTestData(testData);
-        File security = new File(testData.getDataDirectoryRoot(), "security");
-        security.mkdir();
-
-        File users = new File(security, "users.properties");
-        Properties props = new Properties();
-        props.put("admin", "geoserver,ROLE_ADMINISTRATOR");
-        props.put("cite", "cite,ROLE_DUMMY");
-        props.store(new FileOutputStream(users), "");
     }
 
     @Override

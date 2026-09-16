@@ -1,0 +1,29 @@
+<assembly>
+    <id>fips-plugin</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>target</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>${artifactId}-${project.version}.jar</include>
+            </includes>
+        </fileSet>
+        <!-- The three FIPS BouncyCastle jars are part of the plugin: they replace the regular
+             BouncyCastle of the installation rather than joining it, so the admin has to remove
+             the regular ones by hand. See installing.md in the user documentation. -->
+        <fileSet>
+            <directory>target/dependency</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>gs-fips-provider-*.jar</include>
+                <include>bc-fips-*.jar</include>
+                <include>bcpkix-fips-*.jar</include>
+                <include>bcutil-fips-*.jar</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>

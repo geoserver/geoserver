@@ -22,6 +22,8 @@ import org.geoserver.security.jdbc.JDBCConnectAuthProvider;
 import org.geoserver.security.jdbc.config.JDBCConnectAuthProviderConfig;
 import org.geoserver.security.web.auth.AuthenticationProviderPanel;
 import org.geoserver.security.web.usergroup.UserGroupServiceChoice;
+import org.geoserver.web.wicket.ContainsAutoCompleteBehavior;
+import org.geoserver.web.wicket.JDBCUrlTemplates;
 
 /**
  * Configuration panel for {@link JDBCConnectAuthProvider}.
@@ -42,7 +44,10 @@ public class JDBCAuthProviderPanel extends AuthenticationProviderPanel<JDBCConne
 
         add(new UserGroupServiceChoice("userGroupServiceName"));
         add(new JDBCDriverChoice("driverClassName"));
-        add(new TextField<>("connectURL"));
+
+        TextField<String> connectURL = new TextField<>("connectURL");
+        connectURL.add(new ContainsAutoCompleteBehavior(JDBCUrlTemplates.forRegisteredDrivers()));
+        add(connectURL);
 
         TextField<String> userNameField = new TextField<>("username");
         userNameField.setModel(new PropertyModel<>(this, "username"));

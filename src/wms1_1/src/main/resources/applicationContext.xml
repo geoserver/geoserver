@@ -3,8 +3,9 @@ Copyright (C) 2025 Open Source Geospatial Foundation. All rights reserved.
 This code is licensed under the GPL 2.0 license, available at the root
 application directory.
 -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="wms-1_1_1-ServiceDescriptor" class="org.geoserver.platform.Service">
         <constructor-arg index="0" value="wms"/>

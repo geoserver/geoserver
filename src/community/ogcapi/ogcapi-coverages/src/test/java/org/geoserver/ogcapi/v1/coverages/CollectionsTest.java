@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import net.minidev.json.JSONArray;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.config.GeoServer;
@@ -224,7 +223,7 @@ public class CollectionsTest extends CoveragesTestSupport {
             MockHttpServletResponse response = dispatch(request, null);
             assertEquals(200, response.getStatus());
             assertEquals("text/html", response.getContentType());
-            LOGGER.log(Level.INFO, "Last request returned\n:" + response.getContentAsString());
+            LOGGER.fine("Last request returned\n:" + response.getContentAsString());
 
             // parse the HTML
             org.jsoup.nodes.Document document = Jsoup.parse(response.getContentAsString());

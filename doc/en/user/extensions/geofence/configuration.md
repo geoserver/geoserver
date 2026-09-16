@@ -12,7 +12,7 @@ Configure the following settings here:
 - Active engine (read-only field): the current engine GeoServer is talking to. Using the `geofence` plugin, it's "*Remote standalone GeoFence server (REST)*". 
 - GeoServer services URL: this is how GeoServer knows how to connect to the external GeoFence server. When using an internal GeoFence server, this is not configurable. For example "http://localhost:9191/geofence/rest" for an external GeoFence server on localhost.
 
-The **Test connection** button will check whether GeoServer is able to can communicate to GeoFence using the current URL.
+The **Test connection** button will check whether GeoServer is able to communicate with GeoFence using the current URL.
 
 
 ## Options

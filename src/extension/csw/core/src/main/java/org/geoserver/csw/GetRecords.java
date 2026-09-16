@@ -12,17 +12,26 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.xml.namespace.QName;
 import net.opengis.cat.csw20.ElementSetType;
 import net.opengis.cat.csw20.GetRecordsType;
 import net.opengis.cat.csw20.QueryType;
 import net.opengis.cat.csw20.ResultType;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.response.CSWRecordsResult;
 import org.geoserver.csw.store.CatalogStore;
 import org.geoserver.feature.CompositeFeatureCollection;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.LocalWorkspace;
+import org.geoserver.ows.Request;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.SecureCatalogImpl;
+import org.geoserver.security.WorkspaceAccessLimits;
 import org.geotools.api.data.Query;
 import org.geotools.api.data.Transaction;
 import org.geotools.api.feature.Feature;
@@ -37,6 +46,8 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.type.Types;
 import org.geotools.util.factory.Hints;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Runs the GetRecords request
@@ -48,6 +59,9 @@ public class GetRecords {
     static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     public static final Hints.Key KEY_BASEURL = new Hints.Key(String.class);
+
+    /** Set when the request asked for non advertised layers and is allowed to see them. */
+    public static final Hints.Key KEY_INCLUDE_UNADVERTISED = new Hints.Key(Boolean.class);
 
     CSWInfo csw;
 
@@ -202,6 +216,7 @@ public class GetRecords {
 
         // build one query per type name, forgetting about paging for the time being
         List<WrappedQuery> result = new ArrayList<>();
+        boolean includeUnadvertised = includeUnadvertised();
         for (RecordDescriptor outputRd : outputRds) {
             for (QName qName : query.getTypeNames()) {
                 Name typeName = new NameImpl(qName);
@@ -227,11 +242,41 @@ public class GetRecords {
                 // smuggle base url
                 q.getHints().put(KEY_BASEURL, request.getBaseUrl());
 
+                q.getHints().put(KEY_INCLUDE_UNADVERTISED, includeUnadvertised);
+
                 result.add(new WrappedQuery(q, outputRd));
             }
         }
 
         return result;
+    }
+
+    /**
+     * Returns true when the current request asked for non advertised layers and is allowed to see them. Only a global
+     * administrator, or a workspace administrator inside the virtual service of that same workspace, is allowed.
+     */
+    static boolean includeUnadvertised() {
+        Request request = Dispatcher.REQUEST.get();
+        // a POST request carries no raw KVP unless the parameter is on the query string
+        Map<String, Object> rawKvp = request == null ? null : request.getRawKvp();
+        if (rawKvp == null || !Boolean.parseBoolean((String) rawKvp.get("includeUnadvertised"))) {
+            return false;
+        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (GeoServerExtensions.bean(GeoServerSecurityManager.class).checkAuthenticationForAdminRole(auth)) {
+            return true;
+        }
+
+        // outside a virtual service a workspace administrator has no say on which layers show up
+        WorkspaceInfo workspace = LocalWorkspace.get();
+        if (workspace == null) {
+            return false;
+        }
+        // the secure catalog builds and owns the resource access manager
+        SecureCatalogImpl secureCatalog = GeoServerExtensions.bean(SecureCatalogImpl.class);
+        WorkspaceAccessLimits limits = secureCatalog.getResourceAccessManager().getAccessLimits(auth, workspace);
+        return limits != null && limits.isAdminable();
     }
 
     private List<PropertyName> getPropertyNames(RecordDescriptor rd, QueryType query) {

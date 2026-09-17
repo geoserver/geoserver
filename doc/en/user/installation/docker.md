@@ -168,7 +168,7 @@ To work with community modules you must be using the GeoServer {{ version }}.x n
 docker run -it -p 8080:8080 \
   --env INSTALL_EXTENSIONS=true \
   --env STABLE_EXTENSIONS="ysld,h2" \
-  --env COMMUNITY_EXTENSIONS="ogcapi-images,ogcapi-maps,ogcapi-styles,ogcapi-tiles" \
+  --env COMMUNITY_EXTENSIONS="ogcapi-maps,ogcapi-styles,ogcapi-tiles" \
   docker.osgeo.org/geoserver:{{ version }}.x
 ```
 {% endif %}
@@ -189,12 +189,12 @@ For the current list see GeoServer [build server](https://build.geoserver.org/ge
 | libdeflate | mbtiles | mbtiles-store |
 | mongodb-schemaless | monitor-kafka | ncwms |
 | netcdf-ghrsst | notification | ogcapi-coverages |
-| ogcapi-dggs | ogcapi-images | ogcapi-maps |
-| ogcapi-styles | ogcapi-tiled-features | ogcapi-tiles |
-| ogr-datastore | opensearch-eo | png-wind |
-| proxy-base-ext | s3-geotiff | sec-keycloak |
-| sec-oauth2-geonode | sec-oauth2-github | sec-oauth2-google |
-| sec-oauth2-openid | smart-data-loader | solr |
-| spatialjson | stac-datastore | taskmanager-core |
-| taskmanager-s3 | vector-mosaic | vsi |
-| webp | wfs-freemarker | wps-longitudinal-profile |
+| ogcapi-dggs | ogcapi-maps | ogcapi-styles |
+| ogcapi-tiles | ogr-datastore | opensearch-eo |
+| png-wind | proxy-base-ext | s3-geotiff |
+| sec-keycloak | sec-oauth2-geonode | sec-oauth2-github |
+| sec-oauth2-google | sec-oauth2-openid | smart-data-loader |
+| solr | spatialjson | stac-datastore |
+| taskmanager-core | taskmanager-s3 | vector-mosaic |
+| vsi | webp | wfs-freemarker |
+| wps-longitudinal-profile |  |  |

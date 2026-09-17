@@ -14,17 +14,12 @@
         <property name="order" value="200" />
     </bean>
 
-    <!-- Override the service URL -->
-    <!-- Tests need a specific set of rules, so we're pointing to a geofence test instance that contains them -->
-    <bean id="testOverrider" class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
-        <property name="localOverride" value="True"/>
-        <property name="order" value="200"/>
-        <property name="properties">
-          <props>
-             <prop key="geofenceConfigurationManager.configuration.servicesUrl">http://localhost:9191/geofence/remoting/RuleReader</prop>
-             <prop key="remoteReaderService.serviceUrl">http://localhost:9191/geofence/remoting/RuleReader</prop>
-          </props>
-        </property> 
+    <!-- Overrides the component-scanned restRuleReaderService bean with one pointing at a fixed, well-known URL -
+         a literal property value, no placeholder resolution involved, so it isn't affected by where/when
+         GeoFenceSpringConfig's own data-directory-relative properties file would otherwise be read from.
+         Tests need a specific set of rules - geofence_39's real geofence-web-app is expected to be running on
+         this same port, seeded by GeofenceRestTestDataSeeder (GeofenceBaseTest.onSetUp) via GeoFenceAdminClient. -->
+    <bean id="restRuleReaderService" class="org.geoserver.geofence.services.RestRuleReaderService">
+        <property name="serviceUrl" value="http://localhost:9191/geofence/rest"/>
     </bean>
-    
 </beans>

@@ -22,27 +22,29 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.kordamp.json.JSONArray;
-import org.kordamp.json.JSONObject;
 import org.custommonkey.xmlunit.XMLAssert;
+import org.geofence.core.db.dao.DuplicateKeyException;
+import org.geofence.core.model.IPAddressRange;
+import org.geofence.core.model.LayerAttribute;
+import org.geofence.core.model.Rule;
+import org.geofence.core.model.enums.GrantType;
+import org.geofence.core.services.RuleAdminService;
+import org.geofence.core.services.dto.ShortRule;
+import org.geofence.core.services.exception.NotFoundServiceEx;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.geofence.GeofenceBaseTest;
-import org.geoserver.geofence.core.dao.DuplicateKeyException;
-import org.geoserver.geofence.core.model.IPAddressRange;
-import org.geoserver.geofence.core.model.LayerAttribute;
-import org.geoserver.geofence.core.model.Rule;
-import org.geoserver.geofence.core.model.enums.GrantType;
+import org.geoserver.geofence.server.GeofenceDatabaseRule;
 import org.geoserver.geofence.server.rest.xml.JaxbRule;
 import org.geoserver.geofence.server.rest.xml.JaxbRuleList;
 import org.geoserver.geofence.server.xstream.GeoFenceServerXStreamInitializer;
-import org.geoserver.geofence.services.RuleAdminService;
-import org.geoserver.geofence.services.dto.ShortRule;
-import org.geoserver.geofence.services.exception.NotFoundServiceEx;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.gml3.bindings.GML3MockData;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONObject;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.io.ParseException;
@@ -52,6 +54,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class RulesRestControllerTest extends GeofenceBaseTest {
+
+    @ClassRule
+    public static final GeofenceDatabaseRule database = new GeofenceDatabaseRule();
 
     protected RulesRestController controller;
 
@@ -201,6 +206,31 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         assertNull(realRule.getRuleLimits());
     }
 
+    /** A POST update sending only some Limits fields must not wipe the ones it didn't send. */
+    @Test
+    public void testLimitsPartialUpdatePreservesUnsetFields() {
+        JaxbRule rule = new JaxbRule();
+        rule.setPriority(5L);
+        rule.setAccess("LIMIT");
+        rule.setLimits(new JaxbRule.Limits());
+        rule.getLimits().setAllowedArea(GML3MockData.multiPolygon());
+        rule.getLimits().setCatalogMode("MIXED");
+        rule.getLimits().setSpatialFilterType("CLIP");
+
+        long id = prepareGeoFenceTestRules(rule);
+
+        JaxbRule ruleMods = new JaxbRule();
+        ruleMods.setLimits(new JaxbRule.Limits());
+        ruleMods.getLimits().setCatalogMode("HIDE");
+
+        controller.update(id, ruleMods);
+
+        Rule realRule = adminService.get(id);
+        assertEquals("HIDE", realRule.getRuleLimits().getCatalogMode().toString());
+        assertNotNull(realRule.getRuleLimits().getAllowedArea());
+        assertEquals("CLIP", realRule.getRuleLimits().getSpatialFilterType().toString());
+    }
+
     @Test
     public void testLayerDetails() {
         JaxbRule rule = new JaxbRule();
@@ -313,8 +343,38 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         assertEquals(2, realRule.getLayerDetails().getAttributes().size());
     }
 
+    /** A POST update sending only some LayerDetails fields must not wipe the ones it didn't send. */
+    @Test
+    public void testLayerDetailsPartialUpdatePreservesUnsetFields() {
+        JaxbRule rule = new JaxbRule();
+        rule.setPriority(5L);
+        rule.setWorkspace("workspace");
+        rule.setLayer("layer");
+        rule.setAccess("ALLOW");
+        rule.setLayerDetails(new JaxbRule.LayerDetails());
+        rule.getLayerDetails().setAllowedArea(GML3MockData.multiPolygon());
+        rule.getLayerDetails().setCqlFilterRead("myFilterRead");
+        rule.getLayerDetails().setDefaultStyle("myDefaultStyle");
+        rule.getLayerDetails().setLayerType("VECTOR");
+
+        long id = prepareGeoFenceTestRules(rule);
+
+        JaxbRule ruleMods = new JaxbRule();
+        ruleMods.setLayerDetails(new JaxbRule.LayerDetails());
+        ruleMods.getLayerDetails().setDefaultStyle("myDefaultStyle2");
+
+        controller.update(id, ruleMods);
+
+        Rule realRule = adminService.get(id);
+        assertEquals("myDefaultStyle2", realRule.getLayerDetails().getDefaultStyle());
+        assertEquals("myFilterRead", realRule.getLayerDetails().getCqlFilterRead());
+        assertNotNull(realRule.getLayerDetails().getArea());
+    }
+
     @Test
     public void testMovingRules() {
+        // this test asserts on absolute page contents/priorities, so start from an empty table
+        deleteAllRules();
         // create some rules for the test
         String prefix = UUID.randomUUID().toString();
         adminService.insert(
@@ -333,7 +393,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         // get the rules so we can access their id
         JaxbRuleList originalRules = controller.get(
                 0, 6, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         validateRules(originalRules, prefix, "user1", "user2", "user3", "user4", "user5", "user6");
         // check rules per page
         validateRules(0, prefix, "user1", "user2");
@@ -594,7 +654,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 realRule.getRuleLimits().getSpatialFilterType().toString());
         JaxbRuleList list = controller.get(
                 null, null, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         JaxbRule r = list.getRules().get(0);
         JaxbRule.Limits limits = r.getLimits();
         assertEquals("INTERSECT", limits.getSpatialFilterType());
@@ -634,7 +694,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 realRule.getLayerDetails().getSpatialFilterType().toString());
         JaxbRuleList list = controller.get(
                 null, null, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         JaxbRule r = list.getRules().get(0);
         JaxbRule.LayerDetails details = r.getLayerDetails();
         assertEquals("CLIP", details.getSpatialFilterType());
@@ -656,7 +716,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         assertNull(r.getLayerDetails().getLayerType());
         JaxbRuleList list = controller.get(
                 null, null, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         r = list.getRules().get(0);
         assertNotNull(r);
         assertNotNull(r.getLayerDetails());
@@ -698,8 +758,18 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 null,
                 null,
                 null,
+                null,
+                null,
+                null,
+                null,
                 date,
                 includeDefault,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
                 null,
                 null,
                 null,
@@ -835,8 +905,13 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 null,
                 null,
                 null,
+                null,
+                null,
+                null,
                 ip,
                 ipIncludeDefault,
+                null,
+                null,
                 null,
                 null,
                 service,
@@ -846,6 +921,64 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 null,
                 null,
                 null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+    }
+
+    /** The new {@code workspaceDefault} parameter must win over a conflicting, deprecated {@code workspaceAny}. */
+    @Test
+    public void testDefaultParameterWinsOverDeprecatedAny() {
+        deleteAllRules();
+
+        adminService.insert(new Rule(1, null, null, null, null, null, null, null, null, null, GrantType.ALLOW));
+        adminService.insert(new Rule(2, null, null, null, null, null, null, null, "ws1", null, GrantType.ALLOW));
+
+        // workspaceAny=false alone would exclude the workspace-less rule; workspaceDefault=true must win.
+        validateRules(getByWorkspace(false, true), 1l);
+        // and the reverse: workspaceDefault=false alone would include only the specific-workspace rules (none
+        // here), but there is no name/id filter set, so a false workspaceAny/Default just means "any".
+        validateRules(getByWorkspace(true, false), 1l, 2l);
+    }
+
+    private JaxbRuleList getByWorkspace(Boolean workspaceAny, Boolean workspaceDefault) {
+        return controller.get(
+                null,
+                null,
+                false,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                workspaceAny,
+                workspaceDefault,
                 null,
                 null,
                 null);
@@ -881,7 +1014,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
     private void validateRules(int page, String prefix, String... expectedUsers) {
         JaxbRuleList rules = controller.get(
                 page, 2, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         validateRules(rules, prefix, expectedUsers);
     }
 
@@ -899,7 +1032,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
     private void validateRules(int page, long... expectedPriorities) {
         JaxbRuleList rules = controller.get(
                 page, 2, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         validateRules(rules, expectedPriorities);
     }
 

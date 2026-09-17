@@ -140,6 +140,8 @@ public class GetRecordById {
             // smuggle base url
             q.getHints().put(GetRecords.KEY_BASEURL, request.getBaseUrl());
 
+            q.getHints().put(GetRecords.KEY_INCLUDE_UNADVERTISED, GetRecords.includeUnadvertised());
+
             result.add(new GetRecords.WrappedQuery(q, rd));
         }
 

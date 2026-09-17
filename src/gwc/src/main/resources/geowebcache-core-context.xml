@@ -71,7 +71,7 @@
     <constructor-arg ref="gwcSecurityDispatcherTileLayerDispatcherFilter"/>
   </bean>
 
-  <bean id="gwcBlobStoreAggregator" class="org.geowebcache.storage.BlobStoreAggregator">
+  <bean id="gwcBlobStoreAggregator" class="org.geowebcache.storage.BlobStoreAggregator" depends-on="geoWebCacheExtensions">
     <description>
       BlobStoreAggregator serves up BlobStoreInfos from the available Configurations in the application context
     </description>

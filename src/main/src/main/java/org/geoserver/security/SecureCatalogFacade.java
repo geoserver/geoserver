@@ -245,7 +245,7 @@ class SecureCatalogFacade implements CatalogFacade {
 
     @Override
     public <T extends CatalogInfo> int count(Class<T> of, Filter filter) {
-        return facade.count(of, filter);
+        return catalog.count(of, filter);
     }
 
     @Override

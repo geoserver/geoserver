@@ -8,8 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
+import org.geofence.core.services.dto.RuleFilter;
 import org.geoserver.geofence.config.GeoFenceConfiguration;
-import org.geoserver.geofence.services.dto.RuleFilter;
+import org.geoserver.geofence.util.RuleFilterBuilder;
 import org.geoserver.ows.Request;
 import org.junit.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,10 +30,10 @@ public class RuleFilterBuilderTest {
         // filter by user is default and in role field we have ANY filter type
         assertEquals(filter.getRole().getType(), RuleFilter.SpecialFilterType.ANY.getRelatedType());
         assertEquals(filter.getUser().getText(), getAuthentication().getName());
-        assertEquals(filter.getService().getText(), "WMS");
-        assertEquals(filter.getRequest().getText(), "GETMAP");
-        assertEquals(filter.getLayer().getText(), "states");
-        assertEquals(filter.getWorkspace().getText(), "topp");
+        assertEquals("WMS", filter.getService().getText());
+        assertEquals("GETMAP", filter.getRequest().getText());
+        assertEquals("states", filter.getLayer().getText());
+        assertEquals("topp", filter.getWorkspace().getText());
     }
 
     @Test
@@ -46,12 +47,12 @@ public class RuleFilterBuilderTest {
         ruleFilterBuilder.withLayer("states");
         ruleFilterBuilder.withWorkspace("topp");
         RuleFilter filter = ruleFilterBuilder.build();
-        assertEquals(filter.getRole().getText(), "ROLE_ONE");
+        assertEquals("ROLE_ONE", filter.getRole().getText());
         assertEquals(filter.getUser().getText(), getAuthentication().getName());
-        assertEquals(filter.getService().getText(), "WMS");
-        assertEquals(filter.getRequest().getText(), "GETMAP");
-        assertEquals(filter.getLayer().getText(), "states");
-        assertEquals(filter.getWorkspace().getText(), "topp");
+        assertEquals("WMS", filter.getService().getText());
+        assertEquals("GETMAP", filter.getRequest().getText());
+        assertEquals("states", filter.getLayer().getText());
+        assertEquals("topp", filter.getWorkspace().getText());
     }
 
     @Test
@@ -62,14 +63,14 @@ public class RuleFilterBuilderTest {
         RuleFilter filter = ruleFilterBuilder.build();
         assertEquals(filter.getRole().getType(), RuleFilter.SpecialFilterType.ANY.getRelatedType());
         assertEquals(filter.getUser().getText(), getAuthentication().getName());
-        assertEquals(filter.getService().getText(), "WMS");
-        assertEquals(filter.getRequest().getText(), "GETMAP");
+        assertEquals("WMS", filter.getService().getText());
+        assertEquals("GETMAP", filter.getRequest().getText());
         // no value provided should be set to default null
         assertNull(filter.getLayer().getText());
         assertNull(filter.getWorkspace().getText());
         // with type namevalue
-        assertEquals(filter.getLayer().getType(), RuleFilter.FilterType.NAMEVALUE);
-        assertEquals(filter.getWorkspace().getType(), RuleFilter.FilterType.NAMEVALUE);
+        assertEquals(RuleFilter.FilterType.NAMEVALUE, filter.getLayer().getType());
+        assertEquals(RuleFilter.FilterType.NAMEVALUE, filter.getWorkspace().getType());
     }
 
     private Request getRequest() {

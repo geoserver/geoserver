@@ -586,3 +586,30 @@ and the result will be similar to this:
   </wmts:FeatureCollection>
 
 Note how this result correlate with the correspondent ``DescribeDomains`` operation result.
+
+Security
+--------
+
+The domain responses honor the data security restrictions configured for the layer. When a rule or a security
+extension limits which records a user can read, ``DescribeDomains``, ``GetDomainValues``, ``GetHistogram`` and
+``GetFeature`` only report the values found in the records that user is allowed to see. Domain values that no
+readable record carries are left out, and the reported sizes and histogram counts shrink accordingly.
+
+This covers vector layers and the raster layers whose store keeps an index of the single granules, image mosaic
+and the mosaic based NetCDF and GRIB stores being the common cases. **A raster layer that does not expose its
+granules reports the dimension domain declared by its store as is**, so the values listed there do not shrink
+with the restrictions. The data itself is still protected, the user only gets to see domain values for which no
+data will be served.
+
+It is to be noted that **the same layer can report different domains to different users**. A layer whose
+restriction excludes every record reports empty domains, not an error.
+
+**Vector layers configured with a sidecar summary table are the exception**: the domain operations read the
+sidecar instead of the layer, and the sidecar is queried directly, so the restrictions configured on the layer
+do not reach it. A sidecar layer is meant to be public, as listed in :ref:`wmts_multidimensional_sidecar`,
+together with the other layer settings a sidecar bypasses.
+
+How much of a restriction survives in practice depends on where the sidecar lives: a summary table sitting in
+the same store as the layer may still be reached by some of it, one in a separate store is not. **Neither case
+is a supported way to restrict a sidecar**, so do not rely on either - if a layer has to stay restricted, do
+not give it a sidecar.

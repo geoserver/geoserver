@@ -30438,6 +30438,30 @@
 <p><em>Response</em></p>
 <div class="highlight"><pre><span></span><code>201 Created
 </code></pre></div>
+<h1 id="granules-and-data-security">Granules and data security<a class="headerlink" href="#granules-and-data-security" title="Permanent link">&para;</a></h1>
+<p>Harvesting a mosaic needs write access on the store, and nothing more. Data security rules limiting which
+granules a user can read, by attribute or by area, do not hold a harvest back: the granule values are only
+known once the indexing has produced them, so there is nothing to check beforehand.</p>
+<p>The calls above go through the REST API, reserved to administrators by default, and an administrator is subject
+to no restriction. In a standard setup the granule operations therefore behave exactly as documented.</p>
+<h2 id="when-the-restrictions-do-apply">When the restrictions do apply<a class="headerlink" href="#when-the-restrictions-do-apply" title="Permanent link">&para;</a></h2>
+<p>Only when the caller is a normal user: the REST rights have been relaxed through <code>rest.properties</code>, or a custom
+module or WPS process drives the granule store on its behalf. The granule index then behaves like any other
+secured data:</p>
+<ul>
+<li>listing, counting and bounds only report the granules that user can read, and removals and updates are
+  confined to them;</li>
+<li>adding a granule outside the restriction is refused, as its own author could not read it back. <strong>The granules
+  added before it in the same request stay in the index</strong>, so use a transaction if the batch has to land whole
+  or not at all;</li>
+<li><strong>the attributes named in the restriction become read only for that user</strong>. If the rule is
+  <code>elevation &lt; 100</code>, then <code>elevation</code> cannot be updated at all: the request is refused on the attribute name
+  alone, before the new value is even looked at, because writing it could move the granule out of the user's
+  own view. Every other attribute stays writable as usual. Remove the granule and harvest it again to change a
+  read only one.</li>
+</ul>
+<p>Because a harvest is never restricted, it can index granules the restrictions then hide from the user who
+harvested them: only a user the restriction lets read them can remove them.</p>
 
 
 

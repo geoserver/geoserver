@@ -6,12 +6,16 @@
 package org.geoserver.security.decorators;
 
 import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Rectangle;
@@ -45,12 +49,15 @@ import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.coverage.grid.GeneralGridEnvelope;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
+import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.parameter.DefaultParameterDescriptorGroup;
+import org.geotools.parameter.ParameterGroup;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.After;
@@ -62,6 +69,8 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 
 public class SecuredGridCoverage2DReaderTest extends SecureObjectsTest {
+
+    private static final String COVERAGE = "test";
 
     @After
     public void cleanupRequest() {
@@ -110,6 +119,106 @@ public class SecuredGridCoverage2DReaderTest extends SecureObjectsTest {
         final ParameterValue pv = ImageMosaicFormat.FILTER.createValue();
         pv.setValue(requestFilter);
         secured.read(pv);
+    }
+
+    /**
+     * The named coverage overload used to go straight to the delegate through the decorator, skipping the access limits
+     * entirely, so the security filter has to show up in its read parameters too.
+     */
+    @Test
+    public void testFilterOnNamedCoverageRead() throws Exception {
+        final Filter securityFilter = ECQL.toFilter("A > 10");
+        final Filter requestFilter = ECQL.toFilter("B < 10");
+
+        Format format = setupFormat();
+        GridCoverage2DReader reader = createNiceMock(GridCoverage2DReader.class);
+        expect(reader.getFormat()).andReturn(format).anyTimes();
+        setupNamedReadAssertion(reader, COVERAGE, requestFilter, securityFilter);
+
+        CoverageAccessLimits accessLimits = new CoverageAccessLimits(CatalogMode.HIDE, securityFilter, null, null);
+        SecuredGridCoverage2DReader secured =
+                new SecuredGridCoverage2DReader(reader, WrapperPolicy.readOnlyHide(accessLimits));
+
+        final ParameterValue pv = ImageMosaicFormat.FILTER.createValue();
+        pv.setValue(requestFilter);
+        secured.read(COVERAGE, pv);
+
+        EasyMock.verify(reader);
+    }
+
+    /** Same for the structured reader, which shares the read code but overrides the overload separately. */
+    @Test
+    public void testFilterOnNamedCoverageReadOfStructured() throws Exception {
+        final Filter securityFilter = ECQL.toFilter("A > 10");
+        final Filter requestFilter = ECQL.toFilter("B < 10");
+
+        Format format = setupFormat();
+        StructuredGridCoverage2DReader reader = createNiceMock(StructuredGridCoverage2DReader.class);
+        expect(reader.getFormat()).andReturn(format).anyTimes();
+        setupNamedReadAssertion(reader, COVERAGE, requestFilter, securityFilter);
+
+        CoverageAccessLimits accessLimits = new CoverageAccessLimits(CatalogMode.HIDE, securityFilter, null, null);
+        SecuredStructuredGridCoverage2DReader secured =
+                new SecuredStructuredGridCoverage2DReader(reader, WrapperPolicy.readOnlyHide(accessLimits));
+
+        final ParameterValue pv = ImageMosaicFormat.FILTER.createValue();
+        pv.setValue(requestFilter);
+        secured.read(COVERAGE, pv);
+
+        EasyMock.verify(reader);
+    }
+
+    /**
+     * A format with no FILTER read parameter has no way to carry the restrictions down to the data, so the read fails
+     * closed instead of serving the whole coverage.
+     */
+    @Test
+    public void testReadRefusedWhenTheFormatCannotCarryTheFilter() throws Exception {
+        Format format = createNiceMock(Format.class);
+        expect(format.getName()).andReturn("NoFilter").anyTimes();
+        expect(format.getReadParameters())
+                .andReturn(new ParameterGroup(
+                        new DefaultParameterDescriptorGroup("noFilter", AbstractGridFormat.READ_GRIDGEOMETRY2D)))
+                .anyTimes();
+        EasyMock.replay(format);
+
+        GridCoverage2DReader reader = createNiceMock(GridCoverage2DReader.class);
+        expect(reader.getFormat()).andReturn(format).anyTimes();
+        EasyMock.replay(reader);
+
+        CoverageAccessLimits accessLimits =
+                new CoverageAccessLimits(CatalogMode.HIDE, ECQL.toFilter("A > 10"), null, null);
+        SecuredGridCoverage2DReader secured =
+                new SecuredGridCoverage2DReader(reader, WrapperPolicy.readOnlyHide(accessLimits));
+
+        IOException exception = assertThrows(
+                IOException.class, () -> secured.read(AbstractGridFormat.READ_GRIDGEOMETRY2D.createValue()));
+        assertThat(exception.getMessage(), containsString("NoFilter"));
+        // the delegate must never be reached, the nice mock would otherwise answer an unrestricted read
+        EasyMock.verify(reader);
+    }
+
+    /** Asserts the named read reaches the delegate with the security filter ANDed into its FILTER parameter. */
+    private static void setupNamedReadAssertion(
+            GridCoverage2DReader reader, String coverageName, final Filter requestFilter, final Filter securityFilter)
+            throws IOException {
+        // a matcher on the array itself does not survive the vararg expansion, Any does
+        expect(reader.read(eq(coverageName), EasyMock.<GeneralParameterValue>anyObject()))
+                .andAnswer(() -> {
+                    ParameterValue param = (ParameterValue) readParameters()[0];
+                    assertEquals(Predicates.and(requestFilter, securityFilter), param.getValue());
+                    return null;
+                });
+        EasyMock.replay(reader);
+    }
+
+    /** The read parameters of the call being answered, whether the mock kept the vararg array or expanded it. */
+    private static GeneralParameterValue[] readParameters() {
+        Object[] arguments = EasyMock.getCurrentArguments();
+        Object last = arguments[arguments.length - 1];
+        return last instanceof GeneralParameterValue[]
+                ? (GeneralParameterValue[]) last
+                : new GeneralParameterValue[] {(GeneralParameterValue) last};
     }
 
     @Test
@@ -291,6 +400,41 @@ public class SecuredGridCoverage2DReaderTest extends SecureObjectsTest {
                 new SecuredGridCoverage2DReader(reader, WrapperPolicy.readOnlyHide(accessLimits));
 
         assertNull(secured.read(new GeneralParameterValue[0]));
+    }
+
+    /**
+     * The caller owns its parameters: writing the restricted filter back into them would leave it there and AND it into
+     * itself on the next read done with the same objects.
+     */
+    @Test
+    public void testFilterNotAccumulatedAcrossReads() throws Exception {
+        final Filter securityFilter = ECQL.toFilter("A > 10");
+        final Filter requestFilter = ECQL.toFilter("B < 10");
+
+        Format format = setupFormat();
+        GridCoverage2DReader reader = createNiceMock(GridCoverage2DReader.class);
+        expect(reader.getFormat()).andReturn(format).anyTimes();
+        // a matcher on the array itself does not survive the vararg expansion, Any does
+        expect(reader.read(EasyMock.<GeneralParameterValue>anyObject()))
+                .andAnswer(() -> {
+                    ParameterValue param = (ParameterValue) readParameters()[0];
+                    assertEquals(Predicates.and(requestFilter, securityFilter), param.getValue());
+                    return null;
+                })
+                .times(2);
+        EasyMock.replay(reader);
+
+        CoverageAccessLimits accessLimits = new CoverageAccessLimits(CatalogMode.HIDE, securityFilter, null, null);
+        SecuredGridCoverage2DReader secured =
+                new SecuredGridCoverage2DReader(reader, WrapperPolicy.readOnlyHide(accessLimits));
+
+        final ParameterValue pv = ImageMosaicFormat.FILTER.createValue();
+        pv.setValue(requestFilter);
+        secured.read(pv);
+        secured.read(pv);
+
+        assertEquals(requestFilter, pv.getValue());
+        EasyMock.verify(reader);
     }
 
     private static void setupReadAssertion(

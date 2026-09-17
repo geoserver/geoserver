@@ -277,3 +277,34 @@ Given a ``coverageconfig.xml``:
 ::
 
   201 Created
+
+Granules and data security
+--------------------------
+
+Harvesting a mosaic needs write access on the store, and nothing more. Data security rules limiting which
+granules a user can read, by attribute or by area, do not hold a harvest back: the granule values are only
+known once the indexing has produced them, so there is nothing to check beforehand.
+
+The calls above go through the REST API, reserved to administrators by default, and an administrator is subject
+to no restriction. In a standard setup the granule operations therefore behave exactly as documented.
+
+When the restrictions do apply
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Only when the caller is a normal user: the REST rights have been relaxed through ``rest.properties``, or a
+custom module or WPS process drives the granule store on its behalf. The granule index then behaves like any
+other secured data:
+
+* listing, counting and bounds only report the granules that user can read, and removals and updates are
+  confined to them;
+* adding a granule outside the restriction is refused, as its own author could not read it back. **The granules
+  added before it in the same request stay in the index**, so use a transaction if the batch has to land whole
+  or not at all;
+* **the attributes named in the restriction become read only for that user**. If the rule is
+  ``elevation < 100``, then ``elevation`` cannot be updated at all: the request is refused on the attribute name
+  alone, before the new value is even looked at, because writing it could move the granule out of the user's
+  own view. Every other attribute stays writable as usual. Remove the granule and harvest it again to change a
+  read only one.
+
+Because a harvest is never restricted, it can index granules the restrictions then hide from the user who
+harvested them: only a user the restriction lets read them can remove them.

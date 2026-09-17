@@ -10468,6 +10468,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#vendor-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vendor parameters
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Vendor parameters">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#includeunadvertised" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        includeUnadvertised
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#catalog-stores" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30231,6 +30259,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#vendor-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vendor parameters
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Vendor parameters">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#includeunadvertised" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        includeUnadvertised
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#catalog-stores" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30300,13 +30356,24 @@
 </ul>
 <p>(Starting with GeoServer 2.9.x, a new vendor operation has been added: <a href="../directdownload/">DirectDownload</a>)</p>
 <p>The Internal Catalog Store supports filtering on both full x-paths as well as the "Queryables" specified in GetCapabilities.</p>
+<h2 id="vendor-parameters">Vendor parameters<a class="headerlink" href="#vendor-parameters" title="Permanent link">&para;</a></h2>
+<h3 id="includeunadvertised">includeUnadvertised<a class="headerlink" href="#includeunadvertised" title="Permanent link">&para;</a></h3>
+<p>Layers and layer groups that are not advertised are left out of the records returned by <code>GetRecords</code> and <code>GetRecordById</code>. If the current user had administrative powers, <code>includeUnadvertised=true</code> can be added to the request to also get non advertised layers. For example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>http://localhost:8080/geoserver/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecords&amp;typeNames=csw:Record&amp;resultType=results
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    &amp;includeUnadvertised=true
+</code></pre></div>
+<p>The parameter works only for an administrator (someone with <code>ROLE_ADMINISTRATOR</code>):
+* A full administrator can use it on any CSW request.
+* A workspace administrator can use it only inside the virtual service of a workspace they administer, for example <code>/geoserver/topp/csw</code>, and still sees only the layers of that workspace.</p>
+<p>For anyone else the parameter is ignored and the response stays the same as without it.
+The parameter does not change security: layers the caller is not allowed to see stay hidden either way.</p>
 <h2 id="catalog-stores">Catalog stores<a class="headerlink" href="#catalog-stores" title="Permanent link">&para;</a></h2>
 <p>The default catalog store is the Internal Catalog Store, which retrieves information from the GeoServer's internal catalog. The Simple Catalog Store (<code>simple-store</code> module) adds an alternative simple store which reads the catalog data directly from files (mainly used for testing).</p>
 <p>If there are multiple catalog stores present (for example, when the Simple Catalog Store module is loaded), set the Java system property <code>DefaultCatalogStore</code> to make sure that the correct catalog store will be used. To use the Internal Catalog Store, this property must be set to:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="na">DefaultCatalogStore</span><span class="o">=</span><span class="s">org.geoserver.csw.store.internal.InternalCatalogStore</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="na">DefaultCatalogStore</span><span class="o">=</span><span class="s">org.geoserver.csw.store.internal.InternalCatalogStore</span>
 </code></pre></div>
 <p>To use the Simple Catalog Store:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="na">DefaultCatalogStore</span><span class="o">=</span><span class="s">org.geoserver.csw.store.simple.GeoServerSimpleCatalogStore</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="na">DefaultCatalogStore</span><span class="o">=</span><span class="s">org.geoserver.csw.store.simple.GeoServerSimpleCatalogStore</span>
 </code></pre></div>
 <h2 id="supported-schemes">Supported schemes<a class="headerlink" href="#supported-schemes" title="Permanent link">&para;</a></h2>
 <p>The Internal Catalog Store currently supports two metadata schemes:</p>
@@ -30390,23 +30457,23 @@ store.error
 <p>Some fields in the metadata schemes can have multiple occurrences. They may be mapped to properties in the Catalog model that are also multi-valued, such as for example <code>keywords</code>. It is also possible to use a filter function called <code>list</code> to map multiple single-valued or multi-valued catalog properties to a MetaData field with multiple occurrences (see in ISO MetaData Profile example, mapping for the <code>identificationInfo.AbstractMD_Identification.citation.CI_Citation.alternateTitle</code> field).</p>
 <p>Placing the <code>@</code> symbol in front of the field will set that to use as identifier for each metadata record. This may be useful for ID filters. Use a <code>$</code> sign in front of fields that are required to make sure the mapping is aware of the requirement (specifically for the purpose of property selection).</p>
 <p>Below is an example of a Dublin Core mapping file:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="na">@identifier.value</span><span class="o">=</span><span class="s">id</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="na">title.value</span><span class="o">=</span><span class="s">title</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="na">creator.value</span><span class="o">=</span><span class="s">'GeoServer Catalog'</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="na">subject.value</span><span class="o">=</span><span class="s">keywords</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="na">subject.scheme</span><span class="o">=</span><span class="s">'http://www.digest.org/2.1'</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="na">abstract.value</span><span class="o">=</span><span class="s">abstract</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="na">description.value</span><span class="o">=</span><span class="s">strConcat('description about ' , title)</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="na">date.value</span><span class="o">=</span><span class="s">"metadata.date"</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="na">type.value</span><span class="o">=</span><span class="s">'http://purl.org/dc/dcmitype/Dataset'</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="na">publisher.value</span><span class="o">=</span><span class="s">'Niels Charlier'</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="c1">#format.value=</span>
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="c1">#language.value=</span>
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="c1">#coverage.value=</span>
-<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="c1">#source.value=</span>
-<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="c1">#relation.value=</span>
-<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="c1">#rights.value=</span>
-<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="c1">#contributor.value=</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="na">@identifier.value</span><span class="o">=</span><span class="s">id</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="na">title.value</span><span class="o">=</span><span class="s">title</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="na">creator.value</span><span class="o">=</span><span class="s">'GeoServer Catalog'</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="na">subject.value</span><span class="o">=</span><span class="s">keywords</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="na">subject.scheme</span><span class="o">=</span><span class="s">'http://www.digest.org/2.1'</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="na">abstract.value</span><span class="o">=</span><span class="s">abstract</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="na">description.value</span><span class="o">=</span><span class="s">strConcat('description about ' , title)</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="na">date.value</span><span class="o">=</span><span class="s">"metadata.date"</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="na">type.value</span><span class="o">=</span><span class="s">'http://purl.org/dc/dcmitype/Dataset'</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="na">publisher.value</span><span class="o">=</span><span class="s">'Niels Charlier'</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="c1">#format.value=</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="c1">#language.value=</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="c1">#coverage.value=</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="c1">#source.value=</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="c1">#relation.value=</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="c1">#rights.value=</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="c1">#contributor.value=</span>
 </code></pre></div>
 <p>All fields have the form of <code>&lt;fieldname&gt;.value</code> for the actual value in the field. Additionally <code>&lt;fieldname&gt;.scheme</code> can be specified for the <code>@scheme</code> attribute of this field.</p>
 <p>Examples of attributes extracted from the ResourceInfo are <code>id</code>, <code>title</code>, and <code>keywords</code>, etc. The attribute <code>metadata.date</code> uses the metadata (<code>java.util.</code>)Map from the Resource object. In this map, it searches for the keyword "date".</p>

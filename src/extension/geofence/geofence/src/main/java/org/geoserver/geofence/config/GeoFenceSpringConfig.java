@@ -14,6 +14,7 @@ import org.geoserver.config.GeoServerPropertyConfigurer;
 import org.geoserver.geofence.GeoFenceModuleStatus;
 import org.geoserver.geofence.cache.CacheConfiguration;
 import org.geoserver.geofence.cache.RuleCacheLoaderFactory;
+import org.geoserver.geofence.services.RuleReaderAvailability;
 import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geoserver.geofence.web.GeofencePage;
 import org.geoserver.web.Category;
@@ -132,16 +133,24 @@ public class GeoFenceSpringConfig implements ApplicationContextAware {
         return configurer;
     }
 
+    /** Shared by both factories: a source that went bad has to deny at whichever of the two is asked. */
     @Bean
-    public RuleReaderServiceFactory ruleReaderBackendFactory(@Qualifier("geoFenceProperties") Properties props) {
-        String backendName = props.getProperty("ruleReaderBackend", "");
-        return new RuleReaderServiceFactory(resolveRuleReaderBackend(backendName), false);
+    public RuleReaderAvailability ruleReaderAvailability() {
+        return new RuleReaderAvailability();
     }
 
     @Bean
-    public RuleReaderServiceFactory ruleReaderFrontendFactory(@Qualifier("geoFenceProperties") Properties props) {
+    public RuleReaderServiceFactory ruleReaderBackendFactory(
+            @Qualifier("geoFenceProperties") Properties props, RuleReaderAvailability availability) {
+        String backendName = props.getProperty("ruleReaderBackend", "");
+        return new RuleReaderServiceFactory(resolveRuleReaderBackend(backendName), false, availability);
+    }
+
+    @Bean
+    public RuleReaderServiceFactory ruleReaderFrontendFactory(
+            @Qualifier("geoFenceProperties") Properties props, RuleReaderAvailability availability) {
         String frontendName = props.getProperty("ruleReaderFrontend", "cachedRuleReader");
-        return new RuleReaderServiceFactory(frontendName, true);
+        return new RuleReaderServiceFactory(frontendName, true, availability);
     }
 
     @Bean

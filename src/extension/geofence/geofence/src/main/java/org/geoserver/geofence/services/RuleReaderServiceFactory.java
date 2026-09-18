@@ -6,9 +6,6 @@
 package org.geoserver.geofence.services;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BooleanSupplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -60,24 +57,28 @@ public class RuleReaderServiceFactory implements ApplicationContextAware, SmartI
     /** Throttles the "backend unavailable" warning to once per unavailable stretch. */
     private volatile boolean backendUnavailableWarned = false;
 
-    /** While non-empty, deny-all is served; each entry reports whether its source has become usable again. */
-    private final Map<String, BooleanSupplier> pendingRecoveries = new ConcurrentHashMap<>();
+    /** Shared with the other factory, so a source registered on either one denies at both. */
+    private final RuleReaderAvailability availability;
 
     /**
      * @param defaultServiceName the initial bean name, resolved from a ruleReaderBackend/Frontend property
      * @param allowDecorators whether {@link RuleReaderDecorator} beans (e.g. the cache wrapper) are valid candidates;
      *     {@code false} for a backend factory, {@code true} for a frontend factory
+     * @param availability the shared availability state; the same instance must be given to both factories
      */
-    public RuleReaderServiceFactory(String defaultServiceName, boolean allowDecorators) {
+    public RuleReaderServiceFactory(
+            String defaultServiceName, boolean allowDecorators, RuleReaderAvailability availability) {
         this.activeServiceName = defaultServiceName;
         this.defaultServiceName = defaultServiceName;
         this.allowDecorators = allowDecorators;
+        this.availability = availability;
         this.fixedService = null;
     }
 
     private RuleReaderServiceFactory(RuleReaderService fixedService) {
         this.defaultServiceName = null;
         this.allowDecorators = true;
+        this.availability = new RuleReaderAvailability();
         this.fixedService = fixedService;
     }
 
@@ -111,25 +112,12 @@ public class RuleReaderServiceFactory implements ApplicationContextAware, SmartI
         }
     }
 
-    /**
-     * Serves the deny-all fallback until {@code recovery} reports {@code source} usable again. Retried on every
-     * {@link #getService()} call, so fixing the configuration takes effect without another GeoServer reload. Access
-     * resumes only once every registered source has recovered.
-     */
-    public void denyUntilRecovered(String source, BooleanSupplier recovery) {
-        pendingRecoveries.put(source, recovery);
-    }
-
     public RuleReaderService getService() {
         if (fixedService != null) {
             return fixedService;
         }
-        if (!pendingRecoveries.isEmpty()) {
-            pendingRecoveries.entrySet().removeIf(entry -> entry.getValue().getAsBoolean());
-            if (!pendingRecoveries.isEmpty()) {
-                return denyAll;
-            }
-            LOGGER.log(Level.INFO, "GeoFence rule reader backend recovered; resuming normal access");
+        if (!availability.isAvailable()) {
+            return denyAll;
         }
         try {
             RuleReaderService service = resolve(activeServiceName);

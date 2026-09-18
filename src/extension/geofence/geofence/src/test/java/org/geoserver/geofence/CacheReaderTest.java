@@ -23,6 +23,7 @@ import org.geoserver.geofence.cache.RuleCacheLoaderFactory;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.containers.ContainerAccessCacheLoaderFactory;
 import org.geoserver.geofence.containers.DefaultContainerAccessResolver;
+import org.geoserver.geofence.services.RuleReaderAvailability;
 import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geotools.util.logging.Logging;
 import org.junit.Assume;
@@ -49,8 +50,8 @@ public class CacheReaderTest extends GeofenceRestBaseTest {
         configurer.setLocation(
                 new UrlResource(Objects.requireNonNull(this.getClass().getResource("/test-cache-config.properties"))));
 
-        RuleReaderServiceFactory rrsFactory =
-                new RuleReaderServiceFactory(RuleReaderServiceFactory.REMOTE_RULE_READER_NAME, false);
+        RuleReaderServiceFactory rrsFactory = new RuleReaderServiceFactory(
+                RuleReaderServiceFactory.REMOTE_RULE_READER_NAME, false, new RuleReaderAvailability());
         rrsFactory.setApplicationContext(applicationContext);
 
         ticker = new CustomTicker();

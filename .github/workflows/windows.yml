@@ -40,9 +40,12 @@ jobs:
         key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           gs-${{ runner.os }}-maven-
+    - name: Fetch dependencies
+      run: |
+        mvn --% -B -ntp -U -T1 -Prelease,pending,windows-github-build -f src/pom.xml dependency:resolve dependency:resolve-plugins
     - name: Build with Maven
       run: |
-        mvn --% -B -ntp -U -T1C -Dall -Prelease,pending,windows-github-build -f src/pom.xml clean install
+        mvn --% -B -ntp -T1C -Prelease,pending,windows-github-build -f src/pom.xml clean install
     - name: Remove SNAPSHOT jars from repository
       if: always()
       run: |

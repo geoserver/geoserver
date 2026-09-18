@@ -7,9 +7,8 @@ package org.geoserver.geofence.server.config;
 import org.geofence.core.db.config.GeofencePersistenceConfig;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geoserver.geofence.cache.CacheManager;
-import org.geoserver.geofence.services.RuleReaderServiceFactory;
+import org.geoserver.geofence.services.RuleReaderAvailability;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -21,16 +20,16 @@ import org.springframework.stereotype.Component;
 public class GeoFenceDatasourceLifecycleHandler implements GeoServerLifecycleHandler {
 
     private final GeofencePersistenceConfig persistenceConfig;
-    private final RuleReaderServiceFactory ruleReaderBackendFactory;
+    private final RuleReaderAvailability ruleReaderAvailability;
     private final CacheManager cacheManager;
 
     @Autowired
     public GeoFenceDatasourceLifecycleHandler(
             GeofencePersistenceConfig persistenceConfig,
-            @Qualifier("ruleReaderBackendFactory") RuleReaderServiceFactory ruleReaderBackendFactory,
+            RuleReaderAvailability ruleReaderAvailability,
             CacheManager cacheManager) {
         this.persistenceConfig = persistenceConfig;
-        this.ruleReaderBackendFactory = ruleReaderBackendFactory;
+        this.ruleReaderAvailability = ruleReaderAvailability;
         this.cacheManager = cacheManager;
     }
 
@@ -55,7 +54,7 @@ public class GeoFenceDatasourceLifecycleHandler implements GeoServerLifecycleHan
         cacheManager.invalidateAll();
         if (!persistenceConfig.reloadDatasource()) {
             // fail closed, like core disables a store whose password won't decrypt
-            ruleReaderBackendFactory.denyUntilRecovered(
+            ruleReaderAvailability.denyUntilRecovered(
                     "geofence-datasource.properties", persistenceConfig::reloadDatasource);
         }
     }

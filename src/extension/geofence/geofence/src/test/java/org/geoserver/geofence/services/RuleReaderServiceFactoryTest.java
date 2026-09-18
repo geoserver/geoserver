@@ -29,6 +29,8 @@ public class RuleReaderServiceFactoryTest {
         }
     }
 
+    private RuleReaderAvailability availability;
+
     @Test
     public void testDenyUntilRecovered() {
         RuleReaderService backend = new RuleReaderServiceAdapter();
@@ -36,7 +38,7 @@ public class RuleReaderServiceFactoryTest {
         assertSame(backend, factory.getService());
 
         AtomicBoolean healthy = new AtomicBoolean(false);
-        factory.denyUntilRecovered("source", healthy::get);
+        availability.denyUntilRecovered("source", healthy::get);
 
         assertTrue(
                 "a failed recovery attempt must keep denying",
@@ -55,8 +57,8 @@ public class RuleReaderServiceFactoryTest {
 
         AtomicBoolean config = new AtomicBoolean(false);
         AtomicBoolean datasource = new AtomicBoolean(false);
-        factory.denyUntilRecovered("config", config::get);
-        factory.denyUntilRecovered("datasource", datasource::get);
+        availability.denyUntilRecovered("config", config::get);
+        availability.denyUntilRecovered("datasource", datasource::get);
 
         config.set(true);
         assertTrue(
@@ -76,14 +78,16 @@ public class RuleReaderServiceFactoryTest {
         context.registerBean(BEAN_NAME, DecoratingRuleReader.class, DecoratingRuleReader::new);
         context.refresh();
 
-        RuleReaderServiceFactory backendFactory = new RuleReaderServiceFactory(BEAN_NAME, false);
+        RuleReaderServiceFactory backendFactory =
+                new RuleReaderServiceFactory(BEAN_NAME, false, new RuleReaderAvailability());
         backendFactory.setApplicationContext(context);
         assertTrue(
                 "a decorator must not be usable as a backend",
                 backendFactory.getService() instanceof DenyAllRuleReaderService);
 
         // the same bean is a legitimate choice for a frontend factory
-        RuleReaderServiceFactory frontendFactory = new RuleReaderServiceFactory(BEAN_NAME, true);
+        RuleReaderServiceFactory frontendFactory =
+                new RuleReaderServiceFactory(BEAN_NAME, true, new RuleReaderAvailability());
         frontendFactory.setApplicationContext(context);
         assertTrue(
                 "a decorator must still be usable as a frontend",
@@ -102,7 +106,7 @@ public class RuleReaderServiceFactoryTest {
         context.registerBean("notAReader", String.class, () -> "");
         context.refresh();
 
-        RuleReaderServiceFactory factory = new RuleReaderServiceFactory(BEAN_NAME, false);
+        RuleReaderServiceFactory factory = new RuleReaderServiceFactory(BEAN_NAME, false, new RuleReaderAvailability());
         factory.setApplicationContext(context);
 
         assertTrue(rejectionMessage(factory, "missingBean").contains("no such bean: missingBean"));
@@ -113,11 +117,38 @@ public class RuleReaderServiceFactoryTest {
     /** Without a context, callers get a clear failure rather than a NullPointerException. */
     @Test
     public void testMissingContextFailsClearly() {
-        RuleReaderServiceFactory factory = new RuleReaderServiceFactory(BEAN_NAME, false);
+        RuleReaderServiceFactory factory = new RuleReaderServiceFactory(BEAN_NAME, false, new RuleReaderAvailability());
 
         assertThrows(IllegalStateException.class, () -> factory.setActiveServiceName(BEAN_NAME));
         assertThrows(IllegalStateException.class, factory::afterSingletonsInstantiated);
         assertTrue("resolution failures still fail closed", factory.getService() instanceof DenyAllRuleReaderService);
+    }
+
+    /** The access manager asks the frontend factory, so a frontend that isn't the cache wrapper must deny too. */
+    @Test
+    public void testDenyAppliesToADirectlyConfiguredFrontend() {
+        RuleReaderService reader = new RuleReaderServiceAdapter();
+        context = new GenericApplicationContext();
+        context.registerBean(BEAN_NAME, RuleReaderService.class, () -> reader);
+        context.refresh();
+
+        RuleReaderAvailability shared = new RuleReaderAvailability();
+        RuleReaderServiceFactory backend = new RuleReaderServiceFactory(BEAN_NAME, false, shared);
+        RuleReaderServiceFactory frontend = new RuleReaderServiceFactory(BEAN_NAME, true, shared);
+        backend.setApplicationContext(context);
+        frontend.setApplicationContext(context);
+
+        AtomicBoolean healthy = new AtomicBoolean(false);
+        shared.denyUntilRecovered("source", healthy::get);
+
+        assertTrue("the backend must deny", backend.getService() instanceof DenyAllRuleReaderService);
+        assertTrue(
+                "a frontend bypassing the cache must deny as well",
+                frontend.getService() instanceof DenyAllRuleReaderService);
+
+        healthy.set(true);
+        assertSame("recovery must clear both factories", reader, frontend.getService());
+        assertSame(reader, backend.getService());
     }
 
     private String rejectionMessage(RuleReaderServiceFactory factory, String name) {
@@ -130,7 +161,8 @@ public class RuleReaderServiceFactoryTest {
         context.registerBean(BEAN_NAME, RuleReaderService.class, () -> backend);
         context.refresh();
 
-        RuleReaderServiceFactory factory = new RuleReaderServiceFactory(BEAN_NAME, true);
+        availability = new RuleReaderAvailability();
+        RuleReaderServiceFactory factory = new RuleReaderServiceFactory(BEAN_NAME, true, availability);
         factory.setApplicationContext(context);
         return factory;
     }

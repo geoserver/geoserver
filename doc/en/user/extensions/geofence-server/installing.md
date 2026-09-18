@@ -33,6 +33,16 @@ render_macros: true
 1.  [Configure the plugin](#configure-the-plugin)
 1.  Restart GeoServer
 
+## Known incompatibilities
+
+The embedded engine brings its own versions of two libraries that the base GeoServer install also uses, and neither pair can coexist on one classpath:
+
+- **Jiffle raster band-math** stops working. GeoFence's persistence layer needs `antlr4-runtime-4.13.x`, while Eclipse Imagen's Jiffle support needs `4.7.1`. The plugin ships an empty `antlr4-runtime-4.7.1.jar` that overwrites the base install's copy during step 1, so the conflict cannot arise even in an unattended install.
+
+- **Cloud Optimized GeoTIFF (COG)** is unsupported in a build that also enables the embedded engine. COG uses `org.ehcache:ehcache`, which clashes with the `ehcache:jakarta` variant GeoFence's persistence layer requires. This only affects custom builds combining the `cog` and `geofence-server` profiles; the official plugin does not enable COG.
+
+Both affect the embedded engine only: the `geofence` client plugin, talking to a standalone GeoFence server, is unaffected.
+
 ## Configure the plugin {: #configure-the-plugin }
 
 You need a properties file containing the information to connect to the DB where GeoFence will store its data.

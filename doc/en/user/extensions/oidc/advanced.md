@@ -93,6 +93,8 @@ When enabled, the same OAuth2 / OpenID Connect login filter also accepts machine
 
 Disable this option if you only want browser-based login, and you do not want this filter chain to accept bearer tokens.
 
+Bearer tokens go through the same rule for the built-in `admin` and `root` accounts as an interactive login does --- see [Built-in administrator accounts](configuring.md#oidc_admin_accounts).
+
 ## Opaque Token Support (JWE)
 
 ![](images/opaque_token.png)
@@ -104,6 +106,8 @@ When enabled, the same OAuth2 / OpenID Connect login filter will perform the tok
 An opaque token is just an identifier. GeoServer can't validate or extract claims from it locally (there's nothing to decode like a JWT). So the only way to "understand" it is to ask the Authorization Server.
 
 So the token is validated remotely, and any "claims" GeoServer sees come from the introspection JSON.
+
+The principal that comes back from introspection is subject to the same rule for the built-in `admin` and `root` accounts --- see [Built-in administrator accounts](configuring.md#oidc_admin_accounts).
 
 ## Proof Key of Code Exchange (PKCE)
 

@@ -396,6 +396,28 @@
   "webAuthnPolicyPasswordlessAcceptableAaguids" : [ ],
   "webAuthnPolicyPasswordlessExtraOrigins" : [ ],
   "users" : [ {
+    "id" : "1e0c8d64-6c55-4a3c-9e0f-6a2b4f5d7c31",
+    "username" : "root",
+    "firstName" : "root",
+    "lastName" : "root",
+    "email" : "root@example.com",
+    "emailVerified" : true,
+    "enabled" : true,
+    "totp" : false,
+    "credentials" : [ {
+      "type" : "password",
+      "value" : "root",
+      "temporary" : false
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-geocat-live" ],
+    "clientRoles" : {
+      "gs-client" : [ "geoserverAdmin" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
     "id" : "d1dfb8f9-1614-44bc-b77c-0eba22c01b13",
     "username" : "admin",
     "firstName" : "admin",

@@ -404,6 +404,9 @@ public class OAuth2LoginAuthProviderPanel
         add(new HelpLink("oidcAllowUnSecureLoggingHelp", this).setDialog(dialog));
         add(new CheckBox("oidcAllowUnSecureLogging"));
 
+        add(new HelpLink("allowAdminLoginHelp", this).setDialog(dialog));
+        add(new CheckBox("allowAdminLogin"));
+
         add(new HelpLink("connectionParametersHelp", this).setDialog(dialog));
 
         add(new HelpLink("postLogoutRedirectUriHelp", this).setDialog(dialog));

@@ -146,7 +146,7 @@ public class BatchJobServiceImpl implements BatchJobService, TriggerListener {
     @Override
     @Transactional("tmTransactionManager")
     public Batch remove(Batch batch) {
-        batch = dao.lockReload(batch);
+        batch = dao.reload(batch);
         try {
             scheduler.deleteJob(JobKey.jobKey(batch.getId().toString()));
         } catch (SchedulerException e) {
@@ -163,7 +163,7 @@ public class BatchJobServiceImpl implements BatchJobService, TriggerListener {
     @Override
     @Transactional("tmTransactionManager")
     public Configuration remove(Configuration config) {
-        config = dao.lockReload(config);
+        config = dao.reload(config);
         for (Batch batch : config.getBatches().values()) {
             try {
                 scheduler.deleteJob(JobKey.jobKey(batch.getId().toString()));

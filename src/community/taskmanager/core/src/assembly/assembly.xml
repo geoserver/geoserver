@@ -18,18 +18,14 @@
       <includes>
         <include>gs-taskmanager-core*.jar</include>
         <include>*geoserver-manager*.jar</include>
-        <include>hibernate-core*.jar</include>
-        <include>hibernate-commons*.jar</include>
-        <include>hibernate-jpa*.jar</include>
+        <include>hibernate-*.jar</include>
+        <include>jakarta*.jar</include>
         <include>*quartz*.jar</include>
         <include>*postgis*.jar</include>
         <include>h2-*.jar</include>
-        <include>antlr-*.jar</include>
-        <include>classmate-*.jar</include>
-        <include>dom4j-*.jar</include>
         <include>jboss-logging-*.jar</include>
-        <include>jboss-transaction-*.jar</include>
         <include>spring-orm-*.jar</include>
+        <include>byte-buddy*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

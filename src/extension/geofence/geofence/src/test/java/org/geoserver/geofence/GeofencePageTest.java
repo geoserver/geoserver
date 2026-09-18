@@ -17,7 +17,7 @@ import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.config.GeoServerPropertyConfigurer;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
-import org.geoserver.geofence.services.RuleReaderServiceFactory;
+import org.geoserver.geofence.services.RuleReaderAvailability;
 import org.geoserver.geofence.utils.GeofenceTestUtils;
 import org.geoserver.geofence.web.GeofencePage;
 import org.geoserver.web.GeoServerHomePage;
@@ -133,16 +133,15 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
     /** A denying backend must be called out visually, not just worded differently. */
     @Test
     public void testUnavailableBackendIsHighlighted() {
-        RuleReaderServiceFactory backendFactory =
-                applicationContext.getBean("ruleReaderBackendFactory", RuleReaderServiceFactory.class);
-        backendFactory.denyUntilRecovered("test", () -> false);
+        RuleReaderAvailability availability = applicationContext.getBean(RuleReaderAvailability.class);
+        availability.denyUntilRecovered("test", () -> false);
         try {
             tester.startPage(GeofencePage.class);
             tester.assertContains("gs-geofence-unavailable");
             tester.assertContains(
                     new StringResourceModel(GeofencePage.class.getSimpleName() + ".ruleReaderUnavailable").getObject());
         } finally {
-            backendFactory.denyUntilRecovered("test", () -> true);
+            availability.denyUntilRecovered("test", () -> true);
         }
     }
 }

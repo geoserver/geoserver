@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geoserver.geofence.cache.CacheManager;
 import org.geoserver.geofence.services.RestRuleReaderService;
+import org.geoserver.geofence.services.RuleReaderAvailability;
 import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ public class GeoFenceLifecycleHandler implements GeoServerLifecycleHandler {
     private final CacheManager cacheManager;
     private final RuleReaderServiceFactory ruleReaderBackendFactory;
     private final RuleReaderServiceFactory ruleReaderFrontendFactory;
+    private final RuleReaderAvailability ruleReaderAvailability;
     private final RestRuleReaderService restRuleReaderService;
 
     @Autowired
@@ -40,11 +42,13 @@ public class GeoFenceLifecycleHandler implements GeoServerLifecycleHandler {
             CacheManager cacheManager,
             @Qualifier("ruleReaderBackendFactory") RuleReaderServiceFactory ruleReaderBackendFactory,
             @Qualifier("ruleReaderFrontendFactory") RuleReaderServiceFactory ruleReaderFrontendFactory,
+            RuleReaderAvailability ruleReaderAvailability,
             RestRuleReaderService restRuleReaderService) {
         this.configurationManager = configurationManager;
         this.cacheManager = cacheManager;
         this.ruleReaderBackendFactory = ruleReaderBackendFactory;
         this.ruleReaderFrontendFactory = ruleReaderFrontendFactory;
+        this.ruleReaderAvailability = ruleReaderAvailability;
         this.restRuleReaderService = restRuleReaderService;
     }
 
@@ -66,9 +70,9 @@ public class GeoFenceLifecycleHandler implements GeoServerLifecycleHandler {
     @Override
     public void onReload() {
         if (!applyConfiguration()) {
-            // fail closed: cache hits never reach the backend, so denying there alone isn't enough
+            // the caches would otherwise keep answering with grants computed under the old configuration
             cacheManager.invalidateAll();
-            ruleReaderBackendFactory.denyUntilRecovered("geofence.properties", this::applyConfiguration);
+            ruleReaderAvailability.denyUntilRecovered("geofence.properties", this::applyConfiguration);
         }
     }
 

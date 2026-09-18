@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (C) 2026 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="wmsMltBuilderFactory" class="org.geoserver.wms.mlt.MltTileBuilderFactory"/>
+
+  <bean id="wmsMltMapOutputFormat" class="org.geoserver.wms.vector.VectorTileMapOutputFormat">
+    <constructor-arg ref="wmsMltBuilderFactory"/>
+    <property name="clipToMapBounds" value="true"/>
+    <property name="transformToScreenCoordinates" value="true">
+      <description>The MLT builder expects geometries in tile coordinates</description>
+    </property>
+  </bean>
+
+  <bean id="MltExtension" class="org.geoserver.platform.ModuleStatusImpl">
+    <property name="module" value="gs-mlt"/>
+    <property name="name" value="MapLibre Tiles"/>
+    <property name="component" value="MapLibre Tiles WMS output format"/>
+    <property name="available" value="true"/>
+    <property name="enabled" value="true"/>
+    <property name="category" value="EXTENSION"/>
+  </bean>
+
+</beans>

@@ -5,10 +5,13 @@
  */
 package org.geoserver.web.data.store;
 
+import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geotools.ows.wms.WebMapServer;
@@ -59,12 +62,20 @@ public class WMSStoreEditPage extends AbstractWMSStorePage {
     protected void doSaveStore(WMSStoreInfo info) {
         Catalog catalog = getCatalog();
 
+        // cascaded layers must follow the store workspace, as done for data and coverage stores
+        NamespaceInfo namespace =
+                catalog.getNamespaceByPrefix(info.getWorkspace().getName());
+        List<WMSLayerInfo> layers = catalog.getResourcesByStore(info, WMSLayerInfo.class);
+        layers.forEach(layer -> layer.setNamespace(namespace));
+
         // Cloning into "expandedStore" through the super class "clone" method
         WMSStoreInfo expandedStore = catalog.getResourcePool().clone(info, true);
 
         getCatalog().validate(expandedStore, false).throwIfInvalid();
 
         getCatalog().save(info);
+        // saved after the store, so they validate against the new workspace
+        layers.forEach(catalog::save);
         doReturn(StorePage.class);
     }
 

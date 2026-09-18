@@ -148,7 +148,13 @@ public class WorkspaceController extends AbstractCatalogController {
     public void workspacePut(
             @RequestBody WorkspaceInfo workspace, @PathVariable String workspaceName, UriComponentsBuilder builder) {
 
+        // only full admins can change the default workspace or rename a workspace
+        final boolean isFullAdmin = isAuthenticatedAsAdmin();
+
         if ("default".equals(workspaceName)) {
+            if (!isFullAdmin) {
+                throw new RestException("Can't change default workspace", HttpStatus.FORBIDDEN);
+            }
             catalog.setDefaultWorkspace(workspace);
         } else {
             // name must exist
@@ -163,6 +169,9 @@ public class WorkspaceController extends AbstractCatalogController {
                 throw new RestException("The workspace name cannot be empty", HttpStatus.FORBIDDEN);
             }
 
+            if (!workspaceName.equals(infoName) && !isFullAdmin) {
+                throw new RestException("Can't change the workspace name", HttpStatus.FORBIDDEN);
+            }
             new CatalogBuilder(catalog).updateWorkspace(wks, workspace);
             catalog.save(wks);
         }

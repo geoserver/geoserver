@@ -99,15 +99,17 @@ If you would like some users to be able to modify some but not all of your data,
 
 ## GeoServer Workspace Admin Guidance {: #production_config_workspace_admin }
 
-Establishing a workspace administrator user is a recommended configuration providing limited access to the Admin Console to manage the publication of information, but are not intended to be trusted as a GeoServer Administrator with responsibility for the global settings and system integration controls.
+Establishing a [workspace administrator](../security/workspaceadmin/index.md) user is a recommended configuration providing limited access to the Admin Console and REST API to manage the publication of information, but are not intended to be trusted as a GeoServer Administrator with responsibility for the global settings and system integration controls.
 
 1.  Create a role to be used for workspace administration.
 2.  Provide this role to the Users (or Groups) requiring workspace admin access.
 3.  Provide this role [data security](../security/webadmin/data.md) admin access `a` to:
     - [workspace](../data/webadmin/workspaces.md#workspace_security) administration
     - [layer](../data/webadmin/layers.md#layer_security) administration
-4.  Recommendation: The combination of workspace admin permission and GROUP_ADMIN access provides a effective combination for an individual responsible for a workspace. This provides the ability to both manage and control access to the data products in a workspace.
+4.  Recommendation: The combination of workspace admin permission and GROUP_ADMIN access provides an effective combination for an individual responsible for a workspace. This provides the ability to both manage and control access to the data products in a workspace.
 5.  Recommendation: Provide each workspace admin with [sandbox](../security/sandbox.md) restricting file system access for data storage.
+
+For a hands-on guide, see the [Workspace Administration tutorial](../security/tutorials/workspaceadmin/index.md).
 
 ## GeoServer Administrator Guidance {: #production_config_geoserver_admin }
 

@@ -30711,6 +30711,16 @@
 <td>Optional</td>
 <td>Boolean value to specify whether to skip checks for external overviews. Default is <code>false</code>. When enabled, the ImageMosaic will not look for external overview files.</td>
 </tr>
+<tr>
+<td>CollectAttributeTables</td>
+<td>Optional</td>
+<td>Boolean value to enable collection of the <a href="../../../../extensions/rat/">raster attribute tables</a> of the granules into a single table for the mosaic. Default is <code>false</code>. The granule tables must agree: rows sharing the same key must carry the same values, or the collection stops with an error.</td>
+</tr>
+<tr>
+<td>AttributeTableGeometries</td>
+<td>Optional</td>
+<td>How a geometry column of the attribute table is handled when the granules disagree on its value, which happens when the source clips the geometry to each granule. <code>off</code>, the default, leaves the cell empty, <code>merge</code> unions the granule geometries, <code>collect</code> compares the column like any other one, so disagreeing granules stop the collection. Only read when <code>CollectAttributeTables</code> is <code>true</code>. <code>merge</code> is not the default because unioning extents that follow the data coverage can build very large geometries, which can trigger an OOM or a very long harvest, when dealing with many granules.</td>
+</tr>
 </tbody>
 </table>
 <!-- admonition follows -->

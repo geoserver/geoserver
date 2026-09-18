@@ -155,6 +155,27 @@ public class APIBBoxParserTest {
         assertEquals(crs, CRS.lookupIdentifier(envelope.getCoordinateReferenceSystem(), false));
     }
 
+    @Test
+    public void testParseBareCodeIsLonLat() throws FactoryException {
+        // a bare authority code keeps the GeoServer longitude/latitude (forceXY) default
+        ReferencedEnvelope[] result = APIBBoxParser.parse(BBOX_2D_SPEC, "EPSG:4326");
+
+        assertEquals(1, result.length);
+        assertEquals(CRS.AxisOrder.EAST_NORTH, CRS.getAxisOrder(result[0].getCoordinateReferenceSystem()));
+        assertEnvelope(result[0], 10, 20, 30, 40);
+    }
+
+    @Test
+    public void testParseSafeCurieIsAuthorityOrder() throws FactoryException {
+        // the SafeCURIE [authority:code] form follows the authority order: for EPSG:4326 the input is
+        // lat,lon, and gets normalized to a longitude/latitude (XY) envelope for the downstream consumers
+        ReferencedEnvelope[] result = APIBBoxParser.parse(BBOX_2D_SPEC, "[EPSG:4326]");
+
+        assertEquals(1, result.length);
+        assertEquals(CRS.AxisOrder.EAST_NORTH, CRS.getAxisOrder(result[0].getCoordinateReferenceSystem()));
+        assertEnvelope(result[0], 20, 10, 40, 30);
+    }
+
     private void assertEnvelope(BoundingBox bounds, double... expected) {
         assertEnvelope(ReferencedEnvelope.reference(bounds), expected);
     }

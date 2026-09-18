@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-MapsServiceAdminPanel">
+        <h3>
+          <wicket:message key="defaultTitle">Maps Service</wicket:message>
+        </h3>
+        <p>
+          <wicket:message key="configureInformation">OGC API - Maps is a modular OGC API service whose optional conformance classes can be enabled or disabled.</wicket:message>
+        </p>
+        <div class="gs-unordered-list-class">
+          <div class="gs-list-item-class">
+            <fieldset>
+              <legend>
+                <span>
+                  <wicket:message key="maps.title">OGC API - Maps</wicket:message>
+                </span>
+              </legend>
+              <div wicket:id="mapsConformance"/>
+              <div class="gs-form-field">
+                <label for="defaultCollections">
+                  <wicket:message key="defaultCollections">Collections in a dataset map</wicket:message>
+                </label>
+                <input type="number" min="1" wicket:id="defaultCollections" id="defaultCollections"/>
+                <p class="gs-form-description">
+                  <wicket:message key="defaultCollections.description">How many collections a dataset map draws when the request selects none. Leave empty for the default.</wicket:message>
+                </p>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+        <div class="gs-unordered-list-class">
+          <div class="gs-list-item-class">
+            <fieldset>
+              <legend>
+                <span>
+                  <wicket:message key="cql2.title">Common Query Language (CQL2)</wicket:message>
+                </span>
+              </legend>
+              <div wicket:id="cqlConformance"/>
+            </fieldset>
+          </div>
+        </div>
+        <div class="gs-unordered-list-class">
+          <div class="gs-list-item-class">
+            <fieldset>
+              <legend>
+                <span>
+                  <wicket:message key="ecql.title">Extended Common Query Language</wicket:message>
+                </span>
+              </legend>
+              <div wicket:id="ecqlConformance"/>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
+</html>

@@ -2,226 +2,136 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="${resourceLink("openlayers3/ol.css")}" type="text/css" media="screen" />
-    <style>
-        .ol-zoom {
-          top: 52px;
-        }
-        .ol-toggle-options {
-          z-index: 1000;
-          background: rgba(255,255,255,0.4);
-          border-radius: 4px;
-          padding: 2px;
-          position: absolute;
-          left: 8px;
-          top: 8px;
-        }
-        #updateFilterButton, #resetFilterButton {
-          height: 22px;
-          width: 22px;
-          text-align: center;
-          text-decoration: none !important;
-          line-height: 22px;
-          margin: 1px;
-          font-family: 'Lucida Grande',Verdana,Geneva,Lucida,Arial,Helvetica,sans-serif;
-          font-weight: bold !important;
-          background: rgba(0,60,136,0.5);
-          color: white !important;
-          padding: 2px;
-        }
-        .ol-toggle-options a {
-          background: rgba(0,60,136,0.5);
-          color: white;
-          display: block;
-          font-family: 'Lucida Grande',Verdana,Geneva,Lucida,Arial,Helvetica,sans-serif;
-          font-size: 19px;
-          font-weight: bold;
-          height: 22px;
-          line-height: 11px;
-          margin: 1px;
-          padding: 0;
-          text-align: center;
-          text-decoration: none;
-          width: 22px;
-          border-radius: 2px;
-        }
-        .ol-toggle-options a:hover {
-          color: #fff;
-          text-decoration: none;
-          background: rgba(0,60,136,0.7);
-        }
-        body {
-            font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
-            font-size: small;
-        }
-        iframe {
-            width: 100%;
-            height: 250px;
-            border: none;
-        }
-        /* Toolbar styles */
-        #toolbar {
-            position: relative;
-            padding-bottom: 0.5em;
-        }
-        #toolbar ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        #toolbar ul li {
-            float: left;
-            padding-right: 1em;
-            padding-bottom: 0.5em;
-        }
-        #toolbar ul li a {
-            font-weight: bold;
-            font-size: smaller;
-            vertical-align: middle;
-            color: black;
-            text-decoration: none;
-        }
-        #toolbar ul li a:hover {
-            text-decoration: underline;
-        }
-        #toolbar ul li * {
-            vertical-align: middle;
-        }
-        #map {
-            clear: both;
-            position: relative;
-            width: ${model.width?c}px;
-            height: ${model.height?c}px;
-            border: 1px solid black;
-        }
-        #wrapper {
-            width: ${model.width?c}px;
-        }
-        #location {
-            float: right;
-        }
-        /* Styles used by the default GetFeatureInfo output, added to make IE happy */
-        table.featureInfo, table.featureInfo td, table.featureInfo th {
-            border: 1px solid #ddd;
-            border-collapse: collapse;
-            margin: 0;
-            padding: 0;
-            font-size: 90%;
-            padding: .2em .1em;
-        }
-        table.featureInfo th {
-            padding: .2em .2em;
-            font-weight: bold;
-            background: #eee;
-        }
-        table.featureInfo td {
-            background: #fff;
-        }
-        table.featureInfo tr.odd td {
-            background: #eee;
-        }
-        table.featureInfo caption {
-            text-align: left;
-            font-size: 100%;
-            font-weight: bold;
-            padding: .2em .2em;
-        }
-    </style>
-    
-    <script src="${resourceLink("openlayers3/ol.js")}" type="text/javascript"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="${resourceLink("openlayers10/ol.css")}" type="text/css">
+    <link rel="stylesheet" href="${resourceLink("css/geoserver.css")}" type="text/css">
+    <link rel="stylesheet" href="${resourceLink("openlayers10/layout.css")}" type="text/css">
+
+    <script src="${resourceLink("openlayers10/ol.js")}" type="text/javascript"></script>
     <script src="${resourceLink("webresources/ogcapi/maps.js")}" type="text/javascript"></script>
     <title>OpenLayers map preview</title>
   </head>
   <body>
-    <div id="toolbar" class="hidden">
-      <ul>
-        <li>
-          <a>Tiling:</a>
+  <div id="header" class="gs-header">
+    <div class="gs-header-bar">
+      <div class="gs-header-left">
+        <a class="logo" href="${serviceLink("")}"></a>
+      </div>
+      <div class="gs-header-right"></div>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="sidebar">
+      <button id="sidebar-menu" aria-expanded="false" aria-label="Toggle Sidebar">
+        <svg class="open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" aria-hidden="true">
+          <path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"/>
+        </svg>
+        <svg class="close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" aria-hidden="true">
+          <path fill="currentColor" d="M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414"/>
+        </svg>
+      </button>
+
+      <div id="sidebar-content">
+        <div id="toolbar" class="preview-form">
+          <#if collections?size != 0>
+          <label for="selectedCollections">Collections:</label>
+          <div class="collection-palette">
+            <p class="collection-hint">The map draws the selected collections, the first one at the bottom. Double click a collection to move it across.</p>
+            <#if collectionsCut>
+            <p class="collection-warning" id="collectionsCutWarning">Too many collections to list them all: only the first ${collections?size} are shown. Use the collections parameter to draw any other one.</p>
+            </#if>
+            <div class="collection-lists">
+              <select id="candidateCollections" class="collection-list" multiple size="6" aria-label="Available collections">
+                <#list collections as collection>
+                <#if !selectedCollections?seq_contains(collection)>
+                <option value="${collection}">${collection}</option>
+                </#if>
+                </#list>
+              </select>
+              <div class="collection-buttons">
+                <button id="addCollections" type="button" title="Add to the map">&gt;</button>
+                <button id="removeCollections" type="button" title="Remove from the map">&lt;</button>
+              </div>
+              <select id="selectedCollections" class="collection-list" multiple size="6" aria-label="Collections drawn, bottom to top">
+                <#list selectedCollections as collection>
+                <option value="${collection}">${collection}</option>
+                </#list>
+              </select>
+              <div class="collection-buttons">
+                <button id="collectionUp" type="button" title="Move up, drawn below the others">&uarr;</button>
+                <button id="collectionDown" type="button" title="Move down, drawn above the others">&darr;</button>
+              </div>
+            </div>
+          </div>
+          </#if>
+
+          <label for="tilingModeSelector">Tiling:</label>
           <select id="tilingModeSelector">
             <option value="untiled">Single tile</option>
             <option value="tiled">Tiled</option>
           </select>
-        </li>
-        <li>
-          <a>Antialias:</a>
+
+          <label for="antialiasSelector">Antialias:</label>
           <select id="antialiasSelector">
             <option value="full">Full</option>
             <option value="text">Text only</option>
             <option value="none">Disabled</option>
           </select>
-        </li>
-        <li>
-          <a>Format:</a>
+
+          <label for="imageFormatSelector">Format:</label>
           <select id="imageFormatSelector">
             <option value="image/png">PNG 24bit</option>
             <option value="image/png8">PNG 8bit</option>
             <option value="image/gif">GIF</option>
-            <option id="jpeg" value="image/jpeg">JPEG</option>
-            <option id="jpeg-png" value="image/vnd.jpeg-png">JPEG-PNG</option>
-            <option id="jpeg-png8" value="image/vnd.jpeg-png8">JPEG-PNG8</option>
+            <option value="image/jpeg">JPEG</option>
+            <option value="image/vnd.jpeg-png">JPEG-PNG</option>
+            <option value="image/vnd.jpeg-png8">JPEG-PNG8</option>
           </select>
-        </li>
-        <li>
-          <a>Width/Height:</a>
-          <select id="widthSelector">
-             <!--
-             These values come from a statistics of the viewable area given a certain screen area
-             (but have been adapted a litte, simplified numbers, added some resolutions for wide screen)
-             You can find them here: http://www.evolt.org/article/Real_World_Browser_Size_Stats_Part_II/20/2297/
-             --><option value="auto">Auto</option>
-                <option value="600">600</option>
-                <option value="750">750</option>
-                <option value="950">950</option>
-                <option value="1000">1000</option>
-                <option value="1200">1200</option>
-                <option value="1400">1400</option>
-                <option value="1600">1600</option>
-                <option value="1900">1900</option>
-            </select>
-            <select id="heightSelector">
-                <option value="auto">Auto</option>
-                <option value="300">300</option>
-                <option value="400">400</option>
-                <option value="500">500</option>
-                <option value="600">600</option>
-                <option value="700">700</option>
-                <option value="800">800</option>
-                <option value="900">900</option>
-                <option value="1000">1000</option>
-            </select>
-          </li>
-          <li>
-              <a>Filter:</a>
+
+          <label for="filter">Filter:</label>
+          <div class="filter-container">
+            <div class="gs-input-group">
               <select id="filterType">
-                  <option value="cql">CQL</option>
-                  <option value="ogc">OGC</option>
-                  <option value="fid">FeatureID</option>
+                <option value="cql2-text">CQL2 Text</option>
+                <option value="cql2-json">CQL2 JSON</option>
+                <option value="ecql-text">ECQL Text</option>
               </select>
-              <input type="text" size="80" id="filter"/>
-              <a id="updateFilterButton" href="#" title="Apply filter">Apply</a>
-              <a id="resetFilterButton" href="#" title="Reset filter">Reset</a>
-          </li>
-        </ul>
+              <button id="updateFilterButton" title="Apply filter">Apply</button>
+              <button id="resetFilterButton" title="Reset filter">Reset</button>
+            </div>
+            <textarea id="filter" placeholder="Enter filter expression..."></textarea>
+          </div>
+        </div>
       </div>
-    <div id="map">
-      <div class="ol-toggle-options ol-unselectable"><a id="options" title="Toggle options toolbar" href="#toggle">...</a></div>
     </div>
-    <div id="wrapper">
+
+    <div id="page">
+      <div id="map"></div>
+
+      <div id="wrapper">
         <div id="location"></div>
         <div id="scale"></div>
+      </div>
+
+      <div id="popup" class="ol-popup">
+        <a href="#" id="popup-closer" class="ol-popup-closer">&#10006;</a>
+        <div id="popup-content"></div>
+      </div>
+
+      <input type="hidden" id="minX" value="${model.bbox.minX?c}"/>
+      <input type="hidden" id="minY" value="${model.bbox.minY?c}"/>
+      <input type="hidden" id="maxX" value="${model.bbox.maxX?c}"/>
+      <input type="hidden" id="maxY" value="${model.bbox.maxY?c}"/>
+      <input type="hidden" id="SRS" value="${model.SRS}"/>
+      <input type="hidden" id="crsCurie" value="${crsCurie}"/>
+      <input type="hidden" id="axisOrder" value="${axisOrder}"/>
+      <input type="hidden" id="url" value="${url}"/>
+      <input type="hidden" id="units" value="${units}"/>
+      <#list parameters as param>
+      <input type="hidden" class="param" title="${param.name}" value="${param.value}"/>
+      </#list>
     </div>
-    <div id="nodelist">
-        <em>Click on the map to get feature info</em>
-    </div>
-    <input type="hidden" id="minX" value="${model.bbox.minX?c}"/>
-    <input type="hidden" id="minY" value="${model.bbox.minY?c}"/>
-    <input type="hidden" id="maxX" value="${model.bbox.maxX?c}"/>
-    <input type="hidden" id="maxY" value="${model.bbox.maxY?c}"/>
-    <input type="hidden" id="SRS" value="${model.SRS}"/>
-    <input type="hidden" id="url" value="${url}"/>
-    <input type="hidden" id="units" value="${units}"/>
-    <#list parameters as param>
-    <input type="hidden" class="param" title="${param.name}" value="${param.value}"/>
-    </#list>
+  </div>
   </body>
 </html>

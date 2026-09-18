@@ -5,18 +5,32 @@
 package org.geoserver.ogcapi.v1.maps;
 
 import static org.geoserver.catalog.ResourceInfo.TIME;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.PathNotFoundException;
+import java.util.List;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.WMSInfo;
+import org.jsoup.nodes.Document;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CollectionTest extends MapsTestSupport {
 
@@ -67,6 +81,68 @@ public class CollectionTest extends MapsTestSupport {
         assertEquals(-1.0E-4, spatial.read("$[3]"), 0d);
     }
 
+    /** A collection stored in CRS84 needs no storageCrs, and the crs list is the one the service publishes. */
+    @Test
+    public void testLakesCrsList() throws Exception {
+        DocumentContext json = getAsJSONPath("ogc/maps/v1/collections/" + getLayerId(MockData.LAKES), 200);
+        assertEquals("http://www.opengis.net/def/crs/OGC/1.3/CRS84", json.read("$.crs[0]"));
+        // the "#/crs" shorthand is a JSON Pointer into the same document, so it works only in the
+        // collections response, which holds the shared list: here the CRSs are listed in full
+        // (see OGC API - Features - Part 2, /req/crs/fc-md-crs-list-global)
+        List<String> crs = json.read("$.crs");
+        assertEquals(getAsJSONPath("ogc/maps/v1/collections", 200).read("$.crs"), crs);
+        assertThat(crs, not(hasItem("#/crs")));
+        assertThrows(PathNotFoundException.class, () -> json.read("$.storageCrs"));
+        assertThrows(PathNotFoundException.class, () -> json.read("$.extent.spatial.storageCrsBbox"));
+    }
+
+    /** A collection stored in a projected CRS reports it, and the extent repeats the area in that CRS. */
+    @Test
+    public void testProjectedCollectionCrsList() throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        wms.getSRS().addAll(List.of("EPSG:4326", "EPSG:3857"));
+        gs.save(wms);
+        // compute the native bounds, so there is an extent to report in the storage CRS
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo polygons = catalog.getFeatureTypeByName(getLayerId(MockData.POLYGONS));
+        new CatalogBuilder(catalog).setupBounds(polygons);
+        catalog.save(polygons);
+        try {
+            DocumentContext json = getAsJSONPath("ogc/maps/v1/collections/" + getLayerId(MockData.POLYGONS), 200);
+            assertEquals("http://www.opengis.net/def/crs/EPSG/0/32615", json.read("$.storageCrs"));
+            // the configured list, CRS84 first, with the storage CRS added since it was not declared
+            assertThat(
+                    json.read("crs"),
+                    contains(
+                            "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                            "http://www.opengis.net/def/crs/EPSG/0/32615",
+                            "http://www.opengis.net/def/crs/EPSG/0/4326",
+                            "http://www.opengis.net/def/crs/EPSG/0/3857"));
+            // the same area as the CRS84 bbox, in metres
+            DocumentContext storage = readSingleContext(json, "$.extent.spatial.storageCrsBbox");
+            assertEquals(500225, storage.read("$[0]", Double.class), 1d);
+            assertEquals(500025, storage.read("$[1]", Double.class), 1d);
+            assertEquals(500275, storage.read("$[2]", Double.class), 1d);
+            assertEquals(500075, storage.read("$[3]", Double.class), 1d);
+        } finally {
+            wms.getSRS().clear();
+            gs.save(wms);
+        }
+    }
+
+    /** The storage CRS shows up in the collection page, but not for a collection stored in CRS84. */
+    @Test
+    public void testStorageCrsHTML() throws Exception {
+        Document projected = getAsJSoup("ogc/maps/v1/collections/cgf:Polygons?f=html");
+        assertEquals(
+                "http://www.opengis.net/def/crs/EPSG/0/32615",
+                projected.select("#cgf__Polygons_storageCrs").text());
+
+        Document wgs84 = getAsJSoup("ogc/maps/v1/collections/cite:Lakes?f=html");
+        assertTrue(wgs84.select("#cite__Lakes_storageCrs").isEmpty());
+    }
+
     @Test
     public void testLayerGroupJson() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/maps/v1/collections/" + NATURE_GROUP, 200);
@@ -87,7 +163,7 @@ public class CollectionTest extends MapsTestSupport {
     @Test
     public void testTemporalCollectionHTML() throws Exception {
         setupRasterDimension(TIMESERIES, TIME, DimensionPresentation.LIST, null, null, null);
-        org.jsoup.nodes.Document document = getAsJSoup("ogc/maps/v1/collections/sf:timeseries?f=html");
+        Document document = getAsJSoup("ogc/maps/v1/collections/sf:timeseries?f=html");
 
         String id = getLayerId(TIMESERIES).replace(":", "__");
 
@@ -105,7 +181,7 @@ public class CollectionTest extends MapsTestSupport {
     @Test
     public void testTemporalSqlDateHTML() throws Exception {
         setupStartEndTimeDimension(TIME_WITH_START_END_DATE, "time", "startTime", "endTime");
-        org.jsoup.nodes.Document document = getAsJSoup("ogc/maps/v1/collections/sf:TimeWithStartEndDate?f=html");
+        Document document = getAsJSoup("ogc/maps/v1/collections/sf:TimeWithStartEndDate?f=html");
 
         String id = getLayerId(TIME_WITH_START_END_DATE).replace(":", "__");
 
@@ -126,6 +202,16 @@ public class CollectionTest extends MapsTestSupport {
         DocumentContext json = getAsJSONPath("ogc/maps/v1/collections/sf:TimeWithStartEndDate", 200);
         assertEquals("2012-02-11T00:00:00Z", json.read("$.extent.temporal.interval[0][0]"));
         assertEquals("2012-02-14T00:00:00Z", json.read("$.extent.temporal.interval[0][1]"));
+    }
+
+    /** A layer no map can draw is not a collection of this service, so it has no resource of its own either. */
+    @Test
+    public void testGeometrylessCollectionNotFound() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("ogc/maps/v1/collections/cite:Geometryless");
+        assertEquals(400, response.getStatus());
+        DocumentContext json = getAsJSONPath("ogc/maps/v1/collections/cite:Geometryless", 400);
+        assertEquals(ServiceException.INVALID_PARAMETER_VALUE, json.read("$.type"));
+        assertThat(json.read("$.title", String.class), containsString("cite:Geometryless"));
     }
 
     @Test

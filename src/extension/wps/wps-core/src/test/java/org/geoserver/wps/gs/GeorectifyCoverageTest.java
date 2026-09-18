@@ -12,8 +12,11 @@ import static org.junit.Assert.assertTrue;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import javax.imageio.ImageIO;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.expression.Function;
@@ -37,6 +40,27 @@ public class GeorectifyCoverageTest extends WPSTestSupport {
         Function f = ff.function("gs:GeorectifyCoverage");
         assertNotNull(f);
         assertTrue(f instanceof RenderingTransformation);
+    }
+
+    @Test
+    public void testConfigurationReadsOnlyKnownKeys() throws IOException {
+        Resource resource = getResourceLoader().get("gdalops.properties");
+        try (OutputStream out = resource.out()) {
+            out.write(
+                    ("GDAL_CACHEMAX=16000000\n" + "GDAL_TRANSLATE_PARAMS=-expand rgb\n" + "GDAL_EXTRA_PATH=/opt/gdal\n")
+                            .getBytes(StandardCharsets.UTF_8));
+        }
+        try {
+            GeorectifyConfiguration config = new GeorectifyConfiguration();
+            // recognized keys are applied
+            assertEquals("-expand rgb", config.getGdalTranslateParameters());
+            // only the known environment settings reach the environment, unknown keys are dropped
+            Map<String, String> env = config.getEnvVariables();
+            assertEquals(1, env.size());
+            assertEquals("16000000", env.get("GDAL_CACHEMAX"));
+        } finally {
+            resource.delete();
+        }
     }
 
     @Test

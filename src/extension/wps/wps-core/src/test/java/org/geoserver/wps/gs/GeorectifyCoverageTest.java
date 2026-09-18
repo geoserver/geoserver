@@ -16,7 +16,6 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import javax.imageio.ImageIO;
-import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.expression.Function;
@@ -30,9 +29,14 @@ import org.geotools.filter.function.RenderingTransformation;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class GeorectifyCoverageTest extends WPSTestSupport {
+
+    private static final String GDAL_CONFIG = "gdalops.properties";
 
     @Test
     public void testIsRenderingProcess() {
@@ -42,25 +46,68 @@ public class GeorectifyCoverageTest extends WPSTestSupport {
         assertTrue(f instanceof RenderingTransformation);
     }
 
+    @Rule
+    public TemporaryFolder folders = new TemporaryFolder();
+
+    @After
+    public void removeConfigFile() {
+        getResourceLoader().get(GDAL_CONFIG).delete();
+    }
+
+    /** Writes the given lines to the GDAL configuration file and returns a configuration reading it */
+    private GeorectifyConfiguration configure(String... lines) throws IOException {
+        try (OutputStream out = getResourceLoader().get(GDAL_CONFIG).out()) {
+            out.write(String.join("\n", lines).getBytes(StandardCharsets.UTF_8));
+        }
+        return new GeorectifyConfiguration();
+    }
+
+    /** Properties files use the backslash as an escape, make the path safe to write in one */
+    private String propertyPath(File folder) {
+        return folder.getAbsolutePath().replace("\\", "/");
+    }
+
     @Test
     public void testConfigurationReadsOnlyKnownKeys() throws IOException {
-        Resource resource = getResourceLoader().get("gdalops.properties");
-        try (OutputStream out = resource.out()) {
-            out.write(
-                    ("GDAL_CACHEMAX=16000000\n" + "GDAL_TRANSLATE_PARAMS=-expand rgb\n" + "GDAL_EXTRA_PATH=/opt/gdal\n")
-                            .getBytes(StandardCharsets.UTF_8));
-        }
-        try {
-            GeorectifyConfiguration config = new GeorectifyConfiguration();
-            // recognized keys are applied
-            assertEquals("-expand rgb", config.getGdalTranslateParameters());
-            // only the known environment settings reach the environment, unknown keys are dropped
-            Map<String, String> env = config.getEnvVariables();
-            assertEquals(1, env.size());
-            assertEquals("16000000", env.get("GDAL_CACHEMAX"));
-        } finally {
-            resource.delete();
-        }
+        GeorectifyConfiguration config =
+                configure("GDAL_CACHEMAX=16000000", "GDAL_TRANSLATE_PARAMS=-expand rgb", "GDAL_EXTRA_PATH=/opt/gdal");
+
+        // recognized keys are applied
+        assertEquals("-expand rgb", config.getGdalTranslateParameters());
+        // only the known environment settings reach the environment, unknown keys are dropped
+        Map<String, String> env = config.getEnvVariables();
+        assertEquals(1, env.size());
+        assertEquals("16000000", env.get("GDAL_CACHEMAX"));
+    }
+
+    @Test
+    public void testFolderVariables() throws IOException {
+        File data = folders.newFolder("gdal-data");
+        File logging = folders.newFolder("gdal-logging");
+        File temp = folders.newFolder("gdal-temp");
+
+        GeorectifyConfiguration config = configure(
+                "GDAL_DATA=" + propertyPath(data),
+                "GDAL_LOGGING_DIR=" + propertyPath(logging),
+                "TEMP_DIR=" + propertyPath(temp));
+
+        Map<String, String> env = config.getEnvVariables();
+        assertEquals(3, env.size());
+        assertEquals(propertyPath(data), env.get("GDAL_DATA"));
+        assertEquals(propertyPath(logging), env.get("GDAL_LOGGING_DIR"));
+        assertEquals(propertyPath(temp), env.get("TEMP_DIR"));
+    }
+
+    @Test
+    public void testMissingFolderVariable() throws IOException {
+        File missing = new File(folders.getRoot(), "not-there");
+        File file = folders.newFile("plain-file");
+
+        GeorectifyConfiguration config =
+                configure("TEMP_DIR=" + propertyPath(missing), "GDAL_DATA=" + propertyPath(file));
+
+        // a missing folder and a plain file are both rejected
+        assertEquals(0, config.getEnvVariables().size());
     }
 
     @Test

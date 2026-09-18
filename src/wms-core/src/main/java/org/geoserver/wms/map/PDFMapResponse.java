@@ -115,6 +115,7 @@ public class PDFMapResponse extends AbstractMapResponse {
                 document.setMargins(0, 0, 0, 0);
 
                 // step 2: creation of the writer
+                @SuppressWarnings("PMD.CloseResource")
                 PdfWriter writer = PdfWriter.getInstance(document, output);
 
                 // step 3: we open the document

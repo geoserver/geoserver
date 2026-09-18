@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geofence.core.services.RuleReaderService;
+import org.geoserver.geofence.util.Causes;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.context.ApplicationContext;
@@ -133,29 +134,13 @@ public class RuleReaderServiceFactory implements ApplicationContextAware, SmartI
                         Level.SEVERE,
                         "GeoFence rule reader backend ''{0}'' is unavailable; denying all access until it recovers. "
                                 + "Cause: {1}",
-                        new Object[] {activeServiceName, rootCauseMessage(e)});
+                        new Object[] {activeServiceName, Causes.rootCauseMessage(e)});
                 // the full trace is mostly Spring bean-creation frames; keep it for whoever needs to dig
                 LOGGER.log(Level.FINE, "GeoFence rule reader backend resolution failed", e);
                 backendUnavailableWarned = true;
             }
             return denyAll;
         }
-    }
-
-    /**
-     * The deepest cause that carries a message. The layers wrapping the real problem (Spring bean creation, Hikari pool
-     * init) repeat each other, and the innermost one is sometimes message-less, so neither end of the chain reliably
-     * says what went wrong.
-     */
-    private static String rootCauseMessage(Throwable thrown) {
-        String message = thrown.toString();
-        Throwable cause = thrown;
-        for (int depth = 0; cause != null && depth < 20; cause = cause.getCause(), depth++) {
-            if (cause.getMessage() != null && !cause.getMessage().isBlank()) {
-                message = cause.getClass().getSimpleName() + ": " + cause.getMessage();
-            }
-        }
-        return message;
     }
 
     public String getActiveServiceName() {

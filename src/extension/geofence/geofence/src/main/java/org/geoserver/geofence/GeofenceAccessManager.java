@@ -48,6 +48,7 @@ import org.geoserver.geofence.containers.ContainerAccessResolver;
 import org.geoserver.geofence.containers.ContainerLimitResolver;
 import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.geoserver.geofence.util.AccessInfoUtils;
+import org.geoserver.geofence.util.Causes;
 import org.geoserver.geofence.util.GeomHelper;
 import org.geoserver.geofence.util.PermissionCatalogFilterHelper;
 import org.geoserver.geofence.util.RuleFilterBuilder;
@@ -988,7 +989,12 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
         try {
             permsResult = rulesServiceFactory.getService().getPermissionFilter(ruleFilter);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error retrieving permissions for filter " + ruleFilter + ", blocking access", e);
+            // the trace is mostly Guava/Spring plumbing, so report the cause on one line and keep it for FINE
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Error retrieving permissions for filter {0}, blocking access. Cause: {1}",
+                    new Object[] {ruleFilter, Causes.rootCauseMessage(e)});
+            LOGGER.log(Level.FINE, "Permission retrieval failed", e);
             return Filter.EXCLUDE;
         }
 

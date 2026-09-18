@@ -361,8 +361,9 @@ public class AssemblyTest {
             httpPort = acquirePort(name, "HTTP");
             stopPort = acquirePort(name, "STOP");
             Path testWorkDir = Files.createTempDirectory(sharedTempDir, "test-" + name);
+            // outside the try so the finally below can reach it
+            AbstractPluginTester tester = getPluginTester(name);
             try {
-                AbstractPluginTester tester = getPluginTester(name);
                 FileUtils.copyDirectory(binTemplate.toFile(), testWorkDir.toFile());
                 Path libDir = testWorkDir.resolve("webapps/geoserver/WEB-INF/lib");
 
@@ -436,6 +437,8 @@ public class AssemblyTest {
                     }
                 }
             } finally {
+                // out here so a failure in prepareTestDirectory()/pb.start() still stops the tester's container
+                tester.cleanupTestDirectory(testWorkDir);
                 FileUtils.deleteDirectory(testWorkDir.toFile());
             }
         } catch (Throwable t) {

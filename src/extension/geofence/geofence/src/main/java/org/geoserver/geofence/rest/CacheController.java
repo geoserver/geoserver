@@ -49,8 +49,8 @@ public class CacheController extends AbstractCatalogController {
         StringBuilder sb = new StringBuilder();
 
         appendStats(sb, "RuleStats", cacheManager.getRuleCache());
+        appendStats(sb, "PermStats", cacheManager.getPermCache());
         appendStats(sb, "AdminAuthStats", cacheManager.getAuthCache());
-        appendStats(sb, "UserStats", cacheManager.getUserCache());
         appendStats(sb, "ContStats", cacheManager.getContainerCache());
 
         return sb.toString();
@@ -78,8 +78,9 @@ public class CacheController extends AbstractCatalogController {
                 .append("] \n");
     }
 
-    @PutMapping(produces = {MediaType.TEXT_PLAIN_VALUE})
-    @RequestMapping(path = "/invalidate")
+    @PutMapping(
+            path = "/invalidate",
+            produces = {MediaType.TEXT_PLAIN_VALUE})
     public String invalidateCache() {
         LOGGER.log(Level.WARNING, "INVALIDATING CACHE");
         cacheManager.invalidateAll();

@@ -20,6 +20,8 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,6 +52,7 @@ public class CachingResourceAccessManagerTest {
     @After
     public void tearDown() {
         RequestContextHolder.resetRequestAttributes();
+        Dispatcher.REQUEST.remove();
     }
 
     private void bindRequest() {
@@ -75,6 +78,59 @@ public class CachingResourceAccessManagerTest {
         assertNull(caching.getAccessLimits(user, layer));
         assertNull(caching.getAccessLimits(user, layer));
         verify(delegate, times(1)).getAccessLimits(user, layer);
+    }
+
+    /**
+     * GeoFence returns no limits at all when the OWS request is not set up yet, then real limits once it is. The
+     * pre-dispatch answer must not be reused for the rest of the request.
+     */
+    @Test
+    public void testOwsRequestSetupMiss() {
+        LayerInfo layer = layerWithId("l1");
+        DataAccessLimits limits = mock(DataAccessLimits.class);
+        when(delegate.getAccessLimits(user, layer)).thenReturn(null, limits);
+
+        assertNull(caching.getAccessLimits(user, layer));
+        Dispatcher.REQUEST.set(owsRequest("WMS", "GetMap"));
+        assertSame(limits, caching.getAccessLimits(user, layer));
+        verify(delegate, times(2)).getAccessLimits(user, layer);
+    }
+
+    @Test
+    public void testSameOwsRequestHit() {
+        LayerInfo layer = layerWithId("l1");
+        DataAccessLimits limits = mock(DataAccessLimits.class);
+        when(delegate.getAccessLimits(user, layer)).thenReturn(limits);
+        Dispatcher.REQUEST.set(owsRequest("WMS", "GetMap"));
+
+        assertSame(limits, caching.getAccessLimits(user, layer));
+        assertSame(limits, caching.getAccessLimits(user, layer));
+        verify(delegate, times(1)).getAccessLimits(user, layer);
+    }
+
+    /**
+     * A GWC tile miss runs two OWS requests on the same thread and request scope: the outer {@code gwc/dispatch} and
+     * the inner WMS GetMap that renders the missing tile. The two get their own limits.
+     */
+    @Test
+    public void testNestedOwsRequestMiss() {
+        LayerInfo layer = layerWithId("l1");
+        DataAccessLimits outerLimits = mock(DataAccessLimits.class);
+        DataAccessLimits innerLimits = mock(DataAccessLimits.class);
+        when(delegate.getAccessLimits(user, layer)).thenReturn(outerLimits, innerLimits);
+
+        Dispatcher.REQUEST.set(owsRequest("gwc", "dispatch"));
+        assertSame(outerLimits, caching.getAccessLimits(user, layer));
+        Dispatcher.REQUEST.set(owsRequest("WMS", "GetMap"));
+        assertSame(innerLimits, caching.getAccessLimits(user, layer));
+        verify(delegate, times(2)).getAccessLimits(user, layer);
+    }
+
+    private Request owsRequest(String service, String request) {
+        Request owsRequest = new Request();
+        owsRequest.setService(service);
+        owsRequest.setRequest(request);
+        return owsRequest;
     }
 
     @Test

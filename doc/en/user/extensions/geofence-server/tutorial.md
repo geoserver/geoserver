@@ -1,8 +1,8 @@
-# Using the Internal GeoFence server (Tutorial)
+# Using the Embedded GeoFence server (Tutorial)
 
 ## Introduction
 
-This tutorial shows how to install and configure the [Geofence Internal Server](index.md) plug-in. It shows how to create rules in two ways: using the GUI and REST methods.
+This tutorial shows how to install and configure the [Geofence Embedded Server](index.md) plug-in. It shows how to create rules in two ways: using the GUI and REST methods.
 
 The tutorial assumes:
 
@@ -23,7 +23,7 @@ Restart GeoServer.
 !!! note
     Since we defined no rules yet, the default behavior of GeoFence is to deny access to all resources.
 
-There should now be a **GeoFence Data Rules** link on the left side of the screen after logging in. Click on it. This is the configuration page of your internal GeoFence.
+There should now be a **GeoFence Data Rules** link on the left side of the screen after logging in. Click on it. This is the configuration page of your embedded GeoFence.
 
 ![](images/tutorial_rulespage1.png)
 

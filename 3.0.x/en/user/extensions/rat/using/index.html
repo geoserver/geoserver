@@ -20598,6 +20598,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#mosaics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mosaics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rest-api" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30187,6 +30198,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#mosaics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mosaics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rest-api" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30229,11 +30251,12 @@
 <p>The table allows for exploration of the attribute table, while the toolbar at the top allows to generate styles based on the table contents:</p>
 <ul>
 <li>The <strong>Band</strong> dropdown allows to select a raster band.</li>
-<li>The <strong>Classification</strong> dropdown allows to select a column to use for classification.</li>
+<li>The <strong>Classification</strong> dropdown allows to select a column to use for classification. Geometry columns are not listed, as each row holds a different geometry, so it groups nothing.</li>
 <li>The <strong>Style name</strong> controls the name of the style to be generated. It's automatically filled with a naming convention of <code>&lt;layer&gt;_b&lt;band&gt;_&lt;classification&gt;</code>, but can be customized.</li>
 <li>The <strong>Create style</strong> button generates the style based on the chosen classification, eventually using colors if available in the table, otherwise generating random colors. The generated style will also be included among the "alternate styles" of the layer.</li>
 </ul>
 <p>The generated style will match all the values in the raster attribute table, and ensure the chosen classification column is used for both styling, legend generation, and <code>GetFeatureInfo</code> output.</p>
+<p>In the <code>GetFeatureInfo</code> output the table columns keep their type: a number stays a number, a boolean stays a boolean, and a date and time column is reported as a date, converted to UTC. An empty cell is reported as no value at all, unless the column holds text, where it stays an empty text. Geometry columns are reported as text, in the well known text form.</p>
 <p>Here is an example style:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span><span class="nt">&lt;sld:StyledLayerDescriptor</span><span class="w"> </span><span class="na">xmlns:sld=</span><span class="s">"http://www.opengis.net/sld"</span><span class="w"> </span><span class="na">xmlns:gml=</span><span class="s">"http://www.opengis.net/gml"</span><span class="w"> </span><span class="na">xmlns:ogc=</span><span class="s">"http://www.opengis.net/ogc"</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">"http://www.opengis.net/sld"</span><span class="w"> </span><span class="na">version=</span><span class="s">"1.0.0"</span><span class="nt">&gt;</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">&lt;sld:NamedLayer&gt;</span>
@@ -30260,6 +30283,8 @@
 </code></pre></div>
 <p>This is a map generated using the style, with the GetFeatureInfo containing the classification as an extra attribute:</p>
 <p><img alt="image" src="../images/rat_map.png" /></p>
+<h2 id="mosaics">Mosaics<a class="headerlink" href="#mosaics" title="Permanent link">&para;</a></h2>
+<p>An ImageMosaic can build one attribute table out of the tables of its granules. It is off by default, enabled with the <code>CollectAttributeTables</code> indexer property, while <code>AttributeTableGeometries</code> controls what happens to a geometry column the granules disagree on. See <a href="../../../data/raster/imagemosaic/configuration/">ImageMosaic configuration</a>.</p>
 <h2 id="rest-api">REST API<a class="headerlink" href="#rest-api" title="Permanent link">&para;</a></h2>
 <p>A REST API is available, to fetch the full PAM dataset attached to a raster, and to create styles out of RAT classification fields:</p>
 <ul>

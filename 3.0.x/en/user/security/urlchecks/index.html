@@ -30336,7 +30336,8 @@
 <ul>
 <li>WMS GetMap, GetFeatureInfo and GetLegendGraphic requests with remote SLD stylesheets (<code>sld</code> parameter)</li>
 <li>Remote icons referenced by styles (access to icons in the data directory is always allowed)</li>
-<li>WMS GetMap and GetFeatureInfo requests in feature portrayal mode (<code>REMOTE_OWS</code> and <code>REMOTE_OWS_TYPE</code> parameters)</li>
+<li>WMS GetMap and GetFeatureInfo request feature portrayal using mode using <code>REMOTE_OWS_URL</code>/<code>REMOTE_OWS_TYPE</code> parameters.</li>
+<li>WMS GetMap and GetFeatureInfo request feature portrayal using mode using  <code>&lt;RemoteOWS&gt;</code>/<code>&lt;OnlineResource&gt;</code> reference in in an SLD document <code>sld</code> or <code>sld_body</code> element.</li>
 <li>WPS remote inputs, either as GET or POST requests</li>
 </ul>
 <p>External URLs configured by admins in the GUI (e.g. WFS, cascaded WMS &amp; WMTS data stores) are not subject to this check.</p>

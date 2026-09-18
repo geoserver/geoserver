@@ -606,9 +606,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
     }
 
     private boolean isGroupDefaultStyle(String styleName, LayerGroupInfo layerGroupInfo) {
-        return styleName.equals("")
-                || (CapabilityUtil.encodeGroupDefaultStyle(wms, layerGroupInfo)
-                        && styleName.equals(CapabilityUtil.getGroupDefaultStyleName(layerGroupInfo)));
+        return CapabilityUtil.isDefaultGroupStyleName(wms, layerGroupInfo, styleName);
     }
 
     /**

@@ -4,7 +4,6 @@
  */
 package org.geoserver.ogcapi.v1.maps;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -17,21 +16,14 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.CQL2Conformance;
 import org.geoserver.ogcapi.ECQLConformance;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.wms.WMSInfo;
 import org.junit.Test;
 
 /**
  * Covers the attribute filtering of maps: the {@code filter}, {@code filter-lang} and {@code filter-crs} parameters on
- * the map and feature info resources.
- *
- * <p>sf:TimeWithStartEnd holds three features, one per world quadrant: {@code startElevation=1.0} covers NW and SW,
- * {@code startElevation=2.0} covers NE. A filter selecting one value must leave the other quadrants empty.
+ * the map and feature info resources. A filter selecting one {@code startElevation} value must leave the quadrants of
+ * the other features empty, see the quadrant fixture in {@link MapsTestSupport}.
  */
 public class FilterTest extends MapsTestSupport {
-
-    private static final int[] NE = {37, 12};
-    private static final int[] NW = {12, 12};
-    private static final int[] SW = {12, 37};
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -121,25 +113,19 @@ public class FilterTest extends MapsTestSupport {
 
     @Test
     public void testInvalidFilter() throws Exception {
-        DocumentContext json = getAsJSONPath(filteredMapUrl("this is not a filter", null, null), 400);
-        assertEquals("InvalidParameterValue", json.read("type"));
         // the parser message points at the offending token
-        assertThat(json.read("title"), containsString("line 1, column 6"));
+        assertInvalidParameter(filteredMapUrl("this is not a filter", null, null), "line 1, column 6");
     }
 
     /** An attribute no collection exposes as a queryable is a client error, not a silently ignored filter. */
     @Test
     public void testUnknownAttributeRejected() throws Exception {
-        DocumentContext json = getAsJSONPath(filteredMapUrl("notThere = 2.0", null, null), 400);
-        assertEquals("InvalidParameterValue", json.read("type"));
-        assertThat(json.read("title"), containsString("notThere"));
+        assertInvalidParameter(filteredMapUrl("notThere = 2.0", null, null), "notThere");
     }
 
     @Test
     public void testUnknownAttributeRejectedOnFeatureInfo() throws Exception {
-        DocumentContext json = getAsJSONPath(featureInfoUrl("notThere = 2.0"), 400);
-        assertEquals("InvalidParameterValue", json.read("type"));
-        assertThat(json.read("title"), containsString("notThere"));
+        assertInvalidParameter(featureInfoUrl("notThere = 2.0"), "notThere");
     }
 
     /** A raster collection has no queryables at all, so any attribute filter on it is unusable. */
@@ -147,9 +133,7 @@ public class FilterTest extends MapsTestSupport {
     public void testUnknownAttributeOnRasterCollection() throws Exception {
         String url = "ogc/maps/v1/collections/wcs:World/map?f=image/png&width=20&height=20&filter="
                 + ResponseUtils.urlEncode("startElevation = 2.0");
-        DocumentContext json = getAsJSONPath(url, 400);
-        assertEquals("InvalidParameterValue", json.read("type"));
-        assertThat(json.read("title"), containsString("startElevation"));
+        assertInvalidParameter(url, "startElevation");
     }
 
     /** On a dataset map the queryables of all the collections are usable, each layer filtering by what it knows. */
@@ -160,25 +144,19 @@ public class FilterTest extends MapsTestSupport {
         BufferedImage image = getAsPNG(base + ResponseUtils.urlEncode("startElevation = 2.0"));
         assertOpaque(image, NE);
 
-        DocumentContext json = getAsJSONPath(base + ResponseUtils.urlEncode("notThere = 2.0"), 400);
-        assertEquals("InvalidParameterValue", json.read("type"));
-        assertThat(json.read("title"), containsString("notThere"));
+        assertInvalidParameter(base + ResponseUtils.urlEncode("notThere = 2.0"), "notThere");
     }
 
     @Test
     public void testInvalidFilterLanguage() throws Exception {
-        DocumentContext json = getAsJSONPath(filteredMapUrl("startElevation = 2.0", "sql", null), 400);
-        assertEquals("InvalidParameterValue", json.read("type"));
-        assertThat(json.read("title"), containsString("filter-lang"));
+        assertInvalidParameter(filteredMapUrl("startElevation = 2.0", "sql", null), "filter-lang");
     }
 
     @Test
     public void testInvalidFilterCRS() throws Exception {
-        DocumentContext json =
-                getAsJSONPath(filteredMapUrl("S_INTERSECTS(geom, POINT(90 45))", null, "EPSG:notACode"), 400);
-        assertEquals("InvalidParameterValue", json.read("type"));
         // the code is reported upper cased, the way the EPSG factory looked it up
-        assertThat(json.read("title"), containsString("EPSG:NOTACODE"));
+        assertInvalidParameter(
+                filteredMapUrl("S_INTERSECTS(geom, POINT(90 45))", null, "EPSG:notACode"), "EPSG:NOTACODE");
     }
 
     /** With the GeoServer map binding class disabled the parameter is ignored, not rejected. */
@@ -206,42 +184,31 @@ public class FilterTest extends MapsTestSupport {
     /** With every filter language disabled there is nothing to parse the filter with, so it is ignored. */
     @Test
     public void testFilterIgnoredWhenNoLanguageEnabled() throws Exception {
-        setLanguagesEnabled(Boolean.FALSE);
-        try {
+        withFilterLanguagesDisabled(() -> {
             BufferedImage image = filteredMap("startElevation = 2.0", null, null);
             assertOpaque(image, NE);
             assertOpaque(image, NW);
             assertOpaque(image, SW);
-        } finally {
-            setLanguagesEnabled(null);
-        }
+        });
     }
 
     /** A language whose conformance class is disabled is not in the API document enum, so it is rejected. */
     @Test
     public void testDisabledLanguageRejected() throws Exception {
-        setECQLEnabled(Boolean.FALSE);
-        try {
-            DocumentContext json = getAsJSONPath(filteredMapUrl("startElevation = 2.0", "ecql-text", null), 400);
-            assertEquals("InvalidParameterValue", json.read("type"));
-            assertThat(json.read("title"), containsString("ecql-text"));
-        } finally {
-            setECQLEnabled(null);
-        }
+        withWms(
+                wms -> ECQLConformance.configuration(wms).setText(false),
+                () -> assertInvalidParameter(filteredMapUrl("startElevation = 2.0", "ecql-text", null), "ecql-text"));
     }
 
     /** With cql2-text disabled the default language is the first one left, the same the API document declares. */
     @Test
     public void testDefaultLanguageFollowsEnabledOnes() throws Exception {
-        setCQL2TextEnabled(Boolean.FALSE);
-        try {
+        withWms(wms -> CQL2Conformance.configuration(wms).setText(false), () -> {
             String json = "{\"op\":\"=\",\"args\":[{\"property\":\"startElevation\"},2.0]}";
             BufferedImage ne = filteredMap(json, null, null);
             assertOpaque(ne, NE);
             assertTransparent(ne, NW);
-        } finally {
-            setCQL2TextEnabled(null);
-        }
+        });
     }
 
     /**
@@ -262,9 +229,7 @@ public class FilterTest extends MapsTestSupport {
     public void testUnknownAttributeOnMosaic() throws Exception {
         String url = "ogc/maps/v1/collections/" + getLayerId(WATER_TEMP) + "/map?f=image/png&width=20&height=20&filter="
                 + ResponseUtils.urlEncode("notThere = 1");
-        DocumentContext json = getAsJSONPath(url, 400);
-        assertEquals("InvalidParameterValue", json.read("type"));
-        assertThat(json.read("title"), containsString("notThere"));
+        assertInvalidParameter(url, "notThere");
     }
 
     private BufferedImage mosaicMap(String filter) throws Exception {
@@ -274,33 +239,8 @@ public class FilterTest extends MapsTestSupport {
                 + ResponseUtils.urlEncode(filter));
     }
 
-    private static int[] pixels(BufferedImage image) {
-        return image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
-    }
-
     private static long opaquePixels(BufferedImage image) {
         return Arrays.stream(pixels(image)).filter(argb -> alpha(argb) != 0).count();
-    }
-
-    private void setECQLEnabled(Boolean enabled) {
-        WMSInfo wms = getGeoServer().getService(WMSInfo.class);
-        ECQLConformance.configuration(wms).setText(enabled);
-        getGeoServer().save(wms);
-    }
-
-    private void setCQL2TextEnabled(Boolean enabled) {
-        WMSInfo wms = getGeoServer().getService(WMSInfo.class);
-        CQL2Conformance.configuration(wms).setText(enabled);
-        getGeoServer().save(wms);
-    }
-
-    private void setLanguagesEnabled(Boolean enabled) {
-        WMSInfo wms = getGeoServer().getService(WMSInfo.class);
-        CQL2Conformance cql2 = CQL2Conformance.configuration(wms);
-        cql2.setText(enabled);
-        cql2.setJSON(enabled);
-        ECQLConformance.configuration(wms).setText(enabled);
-        getGeoServer().save(wms);
     }
 
     private BufferedImage filteredMap(String filter, String filterLang, String filterCrs) throws Exception {
@@ -308,12 +248,10 @@ public class FilterTest extends MapsTestSupport {
     }
 
     private String filteredMapUrl(String filter, String filterLang, String filterCrs) {
-        StringBuilder url = new StringBuilder("ogc/maps/v1/collections/sf:TimeWithStartEnd/map?f=image/png")
-                .append("&width=50&height=50&filter=")
-                .append(ResponseUtils.urlEncode(filter));
-        if (filterLang != null) url.append("&filter-lang=").append(filterLang);
-        if (filterCrs != null) url.append("&filter-crs=").append(ResponseUtils.urlEncode(filterCrs));
-        return url.toString();
+        StringBuilder query = new StringBuilder("filter=").append(ResponseUtils.urlEncode(filter));
+        if (filterLang != null) query.append("&filter-lang=").append(filterLang);
+        if (filterCrs != null) query.append("&filter-crs=").append(ResponseUtils.urlEncode(filterCrs));
+        return quadrantMapUrl(query.toString());
     }
 
     private DocumentContext featureInfo(String filter) throws Exception {
@@ -321,9 +259,6 @@ public class FilterTest extends MapsTestSupport {
     }
 
     private String featureInfoUrl(String filter) {
-        // the NE pixel of a full world map, in a 50x50 image
-        return "ogc/maps/v1/collections/sf:TimeWithStartEnd/map/info?f=application/json"
-                + "&bbox=-180,-90,180,90&width=50&height=50&i=" + NE[0] + "&j=" + NE[1] + "&filter="
-                + ResponseUtils.urlEncode(filter);
+        return quadrantInfoUrl("filter=" + ResponseUtils.urlEncode(filter));
     }
 }

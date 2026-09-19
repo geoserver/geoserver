@@ -17,9 +17,7 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import org.geoserver.config.GeoServer;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSInfo;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -34,14 +32,10 @@ import org.w3c.dom.NodeList;
 public class EncodingsTest extends MapsTestSupport {
 
     /** A map tight on Blue Lake, so a known pixel falls inside the polygon and carries its colour. */
-    private static final String MAP =
-            "ogc/maps/v1/collections/Lakes/map?bbox=-0.002,-0.003,0.005,0.002&width=100&height=100";
+    private static final String MAP = "ogc/maps/v1/collections/Lakes/map?" + LAKE_WINDOW;
 
     /** The same map with no transparency, so nothing but the encoding differs. */
     private static final String OPAQUE_MAP = MAP + "&transparent=false";
-
-    private static final int LAKE_X = 50;
-    private static final int LAKE_Y = 64;
 
     /**
      * Retrieves the map resource negotiating the encoding through the {@code Accept} header alone, with no {@code f}.
@@ -108,7 +102,7 @@ public class EncodingsTest extends MapsTestSupport {
         assertTrue(image.getColorModel().hasAlpha());
         assertEquals(0, alpha(image, 0, 0));
         // the colours carry the feature: the default Lakes style fills them with a blue dominant tone
-        assertEquals(0xFF4040C0, image.getRGB(LAKE_X, LAKE_Y));
+        assertEquals(LAKE_BLUE, image.getRGB(LAKE_X, LAKE_Y));
     }
 
     /** /conf/jpeg/content: one opaque colour map per response, JPEG having no transparency to encode. */
@@ -179,19 +173,9 @@ public class EncodingsTest extends MapsTestSupport {
                 }));
     }
 
-    /** Runs the body with the given WMS SVG renderer configured, restoring the previous choice afterwards. */
+    /** Runs the body with the given WMS SVG renderer configured. */
     private void withSvgRenderer(String renderer, ThrowingRunnable body) throws Exception {
-        GeoServer gs = getGeoServer();
-        WMSInfo wms = gs.getService(WMSInfo.class);
-        String previous = (String) wms.getMetadata().get("svgRenderer");
-        wms.getMetadata().put("svgRenderer", renderer);
-        gs.save(wms);
-        try {
-            body.run();
-        } finally {
-            wms.getMetadata().put("svgRenderer", previous);
-            gs.save(wms);
-        }
+        withWms(wms -> wms.getMetadata().put("svgRenderer", renderer), body);
     }
 
     /** /conf/html/content: an HTML document presenting the geospatial data as a map. */
@@ -250,10 +234,6 @@ public class EncodingsTest extends MapsTestSupport {
     /** An f value that is not a media type at all is a bad parameter value, caught before the map is rendered. */
     @Test
     public void testMalformedFormatRejected() throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(MAP + "&f=garbage");
-        assertEquals(400, response.getStatus());
-        DocumentContext json = JsonPath.parse(response.getContentAsString());
-        assertEquals("InvalidParameterValue", json.read("type"));
-        assertThat(json.read("title"), containsString("garbage"));
+        assertInvalidParameter(MAP + "&f=garbage", "garbage");
     }
 }

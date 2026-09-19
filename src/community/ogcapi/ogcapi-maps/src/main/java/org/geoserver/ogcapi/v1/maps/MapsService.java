@@ -292,6 +292,53 @@ public class MapsService {
     }
 
     /**
+     * Query parameters shared by the map operations, bound from the request by Spring constructor binding. Some
+     * parameter names cannot be Java identifiers, hence the {@link BindParam} mapping.
+     */
+    record MapQuery(
+            String collections,
+            String bbox,
+            @BindParam("bbox-crs") String bboxCrs,
+            String subset,
+            @BindParam("subset-crs") String subsetCrs,
+            String center,
+            @BindParam("center-crs") String centerCrs,
+            String crs,
+            String datetime,
+            Integer width,
+            Integer height,
+            @BindParam("scale-denominator") Double scaleDenominator,
+            @BindParam("mm-per-pixel") Double mmPerPixel,
+            Double orientation,
+            Boolean transparent,
+            String bgcolor,
+            @BindParam("void-color") String voidColor,
+            @BindParam("void-transparent") Boolean voidTransparent,
+            String filter,
+            @BindParam("filter-lang") String filterLang,
+            @BindParam("filter-crs") String filterCrs) {
+
+        /**
+         * Maps are transparent unless asked otherwise, or unless a background color is given, which would otherwise
+         * never show (OGC API - Maps, {@code /req/background/transparent-definition} C and D).
+         */
+        boolean isTransparent() {
+            if (transparent != null) return transparent;
+            return bgcolor == null;
+        }
+
+        /**
+         * The area outside the valid area of the projection follows the map background, unless a void color is given,
+         * which would otherwise never show ({@code /req/background/void-transparent-definition} B).
+         */
+        boolean isVoidTransparent() {
+            if (voidTransparent != null) return voidTransparent;
+            if (voidColor != null) return false;
+            return isTransparent();
+        }
+    }
+
+    /**
      * The collections a dataset map renders, failing with a 404 when the dataset map class is disabled: outside the
      * standard the resource must not exist. The {@code collections} parameter of a disabled class is ignored, not
      * rejected, as the OGC API convention asks.
@@ -362,7 +409,7 @@ public class MapsService {
             throws IOException, FactoryException, ParseException {
         String encoding = mapFormat(format);
         checkFormatConformance(encoding);
-        GetMapRequest request = toGetMapRequest(collections, styleId, encoding, query);
+        GetMapRequest request = toGetMapRequest(collections, styleId, encoding, query, false);
 
         if ("text/html".equals(encoding) || "html".equals(encoding)) {
             DefaultWebMapService.autoSetBoundsAndSize(request);
@@ -604,83 +651,6 @@ public class MapsService {
                 HttpStatus.NOT_ACCEPTABLE);
     }
 
-    /**
-     * Query parameters shared by the map operations, bound from the request by Spring constructor binding. Some
-     * parameter names cannot be Java identifiers, hence the {@link BindParam} mapping.
-     */
-    record MapQuery(
-            String collections,
-            String bbox,
-            @BindParam("bbox-crs") String bboxCrs,
-            String subset,
-            @BindParam("subset-crs") String subsetCrs,
-            String center,
-            @BindParam("center-crs") String centerCrs,
-            String crs,
-            String datetime,
-            Integer width,
-            Integer height,
-            @BindParam("scale-denominator") Double scaleDenominator,
-            @BindParam("mm-per-pixel") Double mmPerPixel,
-            Double orientation,
-            Boolean transparent,
-            String bgcolor,
-            @BindParam("void-color") String voidColor,
-            @BindParam("void-transparent") Boolean voidTransparent,
-            String filter,
-            @BindParam("filter-lang") String filterLang,
-            @BindParam("filter-crs") String filterCrs) {
-
-        /**
-         * Maps are transparent unless asked otherwise, or unless a background color is given, which would otherwise
-         * never show (OGC API - Maps, {@code /req/background/transparent-definition} C and D).
-         */
-        boolean isTransparent() {
-            if (transparent != null) return transparent;
-            return bgcolor == null;
-        }
-
-        /**
-         * The area outside the valid area of the projection follows the map background, unless a void color is given,
-         * which would otherwise never show ({@code /req/background/void-transparent-definition} B).
-         */
-        boolean isVoidTransparent() {
-            if (voidTransparent != null) return voidTransparent;
-            if (voidColor != null) return false;
-            return isTransparent();
-        }
-
-        /**
-         * The query the feature info resource uses. The pixel comes from the same map, so every parameter shaping it is
-         * kept, with two exceptions: the output crs applies to the bbox too when no bbox-crs is given, and the
-         * orientation is dropped, the wms-core identifiers not being able to query a rotated map.
-         */
-        MapQuery forInfo() {
-            return new MapQuery(
-                    collections,
-                    bbox,
-                    bboxCrs != null ? bboxCrs : crs,
-                    subset,
-                    subsetCrs,
-                    center,
-                    centerCrs,
-                    crs,
-                    datetime,
-                    width,
-                    height,
-                    scaleDenominator,
-                    mmPerPixel,
-                    null,
-                    transparent,
-                    bgcolor,
-                    voidColor,
-                    voidTransparent,
-                    filter,
-                    filterLang,
-                    filterCrs);
-        }
-    }
-
     /** Fails with a 404 when the operation is disabled: its conformance class is not declared, so it must not exist. */
     private void checkEnabled(boolean enabled, String operation) {
         if (enabled) return;
@@ -726,7 +696,7 @@ public class MapsService {
             throw new APIException(
                     INVALID_PARAMETER_VALUE, "limit must be greater than zero, got " + limit, HttpStatus.BAD_REQUEST);
         }
-        GetMapRequest getMapRequest = toGetMapRequest(collections, styleId, "image/png", query.forInfo());
+        GetMapRequest getMapRequest = toGetMapRequest(collections, styleId, "image/png", query, true);
         // fills in the per layer default styles besides the bounds and the size: the identifiers render the map to
         // find the features under the pixel, so they need a style for every layer
         DefaultWebMapService.autoSetMissingProperties(getMapRequest);
@@ -862,13 +832,46 @@ public class MapsService {
         }
     }
 
+    /** The map extent, the time it is drawn at, and the subset the two came from, if any. */
+    private record MapExtent(ReferencedEnvelope region, String datetime, SubsetResult subset) {}
+
     private GetMapRequest toGetMapRequest(
-            List<PublishedInfo> collections, String styleId, String format, MapQuery query)
+            List<PublishedInfo> collections, String styleId, String format, MapQuery query, boolean featureInfo)
             throws IOException, FactoryException, ParseException {
         WMSInfo wmsInfo = getService();
         MapsConformance conf = MapsConformance.configuration(wmsInfo);
-        MapQuery q = ignoreDisabled(query, conf, wmsInfo);
+        MapQuery q = ignoreDisabled(query, conf, wmsInfo, featureInfo);
+        checkSizeAndScale(q, conf, wmsInfo);
 
+        String style = resolveStyle(collections, styleId);
+        StyleInfo styleInfo = style != null ? getCatalog().getStyleByName(style) : null;
+
+        GetMapRequest request = new GetMapRequest();
+        request.setBaseUrl(APIRequestInfo.get().getBaseURL());
+        request.setLayers(getMapLayers(collections));
+        if (styleInfo != null) request.setStyles(Arrays.asList(styleInfo.getStyle()));
+        request.setFormat(format);
+
+        MapExtent extent = applyExtent(q, conf, wmsInfo, request);
+        int[] size = resolveSize(q, extent.region(), request);
+        request.setWidth(size[0]);
+        request.setHeight(size[1]);
+        applyOrientation(q, request);
+        applyBackground(q, request);
+        applyDisplayResolution(q, request);
+        if (extent.datetime() != null) setupTimeSubset(extent.datetime(), request);
+
+        Map<String, String> rawKvp = rawKvp(q, collections, style, size, extent.datetime());
+        applyFilter(q, request);
+        if (extent.subset() != null && conf.generalSubsetting(wmsInfo)) {
+            applyExtraDimensions(extent.subset(), request, rawKvp);
+        }
+        request.setRawKvp(rawKvp);
+        return request;
+    }
+
+    /** Rejects the parameter combinations the scaling and display resolution classes declare invalid. */
+    private void checkSizeAndScale(MapQuery q, MapsConformance conf, WMSInfo wmsInfo) {
         // a viewport has at least one pixel per side (OGC API - Maps, Scaling, width/height requirement C)
         checkPositiveSize("width", q.width());
         checkPositiveSize("height", q.height());
@@ -883,37 +886,42 @@ public class MapsService {
 
         // scale-denominator with an explicit width/height is only defined when spatial subsetting is available
         // (OGC API - Maps, Scaling, scale-denominator requirement D)
-        boolean explicitSize = q.width() != null || q.height() != null;
-        if (q.scaleDenominator() != null && explicitSize && !conf.spatialSubsetting(wmsInfo)) {
+        if (q.scaleDenominator() != null && explicitSize(q) && !conf.spatialSubsetting(wmsInfo)) {
             rejectCombination("scale-denominator with width/height requires the spatial subsetting conformance class");
         }
+    }
 
-        // one collection resolves a style as the styled map resources do; several of them are drawn each in its own
-        // default style, which GetMapDefaults fills in, there being no single style covering unrelated schemas
-        PublishedInfo single = collections.size() == 1 ? collections.get(0) : null;
-        if (single != null) {
-            if (styleId != null) {
-                checkStyle(single, styleId);
-            } else if (single instanceof LayerInfo l) {
-                styleId = l.getDefaultStyle().prefixedName();
-            } else {
-                styleId = StyleDocument.DEFAULT_STYLE_NAME;
-            }
+    private static boolean explicitSize(MapQuery q) {
+        return q.width() != null || q.height() != null;
+    }
+
+    /**
+     * The style a map is drawn in. One collection resolves it as the styled map resources do; several of them are drawn
+     * each in its own default style, which GetMapDefaults fills in, there being no single style covering unrelated
+     * schemas.
+     */
+    private String resolveStyle(List<PublishedInfo> collections, String styleId) {
+        if (collections.size() != 1) return styleId;
+        PublishedInfo single = collections.get(0);
+        if (styleId != null) {
+            checkStyle(single, styleId);
+            return styleId;
         }
-        StyleInfo styleInfo = styleId != null ? getCatalog().getStyleByName(styleId) : null;
+        if (single instanceof LayerInfo l) return l.getDefaultStyle().prefixedName();
+        return StyleDocument.DEFAULT_STYLE_NAME;
+    }
 
-        GetMapRequest request = new GetMapRequest();
-        request.setBaseUrl(APIRequestInfo.get().getBaseURL());
-        request.setLayers(getMapLayers(collections));
-        if (styleInfo != null) request.setStyles(Arrays.asList(styleInfo.getStyle()));
-        request.setFormat(format);
-
+    /**
+     * Works out the area to draw from {@code bbox}, {@code subset} or {@code center}, reprojects it to the output CRS
+     * and sets it on the request, along with the CRS the map is delivered in.
+     */
+    private MapExtent applyExtent(MapQuery q, MapsConformance conf, WMSInfo wmsInfo, GetMapRequest request)
+            throws FactoryException, IOException {
         // accept the SafeCURIE/URN forms for the output CRS, but render in longitude/latitude like the rest of the
         // pipeline; the delivered axis order is reported back through the Content-Crs and Content-Bbox headers
         CoordinateReferenceSystem outputCrs =
                 q.crs() != null ? APIBBoxParser.toLonLat(APIBBoxParser.parseCRS(q.crs())) : null;
 
-        // area of interest: bbox, or subset spatial ranges, or a box built around a center point
         String datetime = q.datetime();
         ReferencedEnvelope region = q.bbox() != null ? parseSingleBBox(q.bbox(), q.bboxCrs()) : null;
         SubsetResult subset = q.subset() != null
@@ -932,16 +940,14 @@ public class MapsService {
             if (subset.envelope != null && conf.spatialSubsetting(wmsInfo)) region = subset.envelope;
             if (subset.time != null && conf.datetime(wmsInfo)) datetime = subset.time;
         }
-        Integer width = q.width();
-        Integer height = q.height();
         // a bbox or spatial subset is an explicit extent; center is not (it needs width/height and scale-denominator)
         boolean explicitExtent = region != null;
         if (region == null && q.center() != null) {
-            region = boundsAround(parseCenter(q), q, width, height);
-        } else if (region == null && q.scaleDenominator() != null && width != null && height != null) {
+            region = boundsAround(parseCenter(q), q, q.width(), q.height());
+        } else if (region == null && q.scaleDenominator() != null && q.width() != null && q.height() != null) {
             // no spatial subset at all: the scale and the image size define the extent, laid out around the middle
             // of the data (/req/scaling/scale-denominator-definition F)
-            region = boundsAround(dataCenter(request), q, width, height);
+            region = boundsAround(dataCenter(request), q, q.width(), q.height());
         }
         if (region != null
                 && outputCrs != null
@@ -957,7 +963,7 @@ public class MapsService {
             }
         }
         // width/height together with a bbox/subset extent and scale-denominator is spec invalid
-        if (q.scaleDenominator() != null && explicitSize && explicitExtent) {
+        if (q.scaleDenominator() != null && explicitSize(q) && explicitExtent) {
             rejectCombination("scale-denominator cannot be combined with width/height and a spatial extent");
         }
 
@@ -975,7 +981,13 @@ public class MapsService {
             request.setCrs(outputCrs);
             request.setSRS(CRS.toSRS(outputCrs));
         }
+        return new MapExtent(region, datetime, subset);
+    }
 
+    /** The image size in pixels: the requested one, what the scale denominator implies, or the shape of the area. */
+    private int[] resolveSize(MapQuery q, ReferencedEnvelope region, GetMapRequest request) {
+        Integer width = q.width();
+        Integer height = q.height();
         // scale-denominator sizes the image when width/height are not both given
         if ((width == null || height == null) && q.scaleDenominator() != null && region != null) {
             int[] size = sizeFromScale(region, q.scaleDenominator(), pixelSizeMeters(q));
@@ -986,61 +998,69 @@ public class MapsService {
         // defaults keep the CRS unit ratio instead, which deforms the map (/req/scaling/width-definition part H)
         if (width == null || height == null) {
             DefaultWebMapService.autoSetBoundsAndSize(request);
-            int[] size = sizeFromAspect(request, width, height);
-            width = size[0];
-            height = size[1];
+            return sizeFromAspect(request, width, height);
         }
-        if (width != null) request.setWidth(width);
-        if (height != null) request.setHeight(height);
-        if (q.orientation() != null) {
-            // a non finite rotation is not a valid orientation, and would silently render a broken map
-            if (!Double.isFinite(q.orientation()))
-                throw new APIException(
-                        INVALID_PARAMETER_VALUE, "Invalid orientation: " + q.orientation(), HttpStatus.BAD_REQUEST);
-            request.setAngle(q.orientation());
-        }
-        applyBackground(q, request);
-        applyDisplayResolution(q, request);
-        if (datetime != null) {
-            setupTimeSubset(datetime, request);
-        }
+        return new int[] {width, height};
+    }
 
-        Map<String, String> rawParamers = new LinkedHashMap<>();
-        if (q.bbox() != null) rawParamers.put("bbox", q.bbox());
-        if (q.crs() != null) rawParamers.put("crs", q.crs());
+    private void applyOrientation(MapQuery q, GetMapRequest request) {
+        if (q.orientation() == null) return;
+        // a non finite rotation is not a valid orientation, and would silently render a broken map
+        if (!Double.isFinite(q.orientation())) {
+            throw new APIException(
+                    INVALID_PARAMETER_VALUE, "Invalid orientation: " + q.orientation(), HttpStatus.BAD_REQUEST);
+        }
+        request.setAngle(q.orientation());
+    }
+
+    /**
+     * The raw KVP the WMS pipeline and the HTML preview read back: the parameters as the client wrote them, plus the
+     * layers, styles and size the request resolved to.
+     */
+    private Map<String, String> rawKvp(
+            MapQuery q, List<PublishedInfo> collections, String styleId, int[] size, String datetime) {
+        Map<String, String> raw = new LinkedHashMap<>();
+        if (q.bbox() != null) raw.put("bbox", q.bbox());
+        if (q.crs() != null) raw.put("crs", q.crs());
         // the rotation applied, kept for the Content-Orientation header
-        if (q.orientation() != null) rawParamers.put("orientation", String.valueOf(q.orientation()));
+        if (q.orientation() != null) raw.put("orientation", String.valueOf(q.orientation()));
         // the requested time, kept for the Content-Datetime header: the parsed value is a range even for an instant
-        if (datetime != null) rawParamers.put("time", datetime);
-        rawParamers.put("width", String.valueOf(width));
-        rawParamers.put("height", String.valueOf(height));
-        rawParamers.put(
-                "layers", collections.stream().map(PublishedInfo::prefixedName).collect(Collectors.joining(",")));
-        if (styleId != null) rawParamers.put("styles", styleId);
+        if (datetime != null) raw.put("time", datetime);
+        raw.put("width", String.valueOf(size[0]));
+        raw.put("height", String.valueOf(size[1]));
+        raw.put("layers", collections.stream().map(PublishedInfo::prefixedName).collect(Collectors.joining(",")));
+        if (styleId != null) raw.put("styles", styleId);
         // carried so that the HTML preview of a dataset map keeps rendering the collections that were asked for
-        if (q.collections() != null) rawParamers.put("collections", q.collections());
-        if (datetime != null) rawParamers.put("datetime", datetime);
-        // the attribute filter, combined with bbox, datetime and subset by AND (/req/filter/mixing-expressions):
-        // the renderer applies it on top of the spatial and dimension restrictions already set above
+        if (q.collections() != null) raw.put("collections", q.collections());
+        if (datetime != null) raw.put("datetime", datetime);
         if (q.filter() != null) {
-            Filter parsed = filterParser.parse(q.filter(), q.filterLang(), q.filterCrs());
-            checkFilterAttributes(parsed, request.getLayers());
-            request.setFilter(Collections.nCopies(request.getLayers().size(), parsed));
-            rawParamers.put("filter", q.filter());
-            if (q.filterLang() != null) rawParamers.put("filter-lang", q.filterLang());
+            raw.put("filter", q.filter());
+            if (q.filterLang() != null) raw.put("filter-lang", q.filterLang());
         }
-        if (subset != null && conf.generalSubsetting(wmsInfo)) {
-            applyExtraDimensions(subset, request, rawParamers);
-        }
-        request.setRawKvp(rawParamers);
-        return request;
+        return raw;
+    }
+
+    /**
+     * Applies the attribute filter, combined with bbox, datetime and subset by AND
+     * ({@code /req/filter/mixing-expressions}): the renderer applies it on top of the spatial and dimension
+     * restrictions already set on the request.
+     */
+    private void applyFilter(MapQuery q, GetMapRequest request) throws IOException {
+        if (q.filter() == null) return;
+        Filter parsed = filterParser.parse(q.filter(), q.filterLang(), q.filterCrs());
+        checkFilterAttributes(parsed, request.getLayers());
+        request.setFilter(Collections.nCopies(request.getLayers().size(), parsed));
     }
 
     /**
      * Returns a copy of the query with the parameters whose conformance class is disabled dropped to {@code null}.
      * According to OGC APIs, a parameter of an unsupported class is ignored, not rejected.
+     *
+     * @param featureInfo the query shapes a feature info request: the pixel comes from the same map, so the output crs
+     *     applies to the bbox too when no bbox-crs is given, and the orientation goes, the wms-core identifiers not
+     *     being able to query a rotated map
      */
-    private MapQuery ignoreDisabled(MapQuery q, MapsConformance conf, WMSInfo wms) {
+    private MapQuery ignoreDisabled(MapQuery q, MapsConformance conf, WMSInfo wms, boolean featureInfo) {
         boolean subsetting = conf.spatialSubsetting(wms);
         boolean scaling = conf.scaling(wms);
         // {@code width} and  {@code height} are supported by both the scaling and the spatial subsetting classes
@@ -1050,10 +1070,11 @@ public class MapsService {
         boolean anySubset = subsetting || conf.datetime(wms) || conf.generalSubsetting(wms);
         // the language is resolved here, so that the parser gets the same default the API document declares
         String filterLang = q.filter() != null ? filterLanguage(q.filterLang(), conf, wms) : null;
+        String bboxCrs = q.bboxCrs() == null && featureInfo ? q.crs() : q.bboxCrs();
         return new MapQuery(
                 conf.collectionsSelection(wms) ? q.collections() : null,
                 subsetting ? q.bbox() : null,
-                subsetting ? q.bboxCrs() : null,
+                subsetting ? bboxCrs : null,
                 anySubset ? q.subset() : null,
                 subsetting ? q.subsetCrs() : null,
                 subsetting ? q.center() : null,
@@ -1064,7 +1085,7 @@ public class MapsService {
                 size ? q.height() : null,
                 scaling ? q.scaleDenominator() : null,
                 conf.displayResolution(wms) ? q.mmPerPixel() : null,
-                conf.orientation(wms) ? q.orientation() : null,
+                conf.orientation(wms) && !featureInfo ? q.orientation() : null,
                 q.transparent(),
                 conf.background(wms) ? q.bgcolor() : null,
                 conf.background(wms) ? q.voidColor() : null,

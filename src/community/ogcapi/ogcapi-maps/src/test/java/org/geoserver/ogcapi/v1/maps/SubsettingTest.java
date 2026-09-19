@@ -68,6 +68,27 @@ public class SubsettingTest extends MapsTestSupport {
     }
 
     /**
+     * The spatial subset grammar takes numbers only, so a bound that is not one, the open bound {@code *} included, is
+     * a client error and not a server failure.
+     */
+    @Test
+    public void testNonNumericSpatialBoundsRejected() throws Exception {
+        for (String subset : new String[] {"Lon(abc:2),Lat(0:2)", "Lon(0:2),Lat(0:*)", "Lon(*),Lat(0:2)"}) {
+            DocumentContext json = getAsJSONPath(MAP + "&subset=" + subset, 400);
+            assertEquals(subset, APIException.INVALID_PARAMETER_VALUE, json.read("type"));
+            assertThat(json.read("title"), containsString("a number is expected"));
+        }
+    }
+
+    /** A centre ordinate that is not a number is a client error, like a subset bound. */
+    @Test
+    public void testNonNumericCenterRejected() throws Exception {
+        DocumentContext json = getAsJSONPath(MAP + "&center=abc,10&scale-denominator=100000", 400);
+        assertEquals(APIException.INVALID_PARAMETER_VALUE, json.read("type"));
+        assertThat(json.read("title"), containsString("Invalid center value"));
+    }
+
+    /**
      * /conf/spatial-subsetting/subset-definition B: the vertical axis, h for a geographic CRS and z for a projected
      * one. A map is flat, so it selects on the elevation dimension of the collection.
      */

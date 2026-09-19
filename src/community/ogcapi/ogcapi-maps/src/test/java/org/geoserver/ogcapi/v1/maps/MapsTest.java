@@ -6,7 +6,6 @@ package org.geoserver.ogcapi.v1.maps;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
@@ -16,7 +15,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -30,28 +28,16 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 public class MapsTest extends MapsTestSupport {
 
-    static final String NATURE_GROUP = "nature";
-
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        // a layer group with default styling, to exercise the default map on a group; tighten the
-        // forests bounds too, so the group extent matches the actual data instead of the world
+        // tighten the forests bounds, so the group extent matches the actual data instead of the world
         Catalog catalog = getCatalog();
-        CatalogBuilder cb = new CatalogBuilder(catalog);
-        LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
-        LayerInfo forests = catalog.getLayerByName(getLayerId(MockData.FORESTS));
-        cb.setupBounds(forests.getResource());
+        LayerInfo forests = layer(MockData.FORESTS);
+        new CatalogBuilder(catalog).setupBounds(forests.getResource());
         catalog.save(forests.getResource());
-        LayerGroupInfo group = catalog.getFactory().createLayerGroup();
-        group.setName(NATURE_GROUP);
-        group.getLayers().add(lakes);
-        group.getLayers().add(forests);
-        group.getStyles().add(null);
-        group.getStyles().add(null);
-        cb.calculateLayerGroupBounds(group);
-        catalog.add(group);
+        addNatureGroup(NATURE_GROUP);
     }
 
     @Test
@@ -351,10 +337,8 @@ public class MapsTest extends MapsTestSupport {
 
     @Test
     public void testUnknownCollectionRejected() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse("ogc/maps/v1/collections/ThisDoesNotExist/map?f=image/png&width=50&height=50");
-        assertThat(response.getStatus(), greaterThanOrEqualTo(400));
-        assertThat(response.getContentAsString(), containsString("ThisDoesNotExist"));
+        assertInvalidParameter(
+                "ogc/maps/v1/collections/ThisDoesNotExist/map?f=image/png&width=50&height=50", "ThisDoesNotExist");
     }
 
     /**
@@ -440,10 +424,7 @@ public class MapsTest extends MapsTestSupport {
 
     /** Features the info resource reports at the north-east quadrant pixel of the time enabled layer. */
     private int northEastFeatures(String query) throws Exception {
-        DocumentContext json = getAsJSONPath(
-                "ogc/maps/v1/collections/sf:TimeWithStartEnd/map/info?f=application%2Fjson&width=40&height=40"
-                        + "&bbox=-180,-90,180,90&i=30&j=10&" + query.replace("\"", "%22"),
-                200);
+        DocumentContext json = getAsJSONPath(quadrantInfoUrl(query.replace("\"", "%22")), 200);
         return json.read("$.numberReturned", Integer.class);
     }
 
@@ -452,9 +433,7 @@ public class MapsTest extends MapsTestSupport {
      * requested transparent, so alpha 0 means the query selected no data for that quadrant.
      */
     private int northEastPixel(String timeQuery) throws Exception {
-        String path = "ogc/maps/v1/collections/sf:TimeWithStartEnd/map?f=image/png&width=40&height=40"
-                + "&bbox=-180,-90,180,90&transparent=true&" + timeQuery.replace("\"", "%22");
-        return getAsPNG(path).getRGB(30, 10);
+        return quadrantMap(timeQuery.replace("\"", "%22")).getRGB(NE[0], NE[1]);
     }
 
     @Test
@@ -516,12 +495,7 @@ public class MapsTest extends MapsTestSupport {
 
     @Test
     public void testInfoInvalidLimitRejected() throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(GROUP_INFO + "&limit=-1");
-        assertEquals(400, response.getStatus());
-        assertEquals("application/json", getBaseMimeType(response.getContentType()));
-        DocumentContext json = getAsJSONPath(response);
-        assertEquals("InvalidParameterValue", json.read("type"));
-        assertThat(json.read("title"), containsString("limit"));
+        assertInvalidParameter(GROUP_INFO + "&limit=-1", "limit");
     }
 
     @Test
@@ -544,7 +518,7 @@ public class MapsTest extends MapsTestSupport {
     @Test
     public void testHTMLNoDatetime() throws Exception {
         setupStartEndTimeDimension(TIME_WITH_START_END, "time", "startTime", "endTime");
-        // failed here when no datetime provided, FTL processing error, null on js_string
+        // a time enabled collection with no datetime in the request: the template has no value to write out
         Document document = getAsJSoup("ogc/maps/v1/collections/sf:TimeWithStartEnd/styles/Default/map?f=html");
         assertNull(getParameterValue(document, "datetime"));
     }

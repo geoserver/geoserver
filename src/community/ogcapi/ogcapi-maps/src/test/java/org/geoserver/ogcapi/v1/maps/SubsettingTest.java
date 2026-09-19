@@ -11,11 +11,9 @@ import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
-import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.APIException;
-import org.geoserver.wms.WMSInfo;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -75,29 +73,26 @@ public class SubsettingTest extends MapsTestSupport {
      */
     @Test
     public void testVerticalAxisAliases() throws Exception {
-        String base = "ogc/maps/v1/collections/sf:TimeWithStartEnd/map/info?f=application%2Fjson"
-                + "&width=40&height=40&bbox=-180,-90,180,90&i=30&j=10&subset=";
         // the elevation range of the north east quadrant feature, named through each accepted spelling
         for (String axis : new String[] {"elevation", "h", "H", "z", "Z"}) {
             assertEquals(
                     "subset=" + axis,
                     Integer.valueOf(1),
-                    getAsJSONPath(base + axis + "(1:3)", 200).read("$.numberReturned", Integer.class));
+                    getAsJSONPath(quadrantInfoUrl("subset=" + axis + "(1:3)"), 200)
+                            .read("$.numberReturned", Integer.class));
         }
     }
 
     /** /conf/datetime/subset-definition B and C: the time axis, and the aliases the standard recommends for it. */
     @Test
     public void testTimeAxisAliases() throws Exception {
-        String base = "ogc/maps/v1/collections/sf:TimeWithStartEnd/map/info?f=application%2Fjson"
-                + "&width=40&height=40&bbox=-180,-90,180,90&i=30&j=10&subset=";
         setupStartEndTimeDimension(TIME_WITH_START_END, "time", "startTime", "endTime");
         for (String axis : new String[] {"time", "Time", "TIME", "t", "T"}) {
             // the single first instant leaves the north east quadrant feature out
             assertEquals(
                     "subset=" + axis,
                     Integer.valueOf(0),
-                    getAsJSONPath(base + axis + "(%222012-02-11T00:00:00Z%22)", 200)
+                    getAsJSONPath(quadrantInfoUrl("subset=" + axis + "(%222012-02-11T00:00:00Z%22)"), 200)
                             .read("$.numberReturned", Integer.class));
         }
     }
@@ -176,7 +171,7 @@ public class SubsettingTest extends MapsTestSupport {
      */
     @Test
     public void testSubsetOutsideAxisRangeNotFoundWhenCiteCompliant() throws Exception {
-        withCiteCompliance(true, () -> {
+        withWms(wms -> wms.setCiteCompliant(true), () -> {
             for (String subset : new String[] {"Lat(200:300)", "Lat(-300:-200)", "Lat(95)"}) {
                 MockHttpServletResponse response = getAsServletResponse(MAP + "&subset=" + subset);
                 assertEquals(subset, 404, response.getStatus());
@@ -211,8 +206,8 @@ public class SubsettingTest extends MapsTestSupport {
      */
     @Test
     public void testSubsetOutsideAxisRangeIgnoredWithoutSpatialSubsetting() throws Exception {
-        withCiteCompliance(
-                true,
+        withWms(
+                wms -> wms.setCiteCompliant(true),
                 () -> withConformance(
                         MapsConformance::setSpatialSubsetting,
                         false,
@@ -242,21 +237,6 @@ public class SubsettingTest extends MapsTestSupport {
                         MapsConformance::setDatetime,
                         false,
                         () -> withConformance(MapsConformance::setGeneralSubsetting, false, body)));
-    }
-
-    /** Runs the body with the CITE compliance flag set, restoring the previous value afterwards. */
-    private void withCiteCompliance(boolean citeCompliant, ThrowingRunnable body) throws Exception {
-        GeoServer gs = getGeoServer();
-        WMSInfo wms = gs.getService(WMSInfo.class);
-        boolean previous = wms.isCiteCompliant();
-        wms.setCiteCompliant(citeCompliant);
-        gs.save(wms);
-        try {
-            body.run();
-        } finally {
-            wms.setCiteCompliant(previous);
-            gs.save(wms);
-        }
     }
 
     /**

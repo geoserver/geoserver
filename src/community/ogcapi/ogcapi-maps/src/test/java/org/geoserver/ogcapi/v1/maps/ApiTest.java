@@ -6,8 +6,10 @@ package org.geoserver.ogcapi.v1.maps;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.in;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
@@ -19,40 +21,19 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.Schema;
 import java.util.List;
 import java.util.Set;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.config.GeoServer;
-import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.SwaggerJSONAPIMessageConverter;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSInfo;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class ApiTest extends MapsTestSupport {
 
-    static final String NATURE_GROUP = "nature";
-
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         // a layer group is a valid Maps collection and must appear in the collectionId enum
-        Catalog catalog = getCatalog();
-        LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
-        LayerGroupInfo group = catalog.getFactory().createLayerGroup();
-        group.setName(NATURE_GROUP);
-        group.getLayers().add(lakes);
-        group.getStyles().add(null);
-        new CatalogBuilder(catalog).calculateLayerGroupBounds(group);
-        catalog.add(group);
-    }
-
-    @Test
-    public void testCollectionIdEnumIncludesLayerGroups() throws Exception {
-        assertThat(enumOf(readApi(), "collectionId"), hasItems("cite:Lakes", NATURE_GROUP));
+        addNatureGroup(NATURE_GROUP);
     }
 
     /** The enum offers what the collections resource lists, so a layer no map can draw is not in it. */
@@ -89,7 +70,7 @@ public class ApiTest extends MapsTestSupport {
                         "/map",
                         "/map/info"));
         // styled dataset maps and map tilesets are intentionally out of scope
-        assertThat(api.getPaths().keySet(), not(hasItems("/styles/{styleId}/map", "/map/tiles")));
+        assertThat(api.getPaths().keySet(), everyItem(not(in(List.of("/styles/{styleId}/map", "/map/tiles")))));
         assertThat(enumOf(api, "f-map"), hasItems("image/png", "image/jpeg", "image/tiff"));
         assertThat(enumOf(api, "collectionId"), hasItems("cite:Lakes", NATURE_GROUP));
     }
@@ -108,7 +89,7 @@ public class ApiTest extends MapsTestSupport {
     public void testDatasetMapPathsDisabled() throws Exception {
         withConformance(MapsConformance::setDatasetMap, false, () -> {
             OpenAPI api = readApi();
-            assertThat(api.getPaths().keySet(), not(hasItems("/map", "/map/info")));
+            assertThat(api.getPaths().keySet(), everyItem(not(in(List.of("/map", "/map/info")))));
         });
     }
 
@@ -182,24 +163,18 @@ public class ApiTest extends MapsTestSupport {
         assertThat(map200Formats(api), hasItems("image/png", "image/jpeg", "image/tiff"));
         assertThat(enumOf(api, "f-map"), not(hasItem("image/svg+xml")));
         // the whole WMS catalog must not leak in
-        assertThat(enumOf(api, "f-map"), not(hasItems("application/pdf", "image/gif", "application/json")));
+        assertThat(
+                enumOf(api, "f-map"), everyItem(not(in(List.of("application/pdf", "image/gif", "application/json")))));
     }
 
     /** SVG becomes an offered encoding once the service is configured with the conformant Batik renderer. */
     @Test
     public void testSvgOfferedWithBatikRenderer() throws Exception {
-        GeoServer gs = getGeoServer();
-        WMSInfo wms = gs.getService(WMSInfo.class);
-        wms.getMetadata().put("svgRenderer", WMS.SVG_BATIK);
-        gs.save(wms);
-        try {
+        withWms(wms -> wms.getMetadata().put("svgRenderer", WMS.SVG_BATIK), () -> {
             OpenAPI api = readApi();
             assertThat(enumOf(api, "f-map"), hasItem("image/svg+xml"));
             assertThat(map200Formats(api), hasItem("image/svg+xml"));
-        } finally {
-            wms.getMetadata().remove("svgRenderer");
-            gs.save(wms);
-        }
+        });
     }
 
     @Test
@@ -210,27 +185,23 @@ public class ApiTest extends MapsTestSupport {
                 () -> withConformance(MapsConformance::setSvg, false, () -> {
                     OpenAPI api = readApi();
                     assertThat(enumOf(api, "f-map"), hasItems("image/png", "image/jpeg"));
-                    assertThat(enumOf(api, "f-map"), not(hasItems("image/tiff", "image/svg+xml")));
-                    assertThat(map200Formats(api), not(hasItems("image/tiff", "image/svg+xml")));
+                    assertThat(enumOf(api, "f-map"), everyItem(not(in(List.of("image/tiff", "image/svg+xml")))));
+                    assertThat(map200Formats(api), everyItem(not(in(List.of("image/tiff", "image/svg+xml")))));
                 }));
     }
 
     @Test
     public void testMapFormatsHonorWmsConfiguration() throws Exception {
-        GeoServer gs = getGeoServer();
-        WMSInfo wms = gs.getService(WMSInfo.class);
-        wms.setGetMapMimeTypeCheckingEnabled(true);
-        wms.getGetMapMimeTypes().add("image/png");
-        gs.save(wms);
-        try {
-            List<String> formats = enumOf(readApi(), "f-map");
-            assertThat(formats, hasItems("image/png"));
-            assertThat(formats, not(hasItems("image/jpeg", "image/tiff", "image/svg+xml")));
-        } finally {
-            wms.setGetMapMimeTypeCheckingEnabled(false);
-            wms.getGetMapMimeTypes().clear();
-            gs.save(wms);
-        }
+        withWms(
+                wms -> {
+                    wms.setGetMapMimeTypeCheckingEnabled(true);
+                    wms.getGetMapMimeTypes().add("image/png");
+                },
+                () -> {
+                    List<String> formats = enumOf(readApi(), "f-map");
+                    assertThat(formats, hasItems("image/png"));
+                    assertThat(formats, everyItem(not(in(List.of("image/jpeg", "image/tiff", "image/svg+xml")))));
+                });
     }
 
     @Test
@@ -239,7 +210,7 @@ public class ApiTest extends MapsTestSupport {
         withConformance(MapsConformance::setScaling, false, () -> {
             List<String> params = mapParamRefs(readApi());
             assertThat(params, hasItems("#/components/parameters/width", "#/components/parameters/height"));
-            assertThat(params, not(hasItems("#/components/parameters/scale-denominator")));
+            assertThat(params, not(hasItem("#/components/parameters/scale-denominator")));
         });
     }
 
@@ -251,7 +222,9 @@ public class ApiTest extends MapsTestSupport {
                 () -> withConformance(MapsConformance::setSpatialSubsetting, false, () -> {
                     List<String> params = mapParamRefs(readApi());
                     assertThat(
-                            params, not(hasItems("#/components/parameters/width", "#/components/parameters/height")));
+                            params,
+                            everyItem(not(
+                                    in(List.of("#/components/parameters/width", "#/components/parameters/height")))));
                 }));
     }
 
@@ -273,21 +246,17 @@ public class ApiTest extends MapsTestSupport {
 
     @Test
     public void testInfoFormatsHonorWmsConfiguration() throws Exception {
-        GeoServer gs = getGeoServer();
-        WMSInfo wms = gs.getService(WMSInfo.class);
-        wms.setGetFeatureInfoMimeTypeCheckingEnabled(true);
-        wms.getGetFeatureInfoMimeTypes().add("application/json");
-        gs.save(wms);
-        try {
-            List<String> formats = enumOf(readApi(), "f-info");
-            assertThat(formats, hasItems("application/json"));
-            // text/html is a WMS GetFeatureInfo format now disallowed, so it must be dropped
-            assertThat(formats, not(hasItems("text/html")));
-        } finally {
-            wms.setGetFeatureInfoMimeTypeCheckingEnabled(false);
-            wms.getGetFeatureInfoMimeTypes().clear();
-            gs.save(wms);
-        }
+        withWms(
+                wms -> {
+                    wms.setGetFeatureInfoMimeTypeCheckingEnabled(true);
+                    wms.getGetFeatureInfoMimeTypes().add("application/json");
+                },
+                () -> {
+                    List<String> formats = enumOf(readApi(), "f-info");
+                    assertThat(formats, hasItems("application/json"));
+                    // text/html is a WMS GetFeatureInfo format now disallowed, so it must be dropped
+                    assertThat(formats, not(hasItem("text/html")));
+                });
     }
 
     private OpenAPI readApi() throws Exception {
@@ -314,7 +283,7 @@ public class ApiTest extends MapsTestSupport {
     public void testFeatureInfoPathRemovedWhenDisabled() throws Exception {
         withConformance(MapsConformance::setFeatureInfo, false, () -> {
             OpenAPI api = readApi();
-            assertThat(api.getPaths().keySet(), not(hasItems("/collections/{collectionId}/map/info")));
+            assertThat(api.getPaths().keySet(), not(hasItem("/collections/{collectionId}/map/info")));
         });
     }
 
@@ -342,16 +311,17 @@ public class ApiTest extends MapsTestSupport {
             OpenAPI api = readApi();
             assertThat(
                     mapParamRefs(api),
-                    not(hasItems(
+                    everyItem(not(in(List.of(
                             "#/components/parameters/filter",
                             "#/components/parameters/filter-lang",
-                            "#/components/parameters/filter-crs")));
-            assertThat(paramRefs(api, "/collections/{collectionId}/map/info"), not(hasItems("filter")));
+                            "#/components/parameters/filter-crs")))));
+            assertThat(paramRefs(api, "/collections/{collectionId}/map/info"), not(hasItem("filter")));
             // the definitions are gone too, nothing is left declaring the parameters
             assertThat(
-                    api.getComponents().getParameters().keySet(), not(hasItems("filter", "filter-lang", "filter-crs")));
+                    api.getComponents().getParameters().keySet(),
+                    everyItem(not(in(List.of("filter", "filter-lang", "filter-crs")))));
             // the queryables only describe what the filter accepts, so the resource goes with it
-            assertThat(api.getPaths().keySet(), not(hasItems("/collections/{collectionId}/queryables")));
+            assertThat(api.getPaths().keySet(), not(hasItem("/collections/{collectionId}/queryables")));
         });
     }
 
@@ -361,7 +331,7 @@ public class ApiTest extends MapsTestSupport {
                 MapsConformance::setQueryables,
                 false,
                 () -> assertThat(
-                        readApi().getPaths().keySet(), not(hasItems("/collections/{collectionId}/queryables"))));
+                        readApi().getPaths().keySet(), not(hasItem("/collections/{collectionId}/queryables"))));
     }
 
     @Test
@@ -369,9 +339,9 @@ public class ApiTest extends MapsTestSupport {
         withConformance(MapsConformance::setLegend, false, () -> {
             assertThat(
                     readApi().getPaths().keySet(),
-                    not(hasItems(
+                    everyItem(not(in(List.of(
                             "/collections/{collectionId}/legend",
-                            "/collections/{collectionId}/styles/{styleId}/legend")));
+                            "/collections/{collectionId}/styles/{styleId}/legend")))));
         });
     }
 }

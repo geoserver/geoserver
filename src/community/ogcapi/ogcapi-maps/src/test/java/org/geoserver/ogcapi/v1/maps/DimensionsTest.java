@@ -43,12 +43,6 @@ public class DimensionsTest extends MapsTestSupport {
 
     private static final String CRS_5030 = "http://www.opengis.net/def/crs/EPSG/0/5030";
 
-    // sf:TimeWithStartEnd has three features keyed by startElevation, one per world quadrant:
-    // f0 startElevation=1.0 -> NW, f1 startElevation=2.0 -> NE, f2 startElevation=1.0 -> SW. Pixels in a 50x50 map:
-    private static final int[] NE = {37, 12};
-    private static final int[] NW = {12, 12};
-    private static final int[] SW = {12, 37};
-
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -112,6 +106,19 @@ public class DimensionsTest extends MapsTestSupport {
         assertEquals(2.0, (double) json.read("$.extent.custom.interval[0][1]"), 0d);
         assertEquals(List.of(1.0, 2.0), json.read("$.extent.custom.grid.coordinates"));
         assertEquals(CollectionDocument.UNKNOWN_DEFINITION, json.read("$.extent.custom.definition"));
+    }
+
+    /** A disabled dimension is configuration the client cannot use, so the collection must not advertise it. */
+    @Test
+    public void testDisabledVectorCustomDimensionNotAdvertised() throws Exception {
+        setupDimension(TIME_WITH_START_END, "dim_custom", "startElevation", DimensionPresentation.LIST, null);
+        FeatureTypeInfo info = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
+        ((DimensionInfo) info.getMetadata().get("dim_custom")).setEnabled(false);
+        getCatalog().save(info);
+
+        DocumentContext json = getAsJSONPath("ogc/maps/v1/collections/sf:TimeWithStartEnd", 200);
+        Map<String, Object> extent = json.read("$.extent");
+        assertFalse(extent.containsKey("custom"));
     }
 
     @Test
@@ -369,18 +376,8 @@ public class DimensionsTest extends MapsTestSupport {
     public void testUnknownSubsetAxisRejected() throws Exception {
         // Lakes has no such dimension; the subset parameter is known but the axis name is not a valid value, so the
         // spec mandates a 4xx (/req/general-subsetting/subset-definition)
-        MockHttpServletResponse response = getAsServletResponse(
-                "ogc/maps/v1/collections/Lakes/map?f=image/png&subset=Depth(1:2)&width=50&height=50");
-        assertEquals(400, response.getStatus());
-        assertEquals("application/json", getBaseMimeType(response.getContentType()));
-        DocumentContext json = JsonPath.parse(response.getContentAsString());
-        assertEquals("InvalidParameterValue", json.read("type"));
-        assertThat(json.read("title"), containsString("Depth"));
-    }
-
-    private BufferedImage quadrantMap(String subset) throws Exception {
-        return getAsPNG(
-                "ogc/maps/v1/collections/sf:TimeWithStartEnd/map?f=image/png&" + subset + "&width=50&height=50");
+        assertInvalidParameter(
+                "ogc/maps/v1/collections/Lakes/map?f=image/png&subset=Depth(1:2)&width=50&height=50", "Depth");
     }
 
     private void setupDimension(

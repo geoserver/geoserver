@@ -22,7 +22,6 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -34,7 +33,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CollectionTest extends MapsTestSupport {
 
-    private static final String NATURE_GROUP = "NATURE";
+    /** An uppercase group name, the collection identifier must come back exactly as configured. */
+    private static final String UPPERCASE_GROUP = "NATURE";
+
     private static final String NATURE_TITLE = "I love nature";
 
     @Override
@@ -44,24 +45,12 @@ public class CollectionTest extends MapsTestSupport {
 
         // compute tight bounds for Lakes
         FeatureTypeInfo lakesType = catalog.getFeatureTypeByName(getLayerId(MockData.LAKES));
-        CatalogBuilder cb = new CatalogBuilder(catalog);
-        cb.setupBounds(lakesType);
+        new CatalogBuilder(catalog).setupBounds(lakesType);
         catalog.save(lakesType);
 
-        // create layer group
-        LayerGroupInfo group = catalog.getFactory().createLayerGroup();
-        LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
-        LayerInfo forests = catalog.getLayerByName(getLayerId(MockData.FORESTS));
-        if (lakes != null && forests != null) {
-            group.setName(NATURE_GROUP);
-            group.setTitle(NATURE_TITLE);
-            group.getLayers().add(lakes);
-            group.getLayers().add(forests);
-            group.getStyles().add(null);
-            group.getStyles().add(null);
-            cb.calculateLayerGroupBounds(group);
-            catalog.add(group);
-        }
+        LayerGroupInfo group = addNatureGroup(UPPERCASE_GROUP);
+        group.setTitle(NATURE_TITLE);
+        catalog.save(group);
     }
 
     @Test
@@ -145,7 +134,7 @@ public class CollectionTest extends MapsTestSupport {
 
     @Test
     public void testLayerGroupJson() throws Exception {
-        DocumentContext json = getAsJSONPath("ogc/maps/v1/collections/" + NATURE_GROUP, 200);
+        DocumentContext json = getAsJSONPath("ogc/maps/v1/collections/" + UPPERCASE_GROUP, 200);
         testNatureJson(json);
     }
 

@@ -184,7 +184,7 @@ public class CollectionsTest extends MapsTestSupport {
     @Test
     public void testVersionHeader() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("ogc/maps/v1/collections?f=html");
-        assertTrue(headerHasValue(response, "API-Version", "1.0.1"));
+        assertEquals("1.0.1", response.getHeader("API-Version"));
     }
 
     /** Every layer of the test data is a collection, apart from the geometryless one, which cannot be drawn. */

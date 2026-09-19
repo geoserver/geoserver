@@ -10,12 +10,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.jayway.jsonpath.DocumentContext;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.TimeZone;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
@@ -25,12 +27,17 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.ogcapi.APIException;
+import org.geoserver.ogcapi.CQL2Conformance;
+import org.geoserver.ogcapi.ECQLConformance;
 import org.geoserver.ogcapi.OGCApiTestSupport;
 import org.geoserver.wms.WMSInfo;
 import org.junit.BeforeClass;
@@ -116,6 +123,34 @@ public class MapsTestSupport extends OGCApiTestSupport {
         }
     }
 
+    /**
+     * Applies a change to the WMS service configuration, runs the body, and always restores the stock configuration
+     * afterwards, whatever the body did.
+     */
+    protected void withWms(Consumer<WMSInfo> mutation, ThrowingRunnable body) throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        mutation.accept(wms);
+        gs.save(wms);
+        try {
+            body.run();
+        } finally {
+            revertService(WMSInfo.class, null);
+        }
+    }
+
+    /** Runs the body with every filter language conformance class turned off, so no filter can be parsed. */
+    protected void withFilterLanguagesDisabled(ThrowingRunnable body) throws Exception {
+        withWms(
+                wms -> {
+                    CQL2Conformance cql2 = CQL2Conformance.configuration(wms);
+                    cql2.setText(false);
+                    cql2.setJSON(false);
+                    ECQLConformance.configuration(wms).setText(false);
+                },
+                body);
+    }
+
     /** Asserts the request returns a 400 whose error body names the offending parameter. */
     protected void assertBadRequestMentions(String url, String parameter) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(url);
@@ -123,7 +158,17 @@ public class MapsTestSupport extends OGCApiTestSupport {
         assertThat(response.getContentAsString(), containsString(parameter));
     }
 
-    /** Reads a map or legend response as PNG, checking the media type and the encoded bytes. */
+    /**
+     * Asserts the request fails as an invalid parameter value, with a message naming what the client got wrong, and
+     * returns the error document for any further assertion.
+     */
+    protected DocumentContext assertInvalidParameter(String url, String expectedMessagePart) throws Exception {
+        DocumentContext json = getAsJSONPath(url, 400);
+        assertEquals(APIException.INVALID_PARAMETER_VALUE, json.read("type"));
+        assertThat(json.read("title", String.class), containsString(expectedMessagePart));
+        return json;
+    }
+
     /** Opaque colours as {@link java.awt.image.BufferedImage#getRGB} returns them, alpha in the high byte. */
     protected static final int RED = 0xFFFF0000;
 
@@ -145,6 +190,18 @@ public class MapsTestSupport extends OGCApiTestSupport {
     /** Red with a zero alpha channel: the colour a transparent map keeps under the alpha. */
     protected static final int TRANSPARENT_RED = 0x00FF0000;
 
+    /** The fill the default Lakes style gives Blue Lake. */
+    protected static final int LAKE_BLUE = 0xFF4040C0;
+
+    /** A pixel inside Blue Lake, in a 100x100 map of {@link #LAKE_WINDOW}. */
+    protected static final int LAKE_X = 50;
+
+    protected static final int LAKE_Y = 64;
+
+    /** A window tight on the CITE data, where Blue Lake and several other test layers hold features. */
+    protected static final String LAKE_WINDOW = "bbox=-0.002,-0.003,0.005,0.002&width=100&height=100";
+
+    /** Reads a map or legend response as PNG, checking the media type and the encoded bytes. */
     protected BufferedImage getAsPNG(String path) throws Exception {
         return readImage(getAsServletResponse(path), "image/png", "png");
     }
@@ -225,6 +282,71 @@ public class MapsTestSupport extends OGCApiTestSupport {
     /** Asserts the pixel at the given x,y was left empty. */
     protected static void assertTransparent(BufferedImage image, int[] xy) {
         assertEquals("expected no data at " + xy[0] + "," + xy[1], 0, alpha(image, xy[0], xy[1]));
+    }
+
+    /** All the pixels of an image, row by row, as ARGB values. */
+    protected static int[] pixels(BufferedImage image) {
+        return image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
+    }
+
+    /**
+     * sf:TimeWithStartEnd holds three features, one per world quadrant: {@code startElevation=1.0} covers NW and SW,
+     * {@code startElevation=2.0} covers NE, and only NE carries the second timestamp. The pixels below sit inside each
+     * quadrant of a 50x50 map of the whole world, so a selection that drops a feature leaves its quadrant empty.
+     */
+    protected static final int[] NE = {37, 12};
+
+    protected static final int[] NW = {12, 12};
+
+    protected static final int[] SW = {12, 37};
+
+    /** A 50x50 transparent map of the whole world over sf:TimeWithStartEnd, with the given extra query string. */
+    protected static String quadrantMapUrl(String query) {
+        return "ogc/maps/v1/collections/sf:TimeWithStartEnd/map?f=image/png&width=50&height=50"
+                + "&bbox=-180,-90,180,90&transparent=true"
+                + (query.isEmpty() ? "" : "&" + query);
+    }
+
+    /** The map {@link #quadrantMapUrl} describes, decoded. */
+    protected BufferedImage quadrantMap(String query) throws Exception {
+        return getAsPNG(quadrantMapUrl(query));
+    }
+
+    /** A feature info request on the {@link #NE} pixel of the very same map. */
+    protected static String quadrantInfoUrl(String query) {
+        return "ogc/maps/v1/collections/sf:TimeWithStartEnd/map/info?f=application%2Fjson&width=50&height=50"
+                + "&bbox=-180,-90,180,90&i=" + NE[0] + "&j=" + NE[1]
+                + (query.isEmpty() ? "" : "&" + query);
+    }
+
+    /** Creates and saves a layer group with the given contents, each in its default style. */
+    protected LayerGroupInfo addLayerGroup(String name, LayerGroupInfo.Mode mode, PublishedInfo... contents)
+            throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group = catalog.getFactory().createLayerGroup();
+        group.setName(name);
+        if (mode != null) group.setMode(mode);
+        for (PublishedInfo content : contents) {
+            group.getLayers().add(content);
+            group.getStyles().add(null);
+        }
+        new CatalogBuilder(catalog).calculateLayerGroupBounds(group);
+        catalog.add(group);
+        // the catalog copy, the only one that can be modified and saved again
+        return catalog.getLayerGroupByName(name);
+    }
+
+    /** The name most tests give the Lakes and Forests layer group. */
+    protected static final String NATURE_GROUP = "nature";
+
+    /** A layer group of Lakes drawn below Forests, both in their default style. */
+    protected LayerGroupInfo addNatureGroup(String name) throws Exception {
+        return addLayerGroup(name, null, layer(MockData.LAKES), layer(MockData.FORESTS));
+    }
+
+    /** The catalog layer publishing a test data type. */
+    protected LayerInfo layer(QName typeName) {
+        return getCatalog().getLayerByName(getLayerId(typeName));
     }
 
     protected void setupStartEndTimeDimension(QName typeName, String dimension, String start, String end) {

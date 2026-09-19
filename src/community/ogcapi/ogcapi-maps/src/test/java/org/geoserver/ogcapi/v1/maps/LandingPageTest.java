@@ -9,10 +9,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.jayway.jsonpath.DocumentContext;
-import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.platform.Service;
-import org.geoserver.wms.WMSInfo;
 import org.geotools.util.Version;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
@@ -67,7 +65,6 @@ public class LandingPageTest extends MapsTestSupport {
     @Test
     public void testLandingPageYaml() throws Exception {
         String yaml = getAsString("ogc/maps/v1?f=application/yaml");
-        // System.out.println(yaml);
         DocumentContext json = convertYamlToJsonPath(yaml);
         assertJSONList(
                 json, "links[?(@.type == 'application/yaml' && @.href =~ /.*ogc\\/maps\\/v1\\/\\?.*/)].rel", "self");
@@ -134,16 +131,9 @@ public class LandingPageTest extends MapsTestSupport {
 
     @Test
     public void testDisabledService() throws Exception {
-        GeoServer gs = getGeoServer();
-        WMSInfo service = gs.getService(WMSInfo.class);
-        service.setEnabled(false);
-        gs.save(service);
-        try {
+        withWms(wms -> wms.setEnabled(false), () -> {
             MockHttpServletResponse httpServletResponse = getAsMockHttpServletResponse("ogc/maps/v1", 404);
             assertEquals("Service Maps is disabled", httpServletResponse.getErrorMessage());
-        } finally {
-            service.setEnabled(true);
-            gs.save(service);
-        }
+        });
     }
 }

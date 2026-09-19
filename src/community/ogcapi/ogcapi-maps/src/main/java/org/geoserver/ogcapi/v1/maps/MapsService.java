@@ -1213,27 +1213,12 @@ public class MapsService {
     }
 
     /**
-     * The map extent the {@code bbox} parameter defines, as one envelope. {@link APIBBoxParser} rolls longitudes into
-     * [-180, 180] and splits the box in two when they then come out in the wrong order; a map is drawn on one
-     * continuous canvas instead, so the longitudes are taken from the parameter as written. GeoServer renders such an
-     * extent the way WMS does, 170..190 across the dateline and -185..185 as the whole world with its edges repeated.
+     * The map extent the {@code bbox} parameter defines, as one continuous envelope: GeoServer renders a dateline
+     * crossing box the way WMS does, 170..190 across the dateline and -185..185 as the whole world with its edges
+     * repeated.
      */
     private ReferencedEnvelope parseSingleBBox(String bbox, String bboxCrs) throws FactoryException {
-        ReferencedEnvelope parsed = horizontal(APIBBoxParser.parse(bbox, bboxCrs)[0]);
-
-        String[] ordinates = bbox.split(",");
-        CoordinateReferenceSystem requestCrs = APIBBoxParser.parseCRS(bboxCrs);
-        // the ordinates follow the axis order the CRS authority declares, the default CRS84 being longitude first
-        int low = requestCrs != null && CRS.getAxisOrder(requestCrs) == CRS.AxisOrder.NORTH_EAST ? 1 : 0;
-        int high = (ordinates.length >= 6 ? 3 : 2) + low;
-        double minX = Double.parseDouble(ordinates[low].trim());
-        double maxX = Double.parseDouble(ordinates[high].trim());
-        // in degrees, a high longitude lower than the low one crosses the antimeridian, which OGC API - Maps writes
-        // that way (e.g. 170..-170); a continuous canvas needs it as 170..190. A projected box in that order never
-        // gets here, the parser refuses it
-        if (maxX < minX) maxX += 360;
-        return new ReferencedEnvelope(
-                minX, maxX, parsed.getMinY(), parsed.getMaxY(), parsed.getCoordinateReferenceSystem());
+        return horizontal(APIBBoxParser.parseContinuous(bbox, APIBBoxParser.parseCRS(bboxCrs)));
     }
 
     /**

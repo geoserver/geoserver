@@ -7,6 +7,7 @@ package org.geoserver.ogcapi.v1.maps;
 import static java.util.Comparator.comparing;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
@@ -18,18 +19,17 @@ import com.jayway.jsonpath.DocumentContext;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.APIException;
-import org.geoserver.wms.WMSInfo;
+import org.geotools.image.test.ImageAssert;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -42,17 +42,9 @@ import org.springframework.mock.web.MockHttpServletRequest;
  */
 public class DatasetMapTest extends MapsTestSupport {
 
-    /** A window on the CITE data, where several of the test layers hold features. */
-    private static final String WINDOW = "bbox=-0.002,-0.003,0.005,0.002&width=100&height=100";
-
-    /** A pixel inside a lake, opaque in the default Lakes style, see {@link EncodingsTest}. */
-    private static final int LAKE_X = 50;
-
-    private static final int LAKE_Y = 64;
+    private static final String WINDOW = LAKE_WINDOW;
 
     private static final String DATASET_MAP = "ogc/maps/v1/map?f=image/png&" + WINDOW;
-
-    static final String NATURE_GROUP = "nature";
 
     private static final String PARENT_GROUP = "parentGroup";
 
@@ -65,49 +57,24 @@ public class DatasetMapTest extends MapsTestSupport {
         super.onSetUp(testData);
 
         // a layer group, to check that a group counts as one collection of the dataset
-        Catalog catalog = getCatalog();
-        CatalogBuilder cb = new CatalogBuilder(catalog);
-        LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
-        LayerInfo forests = layerWithBounds(catalog, cb, MockData.FORESTS);
-        LayerInfo ponds = layerWithBounds(catalog, cb, MockData.PONDS);
-        LayerInfo bridges = layerWithBounds(catalog, cb, MockData.BRIDGES);
-        LayerGroupInfo group = catalog.getFactory().createLayerGroup();
-        group.setName(NATURE_GROUP);
-        group.getLayers().add(lakes);
-        group.getLayers().add(forests);
-        group.getStyles().add(null);
-        group.getStyles().add(null);
-        cb.calculateLayerGroupBounds(group);
-        catalog.add(group);
+        LayerInfo ponds = layerWithBounds(MockData.PONDS);
+        LayerInfo bridges = layerWithBounds(MockData.BRIDGES);
+        layerWithBounds(MockData.FORESTS);
+        addNatureGroup(NATURE_GROUP);
 
         // a NAMED group holding another group, to check that the nested one is not a collection of its own
-        LayerGroupInfo child = layerGroup(catalog, cb, CHILD_GROUP, LayerGroupInfo.Mode.NAMED, ponds);
-        layerGroup(catalog, cb, PARENT_GROUP, LayerGroupInfo.Mode.NAMED, child);
+        LayerGroupInfo child = addLayerGroup(CHILD_GROUP, LayerGroupInfo.Mode.NAMED, ponds);
+        addLayerGroup(PARENT_GROUP, LayerGroupInfo.Mode.NAMED, child);
 
         // a CONTAINER group, which WMS advertises without a name, so it cannot be asked for
-        layerGroup(catalog, cb, CONTAINER_GROUP, LayerGroupInfo.Mode.CONTAINER, bridges);
-    }
-
-    /** Creates and saves a layer group of the given mode, with its bounds worked out from its contents. */
-    private LayerGroupInfo layerGroup(
-            Catalog catalog, CatalogBuilder cb, String name, LayerGroupInfo.Mode mode, PublishedInfo... contents)
-            throws Exception {
-        LayerGroupInfo group = catalog.getFactory().createLayerGroup();
-        group.setName(name);
-        group.setMode(mode);
-        for (PublishedInfo content : contents) {
-            group.getLayers().add(content);
-            group.getStyles().add(null);
-        }
-        cb.calculateLayerGroupBounds(group);
-        catalog.add(group);
-        return group;
+        addLayerGroup(CONTAINER_GROUP, LayerGroupInfo.Mode.CONTAINER, bridges);
     }
 
     /** A layer with its bounds computed, several of the CITE test layers having none in the mock catalog. */
-    private LayerInfo layerWithBounds(Catalog catalog, CatalogBuilder cb, QName name) throws Exception {
-        LayerInfo layer = catalog.getLayerByName(getLayerId(name));
-        cb.setupBounds(layer.getResource());
+    private LayerInfo layerWithBounds(QName name) throws Exception {
+        Catalog catalog = getCatalog();
+        LayerInfo layer = layer(name);
+        new CatalogBuilder(catalog).setupBounds(layer.getResource());
         catalog.save(layer.getResource());
         return layer;
     }
@@ -189,9 +156,9 @@ public class DatasetMapTest extends MapsTestSupport {
     public void testSingleCollection() throws Exception {
         BufferedImage selected = datasetMap("cite:Lakes");
         BufferedImage collectionMap = getAsPNG("ogc/maps/v1/collections/cite:Lakes/map?f=image/png&" + WINDOW);
-        assertSameImage(collectionMap, selected);
+        ImageAssert.assertEquals(collectionMap, selected, 0);
         // and it really is a map of the lakes only, the global rasters left out
-        assertEquals(0xFF4040C0, selected.getRGB(LAKE_X, LAKE_Y));
+        assertEquals(LAKE_BLUE, selected.getRGB(LAKE_X, LAKE_Y));
         assertEquals(0, alpha(selected, 0, 0));
     }
 
@@ -200,8 +167,8 @@ public class DatasetMapTest extends MapsTestSupport {
     public void testMultipleCollections() throws Exception {
         BufferedImage lakes = datasetMap("cite:Lakes");
         BufferedImage both = datasetMap("cite:Lakes,cite:Forests");
-        assertEquals(0xFF4040C0, both.getRGB(LAKE_X, LAKE_Y));
-        assertNotEquals(differentPixels(lakes, both), 0);
+        assertEquals(LAKE_BLUE, both.getRGB(LAKE_X, LAKE_Y));
+        assertThat("adding a collection must change the map", pixels(both), not(equalTo(pixels(lakes))));
     }
 
     /**
@@ -227,7 +194,7 @@ public class DatasetMapTest extends MapsTestSupport {
     public void testLayerGroupCollection() throws Exception {
         BufferedImage group = datasetMap("nature");
         BufferedImage collectionMap = getAsPNG("ogc/maps/v1/collections/nature/map?f=image/png&" + WINDOW);
-        assertSameImage(collectionMap, group);
+        ImageAssert.assertEquals(collectionMap, group, 0);
     }
 
     /**
@@ -237,9 +204,9 @@ public class DatasetMapTest extends MapsTestSupport {
     @Test
     public void testCollectionsAsUrls() throws Exception {
         String url = "http://localhost:8080/geoserver/ogc/maps/v1/collections/cite:Lakes";
-        assertSameImage(datasetMap("cite:Lakes"), datasetMap(url));
+        ImageAssert.assertEquals(datasetMap("cite:Lakes"), datasetMap(url), 0);
         // the map resource URL of the collection names the same collection
-        assertSameImage(datasetMap("cite:Lakes"), datasetMap(url + "/map"));
+        ImageAssert.assertEquals(datasetMap("cite:Lakes"), datasetMap(url + "/map"), 0);
     }
 
     /** An unknown collection is a client error, listing the identifier that could not be found. */
@@ -271,7 +238,7 @@ public class DatasetMapTest extends MapsTestSupport {
     public void testCollectionsSelectionDisabled() throws Exception {
         withConformance(MapsConformance::setCollectionsSelection, false, () -> {
             // the selection is not applied, so the map is the default one, and an unknown value is not looked up
-            assertSameImage(getAsPNG(DATASET_MAP), datasetMap("cite:Lakes"));
+            ImageAssert.assertEquals(getAsPNG(DATASET_MAP), datasetMap("cite:Lakes"), 0);
             assertEquals(
                     200,
                     getAsServletResponse(DATASET_MAP + "&collections=notAcollection")
@@ -367,17 +334,13 @@ public class DatasetMapTest extends MapsTestSupport {
      * configured count is restored before returning, so each test sees the default one.
      */
     private List<String> defaultContents(int count) throws Exception {
-        GeoServer gs = getGeoServer();
-        WMSInfo wms = gs.getService(WMSInfo.class);
-        wms.getMetadata().put(MapsSettings.DEFAULT_COLLECTIONS_KEY, count);
-        gs.save(wms);
-        try {
-            Document document = getAsJSoup("ogc/maps/v1/map?f=text/html");
-            return document.select("#selectedCollections option").eachAttr("value");
-        } finally {
-            wms.getMetadata().remove(MapsSettings.DEFAULT_COLLECTIONS_KEY);
-            gs.save(wms);
-        }
+        AtomicReference<List<String>> contents = new AtomicReference<>();
+        withWms(
+                wms -> wms.getMetadata().put(MapsSettings.DEFAULT_COLLECTIONS_KEY, count),
+                () -> contents.set(getAsJSoup("ogc/maps/v1/map?f=text/html")
+                        .select("#selectedCollections option")
+                        .eachAttr("value")));
+        return contents.get();
     }
 
     /** The identifiers sorted by the unprefixed name, the sort key of the WMS capabilities listing. */
@@ -516,23 +479,5 @@ public class DatasetMapTest extends MapsTestSupport {
     private static String datasetInfo(String collections, Integer limit) {
         return "ogc/maps/v1/map/info?f=application/json&" + WINDOW + "&collections=" + collections + "&i=" + LAKE_X
                 + "&j=" + LAKE_Y + (limit == null ? "" : "&limit=" + limit);
-    }
-
-    /** Fails unless the two images have the same size and the very same pixels. */
-    private static void assertSameImage(BufferedImage expected, BufferedImage actual) {
-        assertEquals(expected.getWidth(), actual.getWidth());
-        assertEquals(expected.getHeight(), actual.getHeight());
-        assertEquals(0, differentPixels(expected, actual));
-    }
-
-    /** The number of pixels the two images disagree on. */
-    private static int differentPixels(BufferedImage a, BufferedImage b) {
-        int different = 0;
-        for (int x = 0; x < a.getWidth(); x++) {
-            for (int y = 0; y < a.getHeight(); y++) {
-                if (a.getRGB(x, y) != b.getRGB(x, y)) different++;
-            }
-        }
-        return different;
     }
 }

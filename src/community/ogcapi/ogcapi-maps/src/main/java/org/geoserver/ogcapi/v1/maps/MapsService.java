@@ -1382,12 +1382,28 @@ public class MapsService {
                     "center must have at least two ordinates",
                     HttpStatus.BAD_REQUEST);
         }
-        double[] c = {Double.parseDouble(ordinates[0].trim()), Double.parseDouble(ordinates[1].trim())};
+        double[] c = {parseOrdinate("center", ordinates[0]), parseOrdinate("center", ordinates[1])};
         CoordinateReferenceSystem crs =
                 q.centerCrs() != null ? APIBBoxParser.parseCRS(q.centerCrs()) : DefaultGeographicCRS.WGS84;
         // center ordinates follow the identifier axis order; read them into longitude/latitude and work in the XY twin
         boolean northEast = CRS.getAxisOrder(crs) == CRS.AxisOrder.NORTH_EAST;
         return new Center(northEast ? c[1] : c[0], northEast ? c[0] : c[1], APIBBoxParser.toLonLat(crs));
+    }
+
+    /**
+     * Parses one spatial subset or centre ordinate. The grammar takes a number only ({@code single = number} in
+     * /req/spatial-subsetting/subset-definition), so anything else, the open bound {@code *} included, is a bad request
+     * rather than an internal error.
+     */
+    private static double parseOrdinate(String axis, String value) {
+        try {
+            return Double.parseDouble(value.trim());
+        } catch (NumberFormatException e) {
+            throw new APIException(
+                    INVALID_PARAMETER_VALUE,
+                    "Invalid " + axis + " value, a number is expected: " + value,
+                    HttpStatus.BAD_REQUEST);
+        }
     }
 
     /** The middle of the data, used as the map centre when the request states none. */
@@ -1547,8 +1563,8 @@ public class MapsService {
                 continue;
             }
             String[] bounds = range.split(":");
-            double low = Double.parseDouble(bounds[0].trim());
-            double high = bounds.length > 1 ? Double.parseDouble(bounds[1].trim()) : low;
+            double low = parseOrdinate(axis, bounds[0]);
+            double high = bounds.length > 1 ? parseOrdinate(axis, bounds[1]) : low;
             if (checkRanges) checkAxisRange(axis, crs.getCoordinateSystem().getAxis(isX ? 0 : 1), low, high);
             if (isX) {
                 minX = low;

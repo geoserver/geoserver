@@ -925,7 +925,11 @@ public class MapsService {
         String datetime = q.datetime();
         ReferencedEnvelope region = q.bbox() != null ? parseSingleBBox(q.bbox(), q.bboxCrs()) : null;
         SubsetResult subset = q.subset() != null
-                ? parseSubset(q.subset(), q.subsetCrs(), wmsInfo.isCiteCompliant() && conf.spatialSubsetting(wmsInfo))
+                ? parseSubset(
+                        q.subset(),
+                        q.subsetCrs(),
+                        wmsInfo.isCiteCompliant() && conf.spatialSubsetting(wmsInfo),
+                        request)
                 : null;
 
         // bbox, center and the spatial axes of a subset all define the same map extent, so at most one of them can be
@@ -1530,7 +1534,8 @@ public class MapsService {
      * @param checkRanges whether a spatial range outside its axis is a 404, which only holds in CITE compliant mode and
      *     only when the spatial subsetting class can act on that range
      */
-    private SubsetResult parseSubset(String subset, String subsetCrs, boolean checkRanges) throws FactoryException {
+    private SubsetResult parseSubset(String subset, String subsetCrs, boolean checkRanges, GetMapRequest request)
+            throws FactoryException, IOException {
         SubsetResult result = new SubsetResult();
         // the ranges are keyed by axis name (Lat/Lon), so the envelope is built in longitude/latitude order and only
         // needs the matching XY CRS regardless of the identifier axis order
@@ -1566,6 +1571,13 @@ public class MapsService {
             double low = parseOrdinate(axis, bounds[0]);
             double high = bounds.length > 1 ? parseOrdinate(axis, bounds[1]) : low;
             if (checkRanges) checkAxisRange(axis, crs.getCoordinateSystem().getAxis(isX ? 0 : 1), low, high);
+            // a map has area: a slice, or a trim with equal bounds, leaves the renderer nothing to draw
+            if (low == high) {
+                throw new APIException(
+                        INVALID_PARAMETER_VALUE,
+                        "The " + axis + " subset has no extent, a map needs an interval: " + range,
+                        HttpStatus.BAD_REQUEST);
+            }
             if (isX) {
                 minX = low;
                 // a low longitude greater than the high one means an extent crossing the wrapping point, see
@@ -1576,10 +1588,41 @@ public class MapsService {
                 maxY = high;
             }
         }
-        if (minX != null && minY != null) {
-            result.envelope = new ReferencedEnvelope(minX, maxX, minY, maxY, crs);
+        if (minX != null || minY != null) {
+            // a subset may name one spatial axis only, the other one then spanning the extent of the drawn layers
+            ReferencedEnvelope data = minX == null || minY == null ? dataBounds(request, crs) : null;
+            result.envelope = new ReferencedEnvelope(
+                    minX != null ? minX : data.getMinX(),
+                    maxX != null ? maxX : data.getMaxX(),
+                    minY != null ? minY : data.getMinY(),
+                    maxY != null ? maxY : data.getMaxY(),
+                    crs);
         }
         return result;
+    }
+
+    /** The extent of the drawn layers in the given CRS, which fills the axis a single axis subset leaves out. */
+    private static ReferencedEnvelope dataBounds(GetMapRequest request, CoordinateReferenceSystem crs)
+            throws IOException {
+        ReferencedEnvelope bounds = new ReferencedEnvelope(crs);
+        for (MapLayerInfo layer : request.getLayers()) {
+            try {
+                // remote sources have no declared box, a misconfigured layer none at all: both leave the axis to the
+                // other layers, and to the check below when no layer has one
+                ReferencedEnvelope layerBounds = layer.getBoundingBox();
+                if (layerBounds == null || layerBounds.isEmpty()) continue;
+                bounds.expandToInclude(layerBounds.transform(crs, true));
+            } catch (Exception e) {
+                throw new IOException("Failed to read the bounds of layer " + layer.getName(), e);
+            }
+        }
+        if (bounds.isNull()) {
+            throw new APIException(
+                    INVALID_PARAMETER_VALUE,
+                    "Cannot complete the subset, the collection has no known extent, name both spatial axes",
+                    HttpStatus.BAD_REQUEST);
+        }
+        return bounds;
     }
 
     /**

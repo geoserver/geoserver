@@ -7,13 +7,16 @@ package org.geoserver.ogcapi.v1.maps;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.util.Arrays;
 import java.util.List;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.APIException;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -143,6 +146,39 @@ public class SubsettingTest extends MapsTestSupport {
         assertEquals("-180.0,0.0,0.0,90.0", response.getHeader("Content-Bbox"));
     }
 
+    /**
+     * A subset naming one spatial axis only clips the map on that axis, the other one spanning the extent of the
+     * collection.
+     */
+    @Test
+    public void testSingleSpatialAxisSubset() throws Exception {
+        ReferencedEnvelope extent = getCatalog()
+                .getLayerByName(getLayerId(MockData.LAKES))
+                .getResource()
+                .getLatLonBoundingBox();
+
+        double[] lon = ordinates(bbox("&subset=Lon(0:2)"));
+        assertArrayEquals(new double[] {0, extent.getMinY(), 2, extent.getMaxY()}, lon, 1e-6);
+
+        double[] lat = ordinates(bbox("&subset=Lat(0:2)"));
+        assertArrayEquals(new double[] {extent.getMinX(), 0, extent.getMaxX(), 2}, lat, 1e-6);
+    }
+
+    /** A single axis subset defines the map extent like a full one, so it cannot be combined with a bbox. */
+    @Test
+    public void testSingleAxisSubsetCombinedWithBboxRejected() throws Exception {
+        DocumentContext json = getAsJSONPath(MAP + "&subset=Lon(0:2)&bbox=-1,-1,1,1", 400);
+        assertEquals(APIException.INVALID_PARAMETER_VALUE, json.read("type"));
+        assertThat(json.read("title"), containsString("all define the map extent"));
+    }
+
+    /** The ordinates of a Content-Bbox header, as minimum x, minimum y, maximum x, maximum y. */
+    private static double[] ordinates(String contentBbox) {
+        return Arrays.stream(contentBbox.split(","))
+                .mapToDouble(Double::parseDouble)
+                .toArray();
+    }
+
     /** /conf/spatial-subsetting/bbox-crs F: with no bbox in the request the bbox-crs is ignored. */
     @Test
     public void testBboxCrsIgnoredWithoutBbox() throws Exception {
@@ -215,9 +251,19 @@ public class SubsettingTest extends MapsTestSupport {
      */
     @Test
     public void testSubsetOutsideAxisRangeToleratedByDefault() throws Exception {
-        for (String subset : new String[] {"Lat(200:300)", "Lat(-300:-200)", "Lat(95)"}) {
+        for (String subset : new String[] {"Lat(200:300)", "Lat(-300:-200)"}) {
             MockHttpServletResponse response = getAsServletResponse(MAP + "&subset=" + subset);
             assertEquals(subset, 200, response.getStatus());
+        }
+    }
+
+    /** A spatial slice, or a trim with equal bounds, leaves the map no area to draw, so it is a client error. */
+    @Test
+    public void testSpatialSliceRejected() throws Exception {
+        for (String subset : new String[] {"Lat(1)", "Lon(0:2),Lat(1:1)"}) {
+            DocumentContext json = getAsJSONPath(MAP + "&subset=" + subset, 400);
+            assertEquals(subset, APIException.INVALID_PARAMETER_VALUE, json.read("type"));
+            assertThat(json.read("title"), containsString("a map needs an interval"));
         }
     }
 

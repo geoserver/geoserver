@@ -15,7 +15,10 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Xmx2g -Daether.connector.basic.threads=8 -Daether.metadataResolver.threads=8 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dspotless.apply.skip=true
+  # -ntp would install the quiet transfer listener, hiding which repository each
+  # artifact came from, so the forensics steps need it out of the way.
+  MAVEN_ARGS: -B
+  MAVEN_OPTS: -Xmx2g -Daether.connector.basic.threads=8 -Daether.metadataResolver.threads=8 -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dspotless.apply.skip=true
 
 jobs:
   build:
@@ -42,10 +45,40 @@ jobs:
           gs-${{ runner.os }}-maven-
     - name: Fetch dependencies
       run: |
-        mvn --% -B -ntp -U -T1 -Prelease,pending,windows-github-build -f src/pom.xml dependency:resolve dependency:resolve-plugins
+        mvn --% -B -U -T1 -Prelease,pending,windows-github-build -f src/pom.xml dependency:resolve dependency:resolve-plugins
+    - name: Record imageio-ext jars before the build
+      run: |
+        ./.github/scripts/hash-jars.ps1 -Output imageio-before.csv
+        ./.github/scripts/dump-imageio-dirs.ps1 -Label "before the build"
     - name: Build with Maven
       run: |
-        mvn --% -B -ntp -T1C -Prelease,pending,windows-github-build -f src/pom.xml clean install
+        mvn '-B' '-nsu' '-T1C' '-Prelease,pending,windows-github-build' '-f' 'src/pom.xml' clean install 2>&1 |
+          Tee-Object -FilePath build.log
+        if ($LASTEXITCODE -ne 0) { throw "Maven build failed, exit code $LASTEXITCODE" }
+
+    # A jar replaced while the test JVMs hold it open makes classes disappear from it,
+    # which reads as an unrelated NoClassDefFoundError. Catch the replacement instead.
+    - name: Check no dependency jar changed during the build
+      if: always()
+      run: |
+        if (-not (Test-Path imageio-before.csv)) {
+          Write-Host "No before snapshot, nothing to compare"
+          exit 0
+        }
+        ./.github/scripts/hash-jars.ps1 -Output imageio-after.csv
+        $changed = Compare-Object (Import-Csv imageio-before.csv) (Import-Csv imageio-after.csv) -Property Path,Length,Modified,Sha1
+        if ($changed) {
+          $changed | Select-Object SideIndicator,Path,Length,Modified,Sha1 | Format-List
+          ./.github/scripts/dump-imageio-dirs.ps1 -Label "after the build"
+          if (Test-Path build.log) {
+            Write-Host "--- downloads of geosolutions/geotools artifacts during the build ---"
+            Select-String -Path build.log -Pattern 'Down(load|loaded) from' |
+              Where-Object { $_.Line -match 'geosolutions|geotools' } |
+              ForEach-Object { $_.Line }
+          }
+          throw "Dependency jars changed while the build was running"
+        }
+        Write-Host "No dependency jar changed during the build"
     - name: Remove SNAPSHOT jars from repository
       if: always()
       run: |

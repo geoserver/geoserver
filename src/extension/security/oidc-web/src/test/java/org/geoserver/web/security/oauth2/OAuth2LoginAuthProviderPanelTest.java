@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
@@ -324,6 +325,72 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         assertFalse(lConfig.isOidcAllowUnSecureLogging());
         assertNull(lConfig.getOidcResponseMode());
         assertFalse(lConfig.isOidcAuthenticationMethodPostSecret());
+    }
+
+    /**
+     * The stored default for {@code allowAdminLogin} is "allowed", expressed as a null field resolved by the getter.
+     * The checkbox must therefore render checked on a filter that has never been configured, otherwise the panel tells
+     * the operator that identity-provider logins for {@code admin} are blocked while they are in fact permitted.
+     */
+    @Test
+    public void allowAdminLoginRendersCheckedForAFreshFilter() throws Exception {
+        navigateToOpenIdPanel("AdminLoginDefaultFilter");
+
+        Component checkbox = formTester.getForm().get("panel:content:allowAdminLogin");
+        assertNotNull("allowAdminLogin checkbox should be present", checkbox);
+        assertEquals(
+                "a fresh filter must render the box checked", Boolean.TRUE, ((CheckBox) checkbox).getModelObject());
+    }
+
+    /** Unchecking the box must persist as an explicit false, and re-checking it must persist as an explicit true. */
+    @Test
+    public void allowAdminLoginSurvivesSaveAndReopen() throws Exception {
+        String filterName = "AdminLoginRoundTripFilter";
+        navigateToOpenIdPanel(filterName);
+
+        String prefix = "panel:content:";
+        String baseUrl = "https://localhost:9090";
+
+        formTester.setValue(prefix + "baseRedirectUri", baseUrl + "/geoserver");
+        tester.executeAjaxEvent(formTester.getForm().get(prefix + "baseRedirectUri"), "change");
+
+        formTester.select(prefix + "providerSelector", 0);
+        tester.executeAjaxEvent(formTester.getForm().get(prefix + "providerSelector"), "change");
+
+        // WicketTester drops queued form data on each AJAX request, so set everything again
+        formTester.setValue(prefix + "baseRedirectUri", baseUrl + "/geoserver");
+        formTester.setValue(prefix + "name", filterName);
+        formTester.select(prefix + "providerSelector", 0);
+        formTester.setValue(prefix + "allowAdminLogin", false);
+
+        String oidcPrefix = "panel:content:pfv:4:settings:";
+        formTester.setValue(oidcPrefix + "clientId", "oidcClientId");
+        formTester.setValue(oidcPrefix + "clientSecret", "oidcClientSecret");
+        formTester.setValue(oidcPrefix + "userNameAttribute", "preferred_username");
+        formTester.setValue(oidcPrefix + "displayOnScopeSupport:scopes", "openid");
+        formTester.setValue(oidcPrefix + "displayOnOidc:oidcTokenUri", "https://localhost:9000/token");
+        formTester.setValue(oidcPrefix + "displayOnOidc:oidcAuthorizationUri", "https://localhost:9000/authorize");
+        formTester.setValue(oidcPrefix + "displayOnOidc:oidcUserInfoUri", "https://localhost:9000/userinfo");
+        formTester.setValue(oidcPrefix + "displayOnOidc:oidcJwkSetUri", "https://localhost:9000/jws.json");
+
+        clickSave();
+        tester.assertNoErrorMessage();
+
+        clickNamedServiceConfig(filterName);
+        newFormTester("panel:panel:form");
+        OAuth2LoginAuthProviderPanel panel =
+                (OAuth2LoginAuthProviderPanel) formTester.getForm().get("panel");
+        assertEquals(Boolean.FALSE, panel.getConfigModel().getObject().getAllowAdminLogin());
+
+        // and back on again
+        formTester.setValue("panel:allowAdminLogin", true);
+        clickSave();
+        tester.assertNoErrorMessage();
+
+        clickNamedServiceConfig(filterName);
+        newFormTester("panel:panel:form");
+        panel = (OAuth2LoginAuthProviderPanel) formTester.getForm().get("panel");
+        assertEquals(Boolean.TRUE, panel.getConfigModel().getObject().getAllowAdminLogin());
     }
 
     @Override

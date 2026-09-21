@@ -1394,9 +1394,9 @@
           <version>2.5.2</version>
         </plugin>
         <plugin>
-          <groupId>pl.project13.maven</groupId>
-          <artifactId>git-commit-id-plugin</artifactId>
-          <version>4.9.10</version>
+          <groupId>io.github.git-commit-id</groupId>
+          <artifactId>git-commit-id-maven-plugin</artifactId>
+          <version>10.0.1</version>
         </plugin>
         <plugin>
           <groupId>com.diffplug.spotless</groupId>
@@ -1578,8 +1578,8 @@
 
       <!-- initialize git revision info -->
       <plugin>
-        <groupId>pl.project13.maven</groupId>
-        <artifactId>git-commit-id-plugin</artifactId>
+        <groupId>io.github.git-commit-id</groupId>
+        <artifactId>git-commit-id-maven-plugin</artifactId>
         <executions>
           <execution>
             <goals>
@@ -1766,8 +1766,8 @@
             <configuration>
               <rules>
                 <requireMavenVersion>
-                  <version>[3.8,4.0)</version>
-                  <message>You must use Maven 3.8 or higher to build this project.</message>
+                  <version>[3.9,4.0)</version>
+                  <message>You must use Maven 3.9 or higher to build this project.</message>
                 </requireMavenVersion>
                 <requireJavaVersion>
                   <version>[17,)</version>

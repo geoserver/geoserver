@@ -30537,6 +30537,7 @@
 <li>Confirm you can actually log in with that username/password (not just through the IdP) <strong>before</strong> upgrading.</li>
 </ol>
 <p>With a password login in place, a disabled OAuth filter or role service becomes a recoverable migration step rather than a lockout: sign in with the password account, then follow the <a href="#migration-procedure">migration procedure</a> to reconfigure the new connector.</p>
+<p>The built-in <code>root</code> account is never assertable by an identity provider, so it stays a password-only recovery login whatever the connector is configured to do. The built-in <code>admin</code> account is assertable by default --- see <a href="../configuring/#oidc_admin_accounts">Built-in administrator accounts</a> if you would rather the IDP could not claim it.</p>
 <h2 id="reusing-a-geoserver-2x-data-directory">Reusing a GeoServer 2.x data directory<a class="headerlink" href="#reusing-a-geoserver-2x-data-directory" title="Permanent link">&para;</a></h2>
 <p>GeoServer 3.x <strong>does not fail to start</strong> when it finds security filters or role services created by a removed or uninstalled plugin. Instead it degrades gracefully:</p>
 <ul>

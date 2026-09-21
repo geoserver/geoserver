@@ -30539,6 +30539,12 @@
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Whatever role source you pick, the built-in <code>root</code> account is never granted roles from an identity provider,
+and the built-in <code>admin</code> account can be put in the same position with a single setting. See
+<a href="../configuring/#oidc_admin_accounts">Built-in administrator accounts</a>.</p>
+</div>
 <h2 id="role-configuration-overview">Role Configuration Overview<a class="headerlink" href="#role-configuration-overview" title="Permanent link">&para;</a></h2>
 <ol>
 <li>Choose a role source - typically <code>ID Token</code>, but can also be <code>Access Token</code> or <code>UserInfo</code>.</li>

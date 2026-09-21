@@ -19117,6 +19117,45 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#oidc_admin_accounts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Built-in administrator accounts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Built-in administrator accounts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#when-to-leave-it-enabled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to leave it enabled
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-disable-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to disable it
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -30353,6 +30392,45 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#oidc_admin_accounts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Built-in administrator accounts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Built-in administrator accounts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#when-to-leave-it-enabled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to leave it enabled
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-disable-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to disable it
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -30443,6 +30521,11 @@
 <td>When checked, the same filter also accepts machine-to-machine requests using an <code>Authorization: Bearer &lt;JWT&gt;</code> header.</td>
 <td>Enabled by default. Disable if you only need browser-based interactive login.</td>
 </tr>
+<tr>
+<td>Allow the provider to log in the built-in "admin" account</td>
+<td>When checked, an identity whose principal is <code>admin</code> is treated like any other user and receives whatever roles the role source assigns it.</td>
+<td>Enabled by default. Uncheck it when the local <code>admin</code> account is managed inside GeoServer and must never be assertable by the IDP. See <a href="#oidc_admin_accounts">Built-in administrator accounts</a>.</td>
+</tr>
 </tbody>
 </table>
 <h3 id="oidc_redirect_base_uri">Redirect Base URI<a class="headerlink" href="#oidc_redirect_base_uri" title="Permanent link">&para;</a></h3>
@@ -30494,6 +30577,36 @@
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>The After-Logout Redirect URI must be registered with your IDP as a permitted post-logout redirect URI. Check your IDP's client configuration.</p>
+</div>
+<h2 id="oidc_admin_accounts">Built-in administrator accounts<a class="headerlink" href="#oidc_admin_accounts" title="Permanent link">&para;</a></h2>
+<p>GeoServer ships with two built-in accounts whose names carry special weight: <code>admin</code>, the default administrator held in the user/group service, and <code>root</code>, the emergency account backed by the master password. An identity provider is free to issue a token for a user called <code>admin</code>, and without a rule for it that token would silently take over the local administrator identity.</p>
+<p><img alt="" src="../img/allow-admin-login-default.png" /></p>
+<p><em>The option as it appears on a newly created filter, enabled by default.</em></p>
+<p>The OIDC filter therefore applies one rule, consistently, to all three of the paths that can turn an identity-provider principal into a GeoServer identity --- the interactive browser login, a bearer JWT, and a bearer opaque token validated by introspection:</p>
+<ul>
+<li><strong><code>root</code> is never assertable.</strong> A token naming <code>root</code> authenticates but is granted no roles at all, so it can read and write nothing. There is no setting for this: <code>root</code> is defined by the master password and cannot have an external identity.</li>
+<li><strong><code>admin</code> is governed by the checkbox</strong>, <em>Allow the provider to log in the built-in "admin" account</em>, which is <strong>enabled by default</strong>. When enabled, <code>admin</code> is an ordinary principal and gets the roles your role source assigns to it. When disabled, a token naming <code>admin</code> authenticates but is granted no roles, exactly like <code>root</code>.</li>
+</ul>
+<p>Both comparisons ignore case, so <code>ADMIN</code> and <code>Root</code> are treated the same as <code>admin</code> and <code>root</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>"Granted no roles" is not the same as "rejected". The request is still authenticated; it simply carries no authorities, so every secured resource refuses it. This is deliberate --- it keeps the failure visible in the logs rather than looking like a bad password.</p>
+</div>
+<h3 id="when-to-leave-it-enabled">When to leave it enabled<a class="headerlink" href="#when-to-leave-it-enabled" title="Permanent link">&para;</a></h3>
+<p>Leave it enabled when the identity provider is the authority for administrators. This is the normal arrangement when GeoServer is driven by an external platform that provisions its own <code>admin</code> user and expects GeoServer to honour it; the IDP asserts the account, your role source maps it to <code>ROLE_ADMINISTRATOR</code>, and GeoServer follows.</p>
+<h3 id="when-to-disable-it">When to disable it<a class="headerlink" href="#when-to-disable-it" title="Permanent link">&para;</a></h3>
+<p>Disable it when the local <code>admin</code> account is managed inside GeoServer and the IDP has no business asserting it. With the option off, someone who can create a user named <code>admin</code> at the identity provider gains nothing in GeoServer.</p>
+<p><img alt="" src="../img/allow-admin-login-disabled.png" /></p>
+<p><em>The same setting with the option turned off.</em></p>
+<div class="admonition warning">
+<p class="admonition-title">Name-based role sources</p>
+<p>The consequence is sharpest when the filter's <a href="../role-config/">role source</a> is <strong>User Group Service</strong> or <strong>Role Service</strong>, because those resolve roles by looking the principal name up in GeoServer's own database. With the option enabled, an identity provider that asserts a user called <code>admin</code> is handed the local <code>admin</code> account's roles --- normally <code>ROLE_ADMINISTRATOR</code> --- without the IDP having asserted any role at all. If you use one of those role sources, and the local <code>admin</code> account exists, turn this option off.</p>
+<p>With an IDP-asserted role source (ID Token, Access Token, UserInfo, MS Graph, Keycloak Admin API), and on both bearer-token paths, roles come from the token and no local lookup happens, so the option only decides whether the roles the IDP asserted are honoured.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Upgrading from an earlier GeoServer 3.x</p>
+<p>Earlier releases refused roles to <code>admin</code> unconditionally; the option did not exist. It defaults to <strong>enabled</strong>, so after the upgrade an IDP-asserted <code>admin</code> <strong>will</strong> receive roles where it previously received none. If your deployment relied on that refusal as a security control, open each OIDC filter and uncheck the option.</p>
+<p>A filter saved before the option existed has no <code>allowAdminLogin</code> entry in its <code>config.xml</code>, and GeoServer reads that absence as enabled. The checkbox shown above is what such a filter displays when you open it, so what you see in the form is what the filter is actually doing --- there is no hidden state to reason about. The entry is written to <code>config.xml</code> the first time you save the filter.</p>
 </div>
 
 

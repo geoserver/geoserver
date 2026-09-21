@@ -12,6 +12,7 @@ import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrat
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -88,11 +89,12 @@ public class GeoServerOAuth2RoleResolverTest {
     }
 
     /**
-     * Verifies that users named "admin" or "root" at identity provider do not receive any roles to prevent from
-     * accidental local admin access.
+     * Verifies that "root" never receives roles from the identity provider, and that "admin" does not either while
+     * allowAdminLogin is off.
      */
     @Test
     public void testGetRolesIsEmptyForGsLocalAdmins() {
+        config.setAllowAdminLogin(Boolean.FALSE);
         for (String lName : new String[] {"admin", "root"}) {
             // given
             OAuth2ResolverParam lParam = new OAuth2ResolverParam(lName, mockRequest, context, userRequest);
@@ -103,6 +105,36 @@ public class GeoServerOAuth2RoleResolverTest {
             // then
             assertTrue("Expecting no roles for " + lName, lRoles.isEmpty());
         }
+    }
+
+    /**
+     * Verifies the shipped default: the identity provider may assert "admin", so the principal is resolved like any
+     * other and receives whatever the role source grants it.
+     */
+    @Test
+    public void testGetRolesIsNotEmptyForAdminByDefault() {
+        // given - allowAdminLogin defaults to true, nothing set
+        OAuth2ResolverParam lParam = new OAuth2ResolverParam("admin", mockRequest, context, userRequest);
+
+        // when
+        Collection<GeoServerRole> lRoles = sut.convert(lParam);
+
+        // then
+        assertFalse("Expecting roles for admin when allowAdminLogin is on", lRoles.isEmpty());
+    }
+
+    /** Verifies that "root" is refused even when admin logins are explicitly allowed. */
+    @Test
+    public void testGetRolesIsEmptyForRootEvenWhenAdminLoginAllowed() {
+        // given
+        config.setAllowAdminLogin(Boolean.TRUE);
+        OAuth2ResolverParam lParam = new OAuth2ResolverParam("root", mockRequest, context, userRequest);
+
+        // when
+        Collection<GeoServerRole> lRoles = sut.convert(lParam);
+
+        // then
+        assertTrue("Expecting no roles for root", lRoles.isEmpty());
     }
 
     /** Verifies that extracting roles from access token works as expected when claim is missing */

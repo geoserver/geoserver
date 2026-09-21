@@ -254,6 +254,9 @@ public class OAuth2LoginAuthProviderPanel
         add(new HelpLink("enableRedirectAuthenticationEntryPointHelp", this).setDialog(dialog));
         add(new CheckBox("enableRedirectAuthenticationEntryPoint"));
 
+        add(new HelpLink("allowAdminLoginHelp", this).setDialog(dialog));
+        add(new CheckBox("allowAdminLogin"));
+
         add(new HelpLink("connectionParametersHelp", this).setDialog(dialog));
 
         add(new HelpLink("postLogoutRedirectUriHelp", this).setDialog(dialog));

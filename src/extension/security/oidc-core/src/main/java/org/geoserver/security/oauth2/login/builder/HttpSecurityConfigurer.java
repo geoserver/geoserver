@@ -17,6 +17,7 @@ import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
 import org.geoserver.security.oauth2.login.BearerAwareSecurityContextRepository;
 import org.geoserver.security.oauth2.login.GeoServerJwtAudienceValidator;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2JwtAuthenticationConverter;
+import org.geoserver.security.oauth2.login.MicrosoftEntraTenant;
 import org.geoserver.security.oauth2.login.OAuth2LoginCustomizers.HttpSecurityCustomizer;
 import org.geoserver.security.oauth2.spring.GeoServerOidcIdTokenDecoderFactory;
 import org.geoserver.security.oauth2.token.GeoServerOAuth2OpaqueTokenIntrospector;
@@ -153,6 +154,20 @@ public class HttpSecurityConfigurer {
         }
         NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
         OAuth2TokenValidator<Jwt> validator = JwtValidators.createDefault();
+
+        String msTenantId = singleTenantMicrosoftId();
+        if (msTenantId != null) {
+            validator =
+                    new DelegatingOAuth2TokenValidator<>(validator, MicrosoftEntraTenant.issuedByTenant(msTenantId));
+            if (!config.isValidateTokenAudience()) {
+                // Confining the tenant is not enough on its own: a tenant hosts many app registrations, and a
+                // token minted for any of them would otherwise authenticate here. Skipped when the administrator
+                // has configured audience validation explicitly, so that their claim and value govern instead --
+                // which is also the escape hatch for a customised application ID URI.
+                validator = new DelegatingOAuth2TokenValidator<>(
+                        validator, MicrosoftEntraTenant.issuedForClient(config.getMsClientId()));
+            }
+        }
         if (config.isValidateTokenAudience()) {
             OAuth2TokenValidator<Jwt> aud = new GeoServerJwtAudienceValidator(
                     config.getValidateTokenAudienceClaimName(), config.getValidateTokenAudienceClaimValue());
@@ -160,6 +175,18 @@ public class HttpSecurityConfigurer {
         }
         decoder.setJwtValidator(validator);
         return decoder;
+    }
+
+    /**
+     * Tenant whose issuer and audience Bearer tokens must match, or null to leave both unchecked as before.
+     *
+     * <p>Only Microsoft with an explicitly configured tenant qualifies, which is a field no existing deployment has
+     * set. Google and custom OIDC are deliberately left alone: {@code CommonOAuth2Provider.GOOGLE} already carries an
+     * issuer URI, so honouring any issuer found on the registration would silently start enforcing one on every
+     * existing Google deployment.
+     */
+    private String singleTenantMicrosoftId() {
+        return config.isMsEnabled() ? MicrosoftEntraTenant.normalize(config.getMsTenantId()) : null;
     }
 
     private String resolveJwkSetUri() {

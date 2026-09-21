@@ -107,7 +107,9 @@ Carry over the client id, client secret, the authorization / token / user-info e
 
 ### legacy-azure -> OIDC
 
-Azure AD / Microsoft Entra was never a separate plugin --- it was the OpenID Connect filter pointed at the Azure tenant endpoints. Migrate it exactly like [legacy-openid-connect](#legacy-openid-connect-oidc), using the Microsoft / Azure tenant discovery URL (`https://login.microsoftonline.com/<tenant>/v2.0`). If roles were resolved through Microsoft Graph, select the Microsoft Graph role source on the new filter.
+Azure AD / Microsoft Entra was never a separate plugin --- it was the OpenID Connect filter pointed at the Azure tenant endpoints. Select the **Microsoft** provider on the new filter rather than the generic *OpenID Connect* one, and put the tenant GUID from the old discovery URL into the **Microsoft Entra Tenant ID** field: the new filter derives the authorization, token and key-set endpoints from it. If roles were resolved through Microsoft Graph, select the Microsoft Graph role source on the new filter. See [Configure the Microsoft Azure authentication provider](oauth2/azure.md).
+
+Migrating a single-tenant deployment to the generic *OpenID Connect* provider instead will work, but it drops the tenant check on Bearer tokens that the Microsoft provider performs --- see [Choose the tenant scope](oauth2/azure.md#choose-the-tenant-scope).
 
 ### legacy-keycloak -> OIDC
 
@@ -179,5 +181,5 @@ When you reconfigure the IdP / OAuth2 client, make sure you:
 Per-provider notes:
 
 * **Keycloak** --- there is no Keycloak adapter JSON any more. Use the generic OpenID Connect provider with `oidcDiscoveryUri = https://<host>/realms/<realm>/.well-known/openid-configuration` and the client id / secret from your Keycloak client. To resolve roles from the Keycloak Admin API, set the role source to `KeycloakAPI` and grant the client's service account the `realm-management` roles `view-realm`, `view-users` and `view-clients`; optionally list extra client ids in `keycloakAdminClientIdsOfRoleScopes`.
-* **Azure AD / Microsoft Entra** --- use the Microsoft provider with the tenant discovery URL `https://login.microsoftonline.com/<tenant>/v2.0`. To resolve roles/groups from Microsoft Graph, enable `msGraphMemberOf` / `msGraphAppRoleAssignments`, grant the app registration the **application** Graph permissions `Directory.Read.All` (groups) and `AppRoleAssignment.Read.All` (app roles), and provide the Enterprise Application **Object ID** (not the client id) in `msGraphAppRoleAssignmentsObjectId`.
+* **Azure AD / Microsoft Entra** --- use the Microsoft provider and enter the tenant GUID in **Microsoft Entra Tenant ID**; leave it empty only for a multi-tenant application. To resolve roles/groups from Microsoft Graph, enable `msGraphMemberOf` / `msGraphAppRoleAssignments`, grant the app registration the **application** Graph permissions `Directory.Read.All` (groups) and `AppRoleAssignment.Read.All` (app roles), and provide the Enterprise Application **Object ID** (not the client id) in `msGraphAppRoleAssignmentsObjectId`.
 * **GeoNode** --- use the generic OpenID Connect provider pointed at the GeoNode `o/` OAuth2 endpoints (authorize / token / userinfo), carrying over the client id, client secret and scopes.

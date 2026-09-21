@@ -5,6 +5,7 @@
 package org.geoserver.config.datadir;
 
 import static java.util.Objects.requireNonNull;
+import static org.geoserver.config.datadir.DataDirectoryGeoServerLoader.GEOSERVER_DATA_DIR_LOADER_THREADS;
 import static org.geoserver.data.test.CiteTestData.ROTATED_CAD;
 import static org.geoserver.data.test.CiteTestData.TASMANIA_BM;
 import static org.geoserver.data.test.CiteTestData.TASMANIA_DEM;
@@ -673,12 +674,9 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
     }
 
     /**
-     * Regression test for GEOS-12023: CatalogLoader.describe() calls resource.getStore(), which subclasses like
-     * WMSLayerInfoImpl and CoverageInfoImpl override with a type-specific cast. If the store reference is an unresolved
-     * ResolvingProxy (e.g. when the store ID can't be matched during parallel catalog loading), that cast throws
-     * ClassCastException. This exception escapes the try-catch in doAddToCatalog because the SEVERE failure-log lambda
-     * also calls describe(), causing a second throw that is uncaught, propagating fatally through ForkJoin and
-     * preventing GeoServer startup.
+     * Regression test for GEOS-12023: a resource whose store reference cannot be matched keeps an unresolved
+     * ResolvingProxy, and any call on it used to escape the try-catch in doAddToCatalog and propagate fatally through
+     * ForkJoin, preventing GeoServer startup. Such a resource is now reported and skipped.
      */
     @Test
     public void wmsLayerWithUnresolvableStoreDoesNotCrashLoader() throws Exception {
@@ -704,12 +702,8 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         layer.setDefaultStyle(catalog.getStyleByName(StyleInfo.DEFAULT_RASTER));
         catalog.add(layer);
 
-        // Overwrite the resource XML with a version pointing to a non-existent store ID.
-        // When the loader reads this file, ResolvingProxy.resolve() returns null for the
-        // unknown store ID, leaving the store field as an unresolved ResolvingProxy. Without
-        // the fix, WMSLayerInfoImpl.getStore() casts it to WMSStoreInfo, throwing
-        // ClassCastException that escapes doAddToCatalog and propagates as
-        // IllegalStateException through ForkJoin, crashing GeoServer startup.
+        // Overwrite the resource XML with a version pointing to a non-existent store ID, so that
+        // ResolvingProxy.resolve() returns null for it and the store field stays a proxy
         Resource resourceFile = getDataDirectory().config(persistedResource);
         WMSLayerInfoImpl rawResource = (WMSLayerInfoImpl) ModificationProxy.unwrap(persistedResource);
         WMSStoreInfoImpl bogusStore = support.createWmsStore(ws);
@@ -717,11 +711,86 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         rawResource.setStore(bogusStore);
         persist(rawResource, resourceFile);
 
-        // Use an isolated loader so we only exercise the WMS layer path, not the full catalog.
-        // Without the fix this throws IllegalStateException caused by ClassCastException.
+        // Use an isolated loader so we only exercise the WMS layer path, not the full catalog
         DataDirectoryGeoServerLoader loader = newLoader();
         CatalogImpl newCatalog = new CatalogImpl();
         loader.postProcessBeforeInitialization(newCatalog, "catalog");
+
+        // the dangling store link makes the resource unusable, so it and its layer are left out
+        assertNull(newCatalog.getResource(persistedResource.getId(), WMSLayerInfo.class));
+        assertNull(newCatalog.getLayer(layer.getId()));
+    }
+
+    /**
+     * A resource whose namespace is not the one of its store workspace is a corrupted, but existing, state produced by
+     * the WMS/WMTS store editors. The loader must keep such layers, not drop them and not fail the startup.
+     *
+     * <p>The two workspaces reference each other so that whichever one is loaded first points at a namespace that is
+     * not in the catalog yet, making the failure deterministic instead of depending on the thread scheduling.
+     */
+    @Test
+    public void crossWorkspaceResourceNamespaceIsPreserved() throws Exception {
+        Catalog catalog = getCatalog();
+        WorkspaceInfo crossa = support.addWorkspace("crossa");
+        WorkspaceInfo crossb = support.addWorkspace("crossb");
+
+        WMSLayerInfo layerA = addCascadedLayer(crossa, "cascadedA");
+        WMSLayerInfo layerB = addCascadedLayer(crossb, "cascadedB");
+
+        // point each resource file at the other workspace namespace, leaving the store where it is
+        repointNamespace(layerA, catalog.getNamespaceByPrefix("crossb"));
+        repointNamespace(layerB, catalog.getNamespaceByPrefix("crossa"));
+
+        // single loader thread, so the load order is the directory order and never a race
+        String previousThreads = System.setProperty(GEOSERVER_DATA_DIR_LOADER_THREADS, "1");
+        CatalogImpl newCatalog = new CatalogImpl();
+        try {
+            newLoader().postProcessBeforeInitialization(newCatalog, "catalog");
+        } finally {
+            if (previousThreads == null) {
+                System.clearProperty(GEOSERVER_DATA_DIR_LOADER_THREADS);
+            } else {
+                System.setProperty(GEOSERVER_DATA_DIR_LOADER_THREADS, previousThreads);
+            }
+        }
+
+        WMSLayerInfo reloadedA = newCatalog.getResource(layerA.getId(), WMSLayerInfo.class);
+        WMSLayerInfo reloadedB = newCatalog.getResource(layerB.getId(), WMSLayerInfo.class);
+        assertNotNull("cascadedA was dropped by the loader", reloadedA);
+        assertNotNull("cascadedB was dropped by the loader", reloadedB);
+
+        // accept as is: the loader does not repair the data, or bookmarked requests would start failing
+        assertEquals("crossb", reloadedA.getNamespace().getPrefix());
+        assertEquals("crossa", reloadedB.getNamespace().getPrefix());
+        assertEquals("crossa", reloadedA.getStore().getWorkspace().getName());
+        assertEquals("crossb", reloadedB.getStore().getWorkspace().getName());
+    }
+
+    private WMSLayerInfo addCascadedLayer(WorkspaceInfo ws, String name) {
+        Catalog catalog = getCatalog();
+        WMSStoreInfoImpl store = support.createWmsStore(ws);
+        store.setName(name + "Store");
+        catalog.add(store);
+
+        WMSLayerInfo resource = catalog.getFactory().createWMSLayer();
+        resource.setName(name);
+        resource.setNativeName(name);
+        resource.setNamespace(catalog.getNamespaceByPrefix(ws.getName()));
+        resource.setStore(catalog.getStore(store.getId(), WMSStoreInfo.class));
+        catalog.add(resource);
+
+        LayerInfo layer = catalog.getFactory().createLayer();
+        layer.setResource(catalog.getResource(resource.getId(), WMSLayerInfo.class));
+        layer.setDefaultStyle(catalog.getStyleByName(StyleInfo.DEFAULT_RASTER));
+        catalog.add(layer);
+        return catalog.getResource(resource.getId(), WMSLayerInfo.class);
+    }
+
+    private void repointNamespace(WMSLayerInfo resource, NamespaceInfo namespace) throws IOException {
+        Resource file = getDataDirectory().config(resource);
+        WMSLayerInfoImpl raw = (WMSLayerInfoImpl) ModificationProxy.unwrap(resource);
+        raw.setNamespace(namespace);
+        persist(raw, file);
     }
 
     private void deleteStyle(String infoName, String sldFile) {

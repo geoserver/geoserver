@@ -71,9 +71,9 @@ public class WMSStoreEditPage extends AbstractWMSStorePage {
         // Cloning into "expandedStore" through the super class "clone" method
         WMSStoreInfo expandedStore = catalog.getResourcePool().clone(info, true);
 
-        getCatalog().validate(expandedStore, false).throwIfInvalid();
+        catalog.validate(expandedStore, false).throwIfInvalid();
 
-        getCatalog().save(info);
+        catalog.save(info);
         // saved after the store, so they validate against the new workspace
         layers.forEach(catalog::save);
         doReturn(StorePage.class);

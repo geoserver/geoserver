@@ -6,8 +6,6 @@ package org.geoserver.security.oauth2.token;
 
 import static java.util.logging.Level.SEVERE;
 import static java.util.stream.Collectors.toList;
-import static org.geoserver.security.impl.GeoServerUser.ADMIN_USERNAME;
-import static org.geoserver.security.impl.GeoServerUser.ROOT_USERNAME;
 import static org.geoserver.security.oauth2.token.OAuth2ClaimsHelpers.asStringList;
 import static org.geoserver.security.oauth2.token.OAuth2ClaimsHelpers.getClaim;
 
@@ -90,7 +88,7 @@ public final class GeoServerOAuth2OpaqueTokenIntrospector
         }
 
         // Avoid collisions with built-in administrator users.
-        if (ADMIN_USERNAME.equalsIgnoreCase(principal) || ROOT_USERNAME.equalsIgnoreCase(principal)) {
+        if (config.isPrincipalBlocked(principal)) {
             LOGGER.log(
                     Level.WARNING,
                     "Potentially harmful opaque-token principal '{0}' detected. Granting no roles.",

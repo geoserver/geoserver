@@ -4,6 +4,9 @@
  */
 package org.geoserver.security.oauth2.spring;
 
+import static org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId.REG_ID_OIDC;
+import static org.geoserver.security.oauth2.login.OAuth2ClientRegistrationId.isRegIdOfType;
+
 import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
 import org.springframework.security.oauth2.client.oidc.authentication.OidcIdTokenDecoderFactory;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -41,20 +44,32 @@ public class GeoServerOidcIdTokenDecoderFactory implements JwtDecoderFactory<Cli
     private void resolveDelegate(GeoServerOAuth2LoginFilterConfig pConfig) {
         GeoServerOidcIdTokenValidatorFactory jwtValidatorFactory = new GeoServerOidcIdTokenValidatorFactory(pConfig);
 
-        if (pConfig.isDisableSignatureValidation()) {
-            final GeoServerOidcIdTokenValidatorFactory validatorFactory = jwtValidatorFactory;
-            this.delegate = (ClientRegistration clientRegistration) -> {
-                // build validator chain for this client
-                final OAuth2TokenValidator<Jwt> validator = validatorFactory.apply(clientRegistration);
+        OidcIdTokenDecoderFactory lFactory = new OidcIdTokenDecoderFactory();
+        lFactory.setJwsAlgorithmResolver(new GeoServerJwsAlgorithmResolver(pConfig));
+        lFactory.setJwtValidatorFactory(jwtValidatorFactory);
 
-                return new GeoServerNoSignatureVerificationJwtDecoder(validator);
-            };
-        } else {
-            OidcIdTokenDecoderFactory lFactory = new OidcIdTokenDecoderFactory();
-            lFactory.setJwsAlgorithmResolver(new GeoServerJwsAlgorithmResolver(pConfig));
-            lFactory.setJwtValidatorFactory(jwtValidatorFactory);
+        if (!pConfig.isDisableSignatureValidation()) {
             this.delegate = lFactory;
+            return;
         }
+
+        final GeoServerOidcIdTokenValidatorFactory validatorFactory = jwtValidatorFactory;
+        final OidcIdTokenDecoderFactory verifyingFactory = lFactory;
+        this.delegate = (ClientRegistration clientRegistration) -> {
+            if (!isRegIdOfType(clientRegistration.getRegistrationId(), REG_ID_OIDC)) {
+                // "Disable token signature validation" is a setting of the custom OpenID Connect provider --
+                // it is the only provider whose panel offers the checkbox, because it is the only one whose
+                // endpoints an administrator supplies by hand and may need to point at a development IDP.
+                // Google, GitHub and Microsoft have fixed, publicly documented key sets, so there is no reason
+                // to skip verification for them and every reason not to: for Microsoft it would also void the
+                // tenant confinement, whose issuer check is only meaningful on a signature that was verified.
+                return verifyingFactory.createDecoder(clientRegistration);
+            }
+            // build validator chain for this client
+            final OAuth2TokenValidator<Jwt> validator = validatorFactory.apply(clientRegistration);
+
+            return new GeoServerNoSignatureVerificationJwtDecoder(validator);
+        };
     }
 
     /** @return the delegate */

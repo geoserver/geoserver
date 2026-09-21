@@ -326,3 +326,47 @@ In order to do this you can follow the next steps:
 
        # verify we've got it.
        keytool -list -v -keystore ${KEYSTOREFILE} -storepass ${KEYSTOREPASS} -alias ${HOST}
+
+.. _community_oidc_admin_accounts:
+
+Built-in administrator accounts
+-------------------------------
+
+GeoServer ships two built-in administrator accounts, ``admin`` and ``root``, and an identity provider may
+well assert a principal with one of those names. The OIDC filter therefore decides explicitly whether such
+a principal is allowed to become the corresponding local account.
+
+**Allow the provider to log in the built-in "admin" account** controls this, and it is **enabled by
+default**.
+
+* **Enabled (default).** A principal named ``admin`` is treated like any other identity and receives
+  whatever roles the configured role source assigns to it. This is what you want when the identity
+  provider is the authoritative source of the administrator account, for example when GeoServer is
+  driven by an external platform that provisions its own ``admin`` user.
+* **Disabled.** Such a login still authenticates, but is granted **no roles at all**, so it cannot act as
+  the local administrator. Disable it when the local ``admin`` account is managed inside GeoServer and
+  must never be assertable by the provider.
+
+The ``root`` account is **never** assertable by an identity provider, whatever this setting says. It is
+the emergency account backed by the master password and cannot be represented by an external identity.
+
+.. note::
+
+   Being granted no roles is not the same as being rejected. The login itself still succeeds; the
+   principal simply ends up with no authorities, which is what stops it acting as an administrator.
+
+.. warning::
+
+   With a **name-based role source** -- ``User group service`` or ``Role service`` -- the principal name
+   asserted by the provider is used as a lookup key into the local user/role database. With this setting
+   enabled, a provider asserting ``admin`` therefore inherits the local administrator's roles without
+   having to assert any role itself. If your provider is not fully trusted to control principal names,
+   either disable this setting or use a claim-based role source.
+
+.. warning::
+
+   **Upgrading.** Data directories written before this option existed do not contain it, and are read as
+   **enabled**, matching the behaviour above. Earlier 2.28.x releases refused roles to ``admin``
+   unconditionally, so an upgrade changes what such a login can do. If you were relying on that refusal,
+   disable the setting explicitly after upgrading.
+

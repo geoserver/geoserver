@@ -5,6 +5,8 @@
 package org.geoserver.security.oauth2.login;
 
 import static java.util.Optional.ofNullable;
+import static org.geoserver.security.impl.GeoServerUser.ADMIN_USERNAME;
+import static org.geoserver.security.impl.GeoServerUser.ROOT_USERNAME;
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilterBuilder.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI;
 
 import java.util.ArrayList;
@@ -125,6 +127,21 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
     // for role extraction
     private String roleConverterString;
     private boolean onlyExternalListedRoles;
+
+    /**
+     * Whether the identity provider is allowed to assert the built-in {@code admin} account. When {@code false}, a
+     * login naming {@code admin} still authenticates, but is granted no roles, so it cannot act as the local
+     * administrator.
+     *
+     * <p>Declared as a nullable {@link Boolean} on purpose. Filter configurations are deserialized through an
+     * Unsafe-based reflection provider, which means field initializers never run: a primitive {@code boolean} would
+     * silently read back as {@code false} for every data directory written before this option existed, turning a
+     * default into a behaviour change on upgrade. {@code null} therefore means "never configured" and is resolved to
+     * {@code true} by {@link #getAllowAdminLogin()}.
+     *
+     * <p>{@code root} is never assertable, whatever this is set to.
+     */
+    private Boolean allowAdminLogin;
 
     public GeoServerOAuth2LoginFilterConfig() {
         this.postLogoutRedirectUri = createPostLogoutRedirectUri();
@@ -630,5 +647,41 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
 
     public void setMsGraphAppRoleAssignmentsObjectId(String msGraphAppRoleAssignmentsObjectId) {
         this.msGraphAppRoleAssignmentsObjectId = msGraphAppRoleAssignmentsObjectId;
+    }
+
+    /**
+     * Whether the identity provider may assert the built-in {@code admin} account. Defaults to {@code true}, including
+     * for configurations written before this option existed.
+     *
+     * @return never null
+     */
+    public Boolean getAllowAdminLogin() {
+        return allowAdminLogin == null ? Boolean.TRUE : allowAdminLogin;
+    }
+
+    /** allowAdminLogin allow/deny identity-provider-asserted logins for the built-in {@code admin} account */
+    public void setAllowAdminLogin(Boolean allowAdminLogin) {
+        this.allowAdminLogin = allowAdminLogin;
+    }
+
+    /**
+     * Tells whether a principal asserted by the identity provider must be refused GeoServer roles because it collides
+     * with a built-in administrator account.
+     *
+     * <p>{@code root} is always refused: it is the emergency account backed by the master password and can never be
+     * represented by an external identity. {@code admin} is refused only when {@link #getAllowAdminLogin()} is
+     * {@code false}.
+     *
+     * @param principal the principal name asserted by the identity provider, may be null
+     * @return true when no roles may be granted to this principal
+     */
+    public boolean isPrincipalBlocked(String principal) {
+        if (principal == null) {
+            return false;
+        }
+        if (ROOT_USERNAME.equalsIgnoreCase(principal)) {
+            return true;
+        }
+        return ADMIN_USERNAME.equalsIgnoreCase(principal) && !getAllowAdminLogin();
     }
 }

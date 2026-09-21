@@ -9,8 +9,6 @@ import static java.util.logging.Level.SEVERE;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.geoserver.security.filter.GeoServerRoleResolvers.PRE_AUTH_ROLE_SOURCE_RESOLVER;
-import static org.geoserver.security.impl.GeoServerUser.ADMIN_USERNAME;
-import static org.geoserver.security.impl.GeoServerUser.ROOT_USERNAME;
 import static org.geoserver.security.jwtheaders.roles.JwtHeadersRolesExtractor.asStringList;
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_MICROSOFT;
 
@@ -107,7 +105,7 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
         }
         Collection<GeoServerRole> result = new ArrayList<>();
         String lPrincipal = pParam.getPrincipal();
-        if (ADMIN_USERNAME.equalsIgnoreCase(lPrincipal) || ROOT_USERNAME.equalsIgnoreCase(lPrincipal)) {
+        if (config.isPrincipalBlocked(lPrincipal)) {
             // avoid unintentional match with pre-existing administrator
             String lMsg = "Potentially harmful OAuth2 user '%s' detected. Granting no roles.";
             LOGGER.log(Level.WARNING, format(lMsg, lPrincipal));

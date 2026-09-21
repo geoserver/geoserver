@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,6 +27,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
@@ -34,6 +37,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.ResolvingProxy;
 import org.geoserver.catalog.impl.ResolvingProxyResolver;
+import org.geoserver.catalog.impl.ResourceInfoImpl;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerLoader;
@@ -226,6 +230,75 @@ class CatalogLoaderSanitizer {
             }
         }
         return true;
+    }
+
+    /**
+     * Whether the store can be added to the catalog, logging why when it cannot.
+     *
+     * <p>Every workspace is in the catalog before the first store is loaded, so a workspace left as a
+     * {@link ResolvingProxy} here points to one the data directory does not hold at all.
+     */
+    public boolean validate(StoreInfo store) {
+        String workspace = ResolvingProxy.getRef(store.getWorkspace());
+        if (workspace == null) {
+            return true;
+        }
+        String msg = "Store %s[%s] points to workspace %s, which is not in the catalog. Store and layers ignored.";
+        LOGGER.severe(msg.formatted(store.getName(), store.getId(), workspace));
+        return false;
+    }
+
+    /**
+     * Whether the resource can be added to the catalog, logging why when it cannot.
+     *
+     * <p>A store or namespace left as a {@link ResolvingProxy} points to something that is not in the catalog, and any
+     * later call on the dangling link recurses inside the proxy and dies with a {@link StackOverflowError}, which no
+     * caller catches. A namespace that merely disagrees with the store workspace is accepted as is: it is a corrupted
+     * but working setup, and renaming the layer to repair it would break requests that already use the old name.
+     */
+    public boolean validate(ResourceInfo resource) {
+        String store = ResolvingProxy.getRef(rawStore(resource));
+        String namespace = ResolvingProxy.getRef(resource.getNamespace());
+        if (store != null || namespace != null) {
+            List<String> missing = new ArrayList<>(2);
+            if (store != null) missing.add("store " + store);
+            if (namespace != null) missing.add("namespace " + namespace);
+            String msg = "Resource %s[%s] points to something that is not in the catalog: %s. Resource and layer "
+                    + "ignored.";
+            LOGGER.severe(msg.formatted(resource.getName(), resource.getId(), String.join(" and ", missing)));
+            return false;
+        }
+        warnOnWorkspaceMismatch(resource);
+        return true;
+    }
+
+    /** Reports a resource whose namespace is not the one of its store workspace, a state the editors used to create. */
+    private void warnOnWorkspaceMismatch(ResourceInfo resource) {
+        StoreInfo store = rawStore(resource);
+        NamespaceInfo namespace = resource.getNamespace();
+        if (store == null || namespace == null) {
+            return; // the catalog rejects these on its own, with its own message
+        }
+        WorkspaceInfo workspace = store.getWorkspace();
+        if (workspace == null || ResolvingProxy.getRef(workspace) != null) {
+            return; // unresolved store workspace, already reported when the store was loaded
+        }
+        if (workspace.getName().equals(namespace.getPrefix())) {
+            return;
+        }
+        String msg = "Resource %s[%s] is in workspace %s but its namespace is %s. Loaded as is, fix the workspace of "
+                + "store %s to align them.";
+        LOGGER.warning(msg.formatted(
+                resource.getName(), resource.getId(), workspace.getName(), namespace.getPrefix(), store.getName()));
+    }
+
+    /**
+     * The store of {@code resource} without the casts its subclasses apply, null when it is unset or when the resource
+     * is not a {@link ResourceInfoImpl} and the raw value cannot be read safely.
+     */
+    private StoreInfo rawStore(ResourceInfo resource) {
+        // getStore() is narrowed by the subclasses (e.g. to DataStoreInfo), which blows up on a resolving proxy
+        return resource instanceof ResourceInfoImpl impl ? impl.rawStore() : null;
     }
 
     /** Aids {@link CatalogLoader#doAddToCatalog()} in resolving the {@link ResolvingProxy} links in {@code info}. */

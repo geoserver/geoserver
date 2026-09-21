@@ -253,11 +253,8 @@ public class ResolvingProxyResolver {
             resolved = unwrap(resolved);
             s.setWorkspace(resolved);
         } else {
-            LOGGER.log(
-                    Level.INFO,
-                    "Failed to resolve workspace for store \""
-                            + store.getName()
-                            + "\". This means the workspace has not yet been added to the catalog, keep the proxy around");
+            LOGGER.log(Level.INFO, () -> "Failed to resolve the workspace of store \"%s\", it is not in the catalog"
+                    .formatted(store.getName()));
         }
     }
 

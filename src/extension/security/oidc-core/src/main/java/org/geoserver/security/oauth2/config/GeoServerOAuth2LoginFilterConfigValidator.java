@@ -176,13 +176,20 @@ public class GeoServerOAuth2LoginFilterConfigValidator extends FilterConfigValid
         if (!StringUtils.hasText(tenantId)) {
             return;
         }
-        try {
-            String normalizedTenantId = tenantId.trim();
-            if (!UUID.fromString(normalizedTenantId).toString().equalsIgnoreCase(normalizedTenantId)) {
-                throw new IllegalArgumentException("Tenant ID must use the canonical UUID format");
-            }
-        } catch (IllegalArgumentException e) {
+        // Deliberately narrower than what Entra's authorize endpoint accepts: the "contoso.onmicrosoft.com"
+        // domain form and the reserved words "organizations"/"consumers" are rejected. The v2.0 issuer always
+        // spells the tenant as a canonical UUID (https://login.microsoftonline.com/{tid}/v2.0), so those forms
+        // would leave nothing to pin the issuer against in ClientRegistrationFactory.
+        if (!isCanonicalUuid(tenantId.trim())) {
             throw createFilterException(OAuth2FilterConfigException.MS_TENANT_ID_INVALID);
+        }
+    }
+
+    private static boolean isCanonicalUuid(String pValue) {
+        try {
+            return UUID.fromString(pValue).toString().equalsIgnoreCase(pValue);
+        } catch (IllegalArgumentException e) {
+            return false;
         }
     }
 

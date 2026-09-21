@@ -19,6 +19,7 @@ import static org.springframework.security.oauth2.core.ClientAuthenticationMetho
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
+import org.geoserver.security.oauth2.login.MicrosoftEntraTenant;
 import org.geoserver.security.oauth2.login.OAuth2ClientRegistrationRegistry;
 import org.geoserver.security.oauth2.login.OAuth2LoginCustomizers.ClientRegistrationCustomizer;
 import org.geoserver.security.oauth2.login.ScopeUtils;
@@ -137,10 +138,12 @@ public class ClientRegistrationFactory {
     /** Microsoft Azure. */
     private ClientRegistration buildMicrosoftRegistration() {
         String[] scopes = ScopeUtils.valueOf(config.getMsScopes());
-        String tenantId = config.getMsTenantId();
-        String tenant = tenantId == null || tenantId.isBlank() ? "common" : tenantId.trim();
+        String tenantId = MicrosoftEntraTenant.normalize(config.getMsTenantId());
+        boolean singleTenant = tenantId != null;
+        String tenant = singleTenant ? tenantId : "common";
         String baseUri = "https://login.microsoftonline.com/" + tenant;
-        ClientRegistration reg = ClientRegistration.withRegistrationId(scopedRegId(config.getName(), REG_ID_MICROSOFT))
+        ClientRegistration.Builder builder = ClientRegistration.withRegistrationId(
+                        scopedRegId(config.getName(), REG_ID_MICROSOFT))
                 .clientId(config.getMsClientId())
                 .clientSecret(config.getMsClientSecret())
                 .userNameAttributeName(config.getMsUserNameAttribute())
@@ -153,8 +156,16 @@ public class ClientRegistrationFactory {
                 .userInfoUri("https://graph.microsoft.com/oidc/userinfo")
                 .jwkSetUri(baseUri + "/discovery/v2.0/keys")
                 .providerConfigurationMetadata(singletonMap("end_session_endpoint", baseUri + "/oauth2/v2.0/logout"))
-                .clientName(REG_ID_MICROSOFT)
-                .build();
+                .clientName(REG_ID_MICROSOFT);
+        if (singleTenant) {
+            // Recording the issuer makes Spring's OidcIdTokenValidator enforce it on the login flow. The v2.0
+            // form is exact here because the endpoints above are always v2.0; the Bearer path additionally
+            // accepts the v1.0 issuer, which GeoServer does not control. Only meaningful for a single tenant:
+            // tokens obtained through the shared "common" endpoint carry their own tenant's issuer, so there is
+            // no single value to record.
+            builder.issuerUri(MicrosoftEntraTenant.v2Issuer(tenantId));
+        }
+        ClientRegistration reg = builder.build();
         registrationCustomizer.accept(reg);
         return reg;
     }

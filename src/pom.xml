@@ -1203,6 +1203,23 @@
     </repository>
 
     <repository>
+      <!-- imageio-ext declares this repository in its own POM, so it takes part in resolution
+           whatever the active profiles are. It publishes 2.1-SNAPSHOT with build numbers of its
+           own, independent of the ones on OSGeo, so Maven merges both metadata files and can pick
+           either, rewriting *-SNAPSHOT.jar in the middle of a build. OSGeo mirrors it and is
+           fresher, so turn it off here instead. -->
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>geosolutions</id>
+      <name>GeoSolutions libraries repository, mirrored by OSGeo</name>
+      <url>https://maven.geo-solutions.it/</url>
+    </repository>
+
+    <repository>
       <releases>
         <enabled>false</enabled>
       </releases>

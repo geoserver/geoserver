@@ -61,6 +61,10 @@ public abstract class GeofenceRestBaseTest extends GeofenceBaseTest {
 
     @Override
     protected void onTearDown(SystemTestData testData) throws Exception {
+        // a no-op on the current base class, but this way a teardown added there later won't be silently skipped
+        super.onTearDown(testData);
+        // static, so the next class would otherwise inherit this one's verdict instead of probing for itself
+        IS_GEOFENCE_AVAILABLE = false;
         try {
             if (System.getProperty("IS_GEOFENCE_AVAILABLE") != null) {
                 System.clearProperty("IS_GEOFENCE_AVAILABLE");

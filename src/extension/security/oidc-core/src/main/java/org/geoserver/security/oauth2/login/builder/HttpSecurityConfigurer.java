@@ -82,7 +82,9 @@ public class HttpSecurityConfigurer {
      * "redirect-to-provider" filter when single-provider entry-point redirection is enabled.
      */
     public List<Filter> configure() throws Exception {
-        // Each builder instance gets its own prototype-scoped tokenDecoderFactory (see applicationContext.xml).
+        // The factory is a singleton shared with every other login filter -- Spring Security resolves it from
+        // the application context by type -- so this registers our configuration under our filter name rather
+        // than replacing whatever another filter set. See GeoServerOidcIdTokenDecoderFactory.
         tokenDecoderFactory.setGeoServerOAuth2LoginFilterConfig(config);
 
         http.oauth2Login(oauth -> {

@@ -62,21 +62,23 @@ public class WMSStoreEditPageTest extends GeoServerWicketTestSupport {
         login();
         Catalog catalog = getCatalog();
 
-        store = catalog.getFactory().createWebMapServer();
-        store.setName("cascade");
-        store.setWorkspace(catalog.getDefaultWorkspace());
+        // built like the new store page does it, the editor validates the connection defaults it sets
+        CatalogBuilder builder = new CatalogBuilder(catalog);
+        store = builder.buildWMSStore("cascade");
         store.setCapabilitiesURL(capabilities);
-        store.setEnabled(true);
+        // an enabled store makes the editor run a live capabilities check on save, and a failure there opens a
+        // confirmation dialog instead of saving, which has nothing to do with what this test covers
+        store.setEnabled(false);
         catalog.add(store);
 
-        CatalogBuilder builder = new CatalogBuilder(catalog);
         builder.setStore(store);
         WMSLayerInfo resource = builder.buildWMSLayer("world4326");
         catalog.add(resource);
         LayerInfo layer = builder.buildLayer(resource);
         catalog.add(layer);
 
-        tester.startPage(new WMSStoreEditPage(store));
+        // the page must get the catalog's proxy view, saving a raw store fails in the catalog facade
+        tester.startPage(new WMSStoreEditPage(catalog.getStore(store.getId(), WMSStoreInfo.class)));
     }
 
     @Test
@@ -86,7 +88,6 @@ public class WMSStoreEditPageTest extends GeoServerWicketTestSupport {
 
         FormTester form = tester.newFormTester("form");
         form.select(WS_DROPDOWN, 2);
-        form.submit();
         tester.clickLink("form:save", true);
 
         tester.assertNoErrorMessage();

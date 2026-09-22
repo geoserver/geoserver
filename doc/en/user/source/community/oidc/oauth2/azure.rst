@@ -69,6 +69,46 @@ Ensure you have the following:
 1. Your Client ID ("Application (client) ID").  This is a guid.
 2. Your Client Secret.  This is a guid.
 3. Name of the geoserver admin Role ("geoserverAdmin")  
+4. Your Directory (tenant) ID, if you intend to restrict sign-in to a single directory.  This is a guid,
+   shown next to the Application (client) ID on the app registration "Overview" page.
+
+
+.. _community_oidc_azure_tenant:
+
+Choose the tenant scope
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Decide this before configuring the filter, because it also affects how the application is registered in
+Azure.
+
+.. list-table::
+   :widths: 20 40 40
+   :header-rows: 1
+
+   * -
+     - Directory (tenant) ID **empty**
+     - Directory (tenant) ID **set**
+   * - Who can sign in
+     - Any Microsoft work, school or personal account
+     - Only accounts in that one directory
+   * - Endpoints used
+     - ``https://login.microsoftonline.com/common/...``
+     - ``https://login.microsoftonline.com/<tenant id>/...``
+   * - Azure registration
+     - Multitenant
+     - Single tenant
+   * - Bearer tokens (if enabled)
+     - Accepted from any tenant, for any application
+     - Must name this tenant **and** this application
+
+Leaving the field empty is the default and is what an existing configuration does after upgrading.
+
+.. warning::
+
+   A tenant-scoped JWKS URL is **not** by itself a restriction.  Microsoft Entra serves the same v2.0
+   signing keys from every tenant path, so a valid signature proves only that Microsoft issued the token,
+   not which directory it came from.  Restricting sign-in to one directory is what the Directory (tenant)
+   ID field does, by requiring that the token's issuer names that tenant.
 
 
 Create the OIDC Filter
@@ -86,7 +126,11 @@ Create the OIDC Filter
 #.  Fill in the required information:
 
     * "Client Id" is the Azure "Application (client) ID"
-    * "Client Secret" which was copied Zzure when you created it.
+    * "Client Secret" which was copied from Azure when you created it.
+    * "Directory (tenant) ID" -- leave empty to accept any Microsoft directory, or enter the tenant guid
+      to restrict sign-in to that one directory.  See :ref:`community_oidc_azure_tenant`.  The value must
+      be the guid form; ``contoso.onmicrosoft.com``, ``organizations`` and ``consumers`` are rejected,
+      because the issuer GeoServer has to match always spells the tenant as a guid.
 
     .. figure:: ../img/keycloak-gs-filter1.png
         :align: center

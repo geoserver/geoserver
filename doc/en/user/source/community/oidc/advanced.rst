@@ -370,3 +370,30 @@ the emergency account backed by the master password and cannot be represented by
    unconditionally, so an upgrade changes what such a login can do. If you were relying on that refusal,
    disable the setting explicitly after upgrading.
 
+
+
+.. _community_oidc_resource_server:
+
+Accepting bearer tokens
+-----------------------
+
+By default this filter handles interactive sign-in only.  Enabling **Accept bearer tokens** additionally
+lets a machine-to-machine caller authenticate by sending an ``Authorization: Bearer <JWT>`` header, verified
+against the same provider the filter is already configured with.
+
+The option only takes effect when exactly one provider is enabled, so that there is never a question of
+which provider's keys a token is checked against.  GitHub does not qualify, being OAuth2-only with no
+published key set.
+
+Such requests are answered statelessly: no session is created, and an unauthenticated one is refused rather
+than redirected to the provider's login page, which a non-interactive caller could not follow.
+
+For Microsoft Entra, what a bearer token must satisfy depends on the tenant scope described in
+:ref:`community_oidc_azure_tenant`.  With a Directory (tenant) ID set, the token must be issued by that
+tenant -- in either the v2.0 form or the ``https://sts.windows.net/<tenant id>/`` form that Entra emits when
+the resource application's ``accessTokenAcceptedVersion`` is unset -- and must name this application, by
+client ID or by the default ``api://<client id>`` application ID URI.
+
+If you have given the application a customised application ID URI, the built-in rule will not recognise it.
+Enable **Validate token audience** instead and enter that URI as the expected value; the audience claim and
+value you configure then govern, in place of the built-in check.

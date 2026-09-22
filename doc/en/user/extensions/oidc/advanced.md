@@ -154,6 +154,8 @@ Optional: It is no longer required to use the `User Info URI` - if you leave tha
 
 This option (**Disable token signature validation**, field `disableSignatureValidation`) is **unchecked by default**, so GeoServer validates the token signature out of the box --- the secure default. Check it only to **disable** signature validation (for example against a development IDP whose keys you do not want to verify); leave it unchecked in production.
 
+The option belongs to the custom **OpenID Connect** provider and applies to it alone, which is why the checkbox only appears when that provider is selected. Tokens from Google, GitHub and Microsoft are always signature-verified regardless of this setting: their key sets are fixed and publicly documented, so there is no case for skipping verification, and for Microsoft it would defeat any confinement based on the token's issuer, which only means something on a signature that was actually checked.
+
 !!! note
     This replaces the legacy `enforceTokenValidation` flag, whose polarity was the opposite (it defaulted to `true` and was checked to *enforce* validation). The new `disableSignatureValidation` flag is inverted: the unchecked default already enforces validation. See [Migrating from the legacy OAuth2/OIDC plugins](migrating.md#geoserver-field-renames).
 

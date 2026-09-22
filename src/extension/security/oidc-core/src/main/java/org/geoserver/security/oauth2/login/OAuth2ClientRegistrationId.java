@@ -46,6 +46,23 @@ public interface OAuth2ClientRegistrationId {
      * @param baseRegId the base registration ID to match against (e.g. {@link #REG_ID_OIDC})
      * @return {@code true} if the registration ID matches the base ID (either directly or as a scoped variant)
      */
+    /**
+     * Extracts the filter name from a scoped registration ID.
+     *
+     * <p>Splits on the last {@link #REG_ID_SCOPE_SEPARATOR}, because a filter may itself be named with one: for
+     * {@code "a__b__oidc"} the filter is {@code "a__b"}, not {@code "a"}.
+     *
+     * @param registrationId the actual registration ID, possibly scoped
+     * @return the filter name, or {@code null} for a bare registration ID that carries none
+     */
+    static String filterNameOf(String registrationId) {
+        if (registrationId == null) {
+            return null;
+        }
+        int lIndex = registrationId.lastIndexOf(REG_ID_SCOPE_SEPARATOR);
+        return lIndex <= 0 ? null : registrationId.substring(0, lIndex);
+    }
+
     static boolean isRegIdOfType(String registrationId, String baseRegId) {
         if (registrationId == null || baseRegId == null) {
             return false;

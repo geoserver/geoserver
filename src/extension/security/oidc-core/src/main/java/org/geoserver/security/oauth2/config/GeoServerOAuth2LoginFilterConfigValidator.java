@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -76,6 +77,7 @@ public class GeoServerOAuth2LoginFilterConfigValidator extends FilterConfigValid
             validateClientId(filterConfig.getMsClientId(), lProviderName);
             validateClientSecret(filterConfig.getMsClientSecret(), lProviderName);
             validateScopes(filterConfig.getMsScopes(), lProviderName);
+            validateMsTenantId(filterConfig.getMsTenantId());
         }
 
         validateRoleSourceMsGraph(filterConfig);
@@ -167,6 +169,27 @@ public class GeoServerOAuth2LoginFilterConfigValidator extends FilterConfigValid
         boolean lMix = Arrays.stream(lScopes).anyMatch(s -> s.contains(" "));
         if (lMix) {
             throw createFilterException(OAuth2FilterConfigException.OAUTH2_SCOPE_DELIMITER_MIXED, pProviderName);
+        }
+    }
+
+    private void validateMsTenantId(String tenantId) throws OAuth2FilterConfigException {
+        if (!StringUtils.hasText(tenantId)) {
+            return;
+        }
+        // Deliberately narrower than what Entra's authorize endpoint accepts: the "contoso.onmicrosoft.com"
+        // domain form and the reserved words "organizations"/"consumers" are rejected. The v2.0 issuer always
+        // spells the tenant as a canonical UUID (https://login.microsoftonline.com/{tid}/v2.0), so those forms
+        // would leave nothing to pin the issuer against in ClientRegistrationFactory.
+        if (!isCanonicalUuid(tenantId.trim())) {
+            throw createFilterException(OAuth2FilterConfigException.MS_TENANT_ID_INVALID);
+        }
+    }
+
+    private static boolean isCanonicalUuid(String pValue) {
+        try {
+            return UUID.fromString(pValue).toString().equalsIgnoreCase(pValue);
+        } catch (IllegalArgumentException e) {
+            return false;
         }
     }
 

@@ -295,12 +295,20 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     private ClientRegistration createMicrosoftClientRegistration() {
         /*
          * Wellknown-endpoint:
-         * - https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration
+         * - https://login.microsoftonline.com/{tenant}/v2.0/.well-known/openid-configuration
+         *
+         * {tenant} is the configured Directory (tenant) ID, or "common" when none is set. Entra serves the
+         * same v2.0 signing keys from every tenant path, so pointing the JWKS URI at one tenant does NOT
+         * confine the filter to it -- that is what the recorded issuer below is for.
          */
 
         String lScopeTxt = configuration.getMsScopes();
         String[] lScopes = ScopeUtils.valueOf(lScopeTxt);
-        ClientRegistration lReg = ClientRegistration
+        String lTenantId = MicrosoftEntraTenant.normalize(configuration.getMsTenantId());
+        boolean lSingleTenant = lTenantId != null;
+        String lTenant = lSingleTenant ? lTenantId : "common";
+        String lBaseUri = "https://login.microsoftonline.com/" + lTenant;
+        ClientRegistration.Builder lBuilder = ClientRegistration
                 // registrationId is used in paths (login and authorization)
                 .withRegistrationId(REG_ID_MICROSOFT)
                 .clientId(configuration.getMsClientId())
@@ -310,14 +318,21 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
                 .clientAuthenticationMethod(CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AUTHORIZATION_CODE)
                 .scope(lScopes)
-                .authorizationUri("https://login.microsoftonline.com/common/oauth2/v2.0/authorize")
-                .tokenUri("https://login.microsoftonline.com/common/oauth2/v2.0/token")
+                .authorizationUri(lBaseUri + "/oauth2/v2.0/authorize")
+                .tokenUri(lBaseUri + "/oauth2/v2.0/token")
                 .userInfoUri("https://graph.microsoft.com/oidc/userinfo")
-                .jwkSetUri("https://login.microsoftonline.com/common/discovery/v2.0/keys")
-                .providerConfigurationMetadata(singletonMap(
-                        "end_session_endpoint", "https://login.microsoftonline.com/common/oauth2/v2.0/logout"))
-                .clientName(REG_ID_MICROSOFT)
-                .build();
+                .jwkSetUri(lBaseUri + "/discovery/v2.0/keys")
+                .providerConfigurationMetadata(singletonMap("end_session_endpoint", lBaseUri + "/oauth2/v2.0/logout"))
+                .clientName(REG_ID_MICROSOFT);
+        if (lSingleTenant) {
+            // Recording the issuer makes Spring's OidcIdTokenValidator enforce it on the login flow. The v2.0
+            // form is exact here because the endpoints above are always v2.0; the Bearer path additionally
+            // accepts the v1.0 issuer, which GeoServer does not control. Only meaningful for a single tenant:
+            // tokens obtained through the shared "common" endpoint carry their own tenant's issuer, so there is
+            // no single value to record.
+            lBuilder.issuerUri(MicrosoftEntraTenant.v2Issuer(lTenantId));
+        }
+        ClientRegistration lReg = lBuilder.build();
         clientRegistrationCustomizer.accept(lReg);
         return lReg;
     }

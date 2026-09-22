@@ -359,4 +359,75 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilderTest {
         assertEquals("msClientId", lClientReg.getClientId());
         assertEquals("msClientSecret", lClientReg.getClientSecret());
     }
+
+    private ClientRegistration buildMicrosoftRegistrationWithTenant(String pTenantId) throws Exception {
+        assignDependencies();
+        when(mockHttp.build())
+                .thenReturn(
+                        new DefaultSecurityFilterChain(mock(RequestMatcher.class), Arrays.asList(mock(Filter.class))));
+
+        configuration.setMsEnabled(true);
+        configuration.setMsClientId("msClientId");
+        configuration.setMsClientSecret("msClientSecret");
+        configuration.setMsTenantId(pTenantId);
+
+        sut.build();
+
+        ClientRegistration lReg = sut.getClientRegistrationRepository().findByRegistrationId(REG_ID_MICROSOFT);
+        assertNotNull(lReg);
+        return lReg;
+    }
+
+    /**
+     * With a Directory (tenant) ID set, every Entra endpoint must address that tenant and the v2.0 issuer must be
+     * recorded on the registration -- that recorded issuer is what makes Spring enforce it on the login flow.
+     */
+    @Test
+    public void testMicrosoftSingleTenantScopesEndpointsAndRecordsIssuer() throws Exception {
+        String lTenant = "11111111-2222-3333-4444-555555555555";
+
+        ClientRegistration lReg = buildMicrosoftRegistrationWithTenant(lTenant);
+        ClientRegistration.ProviderDetails lDetails = lReg.getProviderDetails();
+
+        assertEquals(
+                "https://login.microsoftonline.com/" + lTenant + "/oauth2/v2.0/authorize",
+                lDetails.getAuthorizationUri());
+        assertEquals("https://login.microsoftonline.com/" + lTenant + "/oauth2/v2.0/token", lDetails.getTokenUri());
+        assertEquals("https://login.microsoftonline.com/" + lTenant + "/discovery/v2.0/keys", lDetails.getJwkSetUri());
+        assertEquals(
+                "https://login.microsoftonline.com/" + lTenant + "/oauth2/v2.0/logout",
+                lDetails.getConfigurationMetadata().get("end_session_endpoint"));
+        assertEquals(
+                "the recorded issuer is what confines the login flow to this tenant",
+                "https://login.microsoftonline.com/" + lTenant + "/v2.0",
+                lDetails.getIssuerUri());
+    }
+
+    /**
+     * Left empty, the filter must keep addressing the shared multi-tenant endpoints and record NO issuer: tokens
+     * obtained through "common" carry their own tenant's issuer, so there is no single value to pin.
+     */
+    @Test
+    public void testMicrosoftMultiTenantKeepsCommonAndRecordsNoIssuer() throws Exception {
+        ClientRegistration lReg = buildMicrosoftRegistrationWithTenant(null);
+        ClientRegistration.ProviderDetails lDetails = lReg.getProviderDetails();
+
+        assertEquals("https://login.microsoftonline.com/common/oauth2/v2.0/authorize", lDetails.getAuthorizationUri());
+        assertEquals("https://login.microsoftonline.com/common/discovery/v2.0/keys", lDetails.getJwkSetUri());
+        assertNull(
+                "no issuer may be pinned when the shared endpoint is used, or every login would be refused",
+                lDetails.getIssuerUri());
+    }
+
+    /** A tenant entered with stray whitespace must behave exactly like the trimmed value, not like "common". */
+    @Test
+    public void testMicrosoftTenantIsTrimmed() throws Exception {
+        String lTenant = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
+
+        ClientRegistration lReg = buildMicrosoftRegistrationWithTenant("  " + lTenant + "  ");
+
+        assertEquals(
+                "https://login.microsoftonline.com/" + lTenant + "/discovery/v2.0/keys",
+                lReg.getProviderDetails().getJwkSetUri());
+    }
 }

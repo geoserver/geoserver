@@ -62,8 +62,15 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequest
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.RequestMatcherRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
@@ -71,6 +78,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Builder for {@link GeoServerOAuth2LoginAuthenticationFilter}.
@@ -88,7 +96,8 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     private static final List<Class<?>> REQ_FILTER_TYPES = asList(
             OAuth2AuthorizationRequestRedirectFilter.class,
             OAuth2LoginAuthenticationFilter.class,
-            RequestCacheAwareFilter.class);
+            RequestCacheAwareFilter.class,
+            BearerTokenAuthenticationFilter.class);
 
     // mandatory
     private GeoServerOAuth2LoginFilterConfig configuration;
@@ -173,6 +182,21 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
             oauthConfig.tokenEndpoint().accessTokenResponseClient(getAccessTokenResponseClient());
             oauthConfig.loginProcessingUrl("/web/login/oauth2/code/*");
         });
+
+        // Hybrid mode: accept machine-to-machine requests carrying Authorization: Bearer <JWT>, using the
+        // provider configuration this filter already holds. Only auto-enabled when exactly one provider is
+        // enabled, so there is never a question of which provider key set a bearer token is checked against.
+        JwtDecoder lResourceServerJwtDecoder = createResourceServerJwtDecoderIfApplicable();
+        if (lResourceServerJwtDecoder != null) {
+            // Bearer requests must stay stateless even when a UI login session exists for the same browser.
+            http.securityContext(sc -> sc.securityContextRepository(new BearerAwareSecurityContextRepository()));
+            GeoServerOAuth2JwtAuthenticationConverter lConverter =
+                    new GeoServerOAuth2JwtAuthenticationConverter(securityManager, configuration);
+            http.oauth2ResourceServer(oauth -> oauth.jwt(jwt -> {
+                jwt.decoder(lResourceServerJwtDecoder);
+                jwt.jwtAuthenticationConverter(lConverter);
+            }));
+        }
 
         httpSecurityCustomizer.accept(http);
 
@@ -295,12 +319,20 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     private ClientRegistration createMicrosoftClientRegistration() {
         /*
          * Wellknown-endpoint:
-         * - https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration
+         * - https://login.microsoftonline.com/{tenant}/v2.0/.well-known/openid-configuration
+         *
+         * {tenant} is the configured Directory (tenant) ID, or "common" when none is set. Entra serves the
+         * same v2.0 signing keys from every tenant path, so pointing the JWKS URI at one tenant does NOT
+         * confine the filter to it -- that is what the recorded issuer below is for.
          */
 
         String lScopeTxt = configuration.getMsScopes();
         String[] lScopes = ScopeUtils.valueOf(lScopeTxt);
-        ClientRegistration lReg = ClientRegistration
+        String lTenantId = MicrosoftEntraTenant.normalize(configuration.getMsTenantId());
+        boolean lSingleTenant = lTenantId != null;
+        String lTenant = lSingleTenant ? lTenantId : "common";
+        String lBaseUri = "https://login.microsoftonline.com/" + lTenant;
+        ClientRegistration.Builder lBuilder = ClientRegistration
                 // registrationId is used in paths (login and authorization)
                 .withRegistrationId(REG_ID_MICROSOFT)
                 .clientId(configuration.getMsClientId())
@@ -310,14 +342,21 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
                 .clientAuthenticationMethod(CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AUTHORIZATION_CODE)
                 .scope(lScopes)
-                .authorizationUri("https://login.microsoftonline.com/common/oauth2/v2.0/authorize")
-                .tokenUri("https://login.microsoftonline.com/common/oauth2/v2.0/token")
+                .authorizationUri(lBaseUri + "/oauth2/v2.0/authorize")
+                .tokenUri(lBaseUri + "/oauth2/v2.0/token")
                 .userInfoUri("https://graph.microsoft.com/oidc/userinfo")
-                .jwkSetUri("https://login.microsoftonline.com/common/discovery/v2.0/keys")
-                .providerConfigurationMetadata(singletonMap(
-                        "end_session_endpoint", "https://login.microsoftonline.com/common/oauth2/v2.0/logout"))
-                .clientName(REG_ID_MICROSOFT)
-                .build();
+                .jwkSetUri(lBaseUri + "/discovery/v2.0/keys")
+                .providerConfigurationMetadata(singletonMap("end_session_endpoint", lBaseUri + "/oauth2/v2.0/logout"))
+                .clientName(REG_ID_MICROSOFT);
+        if (lSingleTenant) {
+            // Recording the issuer makes Spring's OidcIdTokenValidator enforce it on the login flow. The v2.0
+            // form is exact here because the endpoints above are always v2.0; the Bearer path additionally
+            // accepts the v1.0 issuer, which GeoServer does not control. Only meaningful for a single tenant:
+            // tokens obtained through the shared "common" endpoint carry their own tenant's issuer, so there is
+            // no single value to record.
+            lBuilder.issuerUri(MicrosoftEntraTenant.v2Issuer(lTenantId));
+        }
+        ClientRegistration lReg = lBuilder.build();
         clientRegistrationCustomizer.accept(lReg);
         return lReg;
     }
@@ -489,6 +528,13 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
         if (redirectToProviderFilter == null) {
             AuthenticationTrustResolver trust = new AuthenticationTrustResolverImpl();
             RequestMatcher lMatcher = r -> {
+                // A bearer request is a machine call; bouncing it to an interactive provider login would turn a
+                // 401 into a redirect the caller cannot follow.
+                if (configuration != null
+                        && configuration.isEnableResourceServerMode()
+                        && BearerAwareSecurityContextRepository.isBearerRequest(r)) {
+                    return false;
+                }
                 Authentication lAuth = SecurityContextHolder.getContext().getAuthentication();
                 if (lAuth == null) {
                     return true;
@@ -564,5 +610,81 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
         if (pClientRegistrationCustomizer != null) {
             clientRegistrationCustomizer = pClientRegistrationCustomizer;
         }
+    }
+
+    /**
+     * Builds the {@link JwtDecoder} used for resource-server (Bearer JWT) mode from the provider configuration this
+     * filter already holds, or returns {@code null} when the mode does not apply.
+     *
+     * <p>Only enabled when exactly one provider is active, so that a bearer token is never ambiguous about which
+     * provider key set should verify it. GitHub is excluded because it is OAuth2-only and publishes no JWKS.
+     *
+     * <p>Package-private so tests can exercise the applicability rules without building a whole filter chain.
+     */
+    JwtDecoder createResourceServerJwtDecoderIfApplicable() {
+        if (configuration == null
+                || !configuration.isEnableResourceServerMode()
+                || configuration.getActiveProviderCount() != 1) {
+            return null;
+        }
+
+        // Resolve the single enabled provider JWKS endpoint
+        String lJwkSetUri;
+        if (configuration.isGoogleEnabled()) {
+            ClientRegistration lReg = getClientRegistrationRepository().findByRegistrationId(REG_ID_GOOGLE);
+            lJwkSetUri = lReg == null ? null : lReg.getProviderDetails().getJwkSetUri();
+        } else if (configuration.isMsEnabled()) {
+            ClientRegistration lReg = getClientRegistrationRepository().findByRegistrationId(REG_ID_MICROSOFT);
+            lJwkSetUri = lReg == null ? null : lReg.getProviderDetails().getJwkSetUri();
+        } else if (configuration.isOidcEnabled()) {
+            lJwkSetUri = configuration.getOidcJwkSetUri();
+        } else {
+            // GitHub-only (or unknown) provider: no JWKS available
+            return null;
+        }
+
+        if (!StringUtils.hasText(lJwkSetUri)) {
+            return null;
+        }
+
+        NimbusJwtDecoder lDecoder = NimbusJwtDecoder.withJwkSetUri(lJwkSetUri).build();
+        // createDefault() checks the token type and the timestamps. It does NOT check the issuer or the
+        // audience, so on its own it accepts any unexpired token Microsoft signed -- from any tenant, for any
+        // application -- because Entra serves the same v2.0 keys from every tenant path.
+        OAuth2TokenValidator<Jwt> lValidator = JwtValidators.createDefault();
+
+        String lMsTenantId = singleTenantMicrosoftId();
+        if (lMsTenantId != null) {
+            lValidator =
+                    new DelegatingOAuth2TokenValidator<>(lValidator, MicrosoftEntraTenant.issuedByTenant(lMsTenantId));
+            if (!configuration.isValidateTokenAudience()) {
+                // Confining the tenant is not enough on its own: a tenant hosts many app registrations, and a
+                // token minted for any of them would otherwise authenticate here. Skipped when the administrator
+                // has configured audience validation explicitly, so that their claim and value govern instead --
+                // which is also the escape hatch for a customised application ID URI.
+                lValidator = new DelegatingOAuth2TokenValidator<>(
+                        lValidator, MicrosoftEntraTenant.issuedForClient(configuration.getMsClientId()));
+            }
+        }
+
+        if (configuration.isValidateTokenAudience()) {
+            OAuth2TokenValidator<Jwt> lAudience = new GeoServerJwtAudienceValidator(
+                    configuration.getValidateTokenAudienceClaimName(),
+                    configuration.getValidateTokenAudienceClaimValue());
+            lValidator = new DelegatingOAuth2TokenValidator<>(lValidator, lAudience);
+        }
+        lDecoder.setJwtValidator(lValidator);
+        return lDecoder;
+    }
+
+    /**
+     * Tenant whose issuer and audience Bearer tokens must match, or {@code null} to leave both unchecked as before.
+     *
+     * <p>Only Microsoft with an explicitly configured tenant qualifies, which is a field no existing deployment has
+     * set. Google and the custom OpenID Connect provider are deliberately left alone: honouring any issuer found on a
+     * registration would silently start enforcing one on deployments that never asked for it.
+     */
+    private String singleTenantMicrosoftId() {
+        return configuration.isMsEnabled() ? MicrosoftEntraTenant.normalize(configuration.getMsTenantId()) : null;
     }
 }

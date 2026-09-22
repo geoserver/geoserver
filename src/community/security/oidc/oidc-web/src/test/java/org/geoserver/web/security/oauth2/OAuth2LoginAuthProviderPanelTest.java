@@ -67,6 +67,7 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         // common
         formTester.setValue(prefix + "postLogoutRedirectUri", baseUrl + "/geoserver/postlogout");
         formTester.setValue(prefix + "enableRedirectAuthenticationEntryPoint", false);
+        formTester.setValue(prefix + "enableResourceServerMode", true);
 
         // Google
         prefix = "panel:content:pfv:1:";
@@ -81,6 +82,7 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         setBasicProviderValues(prefix, "ms");
         prefix = prefix + "settings:";
         formTester.setValue(prefix + "displayOnScopeSupport:scopes", "msScopes");
+        formTester.setValue(prefix + "displayOnMicrosoft:tenantId", "11111111-2222-3333-4444-555555555555");
 
         // OIDC
         prefix = "panel:content:pfv:4:";
@@ -125,6 +127,7 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         assertEquals("https://localhost:9090/geoserver", lConfig.getBaseRedirectUri());
         assertEquals("https://localhost:9090/geoserver/postlogout", lConfig.getPostLogoutRedirectUri());
         assertEquals(Boolean.FALSE, lConfig.getEnableRedirectAuthenticationEntryPoint());
+        assertEquals(Boolean.TRUE, lConfig.getEnableResourceServerMode());
 
         // Google
         assertEquals(Boolean.TRUE, lConfig.isGoogleEnabled());
@@ -132,6 +135,9 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         assertEquals("googleClientSecret", lConfig.getGoogleClientSecret());
         assertEquals("googleUserNameAttribute", lConfig.getGoogleUserNameAttribute());
         assertEquals("https://localhost:9090/geoserver/web/login/oauth2/code/google", lConfig.getGoogleRedirectUri());
+
+        // Microsoft directory (tenant) ID round-trips through the panel
+        assertEquals("11111111-2222-3333-4444-555555555555", lConfig.getMsTenantId());
 
         // gitHub
         assertEquals(Boolean.TRUE, lConfig.isGitHubEnabled());

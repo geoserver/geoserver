@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import org.geoserver.platform.exception.GeoServerRuntimException;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.RoleSource;
@@ -88,6 +89,48 @@ public class GeoServerOAuth2LoginFilterConfigValidator extends FilterConfigValid
         validateRoleSourceMsGraph(filterConfig);
         validateRoleSourceIdToken(filterConfig);
         validateRoleSourceUserInfo(filterConfig);
+        validateMsTenantId(filterConfig.getMsTenantId());
+        validateTokenAudience(filterConfig);
+    }
+
+    /**
+     * Rejects a Microsoft Entra Directory (tenant) ID that is not a canonical UUID.
+     *
+     * <p>Deliberately narrower than what Entra's authorize endpoint accepts: the {@code contoso.onmicrosoft.com} domain
+     * form and the reserved words {@code organizations} and {@code consumers} are rejected. The v2.0 issuer always
+     * spells the tenant as a canonical UUID ({@code https://login.microsoftonline.com/{tid}/v2.0}), so those forms
+     * would leave nothing to pin the issuer against.
+     *
+     * <p>An empty value is valid and selects the multi-tenant endpoints.
+     */
+    private void validateMsTenantId(String tenantId) throws GeoServerOAuth2FilterConfigException {
+        if (!StringUtils.hasText(tenantId)) {
+            return;
+        }
+        if (!isCanonicalUuid(tenantId.trim())) {
+            throw createFilterException(GeoServerOAuth2FilterConfigException.MS_TENANT_ID_INVALID);
+        }
+    }
+
+    private static boolean isCanonicalUuid(String pValue) {
+        try {
+            return UUID.fromString(pValue).toString().equalsIgnoreCase(pValue);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    private void validateTokenAudience(GeoServerOAuth2LoginFilterConfig filterConfig)
+            throws GeoServerOAuth2FilterConfigException {
+        if (!filterConfig.isValidateTokenAudience()) {
+            return;
+        }
+        if (!StringUtils.hasLength(filterConfig.getValidateTokenAudienceClaimName())) {
+            throw createFilterException(GeoServerOAuth2FilterConfigException.OAUTH2_AUDIENCE_CLAIM_NAME_REQUIRED);
+        }
+        if (!StringUtils.hasLength(filterConfig.getValidateTokenAudienceClaimValue())) {
+            throw createFilterException(GeoServerOAuth2FilterConfigException.OAUTH2_AUDIENCE_CLAIM_VALUE_REQUIRED);
+        }
     }
 
     private void validateRoleSourceUserInfo(GeoServerOAuth2LoginFilterConfig filterConfig)

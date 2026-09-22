@@ -78,6 +78,7 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
     private String msUserNameAttribute = "sub";
     private String msRedirectUri;
     private String msScopes = "openid profile email";
+    private String msTenantId;
 
     // custom OpenID Connect
     private boolean oidcEnabled;
@@ -112,6 +113,19 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
     private String tokenRolesClaim;
     private String postLogoutRedirectUri;
     private boolean enableRedirectAuthenticationEntryPoint;
+
+    // Resource server (bearer token) mode
+    /**
+     * Defaults to false on this release line. The OIDC login filter here has never honoured an {@code Authorization:
+     * Bearer} header, so enabling it by default would change how existing deployments answer an already-reaching
+     * request. It also keeps a configuration upgraded from an earlier version, which carries no element for this field,
+     * behaving like a newly created one.
+     */
+    private boolean enableResourceServerMode = false;
+
+    private boolean validateTokenAudience = false;
+    private String validateTokenAudienceClaimName = "aud";
+    private String validateTokenAudienceClaimValue;
 
     // MSGraph
 
@@ -662,6 +676,61 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
     /** allowAdminLogin allow/deny identity-provider-asserted logins for the built-in {@code admin} account */
     public void setAllowAdminLogin(Boolean allowAdminLogin) {
         this.allowAdminLogin = allowAdminLogin;
+    }
+
+    /** @return the Microsoft Entra Directory (tenant) ID, or null/blank for the multi-tenant endpoints */
+    public String getMsTenantId() {
+        return msTenantId;
+    }
+
+    /** @param msTenantId the Microsoft Entra Directory (tenant) ID to set */
+    public void setMsTenantId(String msTenantId) {
+        this.msTenantId = msTenantId;
+    }
+
+    /** @return the enableResourceServerMode */
+    public boolean isEnableResourceServerMode() {
+        return enableResourceServerMode;
+    }
+
+    /** @return the enableResourceServerMode */
+    public boolean getEnableResourceServerMode() {
+        return enableResourceServerMode;
+    }
+
+    /** @param enableResourceServerMode the enableResourceServerMode to set */
+    public void setEnableResourceServerMode(boolean enableResourceServerMode) {
+        this.enableResourceServerMode = enableResourceServerMode;
+    }
+
+    /** @return the validateTokenAudience */
+    public boolean isValidateTokenAudience() {
+        return validateTokenAudience;
+    }
+
+    /** @param validateTokenAudience the validateTokenAudience to set */
+    public void setValidateTokenAudience(boolean validateTokenAudience) {
+        this.validateTokenAudience = validateTokenAudience;
+    }
+
+    /** @return the validateTokenAudienceClaimName */
+    public String getValidateTokenAudienceClaimName() {
+        return validateTokenAudienceClaimName;
+    }
+
+    /** @param validateTokenAudienceClaimName the validateTokenAudienceClaimName to set */
+    public void setValidateTokenAudienceClaimName(String validateTokenAudienceClaimName) {
+        this.validateTokenAudienceClaimName = validateTokenAudienceClaimName;
+    }
+
+    /** @return the validateTokenAudienceClaimValue */
+    public String getValidateTokenAudienceClaimValue() {
+        return validateTokenAudienceClaimValue;
+    }
+
+    /** @param validateTokenAudienceClaimValue the validateTokenAudienceClaimValue to set */
+    public void setValidateTokenAudienceClaimValue(String validateTokenAudienceClaimValue) {
+        this.validateTokenAudienceClaimValue = validateTokenAudienceClaimValue;
     }
 
     /**

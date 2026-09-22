@@ -7,7 +7,10 @@
 package org.geoserver.security.oauth2.login;
 
 import static org.geoserver.security.oauth2.common.GeoServerOAuth2FilterConfigException.MSGRAPH_COMBINATION_INVALID;
+import static org.geoserver.security.oauth2.common.GeoServerOAuth2FilterConfigException.MS_TENANT_ID_INVALID;
 import static org.geoserver.security.oauth2.common.GeoServerOAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_MALFORMED;
+import static org.geoserver.security.oauth2.common.GeoServerOAuth2FilterConfigException.OAUTH2_AUDIENCE_CLAIM_NAME_REQUIRED;
+import static org.geoserver.security.oauth2.common.GeoServerOAuth2FilterConfigException.OAUTH2_AUDIENCE_CLAIM_VALUE_REQUIRED;
 import static org.geoserver.security.oauth2.common.GeoServerOAuth2FilterConfigException.OAUTH2_CLIENT_SECRET_REQUIRED;
 import static org.geoserver.security.oauth2.common.GeoServerOAuth2FilterConfigException.OAUTH2_CLIENT_USER_NAME_REQUIRED;
 import static org.geoserver.security.oauth2.common.GeoServerOAuth2FilterConfigException.OAUTH2_URL_IN_LOGOUT_URI_MALFORMED;
@@ -315,5 +318,94 @@ public class GeoServerOAuth2LoginFilterConfigValidatorTest extends GeoServerMock
         assertEquals(pCode, pException.getId());
         assertEquals(pExArgCount, pException.getArgs().length);
         LOGGER.info(pException.getMessage());
+    }
+
+    /** The tenant field is optional: left empty it selects the multi-tenant endpoints, which must stay valid. */
+    @Test
+    public void testMsTenantIdEmptyIsValid() throws Exception {
+        GeoServerOAuth2LoginFilterConfig config = validMicrosoftConfig();
+
+        config.setMsTenantId(null);
+        validator.validateOAuth2FilterConfig(config);
+
+        config.setMsTenantId("   ");
+        validator.validateOAuth2FilterConfig(config);
+    }
+
+    /** A canonical UUID is the only accepted form, because it is the only one the v2.0 issuer spells. */
+    @Test
+    public void testMsTenantIdCanonicalUuidIsValid() throws Exception {
+        GeoServerOAuth2LoginFilterConfig config = validMicrosoftConfig();
+
+        config.setMsTenantId("11111111-2222-3333-4444-555555555555");
+        validator.validateOAuth2FilterConfig(config);
+
+        // surrounding whitespace is trimmed rather than rejected
+        config.setMsTenantId("  11111111-2222-3333-4444-555555555555  ");
+        validator.validateOAuth2FilterConfig(config);
+    }
+
+    /**
+     * The domain form and the reserved words are refused deliberately: Entra's authorize endpoint accepts them, but the
+     * issuer they produce carries no tenant UUID to pin against.
+     */
+    @Test
+    public void testMsTenantIdNonUuidFormsAreRejected() throws Exception {
+        for (String invalid : new String[] {
+            "contoso.onmicrosoft.com",
+            "organizations",
+            "consumers",
+            "common",
+            "not-a-uuid",
+            "11111111222233334444555555555555"
+        }) {
+            GeoServerOAuth2LoginFilterConfig config = validMicrosoftConfig();
+            config.setMsTenantId(invalid);
+            try {
+                validator.validateOAuth2FilterConfig(config);
+                fail("Expected FilterConfigException for tenant id: " + invalid);
+            } catch (FilterConfigException ex) {
+                assertExceptionCodeWithArgCount(ex, MS_TENANT_ID_INVALID, 0);
+            }
+        }
+    }
+
+    /** Audience validation is opt-in; switching it on without the claim name or value is a configuration error. */
+    @Test
+    public void testValidateTokenAudienceRequiresClaimNameAndValue() throws Exception {
+        GeoServerOAuth2LoginFilterConfig config = validMicrosoftConfig();
+
+        // off by default, so nothing else is required
+        validator.validateOAuth2FilterConfig(config);
+
+        config.setValidateTokenAudience(true);
+        config.setValidateTokenAudienceClaimName("");
+        try {
+            validator.validateOAuth2FilterConfig(config);
+            fail("Expected FilterConfigException");
+        } catch (FilterConfigException ex) {
+            assertExceptionCodeWithArgCount(ex, OAUTH2_AUDIENCE_CLAIM_NAME_REQUIRED, 0);
+        }
+
+        config.setValidateTokenAudienceClaimName("aud");
+        try {
+            validator.validateOAuth2FilterConfig(config);
+            fail("Expected FilterConfigException");
+        } catch (FilterConfigException ex) {
+            assertExceptionCodeWithArgCount(ex, OAUTH2_AUDIENCE_CLAIM_VALUE_REQUIRED, 0);
+        }
+
+        config.setValidateTokenAudienceClaimValue("api://client");
+        validator.validateOAuth2FilterConfig(config);
+    }
+
+    private GeoServerOAuth2LoginFilterConfig validMicrosoftConfig() {
+        GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
+        config.setClassName(GeoServerOAuth2LoginAuthenticationFilter.class.getName());
+        config.setName("testOAuth2");
+        config.setMsEnabled(true);
+        config.setMsClientId("msid");
+        config.setMsClientSecret("mssecret");
+        return config;
     }
 }

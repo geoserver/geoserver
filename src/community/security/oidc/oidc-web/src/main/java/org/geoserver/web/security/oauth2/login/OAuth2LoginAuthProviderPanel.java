@@ -254,6 +254,9 @@ public class OAuth2LoginAuthProviderPanel
         add(new HelpLink("enableRedirectAuthenticationEntryPointHelp", this).setDialog(dialog));
         add(new CheckBox("enableRedirectAuthenticationEntryPoint"));
 
+        add(new HelpLink("enableResourceServerModeHelp", this).setDialog(dialog));
+        add(new CheckBox("enableResourceServerMode"));
+
         add(new HelpLink("allowAdminLoginHelp", this).setDialog(dialog));
         add(new CheckBox("allowAdminLogin"));
 
@@ -308,6 +311,17 @@ public class OAuth2LoginAuthProviderPanel
             lScopeContainer.add(new HelpLink("scopesHelp", this).setDialog(dialog));
         } else {
             lScopeContainer.setVisible(false);
+        }
+
+        // The Directory (tenant) ID is meaningful only for Microsoft Entra: left empty the filter uses the
+        // shared multi-tenant endpoints, set it confines the filter to that one directory.
+        WebMarkupContainer lMicrosoftContainer = new WebMarkupContainer("displayOnMicrosoft");
+        lSHContainer.add(lMicrosoftContainer);
+        if (pProviderKey.equals(PREFIX_MS)) {
+            lMicrosoftContainer.add(createTextField("tenantId", pProviderKey));
+            lMicrosoftContainer.add(new HelpLink("tenantIdHelp", this).setDialog(dialog));
+        } else {
+            lMicrosoftContainer.setVisible(false);
         }
 
         boolean lOidc = pProviderKey.equals(PREFIX_OIDC);

@@ -62,8 +62,15 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequest
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.RequestMatcherRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
@@ -71,6 +78,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Builder for {@link GeoServerOAuth2LoginAuthenticationFilter}.
@@ -88,7 +96,8 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     private static final List<Class<?>> REQ_FILTER_TYPES = asList(
             OAuth2AuthorizationRequestRedirectFilter.class,
             OAuth2LoginAuthenticationFilter.class,
-            RequestCacheAwareFilter.class);
+            RequestCacheAwareFilter.class,
+            BearerTokenAuthenticationFilter.class);
 
     // mandatory
     private GeoServerOAuth2LoginFilterConfig configuration;
@@ -173,6 +182,21 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
             oauthConfig.tokenEndpoint().accessTokenResponseClient(getAccessTokenResponseClient());
             oauthConfig.loginProcessingUrl("/web/login/oauth2/code/*");
         });
+
+        // Hybrid mode: accept machine-to-machine requests carrying Authorization: Bearer <JWT>, using the
+        // provider configuration this filter already holds. Only auto-enabled when exactly one provider is
+        // enabled, so there is never a question of which provider key set a bearer token is checked against.
+        JwtDecoder lResourceServerJwtDecoder = createResourceServerJwtDecoderIfApplicable();
+        if (lResourceServerJwtDecoder != null) {
+            // Bearer requests must stay stateless even when a UI login session exists for the same browser.
+            http.securityContext(sc -> sc.securityContextRepository(new BearerAwareSecurityContextRepository()));
+            GeoServerOAuth2JwtAuthenticationConverter lConverter =
+                    new GeoServerOAuth2JwtAuthenticationConverter(securityManager, configuration);
+            http.oauth2ResourceServer(oauth -> oauth.jwt(jwt -> {
+                jwt.decoder(lResourceServerJwtDecoder);
+                jwt.jwtAuthenticationConverter(lConverter);
+            }));
+        }
 
         httpSecurityCustomizer.accept(http);
 
@@ -504,6 +528,13 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
         if (redirectToProviderFilter == null) {
             AuthenticationTrustResolver trust = new AuthenticationTrustResolverImpl();
             RequestMatcher lMatcher = r -> {
+                // A bearer request is a machine call; bouncing it to an interactive provider login would turn a
+                // 401 into a redirect the caller cannot follow.
+                if (configuration != null
+                        && configuration.isEnableResourceServerMode()
+                        && BearerAwareSecurityContextRepository.isBearerRequest(r)) {
+                    return false;
+                }
                 Authentication lAuth = SecurityContextHolder.getContext().getAuthentication();
                 if (lAuth == null) {
                     return true;
@@ -579,5 +610,52 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
         if (pClientRegistrationCustomizer != null) {
             clientRegistrationCustomizer = pClientRegistrationCustomizer;
         }
+    }
+
+    /**
+     * Builds the {@link JwtDecoder} used for resource-server (Bearer JWT) mode from the provider configuration this
+     * filter already holds, or returns {@code null} when the mode does not apply.
+     *
+     * <p>Only enabled when exactly one provider is active, so that a bearer token is never ambiguous about which
+     * provider key set should verify it. GitHub is excluded because it is OAuth2-only and publishes no JWKS.
+     *
+     * <p>Package-private so tests can exercise the applicability rules without building a whole filter chain.
+     */
+    JwtDecoder createResourceServerJwtDecoderIfApplicable() {
+        if (configuration == null
+                || !configuration.isEnableResourceServerMode()
+                || configuration.getActiveProviderCount() != 1) {
+            return null;
+        }
+
+        // Resolve the single enabled provider JWKS endpoint
+        String lJwkSetUri;
+        if (configuration.isGoogleEnabled()) {
+            ClientRegistration lReg = getClientRegistrationRepository().findByRegistrationId(REG_ID_GOOGLE);
+            lJwkSetUri = lReg == null ? null : lReg.getProviderDetails().getJwkSetUri();
+        } else if (configuration.isMsEnabled()) {
+            ClientRegistration lReg = getClientRegistrationRepository().findByRegistrationId(REG_ID_MICROSOFT);
+            lJwkSetUri = lReg == null ? null : lReg.getProviderDetails().getJwkSetUri();
+        } else if (configuration.isOidcEnabled()) {
+            lJwkSetUri = configuration.getOidcJwkSetUri();
+        } else {
+            // GitHub-only (or unknown) provider: no JWKS available
+            return null;
+        }
+
+        if (!StringUtils.hasText(lJwkSetUri)) {
+            return null;
+        }
+
+        NimbusJwtDecoder lDecoder = NimbusJwtDecoder.withJwkSetUri(lJwkSetUri).build();
+        OAuth2TokenValidator<Jwt> lValidator = JwtValidators.createDefault();
+        if (configuration.isValidateTokenAudience()) {
+            OAuth2TokenValidator<Jwt> lAudience = new GeoServerJwtAudienceValidator(
+                    configuration.getValidateTokenAudienceClaimName(),
+                    configuration.getValidateTokenAudienceClaimValue());
+            lValidator = new DelegatingOAuth2TokenValidator<>(lValidator, lAudience);
+        }
+        lDecoder.setJwtValidator(lValidator);
+        return lDecoder;
     }
 }

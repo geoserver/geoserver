@@ -648,7 +648,25 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
         }
 
         NimbusJwtDecoder lDecoder = NimbusJwtDecoder.withJwkSetUri(lJwkSetUri).build();
+        // createDefault() checks the token type and the timestamps. It does NOT check the issuer or the
+        // audience, so on its own it accepts any unexpired token Microsoft signed -- from any tenant, for any
+        // application -- because Entra serves the same v2.0 keys from every tenant path.
         OAuth2TokenValidator<Jwt> lValidator = JwtValidators.createDefault();
+
+        String lMsTenantId = singleTenantMicrosoftId();
+        if (lMsTenantId != null) {
+            lValidator =
+                    new DelegatingOAuth2TokenValidator<>(lValidator, MicrosoftEntraTenant.issuedByTenant(lMsTenantId));
+            if (!configuration.isValidateTokenAudience()) {
+                // Confining the tenant is not enough on its own: a tenant hosts many app registrations, and a
+                // token minted for any of them would otherwise authenticate here. Skipped when the administrator
+                // has configured audience validation explicitly, so that their claim and value govern instead --
+                // which is also the escape hatch for a customised application ID URI.
+                lValidator = new DelegatingOAuth2TokenValidator<>(
+                        lValidator, MicrosoftEntraTenant.issuedForClient(configuration.getMsClientId()));
+            }
+        }
+
         if (configuration.isValidateTokenAudience()) {
             OAuth2TokenValidator<Jwt> lAudience = new GeoServerJwtAudienceValidator(
                     configuration.getValidateTokenAudienceClaimName(),
@@ -657,5 +675,16 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
         }
         lDecoder.setJwtValidator(lValidator);
         return lDecoder;
+    }
+
+    /**
+     * Tenant whose issuer and audience Bearer tokens must match, or {@code null} to leave both unchecked as before.
+     *
+     * <p>Only Microsoft with an explicitly configured tenant qualifies, which is a field no existing deployment has
+     * set. Google and the custom OpenID Connect provider are deliberately left alone: honouring any issuer found on a
+     * registration would silently start enforcing one on deployments that never asked for it.
+     */
+    private String singleTenantMicrosoftId() {
+        return configuration.isMsEnabled() ? MicrosoftEntraTenant.normalize(configuration.getMsTenantId()) : null;
     }
 }

@@ -14,6 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -77,7 +78,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.jose.jws.JwsAlgorithms;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
@@ -480,8 +481,12 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
                 .get();
         Authentication auth = context.getAuthentication();
         assertNotNull(auth);
-        assertEquals(DefaultOidcUser.class, auth.getPrincipal().getClass());
-        DefaultOidcUser lUser = (DefaultOidcUser) auth.getPrincipal();
+        // GSIP-235 wraps the principal, so this asserts the contract rather than the exact class: what callers
+        // depend on is that it is still an OidcUser, not that it is Spring's DefaultOidcUser.
+        assertTrue(
+                "expected an OidcUser but got " + auth.getPrincipal().getClass(),
+                auth.getPrincipal() instanceof OidcUser);
+        OidcUser lUser = (OidcUser) auth.getPrincipal();
         assertEquals("andrea.aime@gmail.com", lUser.getName());
         assertEquals(lNonce, lUser.getNonce());
 

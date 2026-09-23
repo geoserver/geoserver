@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="${resourceLink("openlayers10/ol.css")}" type="text/css">
     <link rel="stylesheet" href="${resourceLink("css/geoserver.css")}" type="text/css">
     <link rel="stylesheet" href="${resourceLink("openlayers10/layout.css")}" type="text/css">
+    <link rel="stylesheet" href="${resourceLink("webresources/ogcapi/maps.css")}" type="text/css">
 
     <script src="${resourceLink("openlayers10/ol.js")}" type="text/javascript"></script>
     <script src="${resourceLink("webresources/ogcapi/maps.js")}" type="text/javascript"></script>

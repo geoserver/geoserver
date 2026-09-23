@@ -4,8 +4,6 @@
  */
 package org.geoserver.web.ogcapi;
 
-import org.apache.wicket.Component;
-import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
@@ -14,7 +12,7 @@ import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.geoserver.ogcapi.ConformanceInfo;
 import org.jspecify.annotations.Nullable;
 
@@ -28,19 +26,32 @@ import org.jspecify.annotations.Nullable;
  */
 class ThreeStateCheckBox extends FormComponentPanel<Boolean> {
 
+    private static final JavaScriptResourceReference JS =
+            new JavaScriptResourceReference(ThreeStateCheckBox.class, "ThreeStateCheckBox.js");
+
     private String state;
 
     private final HiddenField<String> value;
+
+    private final WebMarkupContainer display;
 
     public ThreeStateCheckBox(String id, IModel<Boolean> model) {
         super(id, model);
         this.state = toState(model.getObject());
         this.value = new HiddenField<>("value", new PropertyModel<>(this, "state"));
         this.value.setOutputMarkupId(true);
-        WebMarkupContainer display = new WebMarkupContainer("display");
-        display.setOutputMarkupId(true);
+        this.display = new WebMarkupContainer("display");
+        this.display.setOutputMarkupId(true);
         add(value, display);
-        add(new TriStateBehavior(display.getMarkupId(), value.getMarkupId()));
+    }
+
+    /** Loads the cycling script and wires the display checkbox to its hidden value field. */
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.render(JavaScriptHeaderItem.forReference(JS));
+        response.render(OnDomReadyHeaderItem.forScript(
+                "gsTriStateInit('" + display.getMarkupId() + "','" + value.getMarkupId() + "')"));
     }
 
     @Override
@@ -67,23 +78,5 @@ class ThreeStateCheckBox extends FormComponentPanel<Boolean> {
 
     private static String toState(@Nullable Boolean value) {
         return value == null ? "" : value.toString();
-    }
-
-    /** Loads the cycling script and wires the display checkbox to its hidden value field on render. */
-    private static class TriStateBehavior extends Behavior {
-        private final String displayId;
-        private final String valueId;
-
-        TriStateBehavior(String displayId, String valueId) {
-            this.displayId = displayId;
-            this.valueId = valueId;
-        }
-
-        @Override
-        public void renderHead(Component component, IHeaderResponse response) {
-            response.render(JavaScriptHeaderItem.forReference(
-                    new PackageResourceReference(ThreeStateCheckBox.class, "ThreeStateCheckBox.js")));
-            response.render(OnDomReadyHeaderItem.forScript("gsTriStateInit('" + displayId + "','" + valueId + "')"));
-        }
     }
 }

@@ -27,9 +27,6 @@ import org.geotools.api.coverage.grid.GridEnvelope;
 import org.geotools.api.parameter.ParameterValueGroup;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
-import org.geotools.coverage.grid.io.AbstractGridFormat;
-import org.geotools.coverage.grid.io.GridFormatFinder;
-import org.geotools.coverage.grid.io.UnknownFormat;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
 import org.geotools.process.ProcessException;
@@ -88,9 +85,9 @@ public class GeoTiffPPIO extends BinaryPPIO implements ExtensionPriority {
         GridCoverageReaderResource resource = null;
         try {
             FileUtils.copyInputStreamToFile(input, f);
-            AbstractGridFormat format = GridFormatFinder.findFormat(f);
-            if (format instanceof UnknownFormat) {
-                throw new WPSException("Could not find the GeoTIFF GT2 format, please check it's in the classpath");
+            GeoTiffFormat format = new GeoTiffFormat();
+            if (!format.accepts(f)) {
+                throw new WPSException("Input could not be read as a GeoTIFF");
             }
             AbstractGridCoverage2DReader reader = format.getReader(f);
             resource = new GridCoverageReaderResource(reader, f);

@@ -172,11 +172,11 @@ public class CQL2Conformance extends ConformanceInfo<ServiceInfo> {
         return isEnabled(info, json, CQL2_JSON);
     }
 
-    public boolean isAdvanced() {
+    public Boolean isAdvanced() {
         return advanced;
     }
 
-    public void setCql2Advanced(boolean enabled) {
+    public void setAdvanced(Boolean enabled) {
         advanced = enabled;
     }
 
@@ -188,7 +188,7 @@ public class CQL2Conformance extends ConformanceInfo<ServiceInfo> {
         return arithmetic;
     }
 
-    public void setArtihmetic(Boolean enabled) {
+    public void setArithmetic(Boolean enabled) {
         arithmetic = enabled;
     }
 

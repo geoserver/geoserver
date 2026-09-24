@@ -9,6 +9,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
@@ -208,8 +211,18 @@ class CatalogLoader {
      * layers, styles, and layer groups.
      */
     private void loadWorkspaces() {
-        Stream<WorkspaceDirectory> stream = fileWalk.workspaces().stream();
-        stream.parallel().forEach(this::loadWorkspace);
+        // all namespaces go in before any resource is loaded: a resource may point to a namespace other than the
+        // one of its store workspace, and resolving it against a half loaded catalog would drop it at random
+        List<Entry<WorkspaceDirectory, WorkspaceInfo>> workspaces = fileWalk.workspaces().parallelStream()
+                .map(this::loadWorkspaceAndNamespace)
+                .flatMap(Optional::stream)
+                .toList();
+
+        workspaces.parallelStream().forEach(ws -> loadWorkspaceContents(ws.getKey(), ws.getValue()));
+
+        // and all layers go in before any layer group: a group whose layer is not in yet keeps a proxy, and
+        // validating the group workspace dereferences it and rejects the group for good
+        workspaces.parallelStream().forEach(ws -> loadLayerGroups(ws.getKey().layerGroups().stream()));
     }
 
     /**
@@ -222,23 +235,29 @@ class CatalogLoader {
     }
 
     /**
-     * Adds the workspace and namespace to the catalog directly from inside the calling worker thread, as well as the
-     * styles. For stores, layers, and layer groups, work may be deferred to additional threads in the pool.
+     * Adds the workspace and namespace to the catalog directly from inside the calling worker thread, returning empty
+     * if either file is missing or unreadable, in which case the workspace contents are not loaded at all.
      */
-    private void loadWorkspace(WorkspaceDirectory wsdir) {
+    private Optional<Entry<WorkspaceDirectory, WorkspaceInfo>> loadWorkspaceAndNamespace(WorkspaceDirectory wsdir) {
         Optional<WorkspaceInfo> wsinfo = depersist(wsdir.workspaceFile());
         Optional<NamespaceInfo> nsinfo = depersist(wsdir.namespaceFile());
 
-        if (wsinfo.isPresent() && nsinfo.isPresent()) {
-            WorkspaceInfo ws = wsinfo.orElseThrow();
-            NamespaceInfo ns = nsinfo.orElseThrow();
-            addToCatalog(ws);
-            addToCatalog(ns);
-
-            loadStyles(ws, wsdir.styles().stream());
-            loadStores(wsdir.stores());
-            loadLayerGroups(wsdir.layerGroups().stream());
+        if (wsinfo.isEmpty() || nsinfo.isEmpty()) {
+            return Optional.empty();
         }
+        WorkspaceInfo ws = wsinfo.orElseThrow();
+        addToCatalog(ws);
+        addToCatalog(nsinfo.orElseThrow());
+        return Optional.of(Map.entry(wsdir, ws));
+    }
+
+    /**
+     * Adds the workspace styles from inside the calling worker thread. For stores and layers, work may be deferred to
+     * additional threads in the pool. Layer groups are left out, they are loaded once every workspace is complete.
+     */
+    private void loadWorkspaceContents(WorkspaceDirectory wsdir, WorkspaceInfo ws) {
+        loadStyles(ws, wsdir.styles().stream());
+        loadStores(wsdir.stores());
     }
 
     /**
@@ -276,8 +295,8 @@ class CatalogLoader {
      */
     private void loadStore(StoreDirectory storeDir) {
         Optional<StoreInfo> store = depersist(storeDir.storeFile, pathContext(storeDir.storeFile));
-        if (store.isPresent()) {
-            addToCatalog(store.orElseThrow());
+        // the layers go in only if their store made it, otherwise each one is dropped again with a store error
+        if (store.isPresent() && addToCatalog(store.orElseThrow())) {
             loadLayers(storeDir.layers());
         }
     }
@@ -299,9 +318,21 @@ class CatalogLoader {
     private void loadResourceAndLayer(LayerDirectory layerDir) {
         Optional<ResourceInfo> resource = depersist(layerDir.resourceFile, pathContext(layerDir.resourceFile));
         Optional<LayerInfo> layer = depersist(layerDir.layerFile, pathContext(layerDir.layerFile));
-        if (resource.isPresent() && layer.isPresent()) {
-            addToCatalog(resource.orElseThrow());
-            addToCatalog(layer.orElseThrow());
+        // the layer goes in only if its resource made it, an orphan layer breaks every catalog lookup
+        if (resource.isPresent() && layer.isPresent() && addToCatalog(resource.orElseThrow())) {
+            if (!addToCatalog(layer.orElseThrow())) {
+                removeOrphanResource(resource.orElseThrow());
+            }
+        }
+    }
+
+    /** Drops a resource whose layer did not make it, it is unreachable but still takes up its name in the catalog. */
+    private void removeOrphanResource(ResourceInfo resource) {
+        try {
+            catalog.remove(resource);
+        } catch (RuntimeException e) {
+            LOGGER.log(Level.SEVERE, e, () -> "Failed to remove the orphan %s %s"
+                    .formatted(sanitizer.typeOf(resource), resource.getId()));
         }
     }
 
@@ -311,7 +342,7 @@ class CatalogLoader {
      * @param stream stream of paths to layer group files
      */
     private void loadLayerGroups(Stream<Path> stream) {
-        depersist(stream, LayerGroupInfo.class, null).forEach(this::addToCatalog);
+        depersist(stream.parallel(), LayerGroupInfo.class, null).forEach(this::addToCatalog);
     }
 
     /**
@@ -337,31 +368,59 @@ class CatalogLoader {
      *
      * <p>This method dispatches to the appropriate catalog add method based on the type of the catalog info object.
      *
-     * @param <C> the type of catalog info
      * @param info the catalog info object to add
-     * @return the added catalog info object
+     * @return whether the object made it into the catalog
      * @throws IllegalArgumentException if the info object is of an unknown type
      */
-    private <C extends CatalogInfo> C addToCatalog(C info) {
+    private boolean addToCatalog(CatalogInfo info) {
 
-        sanitizer.resolveProxies(info);
+        if (!resolveAndValidate(info)) {
+            return false;
+        }
 
         if (info instanceof WorkspaceInfo workspaceInfo) {
-            doAddToCatalog(workspaceInfo, catalog::add, WorkspaceInfo::getName);
+            return doAddToCatalog(workspaceInfo, catalog::add, WorkspaceInfo::getName)
+                    .isPresent();
         } else if (info instanceof NamespaceInfo namespaceInfo) {
-            doAddToCatalog(namespaceInfo, catalog::add, NamespaceInfo::getPrefix);
-        } else if (info instanceof StoreInfo storeInfo) doAddToCatalog(storeInfo, catalog::add, StoreInfo::getName);
+            return doAddToCatalog(namespaceInfo, catalog::add, NamespaceInfo::getPrefix)
+                    .isPresent();
+        } else if (info instanceof StoreInfo storeInfo)
+            return doAddToCatalog(storeInfo, catalog::add, StoreInfo::getName).isPresent();
         else if (info instanceof ResourceInfo resourceInfo)
-            doAddToCatalog(resourceInfo, catalog::add, this::resourceLog);
+            return doAddToCatalog(resourceInfo, catalog::add, this::resourceLog).isPresent();
         else if (info instanceof LayerInfo layerInfo) {
-            doAddToCatalog(layerInfo, catalog::add, LayerInfo::getName);
+            return doAddToCatalog(layerInfo, catalog::add, LayerInfo::getName).isPresent();
         } else if (info instanceof LayerGroupInfo groupInfo) {
-            doAddToCatalog(groupInfo, catalog::add, LayerGroupInfo::getName);
-        } else if (info instanceof StyleInfo styleInfo) doAddToCatalog(styleInfo, catalog::add, StyleInfo::getName);
+            return doAddToCatalog(groupInfo, catalog::add, LayerGroupInfo::getName)
+                    .isPresent();
+        } else if (info instanceof StyleInfo styleInfo)
+            return doAddToCatalog(styleInfo, catalog::add, StyleInfo::getName).isPresent();
         else {
             throw new IllegalArgumentException("Unexpected value: %s".formatted(info));
         }
-        return info;
+    }
+
+    /**
+     * Resolves the {@link ResolvingProxy} links of {@code info} and tells whether it is fit for the catalog.
+     *
+     * <p>Anything thrown here is swallowed on purpose: a dangling link makes the accessors of the concrete info class
+     * misbehave in ways this code cannot enumerate, and letting it out of the worker thread aborts the whole startup
+     * (GEOS-12023) instead of costing a single layer. {@link StackOverflowError} is in the list because a dangling
+     * proxy recurses into itself, and it is a local failure, unlike the errors that take the whole JVM down.
+     */
+    private boolean resolveAndValidate(CatalogInfo info) {
+        try {
+            sanitizer.resolveProxies(info);
+            if (info instanceof ResourceInfo resource) return sanitizer.validate(resource);
+            if (info instanceof StoreInfo store) return sanitizer.validate(store);
+            return true;
+        } catch (RuntimeException | StackOverflowError e) {
+            // the overflow trace is thousands of identical proxy frames, worthless in a log, so only its type is kept
+            Throwable trace = e instanceof StackOverflowError ? null : e;
+            LOGGER.log(Level.SEVERE, trace, () -> "Failed to resolve the links of %s %s (%s), it is ignored"
+                    .formatted(sanitizer.typeOf(info), info.getId(), e));
+            return false;
+        }
     }
 
     private String resourceLog(CatalogInfo resource) {

@@ -120,6 +120,13 @@ This filter allows gathering user credentials (username and password) from reque
 
    
 	 
+.. _security_webadmin_rememberme:
+
+Remember me
+~~~~~~~~~~~
+
+The **rememberme** filter keeps a user logged in through a browser cookie. In a cluster, set the ``GEOSERVER_REMEMBERME_KEY`` environment variable to the same value on every node, so a cookie issued by one node is accepted by the others. Choose a long value that mixes upper and lower case letters, digits and punctuation.
+
 Authentication providers
 ------------------------
 

@@ -8,9 +8,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
+import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.MessageConverterResponseAdapter;
 import org.geoserver.ogcapi.ResponseMessageConverter;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
@@ -48,6 +51,23 @@ public class MapResponseMessageConverter extends MessageConverterResponseAdapter
         return new Operation(original.getId(), original.getService(), original.getMethod(), new Object[] {
             result.getMapContent().getRequest()
         });
+    }
+
+    /**
+     * The response that will encode this map. Several WMS responses share a media type while binding to different
+     * {@link WebMap} subclasses (e.g. the two SVG renderers), so a lookup by media type alone can pick a response that
+     * might not handle the map it is given.
+     */
+    @Override
+    public Optional<Response> getResponse(MediaType mediaType) {
+        Request dr = Dispatcher.REQUEST.get();
+        if (!(APIRequestInfo.get().getResult() instanceof WebMap map)) return super.getResponse(mediaType);
+        Operation operation = getOperation(map, dr, mediaType);
+        return responses.stream()
+                .filter(r -> r.getBinding().isInstance(map))
+                .filter(r -> r.canHandle(operation))
+                .filter(r -> getMediaTypeStream(r).anyMatch(mediaType::isCompatibleWith))
+                .findFirst();
     }
 
     @Override

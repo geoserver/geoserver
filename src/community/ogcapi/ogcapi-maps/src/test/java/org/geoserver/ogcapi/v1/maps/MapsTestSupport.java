@@ -4,16 +4,24 @@
  */
 package org.geoserver.ogcapi.v1.maps;
 
+import java.awt.image.BufferedImage;
 import java.util.Collections;
 import java.util.TimeZone;
+import java.util.function.BiConsumer;
 import javax.xml.namespace.QName;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.OGCApiTestSupport;
+import org.geoserver.wms.WMSInfo;
 import org.junit.BeforeClass;
 
 public class MapsTestSupport extends OGCApiTestSupport {
@@ -37,20 +45,88 @@ public class MapsTestSupport extends OGCApiTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
+
+        // add a red style and set it as alternative style for lakes
+        Catalog catalog = getCatalog();
+        testData.addStyle("red", getClass(), catalog);
+        StyleInfo redStyle = catalog.getStyleByName("red");
+        LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
+        lakes.getStyles().add(redStyle);
+        catalog.save(lakes);
+
+        // setup the bbox for lakes
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        cb.setupBounds(lakes.getResource());
+        catalog.save(lakes.getResource());
+
         // add temporal layer
-        testData.addRasterLayer(TIMESERIES, "timeseries.zip", null, getCatalog());
+        testData.addRasterLayer(TIMESERIES, "timeseries.zip", null, catalog);
         testData.addVectorLayer(
                 TIME_WITH_START_END,
                 Collections.emptyMap(),
                 "TimeElevationWithStartEnd.properties",
                 getClass(),
-                getCatalog());
+                catalog);
         testData.addVectorLayer(
                 TIME_WITH_START_END_DATE,
                 Collections.emptyMap(),
                 "TimeElevationWithStartEndDate.properties",
                 getClass(),
-                getCatalog());
+                catalog);
+    }
+
+    /** A test body that may throw, used by {@link #withConformance}. */
+    @FunctionalInterface
+    protected interface ThrowingRunnable {
+        void run() throws Exception;
+    }
+
+    /** Flips one Maps conformance flag, runs the body, and always resets the flag to its default (null) afterwards. */
+    protected void withConformance(BiConsumer<MapsConformance, Boolean> flag, boolean value, ThrowingRunnable body)
+            throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        flag.accept(MapsConformance.configuration(wms), value);
+        gs.save(wms);
+        try {
+            body.run();
+        } finally {
+            flag.accept(MapsConformance.configuration(wms), null);
+            gs.save(wms);
+        }
+    }
+
+    /**
+     * Alpha of one pixel, 0 fully transparent and 255 fully opaque. {@link BufferedImage#getRGB} returns the pixel as
+     * ARGB with alpha in the high byte.
+     */
+    protected static int alpha(BufferedImage image, int x, int y) {
+        return alpha(image.getRGB(x, y));
+    }
+
+    /** Alpha of an ARGB pixel as returned by {@link BufferedImage#getRGB}, 0 fully transparent and 255 fully opaque. */
+    protected static int alpha(int argb) {
+        return argb >>> 24;
+    }
+
+    /** Red band of an ARGB pixel, 0 to 255. */
+    protected static int red(int argb) {
+        return (argb >> 16) & 0xFF;
+    }
+
+    /** Green band of an ARGB pixel, 0 to 255. */
+    protected static int green(int argb) {
+        return (argb >> 8) & 0xFF;
+    }
+
+    /** Blue band of an ARGB pixel, 0 to 255. */
+    protected static int blue(int argb) {
+        return argb & 0xFF;
+    }
+
+    /** The three colour bands of an ARGB pixel, with the alpha dropped, for comparisons that ignore opacity. */
+    protected static int rgb(int argb) {
+        return argb & 0xFFFFFF;
     }
 
     protected void setupStartEndTimeDimension(QName typeName, String dimension, String start, String end) {

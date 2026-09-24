@@ -5,17 +5,25 @@
 package org.geoserver.ogcapi.v1.maps;
 
 import static org.geoserver.catalog.ResourceInfo.TIME;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.PathNotFoundException;
+import java.util.List;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.wms.WMSInfo;
 import org.junit.Test;
 
 public class CollectionTest extends MapsTestSupport {
@@ -65,6 +73,62 @@ public class CollectionTest extends MapsTestSupport {
         assertEquals(-0.0018, spatial.read("$[1]"), 0d);
         assertEquals(0.0031, spatial.read("$[2]"), 0d);
         assertEquals(-1.0E-4, spatial.read("$[3]"), 0d);
+    }
+
+    /** A collection stored in CRS84 needs no storageCrs, and the crs list is the one the service publishes. */
+    @Test
+    public void testLakesCrsList() throws Exception {
+        DocumentContext json = getAsJSONPath("ogc/maps/v1/collections/" + getLayerId(MockData.LAKES), 200);
+        assertEquals("http://www.opengis.net/def/crs/OGC/1.3/CRS84", json.read("$.crs[0]"));
+        assertThrows(PathNotFoundException.class, () -> json.read("$.storageCrs"));
+        assertThrows(PathNotFoundException.class, () -> json.read("$.extent.spatial.storageCrsBbox"));
+    }
+
+    /** A collection stored in a projected CRS reports it, and the extent repeats the area in that CRS. */
+    @Test
+    public void testProjectedCollectionCrsList() throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        wms.getSRS().addAll(List.of("EPSG:4326", "EPSG:3857"));
+        gs.save(wms);
+        // compute the native bounds, so there is an extent to report in the storage CRS
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo polygons = catalog.getFeatureTypeByName(getLayerId(MockData.POLYGONS));
+        new CatalogBuilder(catalog).setupBounds(polygons);
+        catalog.save(polygons);
+        try {
+            DocumentContext json = getAsJSONPath("ogc/maps/v1/collections/" + getLayerId(MockData.POLYGONS), 200);
+            assertEquals("http://www.opengis.net/def/crs/EPSG/0/32615", json.read("$.storageCrs"));
+            // the configured list, CRS84 first, with the storage CRS added since it was not declared
+            assertThat(
+                    json.read("crs"),
+                    contains(
+                            "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                            "http://www.opengis.net/def/crs/EPSG/0/32615",
+                            "http://www.opengis.net/def/crs/EPSG/0/4326",
+                            "http://www.opengis.net/def/crs/EPSG/0/3857"));
+            // the same area as the CRS84 bbox, in metres
+            DocumentContext storage = readSingleContext(json, "$.extent.spatial.storageCrsBbox");
+            assertEquals(500225, storage.read("$[0]", Double.class), 1d);
+            assertEquals(500025, storage.read("$[1]", Double.class), 1d);
+            assertEquals(500275, storage.read("$[2]", Double.class), 1d);
+            assertEquals(500075, storage.read("$[3]", Double.class), 1d);
+        } finally {
+            wms.getSRS().clear();
+            gs.save(wms);
+        }
+    }
+
+    /** The storage CRS shows up in the collection page, but not for a collection stored in CRS84. */
+    @Test
+    public void testStorageCrsHTML() throws Exception {
+        org.jsoup.nodes.Document projected = getAsJSoup("ogc/maps/v1/collections/cgf:Polygons?f=html");
+        assertEquals(
+                "http://www.opengis.net/def/crs/EPSG/0/32615",
+                projected.select("#cgf__Polygons_storageCrs").text());
+
+        org.jsoup.nodes.Document wgs84 = getAsJSoup("ogc/maps/v1/collections/cite:Lakes?f=html");
+        assertTrue(wgs84.select("#cite__Lakes_storageCrs").isEmpty());
     }
 
     @Test

@@ -31,10 +31,11 @@ public class LandingPageTest extends MapsTestSupport {
         assertThat(
                 service.getOperations(),
                 Matchers.containsInAnyOrder(
-                        // "getApi",
+                        "getApi",
                         "describeCollection",
                         "getCollections",
                         "getCollectionInfo",
+                        "getCollectionLegend",
                         "getCollectionMap",
                         "getLandingPage",
                         "getConformanceDeclaration",

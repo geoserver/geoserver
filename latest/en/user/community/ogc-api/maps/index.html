@@ -24784,6 +24784,73 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Configuration of OGC API - Maps module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#turning-optional-functionality-off" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Turning optional functionality off
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requesting-a-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requesting a map
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Requesting a map">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#map-size-and-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Map size and shape
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requesting-a-map-of-several-collections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requesting a map of several collections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filtering-a-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtering a map
+      
+    </span>
+  </a>
+  
 </li>
       
     </ul>
@@ -30239,6 +30306,73 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Configuration of OGC API - Maps module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#turning-optional-functionality-off" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Turning optional functionality off
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requesting-a-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requesting a map
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Requesting a map">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#map-size-and-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Map size and shape
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requesting-a-map-of-several-collections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requesting a map of several collections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filtering-a-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtering a map
+      
+    </span>
+  </a>
+  
 </li>
       
     </ul>
@@ -30267,18 +30401,23 @@
 
 
 <h1 id="ogc-api-maps">OGC API - Maps<a class="headerlink" href="#ogc-api-maps" title="Permanent link">&para;</a></h1>
-<p>A <a href="https://github.com/opengeospatial/ogcapi-maps">OGC API - Maps</a> based on the current early specification draft, delivering partial functionality:</p>
+<p>A <a href="https://github.com/opengeospatial/ogcapi-maps">OGC API - Maps</a> implementation aligned to version 1.0.0, delivering:</p>
 <ul>
-<li>Collection listing</li>
-<li>Styles per collection</li>
-<li>Map and info support for single collection</li>
+<li>Collection listing, and styles per collection</li>
+<li>Map of a collection, in the default style or in any style associated to it</li>
+<li>Map of the whole dataset, drawing several collections in one image, chosen and ordered with the
+  <code>collections</code> parameter</li>
+<li>API definition (OpenAPI 3), filtered to the conformance classes enabled on the server</li>
+<li>Optional map parameters, listed under <a href="#requesting-a-map">Requesting a map</a></li>
+<li>Attribute filtering of the rendered features, with the queryable attributes of each collection</li>
+<li>Three GeoServer extensions outside the standard: feature info on a map, legends, and the binding of the
+  filter parameters to the map resources</li>
 </ul>
-<p>Missing functionality at the time of writing, and known issues:</p>
+<p>Missing functionality at the time of writing:</p>
 <ul>
-<li>API definition</li>
 <li>Maps specific metadata (e.g., scale ranges)</li>
-<li>Support for multi-collection map representation</li>
-<li>HTML representation of a map with OpenLayers is only partially functional</li>
+<li>A style applied to a dataset map: each collection is drawn in its own default style (not part of the standard)</li>
+<li>Map tilesets (delivered by the separate OGC API - Tiles module)</li>
 </ul>
 <h2 id="ogc-api-maps-implementation-status">OGC API - Maps Implementation status<a class="headerlink" href="#ogc-api-maps-implementation-status" title="Permanent link">&para;</a></h2>
 <table>
@@ -30292,13 +30431,8 @@
 <tbody>
 <tr>
 <td>Part 1: Core</td>
-<td><a href="https://docs.ogc.org/DRAFTS/20-057.md">Draft</a></td>
-<td>Implementation based on early specification draft.</td>
-</tr>
-<tr>
-<td>Part 2: Partitioning</td>
-<td><a href="https://github.com/opengeospatial/ogcapi-maps/tree/master/extensions/partitioning/standard">Draft</a></td>
-<td>Implementation based on early specification draft.</td>
+<td><a href="https://docs.ogc.org/is/20-058/20-058.html">1.0.0</a></td>
+<td>Implemented for collection maps and dataset maps, with the optional classes listed above.</td>
 </tr>
 </tbody>
 </table>
@@ -30325,10 +30459,201 @@
 <li>
 <p>Restart GeoServer.</p>
 <p>On restart the services are listed at <a href="http://localhost:8080/geoserver">http://localhost:8080/geoserver</a></p>
+<p>The Maps landing page is at <a href="http://localhost:8080/geoserver/ogc/maps/v1">http://localhost:8080/geoserver/ogc/maps/v1</a>, linking to the API definition,
+the collections, the dataset map and the conformance classes.</p>
+<p><img alt="" src="img/landing-page.png" /><br />
+<em>OGC API - Maps landing page</em></p>
 </li>
 </ol>
 <h2 id="configuration-of-ogc-api-maps-module">Configuration of OGC API - Maps module<a class="headerlink" href="#configuration-of-ogc-api-maps-module" title="Permanent link">&para;</a></h2>
-<p>The module is based on the GeoServer WMS one, follows the same configuration and exposes the same layers. As a significant difference, Maps does not have a concept of layer tree, so only individual layers and groups can be exposed.</p>
+<p>The module shares the same mapping engine as WMS, follows the same configuration and exposes the same layers. As a significant difference, Maps does not have a concept of layer tree, so only individual layers and groups can be exposed.</p>
+<h3 id="turning-optional-functionality-off">Turning optional functionality off<a class="headerlink" href="#turning-optional-functionality-off" title="Permanent link">&para;</a></h3>
+<p>As with other OGC APIs, Maps exposes conformance classes, which can be turned off individually from the
+<strong>Services &gt; Mapping</strong> settings page in the admin UI, on the <strong>Maps</strong> tab.</p>
+<p>A table lists each optional class with an Enabled checkbox, plus the <strong>Collections in a dataset map</strong> field described in
+<a href="#requesting-a-map-of-several-collections">Requesting a map of several collections</a>.</p>
+<p><img alt="" src="img/maps-service-configuration.png" /><br />
+<em>Maps conformance classes</em></p>
+<p>The same tab lists the CQL2 and ECQL filter languages, and the CQL2 capabilities, in two further tables.</p>
+<p><img alt="" src="img/maps-cql2-configuration.png" /><br />
+<em>CQL2 filter configuration</em></p>
+<p><img alt="" src="img/maps-ecql-configuration.png" /><br />
+<em>ECQL filter configuration</em></p>
+<p>Disabling a class removes it from the <code>conformance</code> document, and removes its parameters, or its whole
+resource, from the API document; a resource that is gone answers with a <code>404</code> status. The kind of class decides
+what happens to a request that still uses the disabled functionality:</p>
+<ul>
+<li>A parameter class (<code>spatialSubsetting</code>, <code>generalSubsetting</code>, <code>scaling</code>, <code>displayResolution</code>, <code>datetime</code>,
+  <code>crs</code>, <code>background</code>, <code>orientation</code>): the parameter is ignored, following the OGC API convention of ignoring
+  unsupported query parameters, and the map is returned as if it had not been provided. With <code>generalSubsetting</code>
+  off, the elevation and custom-dimension axes of a <code>subset</code> are dropped rather than rejected.</li>
+<li>An output format class (<code>tiff</code>, <code>svg</code>): the format is no longer offered, so a request for it fails HTTP content
+  negotiation with a <code>406</code> status.</li>
+<li>The two GeoServer extension resources, <code>featureInfo</code> and <code>legend</code>: each is a whole resource, so it answers
+  with a <code>404</code> status once disabled. Turning <code>legend</code> off also leaves the styles document with no legend
+  formats to offer.</li>
+<li><code>datasetMap</code>: the <code>/map</code> resource and its feature info go away, and the landing page stops linking them and
+  stops publishing an <code>extent</code>. Collection maps are not affected.</li>
+<li><code>collectionsSelection</code>: the <code>collections</code> parameter is ignored, so the dataset map always draws the default
+  contents, and the preview offers no palette. The class needs <code>datasetMap</code> to mean anything, so turning that
+  off disables both.</li>
+<li>The filter classes (<code>filter</code>, <code>mapFilter</code>, the language ones) and <code>queryables</code>: filtering needs <code>filter</code>,
+  <code>mapFilter</code> and at least one language, so turning off any of them ignores the <code>filter</code> parameter and takes the
+  queryables away with it. See <a href="#filtering-a-map">Filtering a map</a>.</li>
+</ul>
+<h2 id="requesting-a-map">Requesting a map<a class="headerlink" href="#requesting-a-map" title="Permanent link">&para;</a></h2>
+<p>A map of a collection is retrieved from <code>/ogc/maps/v1/collections/{collectionId}/map</code>, or from
+<code>.../styles/{styleId}/map</code> to pick a style other than the default one. The output format is chosen with the <code>f</code>
+parameter, PNG and JPEG are always available, TIFF and SVG can be turned off via conformance classes,
+in general, other output formats can be removed in the mapping configuration panel as well.</p>
+<p><img alt="" src="img/collection.png" /><br />
+<em>Collection page</em></p>
+<p>The format can also be negotiated with the <code>Accept</code> header, in place of <code>f</code>. A client that lists PNG and JPEG
+with the same quality, and nothing it prefers more, lets the server choose: a map with transparency comes back
+as PNG, an opaque one as JPEG, which compresses it better. Give one of the two a higher quality, for example
+<code>Accept: image/png, image/jpeg;q=0.5</code>, to make the choice explicit.</p>
+<p>The area, size and appearance of the map are controlled by the parameters of the optional conformance classes:</p>
+<ul>
+<li><code>bbox</code> and <code>bbox-crs</code>, <code>subset</code> and <code>subset-crs</code>, or <code>center</code> and <code>center-crs</code>, to pick the area. A <code>center</code>
+  request also needs <code>width</code>, <code>height</code> and <code>scale-denominator</code>, since a point alone does not define an extent.</li>
+<li><code>subset</code> can be also used to select along dimensions beyond space and time, when general subsetting is enabled: the
+  elevation and any custom dimension declared on the layer, for example <code>subset=elevation(500)</code> or
+  <code>subset=&lt;dimension&gt;(&lt;value&gt;)</code>, with <code>low:high</code> for a range. The dimensions available on a collection, and
+  their ranges, are listed in the collection description under <code>extent</code>. An axis that is not a dimension of the
+  collection is rejected with a <code>400</code> status.</li>
+<li><code>width</code> and <code>height</code>, or <code>scale-denominator</code>, to size the image. If you leave out the width or the height,
+  GeoServer computes it, see <a href="#map-size-and-shape">Map size and shape</a> below.</li>
+<li><code>mm-per-pixel</code>, the size of a pixel on the display, 0.28 mm when not given.</li>
+<li><code>datetime</code>, to select a time in a layer with a time dimension.</li>
+<li><code>crs</code>, the CRS of the delivered map. Both the extended <code>http://www.opengis.net/def/crs/EPSG/0/4326</code> form and the SafeCURIE <code>[EPSG:4326]</code> form are
+  accepted; these forms follow the axis order declared by the CRS authority, while a plain <code>EPSG:4326</code> is always
+  longitude/latitude. The same holds for <code>bbox-crs</code>, <code>subset-crs</code> and <code>center-crs</code>.</li>
+<li><code>bgcolor</code>, <code>transparent</code>, <code>void-color</code> and <code>void-transparent</code>, for the map background.</li>
+<li>
+<p><code>orientation</code>, to rotate the map, in degrees.</p>
+</li>
+<li>
+<p><code>filter</code>, <code>filter-lang</code> and <code>filter-crs</code>, to render only the features matching a filter. See
+  <a href="#filtering-a-map">Filtering a map</a> below.</p>
+</li>
+</ul>
+<p>Every response carries the delivered area back in the <code>Content-Crs</code>, <code>Content-Bbox</code>, <code>Content-Orientation</code> and
+<code>Content-Datetime</code> headers. <code>Content-Bbox</code> follows the axis order of the CRS authority, so for <code>EPSG:4326</code> it reads
+latitude,longitude, and it always reports the area before any rotation. <code>Content-Crs</code> holds the CRS URI between
+angle brackets, for example <code>&lt;http://www.opengis.net/def/crs/EPSG/0/4326&gt;</code>, and is omitted when the CRS has no
+authority code, for example when using an AUTO code. <code>Content-Orientation</code> is the rotation applied, zero for a map with the default orientation.</p>
+<p>The CRSs a map can be delivered in are advertised as CRS URIs by the collection description, in its <code>crs</code>
+property, and by the <code>/collections</code> document, which lists them once at its root so that each collection can
+point at that single list with <code>#/crs</code>. The list is the <strong>Services &gt; Mapping</strong> SRS list when one is configured,
+otherwise it's all the known codes. A collection whose storage CRS is
+not CRS84 also reports it as <code>storageCrs</code>, adding it to the <code>crs</code> list, and repeats its extent in that CRS under
+<code>extent.spatial.storageCrsBbox</code>. That is the CRS a map is delivered in when the request does not ask for another
+one, so no reprojection takes place.</p>
+<p>These two resources are GeoServer extensions as well, not part of the standard:</p>
+<ul>
+<li><code>.../map/info</code>, the feature information at a pixel, selected with the <code>i</code> and <code>j</code> parameters. <code>limit</code> sets the
+  maximum number of features returned, one by default, counted across all the layers of the collection: a layer
+  group needs a higher limit to report something from more than one of its layers. The pixel is read from the
+  same map the <code>map</code> resource returns, so all the map parameters above apply here too, and the reported features
+  are the ones the map shows. <code>orientation</code> is the exception, it is currently ignored: the pixel is always read
+  from the map as it would be drawn without rotation, so on a rotated map use the <code>map</code> resource to see the
+  rotation and this one to query it. When no <code>bbox-crs</code> is given, <code>crs</code> applies to the <code>bbox</code> as well.
+  Unless otherwise specified, the parameters supported by a WMS GetFeatureInfo are also available in the <code>.../map/info</code> resource.</li>
+<li><code>.../legend</code> and <code>.../styles/{styleId}/legend</code>, the legend of a style, with the same <code>width</code>, <code>height</code>, <code>scale</code>,
+  <code>rule</code>, <code>lang</code>, <code>transparent</code>, <code>bgcolor</code> and <code>legend-options</code> parameters as the WMS <code>GetLegendGraphic</code> request.</li>
+</ul>
+<p>Maps is subject to the same service limits as WMS: memory, rendering time, maximum dimensions, and so on.</p>
+<h3 id="map-size-and-shape">Map size and shape<a class="headerlink" href="#map-size-and-shape" title="Permanent link">&para;</a></h3>
+<p>When the request gives no <code>width</code> or no <code>height</code>, the standard requires the missing one to be computed from the size of
+the area on the ground, and not from the span of its coordinates. See parts H of the
+<a href="https://docs.ogc.org/is/20-058/20-058.html#req_scaling_width-definition">width</a> and
+<a href="https://docs.ogc.org/is/20-058/20-058.html#req_scaling_height-definition">height</a> requirements, and the
+<a href="https://docs.ogc.org/is/20-058/20-058.html#scaling-aspect-ratio">scale and aspect ratio considerations</a> that describe
+the computation. The two measures differ: one degree of longitude is about 111 km at the equator and about 56 km at 60
+degrees of latitude, while one degree of latitude is about 111 km everywhere. Projected CRSs have the same problem in
+their own units, a Web Mercator "metre" is a real metre at the equator only.</p>
+<p>The results might be surprising for those with a WMS background:</p>
+<ul>
+<li>A geographic map away from the equator comes out taller than its bounding box suggests. A box of 10 by 10 degrees at
+  60 degrees of latitude covers about 558 km east to west and about 1114 km north to south, so the image is about twice
+  as tall as it is wide. The square image a WMS returns for the same box is the stretched one, when ground distances
+  are considered.</li>
+<li>GeoServer measures at the centre of the map, one of the ways the standard allows. A large map is correct in the
+  middle, and progressively wrong towards its edges. No single image size can be correct everywhere, and the standard
+  warns that two servers may answer the same request with slightly different sizes.</li>
+<li>GeoServer still computes the scale of a style from the coordinates, the WMS way. On a large map, or far from the
+  equator, the style is drawn with the rules of a somewhat different scale than the <code>scale-denominator</code> asked for.</li>
+</ul>
+<p>Send <code>bbox</code>, <code>width</code> and <code>height</code> together, as in a WMS request, to keep full control: GeoServer then computes nothing.</p>
+<h2 id="requesting-a-map-of-several-collections">Requesting a map of several collections<a class="headerlink" href="#requesting-a-map-of-several-collections" title="Permanent link">&para;</a></h2>
+<p>A map of the whole service is retrieved from <code>/ogc/maps/v1/map</code>, linked from the landing page. It takes the same
+parameters as a collection map, plus <code>collections</code>, a comma separated list choosing what to draw:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>/ogc/maps/v1/map?collections=topp:states,topp:tasmania_roads&amp;f=image/png
+</code></pre></div>
+<p>The collections are drawn in painter's order, the first one at the bottom and the last one on top. Each entry is
+either a collection identifier or the full URL of its collection resource. A layer group counts as a single
+collection, and keeps its own internal layer order and per-layer styles. Every collection is drawn in its own
+default style: OGC API - Maps 1.0.0 has no way to pick a style per collection.</p>
+<p>Without <code>collections</code> the map draws the contents of the service it was addressed to: the layer or layer group of
+a <a href="../../../configuration/virtual-services/">virtual service</a>, or a selection of the collections of the
+workspace, or of the whole catalog at the root. Drawing a whole catalog would be both slow and the map likely unreadable, so the
+map holds at most the number of collections set in <strong>Services &gt; Mapping</strong> on the <strong>Maps</strong> tab (10 by default). The collections are picked
+in two steps: first the layer groups, being curated, then the layers by name until the limit is reached, leaving out any
+layer already drawn as a member of one of those groups. The selection is then stacked bottom to top as rasters,
+polygon layers, layer groups, lines and points, so that the least covering layers stay on top. Ask for the
+collections you want in <code>collections</code> to get anything else: that list is never cut.</p>
+<p>Maps leaves out the same layers the WMS capabilities document does: disabled layers, layers not advertised, vector
+layers without a geometry, and layer groups nested in another group. A group in <code>CONTAINER</code> mode cannot be drawn on
+its own, as in WMS, so its members are collections instead. A layer drawn as part of a group is not drawn a second
+time on its own, whatever the mode of the group; ask for it in <code>collections</code> to have it drawn separately.</p>
+<p>Naming a collection that does not exist, or one that cannot be drawn, fails with a <code>400</code> status.</p>
+<p>The landing page describes what the dataset map covers, in an <code>extent</code> property built like the one of a
+collection, and the CRSs it can be delivered in, in a <code>crs</code> property. The extent covers the default contents,
+in CRS84, and reports no temporal range: working one out would mean reading the time domain of every collection.</p>
+<p>The dimension parameters apply as they do in WMS: one <code>datetime</code> or <code>subset</code> value drives every collection having
+that dimension, and the collections that do not have it are drawn whole. A request fails only when none of the
+collections has the dimension asked for. A <code>filter</code> is applied to every collection drawn, so it is only useful on
+collections sharing the attributes it names.</p>
+<p>The HTML view of the dataset map is an interactive preview with a collection palette: pick the collections to
+draw from the list of candidates, and move them up and down to change the drawing order. <code>.../map/info</code>, the
+GeoServer feature info extension, works on the dataset map too, reporting across the collections drawn.</p>
+<p><img alt="" src="img/dataset-map.png" /><br />
+<em>Dataset map preview with the collection palette</em></p>
+<h2 id="filtering-a-map">Filtering a map<a class="headerlink" href="#filtering-a-map" title="Permanent link">&para;</a></h2>
+<p>Filtering is not part of OGC API - Maps 1.0.0. GeoServer applies the filter parameters of
+<a href="https://docs.ogc.org/is/19-079r2/19-079r2.html">OGC API - Features - Part 3: Filtering</a> to the map resources,
+so only the features matching the filter are rendered. Binding those parameters to the map resources is itself a
+GeoServer extension, declared as a separate conformance class. The request parameters are:</p>
+<ul>
+<li><code>filter</code>, the filter expression.</li>
+<li><code>filter-lang</code>, its language: <code>cql2-text</code> (the default), <code>cql2-json</code>, or <code>ecql-text</code>, the GeoServer own
+  Extended CQL. XML filters and feature identifiers are not supported, though they might be added in the future.
+  Only the languages enabled in the service configuration are accepted, the API document lists them in the
+  <code>filter-lang</code> parameter, and any other value gives a <code>400</code> status.</li>
+<li><code>filter-crs</code>, the CRS of the geometry literals used in spatial predicates. Defaults to CRS84.</li>
+</ul>
+<p>For example, to render only the roads whose type is a motorway:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>.../collections/topp:roads/map?f=image/png&amp;filter=type='motorway'
+</code></pre></div>
+<p>The filter is combined with <code>bbox</code>, <code>datetime</code> and <code>subset</code> by AND, so a feature is drawn only when it satisfies
+all of them. The same parameters work on the <code>.../map/info</code> resource, so the feature info reports only the
+features that the map shows. An invalid expression, an unknown language, or an unknown CRS is answered with a
+<code>400</code> status.</p>
+<p>The attributes that can be used in a filter, with their types, are listed by the queryables resource:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>.../collections/topp:roads/queryables
+</code></pre></div>
+<p>It answers a JSON Schema document (<code>application/schema+json</code>), also available as HTML, and is linked from the
+collection description. A vector layer lists the attributes of its features. A raster layer lists them only when
+it is structured, an image mosaic for example: the filter then selects which files to mosaic, using the attributes
+of the index, such as the file location, the time of ingestion or the elevation. Other raster layers, and layer
+groups, answer with a <code>404</code> status, a layer group because each of its members has its own set of attributes.</p>
+<p>A filter naming an attribute that none of the collections drawn lists as a queryable is answered with a <code>400</code>
+status, rather than being quietly dropped, so a typo in an attribute name shows up right away. On a map of
+several collections, or on a layer group, the attribute only has to be a queryable of one of them, since the
+collections can have different schemas, and it is applied to every one of them.</p>
+<p>The map preview allows to pick a filter and a filter language in its tool box.</p>
+<p><img alt="" src="img/map-preview.png" /><br />
+<em>Map preview filtered to the states with more than 5 million inhabitants</em></p>
 
 
 

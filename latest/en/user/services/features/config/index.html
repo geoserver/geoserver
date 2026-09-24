@@ -30287,6 +30287,12 @@
 </ul>
 <p><img alt="" src="../img/ecql-configuration.png" /></p>
 <p><em>ECQL Filter configuration</em></p>
+<ul>
+<li>The enabled filter languages are listed in the <code>filter-lang</code> parameter of the API document, and the first one is
+  its default. A request using any other language gets a <code>400</code> status. With every language disabled the filter
+  parameters are not available at all: the filter conformance classes disappear from the <code>conformance</code> document,
+  the parameters are removed from the API document, and a <code>filter</code> sent anyway is ignored.</li>
+</ul>
 <p>For more information see <a href="../status/">Status</a>.</p>
 
 

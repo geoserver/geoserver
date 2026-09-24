@@ -4,9 +4,14 @@
  */
 package org.geoserver.web.ogcapi;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -15,8 +20,11 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
+import org.apache.wicket.util.string.StringValue;
+import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.ogcapi.APIConformance;
 import org.geoserver.ogcapi.ConformanceInfo;
@@ -38,6 +46,21 @@ public class ConformanceTable extends GeoServerTablePanel<APIConformance> {
 
     private final IModel<ConformanceInfo<?>> conformanceModel;
 
+    /** Recomputes every conformance table of the page from the checkbox states the user has not saved yet. */
+    private final AbstractDefaultAjaxBehavior recompute = new AbstractDefaultAjaxBehavior() {
+        @Override
+        protected void respond(AjaxRequestTarget target) {
+            Map<String, Boolean> states = new HashMap<>();
+            for (StringValue value :
+                    RequestCycle.get().getRequest().getRequestParameters().getParameterValues("s")) {
+                String entry = value.toString("");
+                int split = entry.lastIndexOf('=');
+                if (split > 0) states.put(entry.substring(0, split), fromState(entry.substring(split + 1)));
+            }
+            target.appendJavaScript("gsConformanceTableUpdate(" + recomputePage(states) + ")");
+        }
+    };
+
     /**
      * Table to manage conformance settings for service.
      *
@@ -57,6 +80,7 @@ public class ConformanceTable extends GeoServerTablePanel<APIConformance> {
         setItemReuseStrategy(new DefaultItemReuseStrategy());
         setSelectable(false); // no selection, the editable checkboxes are a different case
         setFilterable(false);
+        add(recompute);
     }
 
     @SuppressWarnings("unchecked")
@@ -66,7 +90,8 @@ public class ConformanceTable extends GeoServerTablePanel<APIConformance> {
         if ("enabled".equals(property.getName())) {
             Fragment fragment = new Fragment(id, "checkboxFragment", this);
             fragment.add(new ThreeStateCheckBox("checkbox", (IModel<Boolean>) property.getModel(itemModel)));
-            // what each checkbox state would mean for the service, so the page can show it as the user clicks
+            fragment.add(
+                    AttributeModifier.replace("data-conformance-key", IModel.of(() -> key(itemModel.getObject()))));
             fragment.add(AttributeModifier.replace(
                     "data-in-effect-unset", IModel.of(() -> isInEffect(itemModel.getObject(), null))));
             fragment.add(AttributeModifier.replace(
@@ -92,7 +117,76 @@ public class ConformanceTable extends GeoServerTablePanel<APIConformance> {
         super.renderHead(response);
         response.render(CssHeaderItem.forReference(CSS));
         response.render(JavaScriptHeaderItem.forReference(JS));
-        response.render(OnDomReadyHeaderItem.forScript("gsConformanceTableInit('" + getMarkupId() + "')"));
+        response.render(OnDomReadyHeaderItem.forScript(
+                "gsConformanceTableInit('" + getMarkupId() + "','" + recompute.getCallbackUrl() + "')"));
+    }
+
+    /**
+     * Establishes what checkbox state means for each conformance table on page (with unsaved states applied), since a
+     * class may depend on classes listed in another row or another table.
+     *
+     * @param states checkbox states by row key, {@code null} for unset
+     * @return a JavaScript object literal with the outcome of each state, by row key
+     */
+    private String recomputePage(Map<String, Boolean> states) {
+        List<ConformanceTable> tables = new ArrayList<>();
+        getPage().visitChildren(ConformanceTable.class, (IVisitor<ConformanceTable, Void>) (t, v) -> tables.add(t));
+        List<Map<APIConformance, Boolean>> saved = new ArrayList<>();
+        try {
+            for (ConformanceTable table : tables) saved.add(table.apply(states));
+            StringBuilder rows = new StringBuilder("{");
+            for (ConformanceTable table : tables) table.describe(rows);
+            if (rows.length() > 1) rows.setLength(rows.length() - 1);
+            return rows.append("}").toString();
+        } finally {
+            for (int i = 0; i < saved.size(); i++) tables.get(i).restore(saved.get(i));
+        }
+    }
+
+    /** Applies the unsaved states of this table's rows, returning the stored values so they can be restored. */
+    private Map<APIConformance, Boolean> apply(Map<String, Boolean> states) {
+        ConformanceInfo<?> info = conformanceModel.getObject();
+        Map<APIConformance, Boolean> stored = new HashMap<>();
+        for (APIConformance conformance : info.configurableConformances()) {
+            String key = key(conformance);
+            if (states.containsKey(key)) {
+                stored.put(conformance, info.isEnabled(conformance));
+                info.setEnabled(conformance, states.get(key));
+            }
+        }
+        return stored;
+    }
+
+    private void restore(Map<APIConformance, Boolean> stored) {
+        ConformanceInfo<?> info = conformanceModel.getObject();
+        stored.forEach(info::setEnabled);
+    }
+
+    /** Appends the outcome of each checkbox state of this table's rows, as {@code "key":{...},} entries. */
+    private void describe(StringBuilder rows) {
+        for (APIConformance conformance : conformanceModel.getObject().configurableConformances()) {
+            rows.append('"')
+                    .append(key(conformance).replace("\\", "\\\\").replace("\"", "\\\""))
+                    .append("\":{\"unset\":")
+                    .append(isInEffect(conformance, null))
+                    .append(",\"true\":")
+                    .append(isInEffect(conformance, Boolean.TRUE))
+                    .append(",\"false\":")
+                    .append(isInEffect(conformance, Boolean.FALSE))
+                    .append("},");
+        }
+    }
+
+    /** Identifies a row across the tables of the page. */
+    private String key(APIConformance conformance) {
+        return getMarkupId() + " " + conformance.getId();
+    }
+
+    @Nullable
+    private static Boolean fromState(String state) {
+        if ("true".equals(state)) return Boolean.TRUE;
+        if ("false".equals(state)) return Boolean.FALSE;
+        return null;
     }
 
     /**

@@ -4,14 +4,31 @@
  */
 
 /* Show row identifier as disabled/enabled to reflect conformance being in effect.
-   Updates row immediately when its checkbox changes. */
-function gsConformanceTableInit(tableId) {
+   Updates row immediately, then ask server to recompute other rows (across tables if needed). */
+function gsConformanceTableInit(tableId, callbackUrl) {
     var table = document.getElementById(tableId);
     if (!table || table.dataset.gsConformanceBound) return; // avoid a second listener on re-init
     table.dataset.gsConformanceBound = "true";
     table.addEventListener("change", function (e) {
-        var cell = e.target.closest("[data-in-effect-unset]");
+        var cell = e.target.closest("[data-conformance-key]");
         if (!cell) return;
+        gsConformanceRowApply(cell);
+        var states = [];
+        document.querySelectorAll("[data-conformance-key]").forEach(function (c) {
+            states.push({ name: "s", value: c.getAttribute("data-conformance-key") + "=" + gsConformanceState(c) });
+        });
+        Wicket.Ajax.post({ u: callbackUrl, ep: states });
+    });
+}
+
+/* Called back by the server with the outcome of each checkbox state, by row key. */
+function gsConformanceTableUpdate(rows) {
+    document.querySelectorAll("[data-conformance-key]").forEach(function (cell) {
+        var row = rows[cell.getAttribute("data-conformance-key")];
+        if (!row) return;
+        cell.setAttribute("data-in-effect-unset", row.unset);
+        cell.setAttribute("data-in-effect-true", row["true"]);
+        cell.setAttribute("data-in-effect-false", row["false"]);
         gsConformanceRowApply(cell);
     });
 }

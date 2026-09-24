@@ -28,7 +28,6 @@ Missing functionality at the time of writing:
 | [OGC API - Maps](https://github.com/opengeospatial/ogcapi-maps) | Version | Implementation status |
 |----|----|----|
 | Part 1: Core | [1.0.0](https://docs.ogc.org/is/20-058/20-058.html) | Implemented for collection maps and dataset maps, with the optional classes listed above. |
-| Part 2: Partitioning | [Draft](https://github.com/opengeospatial/ogcapi-maps/tree/master/extensions/partitioning/standard) | Implementation based on early specification draft. |
 
 ## Installing the GeoServer OGC API - Maps module
 
@@ -51,6 +50,12 @@ Missing functionality at the time of writing:
 
     On restart the services are listed at <http://localhost:8080/geoserver>
 
+    The Maps landing page is at <http://localhost:8080/geoserver/ogc/maps/v1>, linking to the API definition,
+    the collections, the dataset map and the conformance classes.
+
+    ![](img/landing-page.png)  
+    *OGC API - Maps landing page*
+
 ## Configuration of OGC API - Maps module
 
 The module shares the same mapping engine as WMS, follows the same configuration and exposes the same layers. As a significant difference, Maps does not have a concept of layer tree, so only individual layers and groups can be exposed.
@@ -58,10 +63,21 @@ The module shares the same mapping engine as WMS, follows the same configuration
 ### Turning optional functionality off
 
 As with other OGC APIs, Maps exposes conformance classes, which can be turned off individually from the
-**Services > WMS** settings page in the admin UI, on the **Maps** tab: it lists each optional class with an
-Enabled checkbox. The same tab lists the CQL2 and ECQL filter languages, and the CQL2 capabilities, in two
-further tables, plus the **Collections in a dataset map** field described in
+**Services > Mapping** settings page in the admin UI, on the **Maps** tab.
+
+A table lists each optional class with an Enabled checkbox, plus the **Collections in a dataset map** field described in
 [Requesting a map of several collections](#requesting-a-map-of-several-collections).
+
+![](img/maps-service-configuration.png)  
+*Maps conformance classes*
+
+The same tab lists the CQL2 and ECQL filter languages, and the CQL2 capabilities, in two further tables.
+
+![](img/maps-cql2-configuration.png)  
+*CQL2 filter configuration*
+
+![](img/maps-ecql-configuration.png)  
+*ECQL filter configuration*
 
 Disabling a class removes it from the `conformance` document, and removes its parameters, or its whole
 resource, from the API document; a resource that is gone answers with a `404` status. The kind of class decides
@@ -91,6 +107,9 @@ A map of a collection is retrieved from `/ogc/maps/v1/collections/{collectionId}
 `.../styles/{styleId}/map` to pick a style other than the default one. The output format is chosen with the `f`
 parameter, PNG and JPEG are always available, TIFF and SVG can be turned off via conformance classes,
 in general, other output formats can be removed in the mapping configuration panel as well.
+
+![](img/collection.png)  
+*Collection page*
 
 The format can also be negotiated with the `Accept` header, in place of `f`. A client that lists PNG and JPEG
 with the same quality, and nothing it prefers more, lets the server choose: a map with transparency comes back
@@ -127,7 +146,7 @@ authority code, for example when using an AUTO code. `Content-Orientation` is th
 
 The CRSs a map can be delivered in are advertised as CRS URIs by the collection description, in its `crs`
 property, and by the `/collections` document, which lists them once at its root so that each collection can
-point at that single list with `#/crs`. The list is the **Services > WMS** SRS list when one is configured,
+point at that single list with `#/crs`. The list is the **Services > Mapping** SRS list when one is configured,
 otherwise it's all the known codes. A collection whose storage CRS is
 not CRS84 also reports it as `storageCrs`, adding it to the `crs` list, and repeats its extent in that CRS under
 `extent.spatial.storageCrsBbox`. That is the CRS a map is delivered in when the request does not ask for another
@@ -190,7 +209,7 @@ default style: OGC API - Maps 1.0.0 has no way to pick a style per collection.
 Without `collections` the map draws the contents of the service it was addressed to: the layer or layer group of
 a [virtual service](../../../configuration/virtual-services.md), or a selection of the collections of the
 workspace, or of the whole catalog at the root. Drawing a whole catalog would be both slow and the map likely unreadable, so the
-map holds at most the number of collections set in **Services > WMS > Maps** (10 by default). The collections are picked
+map holds at most the number of collections set in **Services > Mapping** on the **Maps** tab (10 by default). The collections are picked
 in two steps: first the layer groups, being curated, then the layers by name until the limit is reached, leaving out any
 layer already drawn as a member of one of those groups. The selection is then stacked bottom to top as rasters,
 polygon layers, layer groups, lines and points, so that the least covering layers stay on top. Ask for the
@@ -215,6 +234,9 @@ collections sharing the attributes it names.
 The HTML view of the dataset map is an interactive preview with a collection palette: pick the collections to
 draw from the list of candidates, and move them up and down to change the drawing order. `.../map/info`, the
 GeoServer feature info extension, works on the dataset map too, reporting across the collections drawn.
+
+![](img/dataset-map.png)  
+*Dataset map preview with the collection palette*
 
 ## Filtering a map
 
@@ -259,4 +281,7 @@ several collections, or on a layer group, the attribute only has to be a queryab
 collections can have different schemas, and it is applied to every one of them.
 
 The map preview allows to pick a filter and a filter language in its tool box.
+
+![](img/map-preview.png)  
+*Map preview filtered to the states with more than 5 million inhabitants*
 

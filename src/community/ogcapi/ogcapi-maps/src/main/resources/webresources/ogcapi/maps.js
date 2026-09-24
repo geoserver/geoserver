@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
         controls: ol.control.defaults.defaults({ attribution: false }).extend([mousePosition]),
         target: "map",
         layers: [untiledLayer, tiledLayer],
-        view: new ol.View({ projection: projection, constrainResolution: true }),
+        view: new ol.View({ projection: projection, constrainResolution: true, showFullExtent: true }),
     });
     map.getView().fit(bounds, { size: map.getSize(), padding: [20, 20, 20, 20] });
     new ResizeObserver(() => map.updateSize()).observe(el("map"));

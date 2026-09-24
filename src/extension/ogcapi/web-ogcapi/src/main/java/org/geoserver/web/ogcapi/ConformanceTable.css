@@ -3,7 +3,6 @@
  * application directory.
  */
 
-/* a conformance class the service does not declare, whether disabled explicitly or by default */
 .gs-conformance-disabled {
   color: var(--gs-secondary-color);
   opacity: 0.65;

@@ -18,10 +18,13 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tika.config.TikaConfig;
+import org.apache.tika.config.loader.TikaLoader;
+import org.apache.tika.detect.Detector;
+import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.mime.MediaType;
+import org.apache.tika.parser.ParseContext;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
@@ -49,14 +52,16 @@ public class FileTypes {
 
     static final MediaType ZIP_MEDIA_TYPE = MediaType.parse("application/zip");
 
-    static TikaConfig tika = null;
+    static TikaLoader tika = null;
+    static Detector detector = null;
 
     /*
      * only setup TikaConfig once (slow).
      */
     static {
         try {
-            tika = new TikaConfig();
+            tika = TikaLoader.loadDefault();
+            detector = tika.loadDetectors();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Unable to initialize TikaConfig, file checks will not work", e);
         }
@@ -133,7 +138,7 @@ public class FileTypes {
         if (!StringUtils.isAllEmpty(fname)) {
             fileMetadata.set(TikaCoreProperties.RESOURCE_NAME_KEY, fname);
         }
-        MediaType detectedMediaType = tika.getDetector().detect(stream, fileMetadata);
+        MediaType detectedMediaType = detector.detect(TikaInputStream.get(stream), fileMetadata, new ParseContext());
         if (reject.test(detectedMediaType.getBaseType(), fname)) {
             throw new IOException("Unsupported media type: " + detectedMediaType);
         }
@@ -154,7 +159,8 @@ public class FileTypes {
     public static boolean isZip(InputStream inputStream) throws IOException {
         inputStream = wrapIfNotMarkReset(inputStream);
         Metadata fileMetadata = new Metadata();
-        MediaType detectedMediaType = tika.getDetector().detect(inputStream, fileMetadata);
+        MediaType detectedMediaType =
+                detector.detect(TikaInputStream.get(inputStream), fileMetadata, new ParseContext());
         return detectedMediaType.getBaseType().equals(ZIP_MEDIA_TYPE);
     }
 
@@ -191,7 +197,10 @@ public class FileTypes {
             fileMetadata.set(TikaCoreProperties.RESOURCE_NAME_KEY, fname);
         }
 
-        MediaType detectedMediaType = tika.getDetector().detect(stream, fileMetadata);
+        MediaType detectedMediaType = detector.detect(TikaInputStream.get(stream), fileMetadata, new ParseContext());
+        if (stream.markSupported()) {
+            stream.reset();
+        }
         if (!detectedMediaType.getBaseType().equals(ZIP_MEDIA_TYPE)) {
             // single file
             assertSimpleFileNotInRejectList(stream, fname, reject);
@@ -224,7 +233,10 @@ public class FileTypes {
         // does this support mark/rest (required by tika)
         stream = wrapIfNotMarkReset(stream);
 
-        MediaType detectedMediaType = tika.getDetector().detect(stream, new Metadata());
+        MediaType detectedMediaType = detector.detect(TikaInputStream.get(stream), new Metadata(), new ParseContext());
+        if (stream.markSupported()) {
+            stream.reset();
+        }
         if (!SIMPLE_IMAGE_MIME_TYPES.contains(detectedMediaType)) {
             throw new IOException("Unsupported IMAGE media type.  Detected MediaType: " + detectedMediaType);
         }

@@ -136,7 +136,7 @@ If this information is not provided the global settings will be used. For detail
 
 ### Security {: #workspace_security }
 
-The Security tab allows to set data access rules at workspace level.
+The Security tab allows to set data access rules at workspace level, including admin access for [workspace administrators](../../security/workspaceadmin/index.md).
 
 !!! note
     For more information on data access rules, please see the section on [Data](../../security/webadmin/data.md).

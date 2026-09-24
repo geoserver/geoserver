@@ -103,6 +103,12 @@ GeoServer Property Reference
      - x
      - x
      - x
+   * - GEOSERVER_REMEMBERME_KEY
+       
+       Shared key that signs remember-me cookies across a cluster. See :ref:`security_webadmin_rememberme`.
+     - x
+     - x
+     - x
    * - org.geoserver.web.csp.strict
        
        :ref:`csp_strict`, default true.

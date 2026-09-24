@@ -101,6 +101,9 @@ what happens to a request that still uses the disabled functionality:
   `mapFilter` and at least one language, so turning off any of them ignores the `filter` parameter and takes the
   queryables away with it. See [Filtering a map](#filtering-a-map).
 
+![](img/maps-filter-dependency.png)  
+*Filter and Queryables require Filter on maps*
+
 ## Requesting a map
 
 A map of a collection is retrieved from `/ogc/maps/v1/collections/{collectionId}/map`, or from

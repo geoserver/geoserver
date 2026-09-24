@@ -52,11 +52,18 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
         // resolve each configuration from the live WFSInfo on access: the service is reloaded per request
         add(new ConformanceTable(
                 "featureConformance",
+                info,
                 IModel.of(() -> FeatureConformance.configuration((WFSInfo) info.getObject())),
                 this));
         add(new ConformanceTable(
-                "cqlConformance", IModel.of(() -> CQL2Conformance.configuration((WFSInfo) info.getObject())), this));
+                "cqlConformance",
+                info,
+                IModel.of(() -> CQL2Conformance.configuration((WFSInfo) info.getObject())),
+                this));
         add(new ConformanceTable(
-                "ecqlConformance", IModel.of(() -> ECQLConformance.configuration((WFSInfo) info.getObject())), this));
+                "ecqlConformance",
+                info,
+                IModel.of(() -> ECQLConformance.configuration((WFSInfo) info.getObject())),
+                this));
     }
 }

@@ -14,6 +14,8 @@ import org.geoserver.platform.OWS20Exception;
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.MediaType;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 /** Base class for exception handling. Has support for extracting basic information from common exception types. */
@@ -65,6 +67,16 @@ public abstract class AbstractAPIExceptionHandler implements APIExceptionHandler
                     + exception.getValue()
                     + " for parameter "
                     + exception.getParameter().getParameterName();
+        } else if (t instanceof BindException be) {
+            // when using @ModelAttribute to map multiple request parameters to a bean
+            // failures to map onto fields are reported as Spring BindException
+            response.setStatus(400);
+            statusSet = true;
+            type = OWS20Exception.INVALID_PARAMETER_VALUE;
+            FieldError error = be.getFieldError();
+            if (error != null) {
+                title = "Invalid syntax " + error.getRejectedValue() + " for parameter " + error.getField();
+            }
         }
         if (!statusSet) response.setStatus(500);
         if (type == null) type = OWS20Exception.NO_APPLICABLE_CODE;

@@ -10,6 +10,7 @@ import static org.geoserver.ogcapi.APIConformance.Level.STANDARD;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.ogcapi.APIConformance;
+import org.geoserver.ogcapi.APIFilterParser;
 import org.geoserver.ogcapi.ConformanceClass;
 import org.geoserver.ogcapi.ConformanceInfo;
 import org.geoserver.wfs.WFSInfo;
@@ -370,13 +371,16 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
     }
 
     /**
-     * FILTER conformance enabled by configuration or default.
+     * FILTER conformance enabled by configuration or default, and at least one filter language available: OGC API -
+     * Features - Part 3 {@code /req/filter/filter-lang-param} makes the language classes part of the filter class, so
+     * with none enabled there is nothing to parse a filter with.
      *
      * @param serviceInfo WFSService configuration used to determine default
      * @return {@true} if Filter conformance enabled
      */
     public boolean filter(WFSInfo serviceInfo) {
-        return isEnabled(serviceInfo, filter, FILTER);
+        return isEnabled(serviceInfo, filter, FILTER)
+                && !APIFilterParser.enabledLanguages(serviceInfo).isEmpty();
     }
 
     /**

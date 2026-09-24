@@ -19,6 +19,9 @@ import static org.geoserver.ogcapi.ConformanceClass.FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.QUERYABLES;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.in;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
@@ -89,6 +92,19 @@ public class ConformanceTest extends FeaturesTestSupport {
         List<String> classes =
                 document.select("#content li").stream().map(e -> e.text()).collect(Collectors.toList());
         assertThat(classes, containsInAnyOrder(getExpectedConformanceClasses()));
+    }
+
+    /**
+     * The filter class takes a language, so with every language class disabled it cannot be advertised: OGC API -
+     * Features - Part 3 {@code /req/filter/filter-lang-param} binds the two.
+     */
+    @Test
+    public void testNoFilterLanguageEnabled() throws Exception {
+        withFilterLanguagesDisabled(() -> {
+            List<String> classes =
+                    getAsJSONPath("ogc/features/v1/conformance", 200).read("$.conformsTo");
+            assertThat(classes, everyItem(not(in(List.of(FILTER, FEATURES_FILTER, ECQL_TEXT, CQL2_TEXT, CQL2_JSON)))));
+        });
     }
 
     @Test

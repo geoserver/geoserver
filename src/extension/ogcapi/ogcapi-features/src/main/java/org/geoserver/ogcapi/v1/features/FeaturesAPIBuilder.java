@@ -10,12 +10,11 @@ import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.ogcapi.APIFilterParser;
+import org.geoserver.ogcapi.CQL2Conformance;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.wfs.WFSInfo;
 
@@ -38,7 +37,6 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
 
         FeatureConformance features = FeatureConformance.configuration(wfs);
         CQL2Conformance cql2 = CQL2Conformance.configuration(wfs);
-        ECQLConformance ecql = ECQLConformance.configuration(wfs);
 
         // adjust paths
         if (!features.search(wfs)) {
@@ -106,19 +104,7 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
                 .collect(Collectors.toList());
         collectionId.getSchema().setEnum(validCollectionIds);
 
-        // list of valid filter-lang values
-        Parameter filterLang = parameters.get("filter-lang");
-        ArrayList<String> filterLangValues = new ArrayList<>(APIFilterParser.SUPPORTED_ENCODINGS);
-        if (!cql2.text(wfs)) {
-            filterLangValues.remove(APIFilterParser.CQL2_TEXT);
-        }
-        if (!cql2.json(wfs)) {
-            filterLangValues.remove(APIFilterParser.CQL2_JSON);
-        }
-        if (!ecql.isEnabled(wfs)) {
-            filterLangValues.remove(APIFilterParser.ECQL_TEXT);
-        }
-        filterLang.getSchema().setEnum(filterLangValues);
+        declareFilterLanguages(api, wfs);
 
         // provide actual values for limit
         Parameter limit = parameters.get("limit");

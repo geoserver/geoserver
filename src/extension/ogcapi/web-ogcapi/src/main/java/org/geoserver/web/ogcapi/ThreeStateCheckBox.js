@@ -19,6 +19,7 @@ function gsTriStateInit(displayId, valueId) {
         setTimeout(function () {
             value.value = gsTriStateNext(value.value);
             gsTriStateApply(display, value.value);
+            value.dispatchEvent(new Event("change", { bubbles: true }));
         }, 0);
     });
 }

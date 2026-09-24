@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,6 +97,37 @@ public class MapsServiceAdminPanelTest extends GeoServerWicketTestSupport {
             assertEquals(4, MapsSettings.defaultCollections(wms));
         } finally {
             wms.getMetadata().remove(MapsSettings.DEFAULT_COLLECTIONS_KEY);
+            getGeoServer().save(wms);
+        }
+    }
+
+    /**
+     * In strict mode a community class is off by default, so its identifier is shown disabled without a stored flag.
+     */
+    @Test
+    public void testDefaultDisabledConformanceShownDisabled() {
+        WMSInfo wms = getGeoServer().getService(WMSInfo.class);
+        wms.setCiteCompliant(true);
+        getGeoServer().save(wms);
+        try {
+            login();
+            tester.startPage(WMSAdminPage.class);
+            tester.clickLink("form:tabs:tabs-container:tabs:" + mapsTabIndex() + ":link");
+
+            String markup = tester.getLastResponseAsString();
+            String featureInfo = "http://geoserver.org/spec/ogcapi-maps/1.0/conf/featureinfo<";
+            assertTrue(markup.contains("class=\"gs-conformance-id gs-conformance-disabled\">" + featureInfo));
+            assertTrue(markup.contains(
+                    "class=\"gs-conformance-id\">https://www.opengis.net/spec/ogcapi-maps-1/1.0/conf/dataset-map<"));
+
+            // the checkbox cell of the same row tells the page what each click would mean
+            String row = markup.substring(0, markup.indexOf(featureInfo));
+            row = row.substring(row.lastIndexOf("<tr"));
+            assertTrue(row.contains("data-in-effect-unset=\"false\""));
+            assertTrue(row.contains("data-in-effect-true=\"true\""));
+            assertTrue(row.contains("data-in-effect-false=\"false\""));
+        } finally {
+            wms.setCiteCompliant(false);
             getGeoServer().save(wms);
         }
     }

@@ -4,6 +4,8 @@
  */
 package org.geoserver.geofence;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geofence.web.rest.api.model.RESTInputRule;
 import org.geofence.web.rest.api.model.RESTLayerConstraints;
 import org.geofence.web.rest.api.model.RESTRulePosition;
@@ -11,6 +13,7 @@ import org.geofence.web.rest.api.model.RESTRulePosition.RESTPositionReference;
 import org.geofence.web.rest.api.model.enums.RESTGrantType;
 import org.geofence.web.rest.api.model.enums.RESTSpatialFilterType;
 import org.geofence.web.rest.client.GeoFenceAdminClient;
+import org.geotools.util.logging.Logging;
 
 /**
  * Wipes and re-seeds, via the REST admin client, the exact rule fixture {@code GeofenceAccessManagerTest}/
@@ -24,14 +27,20 @@ import org.geofence.web.rest.client.GeoFenceAdminClient;
  */
 class GeofenceRestTestDataSeeder {
 
+    private static final Logger LOGGER = Logging.getLogger(GeofenceRestTestDataSeeder.class);
+
     private final GeoFenceAdminClient client;
+    private final String restUrl;
 
     GeofenceRestTestDataSeeder(String restUrl) {
+        this.restUrl = restUrl;
         client = new GeoFenceAdminClient();
         client.setRestUrl(restUrl);
     }
 
     void seed() {
+        // loud on purpose: opting in protects against accident, this protects against the wrong URL
+        LOGGER.log(Level.WARNING, "Deleting every GeoFence rule on {0} to seed the test fixture", restUrl);
         client.removeAll();
 
         long priority = 0;

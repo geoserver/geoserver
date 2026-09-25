@@ -10,6 +10,7 @@ import static org.junit.Assert.assertThrows;
 import org.geoserver.geofence.cache.CacheConfiguration;
 import org.geoserver.geofence.cache.CacheManager;
 import org.geoserver.geofence.services.RestRuleReaderService;
+import org.geoserver.geofence.services.RuleReaderAvailability;
 import org.geoserver.geofence.services.RuleReaderServiceFactory;
 import org.junit.After;
 import org.junit.Test;
@@ -32,9 +33,11 @@ public class GeoFenceConfigurationControllerTest {
         context = new GenericApplicationContext();
         context.refresh();
 
-        RuleReaderServiceFactory backendFactory = new RuleReaderServiceFactory("noSuchBean", false);
+        RuleReaderServiceFactory backendFactory =
+                new RuleReaderServiceFactory("noSuchBean", false, new RuleReaderAvailability());
         backendFactory.setApplicationContext(context);
-        RuleReaderServiceFactory frontendFactory = new RuleReaderServiceFactory("noSuchBean", true);
+        RuleReaderServiceFactory frontendFactory =
+                new RuleReaderServiceFactory("noSuchBean", true, new RuleReaderAvailability());
         frontendFactory.setApplicationContext(context);
 
         RecordingConfigurationManager configManager = new RecordingConfigurationManager();

@@ -195,8 +195,8 @@
       <groupId>org.geotools</groupId>
       <artifactId>gt-geotiff</artifactId>
       <exclusions>
-        <!-- plain ehcache conflicts with geofence-persistence's jakarta-classifier one; can't scope an
-             exclusion to a profile, but this jar is only used by gt-geotiff's opt-in COG support. -->
+        <!-- clashes with geofence-persistence's jakarta-classifier ehcache; only gt-geotiff's opt-in COG
+             support uses it, so the cog profile declares it back -->
         <exclusion>
           <artifactId>ehcache</artifactId>
           <groupId>org.ehcache</groupId>
@@ -1790,6 +1790,12 @@
     <profile>
       <id>cog</id>
       <dependencies>
+        <dependency>
+          <!-- excluded from gt-geotiff above, where it clashes with GeoFence; COG is its only user -->
+          <groupId>org.ehcache</groupId>
+          <artifactId>ehcache</artifactId>
+          <version>3.4.0</version>
+        </dependency>
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-cog-core</artifactId>

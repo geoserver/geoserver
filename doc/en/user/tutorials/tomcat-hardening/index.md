@@ -24,7 +24,7 @@ Hide the Tomcat version in error responses and its error details:
 
     ```xml
         <Host name="localhost"  appBase="webapps"
-            unpackWARs="true" autoDeploy="true">
+            unpackWARs="true" autoDeploy="false">
     
         ...
     

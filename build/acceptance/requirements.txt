@@ -1,3 +1,4 @@
 geoservercloud==0.8.3
+sqlalchemy<2.1
 # To debug a local version of python-geoservercloud, uncomment the following line and adjust the path accordingly
 #-e file:./../../../python-geoservercloud

@@ -62,7 +62,7 @@ public class CoalescedRequestSplitter {
      * extra quantization of the finished canvas (its member tiles were already quantized when they were cached) and its
      * palette alpha is 1-bit, unlike {@code image/png}.
      */
-    private static final Set<String> CACHEABLE_FORMATS = Set.of("image/png", "image/png8");
+    private static final Set<String> CACHEABLE_FORMATS = Set.of("image/png", "image/png8", "image/png; mode=8bit");
 
     private final ImageDecoderContainer decoders;
 

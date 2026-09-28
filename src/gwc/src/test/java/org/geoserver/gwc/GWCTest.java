@@ -1655,6 +1655,12 @@ public class GWCTest {
         assertNotNull(splitter.classifyCoalescedMembers(mediator, request, mismatch));
         assertEquals("", mismatch.toString());
 
+        // image/png; mode=8bit is the OGC-style spelling of the same 8-bit paletted output and must pass too
+        request.setFormat("image/png; mode=8bit");
+        mismatch = new StringBuilder();
+        assertNotNull(splitter.classifyCoalescedMembers(mediator, request, mismatch));
+        assertEquals("", mismatch.toString());
+
         // FORMAT is only made mandatory further down the line, in GetMap, so the gate has to survive a null one
         request.setFormat(null);
         mismatch = new StringBuilder();

@@ -18573,6 +18573,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#known-incompatibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known incompatibilities
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#configure-the-plugin" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30248,6 +30259,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#known-incompatibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known incompatibilities
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#configure-the-plugin" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30329,6 +30351,17 @@ Please install either one according to your setup.</p>
 <li><a href="#configure-the-plugin">Configure the plugin</a></li>
 <li>Restart GeoServer</li>
 </ol>
+<h2 id="known-incompatibilities">Known incompatibilities<a class="headerlink" href="#known-incompatibilities" title="Permanent link">&para;</a></h2>
+<p>The embedded engine brings its own versions of two libraries that the base GeoServer install also uses, and neither pair can coexist on one classpath:</p>
+<ul>
+<li>
+<p><strong>Jiffle raster band-math</strong> stops working. GeoFence's persistence layer needs <code>antlr4-runtime-4.13.x</code>, while Eclipse Imagen's Jiffle support needs <code>4.7.1</code>. The plugin ships an empty <code>antlr4-runtime-4.7.1.jar</code> that overwrites the base install's copy during step 1, so the conflict cannot arise even in an unattended install.</p>
+</li>
+<li>
+<p><strong>Cloud Optimized GeoTIFF (COG)</strong> is unsupported in a build that also enables the embedded engine. COG uses <code>org.ehcache:ehcache</code>, which clashes with the <code>ehcache:jakarta</code> variant GeoFence's persistence layer requires. This only affects custom builds combining the <code>cog</code> and <code>geofence-server</code> profiles; the official plugin does not enable COG.</p>
+</li>
+</ul>
+<p>Both affect the embedded engine only: the <code>geofence</code> client plugin, talking to a standalone GeoFence server, is unaffected.</p>
 <h2 id="configure-the-plugin">Configure the plugin<a class="headerlink" href="#configure-the-plugin" title="Permanent link">&para;</a></h2>
 <p>You need a properties file containing the information to connect to the DB where GeoFence will store its data.</p>
 <p>If the file is not present, the problem will be logged out to the GeoServer log:

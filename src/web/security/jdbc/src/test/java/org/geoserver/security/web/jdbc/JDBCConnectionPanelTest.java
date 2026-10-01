@@ -5,11 +5,15 @@
  */
 package org.geoserver.security.web.jdbc;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -120,13 +124,48 @@ public class JDBCConnectionPanelTest extends AbstractSecurityWicketTestSupport {
         theConfig.setUserName("user1");
         theConfig.setPassword("pw");
         theConfig.setDriverClassName("org.h2.Driver");
-        theConfig.setConnectURL("jdbc:foo");
+        // passes the URL check, then fails to connect
+        theConfig.setConnectURL("jdbc:h2:tcp://localhost:1/db");
 
         setupPanel(theConfig);
         tester.assertRenderedPage(FormTestPage.class);
 
         tester.clickLink("form:panel:cxTest", true);
-        assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
+        List<Serializable> errors = tester.getMessages(FeedbackMessage.ERROR);
+        assertEquals(1, errors.size());
+        assertThat(errors.get(0).toString(), startsWith("org.h2.jdbc.JdbcSQLException: Connection is broken"));
+    }
+
+    @Test
+    public void testConnectionTestEmptyUrl() throws Exception {
+        JDBCUserGroupServiceConfig theConfig = new JDBCUserGroupServiceConfig();
+        theConfig.setUserName("sa");
+        theConfig.setDriverClassName("org.h2.Driver");
+
+        setupPanel(theConfig);
+        tester.clickLink("form:panel:cxTest", true);
+
+        // Wicket reports the required field, the connection test adds no second message
+        List<Serializable> errors = tester.getMessages(FeedbackMessage.ERROR);
+        assertEquals(1, errors.size());
+        assertEquals("Field 'Connection URL' is required.", errors.get(0).toString());
+    }
+
+    @Test
+    public void testConnectionTestUnknownParameter() throws Exception {
+        JDBCUserGroupServiceConfig theConfig = new JDBCUserGroupServiceConfig();
+        theConfig.setUserName("sa");
+        theConfig.setDriverClassName("org.hsqldb.jdbc.JDBCDriver");
+        theConfig.setConnectURL("jdbc:hsqldb:mem:x;textdb.allow_full_path=true");
+
+        setupPanel(theConfig);
+        tester.clickLink("form:panel:cxTest", true);
+
+        List<Serializable> errors = tester.getMessages(FeedbackMessage.ERROR);
+        assertEquals(
+                List.of("The JDBC URL is invalid, parameter textdb.allow_full_path has not been recognized for driver"
+                        + " org.hsqldb.jdbc.JDBCDriver. Add it with GEOSERVER_JDBC_EXTRA_PARAMETERS if it is needed"),
+                errors);
     }
 
     @Test

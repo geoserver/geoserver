@@ -388,6 +388,12 @@ GeoServer Property Reference
      - x
      - x
      - x
+   * - GEOSERVER_JDBC_EXTRA_PARAMETERS
+
+       Extra connection URL parameters accepted for JDBC user/group services, role services and authentication providers. GeoServer accepts only a known list of parameters for each driver. Format is ``driverClass:param1,param2;driverClass2:param3``, for example ``com.ibm.db2.jcc.DB2Driver:currentSchema``. Use it to allow a parameter, or a driver, that is not known. A legacy driver class name, such as ``org.hsqldb.jdbcDriver``, shares the parameters of its current name. Each parameter added this way is passed to the driver unchecked, so add only parameters that cannot read or write files or load classes.
+     - x
+     - x
+     - x
    * - TRACK_USER
 
        Flag to enable user tracking in GeoServer.

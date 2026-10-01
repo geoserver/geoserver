@@ -20,6 +20,21 @@ public class JDBCSecurityConfigException extends SecurityConfigException {
     public static final String JDBCURL_REQUIRED = "JDBCURL_REQUIRED";
     // return MessageFormat.format("Jdbc connect url is mandatory",args);
 
+    public static final String JDBCURL_DRIVER_UNSUPPORTED_$1 = "JDBCURL_DRIVER_UNSUPPORTED";
+    // return MessageFormat.format("Driver {0} is not supported",args);
+
+    public static final String JDBCURL_DRIVER_MISMATCH_$1 = "JDBCURL_DRIVER_MISMATCH";
+    // return MessageFormat.format("Jdbc connect url is not handled by driver {0}",args);
+
+    public static final String JDBCURL_HOST_PROPERTIES_$1 = "JDBCURL_HOST_PROPERTIES";
+    // return MessageFormat.format("Driver {0} does not support properties in the host part",args);
+
+    public static final String JDBCURL_PARAMETER_EMPTY = "JDBCURL_PARAMETER_EMPTY";
+    // return MessageFormat.format("Jdbc connect url contains an empty parameter",args);
+
+    public static final String JDBCURL_PARAMETER_UNKNOWN_$2 = "JDBCURL_PARAMETER_UNKNOWN";
+    // return MessageFormat.format("Parameter {0} is not recognized for driver {1}",args);
+
     public static final String DRIVER_CLASS_NOT_FOUND_$1 = "DRIVER_CLASS_NOTFOUND";
     // return MessageFormat.format("Driver named {0} is not in class path",args);
 

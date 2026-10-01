@@ -55,6 +55,14 @@ public class RewriteLegacyKeysTest {
                 params);
     }
 
+    /** Catalogs saved with tileverse 2.0 hold storage.gcs.default-credentials-chain; false meant anonymous access. */
+    @Test
+    public void savedGcsCredentialsChainShownAsAnonymous() {
+        Map<String, Serializable> params = rewrite(Map.of("storage.gcs.default-credentials-chain", Boolean.FALSE));
+
+        assertEquals(Map.of("storage.gcs.anonymous", Boolean.TRUE), params);
+    }
+
     @Test
     public void renamedKeysFollowStorageConfigNormalization() {
         Map<String, Serializable> params = rewrite(Map.of("io.tileverse.rangereader.gcs.host", "http://localhost:88"));

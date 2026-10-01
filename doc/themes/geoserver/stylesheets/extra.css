@@ -738,3 +738,20 @@
 .md-typeset a code {
   border-color: transparent;
 }
+
+/* A single source list rendered as a 3-column grid: it looks like a table but
+   stays one list, so there is no manual row layout to balance when items are
+   added or removed. Items fill left to right, keeping the reading order. */
+.md-typeset .columns-3 ul {
+  column-count: 3;
+  column-gap: 2rem;
+  margin: 0;
+}
+.md-typeset .columns-3 li {
+  break-inside: avoid;
+}
+@media screen and (max-width: 44.9375em) {
+  .md-typeset .columns-3 ul {
+    column-count: 1;
+  }
+}

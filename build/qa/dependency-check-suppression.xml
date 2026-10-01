@@ -112,16 +112,6 @@
         <cve>CVE-2024-41672</cve>
     </suppress>
     <suppress>
-        <notes><![CDATA[file name: gwc-sqlite-2.0-SNAPSHOT.jar is not sqlite 2.0]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.geowebcache/gwc-sqlite@.*$</packageUrl>
-        <cpe>cpe:/a:sqlite-web_project:sqlite-web</cpe>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[file name: gwc-sqlite-2.0-SNAPSHOT.jar is not sqlite 2.x]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.geowebcache/gwc-sqlite@.*$</packageUrl>
-        <cpe>cpe:/a:sqlite:sqlite</cpe>
-    </suppress>
-    <suppress>
         <notes><![CDATA[file name: jep-4.2.0.jar. Not used in GeoServer, confused with JEP]]></notes>
         <packageUrl regex="true">^pkg:maven/black\.ninia/jep@.*$</packageUrl>
         <cpe>cpe:/a:python:black</cpe>

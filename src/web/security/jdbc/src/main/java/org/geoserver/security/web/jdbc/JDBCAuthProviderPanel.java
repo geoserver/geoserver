@@ -17,8 +17,12 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.jdbc.JDBCConnectAuthProvider;
+import org.geoserver.security.jdbc.JdbcSecurityConfigValidator;
 import org.geoserver.security.jdbc.config.JDBCConnectAuthProviderConfig;
+import org.geoserver.security.web.SecurityNamedServicePanel;
 import org.geoserver.security.web.auth.AuthenticationProviderPanel;
 import org.geoserver.security.web.usergroup.UserGroupServiceChoice;
 
@@ -61,7 +65,7 @@ public class JDBCAuthProviderPanel extends AuthenticationProviderPanel<JDBCConne
                             info(new StringResourceModel("connectionSuccessful", JDBCAuthProviderPanel.this, null)
                                     .getObject());
                         } catch (Exception e) {
-                            error(e);
+                            SecurityNamedServicePanel.reportConnectionError(e, JDBCAuthProviderPanel.this);
                             LOGGER.log(Level.WARNING, "Connection error", e);
                         } finally {
                             target.add(feedbackPanel);
@@ -82,6 +86,10 @@ public class JDBCAuthProviderPanel extends AuthenticationProviderPanel<JDBCConne
         ((FormComponent) get("username")).processInput();
         ((FormComponent) get("password")).processInput();
 
+        String driver = get("driverClassName").getDefaultModelObjectAsString();
+        String url = get("connectURL").getDefaultModelObjectAsString();
+        new JdbcSecurityConfigValidator(GeoServerExtensions.bean(GeoServerSecurityManager.class))
+                .validateJdbcConnectionUrl(driver, url);
         // do the test
         Class.forName(get("driverClassName").getDefaultModelObjectAsString());
         try (Connection fx = DriverManager.getConnection(

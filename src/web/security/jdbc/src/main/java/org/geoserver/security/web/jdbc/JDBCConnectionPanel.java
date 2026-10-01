@@ -23,7 +23,11 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.jdbc.JdbcSecurityConfigValidator;
 import org.geoserver.security.jdbc.config.JDBCSecurityServiceConfig;
+import org.geoserver.security.web.SecurityNamedServicePanel;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 
@@ -76,7 +80,7 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig> extends Fo
                             info(new StringResourceModel("connectionSuccessful", JDBCConnectionPanel.this, null)
                                     .getObject());
                         } catch (Exception e) {
-                            error(e);
+                            SecurityNamedServicePanel.reportConnectionError(e, JDBCConnectionPanel.this);
                             LOGGER.log(Level.WARNING, "Connection error", e);
                         } finally {
                             target.add(feedbackPanel);
@@ -137,6 +141,10 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig> extends Fo
             ((FormComponent) get("userName")).processInput();
             ((FormComponent) get("password")).processInput();
 
+            String driver = get("driverClassName").getDefaultModelObjectAsString();
+            String url = get("connectURL").getDefaultModelObjectAsString();
+            new JdbcSecurityConfigValidator(GeoServerExtensions.bean(GeoServerSecurityManager.class))
+                    .validateJdbcConnectionUrl(driver, url);
             // do the test
             Class.forName(get("driverClassName").getDefaultModelObjectAsString());
             try (Connection cx = DriverManager.getConnection(

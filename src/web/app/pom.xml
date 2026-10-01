@@ -1337,16 +1337,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>gwc-sqlite</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-gwc-sqlite</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>oidc</id>
       <dependencies>
         <dependency>

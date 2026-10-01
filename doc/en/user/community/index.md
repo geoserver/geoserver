@@ -49,7 +49,6 @@ Community modules are provided "as is" alongside the [nightly builds](https://bu
 - [GWC Azure BlobStore plugin](gwc-azure-blob/index.md)
 - [GWC Google Cloud Storage BlobStore plugin](gwc-gcs-blob/index.md)
 - [GWC MBTiles layer plugin](gwc-mbtiles/index.md)
-- [GWC SQLite Plugin](gwc-sqlite/index.md)
 - [SAP HANA](hana/index.md)
 - [Hazelcast Clustering Plugin](hz-cluster/index.md)
 - [Importer JDBC storage](importer-jdbc/index.md)

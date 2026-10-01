@@ -839,7 +839,6 @@ nav:
       - GWC Azure BlobStore plugin: en/user/community/gwc-azure-blob/index.md
       - GWC Google Cloud Storage BlobStore plugin: en/user/community/gwc-gcs-blob/index.md
       - GWC MBTiles layer plugin: en/user/community/gwc-mbtiles/index.md
-      - GWC SQLite Plugin: en/user/community/gwc-sqlite/index.md
       - SAP HANA: en/user/community/hana/index.md
       - Hazelcast Clustering Plugin: en/user/community/hz-cluster/index.md
       - Importer JDBC storage: en/user/community/importer-jdbc/index.md

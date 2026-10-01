@@ -9,7 +9,6 @@ import io.tileverse.geoserver.web.storage.StorageParamsPanel.BackendSelection;
 import io.tileverse.storage.StorageConfig;
 import java.io.Serializable;
 import java.net.URI;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -81,14 +80,13 @@ public class PMTilesDataStoreEditPanel extends StorageAwareDataStoreEditPanel {
     }
 
     /**
-     * Rewrite any legacy {@code io.tileverse.rangereader.*} keys into the canonical {storage.*} form, in place; Wicket
-     * MapModel widgets are keyed off the factory's short {@code Param.key} and would otherwise miss values persisted in
-     * pre-migration GeoServer catalogs.
+     * Rewrite any legacy {@code io.tileverse.rangereader.*} keys into the canonical {storage.*} form, and any replaced
+     * key into its replacement, in place; Wicket MapModel widgets are keyed off the factory's short {@code Param.key}
+     * and would otherwise miss values persisted in pre-migration GeoServer catalogs.
      */
     static void rewriteLegacyKeys(Map<String, Serializable> params) {
-        Map<String, Serializable> rewritten = new LinkedHashMap<>(params.size());
-        params.forEach((k, v) -> rewritten.put(StorageConfig.normalizeKey(k), v));
+        Map<String, Object> rewritten = StorageConfig.normalizeKeys(params);
         params.clear();
-        params.putAll(rewritten);
+        rewritten.forEach((k, v) -> params.put(k, (Serializable) v));
     }
 }

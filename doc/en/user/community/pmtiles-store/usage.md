@@ -181,13 +181,13 @@ These parameters appear when using S3 URLs or when connecting to S3-compatible s
 
 :   AWS region for the S3 bucket (e.g., `us-west-2`, `eu-central-1`).
 
-#### Use Default Credentials Provider
+#### Anonymous (public bucket)
 
-:   Checkbox to use the AWS default credentials chain (environment variables, IAM roles, credential file).
+:   Checkbox to send unsigned requests, for public buckets that allow anonymous reads.
 
 #### AWS Access Key
 
-:   AWS access key ID for authentication (if not using default credentials).
+:   AWS access key ID, used together with the secret access key.
 
 #### AWS Secret Access Key
 
@@ -200,6 +200,8 @@ These parameters appear when using S3 URLs or when connecting to S3-compatible s
 #### Enable S3 path style access
 
 :   Checkbox to use path-style URLs (`https://s3.region.amazonaws.com/bucket/key`) instead of virtual-hosted-style URLs. Required for S3-compatible services like MinIO.
+
+The store takes the first credentials configured in this order: anonymous access, the access key pair, the credentials profile. With none of them set, it uses the AWS default credentials provider chain: system properties, environment variables, a web identity token, the `~/.aws` files (the profile named by `AWS_PROFILE`, or `default`), then container and EC2 instance roles.
 
 ### Azure Blob Storage Parameters
 
@@ -229,9 +231,11 @@ These parameters appear when using Google Cloud Storage URLs:
 
 :   Optional project ID for quota and billing purposes.
 
-#### Use default application credentials
+#### Anonymous (public bucket)
 
-:   Checkbox to use Google's default application credentials chain (service account, application default credentials, etc.).
+:   Checkbox to send unsigned requests, for public buckets that allow anonymous reads and for emulators.
+
+Unless the store is anonymous, Google Application Default Credentials authenticate the requests (`GOOGLE_APPLICATION_CREDENTIALS`, `gcloud auth application-default login`, or the attached service account on GCE, GKE and Cloud Run). The store fails to open when none can be found. A store saved with "Use default application credentials" unchecked opens as anonymous.
 
 ## Performance Tuning
 

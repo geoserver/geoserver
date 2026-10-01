@@ -125,27 +125,65 @@ This will download and install the [YSLD](../styling/ysld/index.md) and [OGCAPI 
 Here is a list of available extensions (taken from the [build server](https://build.geoserver.org/geoserver/main/ext-latest/)):
 
 
-|   |   |   |
-|---|---|---|
-| app-schema | authkey | cas |
-| charts | control-flow | css |
-| csw | csw-iso | datadir-catalog-loader |
-| db2 | dxf | excel |
-| feature-pregeneralized | gdal | geofence |
-| geofence-server-h2 | geofence-server-postgres | geofence-wps |
-| geopkg-output | grib | gwc-s3 |
-| iau | importer | inspire |
-| jp2k | kml | libjpeg-turbo |
-| mapml | mbstyle | metadata |
-| mongodb | monitor | mysql |
-| netcdf | netcdf-out | ogcapi-features |
-| ogr-wfs | ogr-wps | oracle |
-| params-extractor | printing | pyramid |
-| querylayer | rat | sldservice |
-| sqlserver | vectortiles | wcs2_0-eo |
-| web-resource | wmts-multi-dimensional | wps |
-| wps-cluster-hazelcast | wps-download | wps-jdbc |
-| ysld |  |  |
+<div class="columns-3" markdown>
+
+- app-schema
+- authkey
+- cas
+- charts
+- control-flow
+- css
+- csw
+- csw-iso
+- datadir-catalog-loader
+- db2
+- dxf
+- excel
+- feature-pregeneralized
+- gdal
+- geofence
+- geofence-server-h2
+- geofence-server-postgres
+- geofence-wps
+- geopkg-output
+- grib
+- gwc-s3
+- iau
+- importer
+- inspire
+- jp2k
+- kml
+- libjpeg-turbo
+- mapml
+- mbstyle
+- metadata
+- mongodb
+- monitor
+- mysql
+- netcdf
+- netcdf-out
+- ogcapi-features
+- ogr-wfs
+- ogr-wps
+- oracle
+- params-extractor
+- printing
+- pyramid
+- querylayer
+- rat
+- sldservice
+- sqlserver
+- vectortiles
+- wcs2_0-eo
+- web-resource
+- wmts-multi-dimensional
+- wps
+- wps-cluster-hazelcast
+- wps-download
+- wps-jdbc
+- ysld
+
+</div>
 
 ## Testing GeoServer Community modules
 
@@ -175,25 +213,67 @@ docker run -it -p 8080:8080 \
 
 For the current list see GeoServer [build server](https://build.geoserver.org/geoserver/main/community-latest/).
 
-|   |   |   |
-|---|---|---|
-| acl | backup-restore | cog-azure |
-| cog-google | cog-http | cog-s3 |
-| colormap | cov-json | dds |
-| elasticsearch | features-autopopulate | features-templating |
-| flatgeobuf | gdal-wcs | gdal-wps |
-| geopkg | gpx | graticule |
-| gsr | gwc-azure-blobstore | gwc-mbtiles |
-| hz-cluster | importer-jdbc | jdbcconfig |
-| jdbcstore | jms-cluster | libdeflate |
-| mbtiles | mbtiles-store | mongodb-schemaless |
-| monitor-kafka | ncwms | netcdf-ghrsst |
-| notification | ogcapi-coverages | ogcapi-dggs |
-| ogcapi-maps | ogcapi-styles | ogcapi-tiles |
-| ogr-datastore | opensearch-eo | png-wind |
-| proxy-base-ext | s3-geotiff | sec-keycloak |
-| sec-oauth2-geonode | sec-oauth2-github | sec-oauth2-google |
-| sec-oauth2-openid | smart-data-loader | solr |
-| spatialjson | stac-datastore | taskmanager-core |
-| taskmanager-s3 | vector-mosaic | vsi |
-| webp | wfs-freemarker | wps-longitudinal-profile |
+<div class="columns-3" markdown>
+
+- acl
+- backup-restore
+- cog-azure
+- cog-google
+- cog-http
+- cog-s3
+- colormap
+- cov-json
+- dds
+- elasticsearch
+- features-autopopulate
+- features-templating
+- flatgeobuf
+- gdal-wcs
+- gdal-wps
+- geopkg
+- gpx
+- graticule
+- gsr
+- gwc-azure-blobstore
+- gwc-mbtiles
+- hz-cluster
+- importer-jdbc
+- jdbcconfig
+- jdbcstore
+- jms-cluster
+- libdeflate
+- mbtiles
+- mbtiles-store
+- mongodb-schemaless
+- monitor-kafka
+- ncwms
+- netcdf-ghrsst
+- notification
+- ogcapi-coverages
+- ogcapi-dggs
+- ogcapi-maps
+- ogcapi-styles
+- ogcapi-tiles
+- ogr-datastore
+- opensearch-eo
+- png-wind
+- proxy-base-ext
+- s3-geotiff
+- sec-keycloak
+- sec-oauth2-geonode
+- sec-oauth2-github
+- sec-oauth2-google
+- sec-oauth2-openid
+- smart-data-loader
+- solr
+- spatialjson
+- stac-datastore
+- taskmanager-core
+- taskmanager-s3
+- vector-mosaic
+- vsi
+- webp
+- wfs-freemarker
+- wps-longitudinal-profile
+
+</div>

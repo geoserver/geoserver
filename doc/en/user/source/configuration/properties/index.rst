@@ -343,6 +343,12 @@ GeoServer Property Reference
      - x
      - x
      - x
+   * - GEOSERVER_TRUSTED_PROXIES
+       
+       Comma separated list of reverse proxy IP addresses or CIDR blocks. GeoServer reads the client address from the ``X-Forwarded-For`` header only for requests arriving from one of these proxies, otherwise it uses the direct connection address. The default is loopback only (``127.0.0.0/8``, ``::1``), so a reverse proxy on another host must be listed, otherwise every request appears to come from the proxy address.
+     - x
+     - x
+     - x
    * - org.geoserver.service.disabled
        
        :ref:`Layer service <data_webadmin_layers_services>` default comma separated list of disabled services.

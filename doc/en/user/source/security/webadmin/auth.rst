@@ -56,9 +56,8 @@ HTTP/1.1 401 User foo, 5896 concurrent login attempt(s) denied during the quiet 
   
 
 A blessed set of IPs that can dodge the mechanism allows legit administrators to take control of the server even during
-an attack. The system only trusts the actual requestor IP, ignoring "X-Forwarded-For" headers, as they can be easily spoofed
-(this in turn requires the admin to access the system from a local network, without proxies in the middle, for the blessed
-IP to be recognized).
+an attack. The system checks the client IP, which is read from the "X-Forwarded-For" header only for requests coming from
+a trusted reverse proxy (see ``GEOSERVER_TRUSTED_PROXIES`` in :ref:`application_properties`).
 
 The maximum number of threads blocked configuration allows to setup the system so that an attacker can misuse the
 system to simply block all service threads, by issuing requests with random usernames (the system cannot determine

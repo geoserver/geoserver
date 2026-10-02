@@ -97,14 +97,11 @@ public abstract class AbstractFlowControllerTest {
         request.setHttpRequest(httpRequest);
         request.setHttpResponse(new MockHttpServletResponse());
 
-        if (ipAddress != null && !ipAddress.equals("")) {
-            httpRequest.setRemoteAddr(ipAddress);
-        } else {
-            httpRequest.setRemoteAddr("127.0.0.1");
+        String client = proxyIp != null && !proxyIp.isEmpty() ? proxyIp : ipAddress;
+        if (client == null || client.isEmpty()) {
+            client = "127.0.0.1";
         }
-        if (!proxyIp.equals("")) {
-            httpRequest.addHeader("x-forwarded-for", proxyIp + ", " + ipAddress);
-        }
+        httpRequest.setRemoteAddr(client);
         return request;
     }
 

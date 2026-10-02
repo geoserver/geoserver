@@ -143,7 +143,6 @@
         <module>gwc-azure-blob</module>
         <module>backup-restore</module>
         <module>ncwms</module>
-        <module>gwc-sqlite</module>
         <module>jwt-headers</module>
         <module>security</module>
         <module>notification</module>
@@ -324,13 +323,6 @@
         <module>ncwms</module>
       </modules>
     </profile>
-    <profile>
-      <id>gwc-sqlite</id>
-      <modules>
-        <module>gwc-sqlite</module>
-      </modules>
-    </profile>
-
     <profile>
       <id>jwt-headers</id>
       <modules>

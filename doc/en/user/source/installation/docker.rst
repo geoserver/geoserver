@@ -202,7 +202,7 @@ Working with a Nightly build is a good way to test community modules and provide
    ::
    
        acl                           gwc-mbtiles                     ogcapi-tiles
-       activeMQ-broker               gwc-sqlite                      ogr-datastore
+       activeMQ-broker                                               ogr-datastore
        backup-restore                hz-cluster                      opensearch-eo
        cog-azure                                                     proxy-base-ext
        cog-google                    importer-jdbc                   s3-geotiff

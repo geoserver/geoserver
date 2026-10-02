@@ -354,4 +354,27 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
     </properties>
   </rule>
 
+  <rule name="AvoidXForwardedForHeader"
+        language="java"
+        message="Read the client address with HttpServletRequest.getRemoteAddr(), which RemoteIpFilter resolves, instead of the X-Forwarded-For header."
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      RemoteIpFilter resolves the client address once per request, from the configured proxies, so every
+      component reports the same address. Request code should call HttpServletRequest.getRemoteAddr()
+      instead of parsing the header again. A deliberate use, such as the filter itself, request logging, or
+      proxy URL building, must carry an explicit @SuppressWarnings("PMD.AvoidXForwardedForHeader") stating
+      why.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+              //StringLiteral[contains(lower-case(@Image), 'x-forwarded-for')]
+              ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+
 </ruleset>

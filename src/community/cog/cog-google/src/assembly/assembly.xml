@@ -6,26 +6,32 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>target/dependency</directory>
+      <directory>target</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>gs-cog*.jar</include>
-        <include>imageio-ext-*rangereader*.jar</include>
-        <include>*google*.jar</include>
-        <include>guava*.jar</include>
-        <include>checker-qual*.jar</include>
-        <include>error_prone_annotations*.jar</include>
-        <include>objc-annotations*.jar</include>
-        <include>gson*.jar</include>
-        <include>auto-value-annotations*</include>
-        <include>gax*</include>
-        <include>api-common*</include>
-        <include>annotation-api*</include>
-        <include>grpc-context*</include>
-        <include>opencensus*</include>
-        <include>protobuf-java*</include>
-        <include>threetenbp*</include>
+        <include>${artifactId}-${project.version}.jar</include>
       </includes>
     </fileSet>
   </fileSets>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory></outputDirectory>
+      <scope>compile</scope>
+      <includes>
+        <include>org.geoserver.community:gs-cog-core</include>
+        <include>it.geosolutions.imageio-ext:imageio-ext-cog-rangereader-gs</include>
+      </includes>
+      <useTransitiveDependencies>true</useTransitiveDependencies>
+      <useTransitiveFiltering>true</useTransitiveFiltering>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory></outputDirectory>
+      <scope>runtime</scope>
+      <includes>
+        <include>it.geosolutions.imageio-ext:imageio-ext-cog-rangereader-gs</include>
+      </includes>
+      <useTransitiveDependencies>true</useTransitiveDependencies>
+      <useTransitiveFiltering>true</useTransitiveFiltering>
+    </dependencySet>
+  </dependencySets>
 </assembly>

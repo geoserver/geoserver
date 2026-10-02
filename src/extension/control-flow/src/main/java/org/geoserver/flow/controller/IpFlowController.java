@@ -12,7 +12,6 @@ import static org.geoserver.flow.ControlFlowCallback.X_CONCURRENT_REQUESTS;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.ows.Request;
 import org.geotools.util.logging.Logging;
 
@@ -55,7 +54,7 @@ public class IpFlowController extends QueueController {
         // check if this client already made other connections
         final String incomingIp;
         {
-            String ip = getRemoteAddr(request.getHttpRequest());
+            String ip = request.getHttpRequest().getRemoteAddr();
             if (null == ip || "".equals(ip)) {
                 // may this happen? hope not, but if someone is trying to trick us lets not let him
                 // and pool it on the "empty IP" queue
@@ -114,27 +113,6 @@ public class IpFlowController extends QueueController {
         }
 
         return retval;
-    }
-
-    static String getRemoteAddr(HttpServletRequest req) {
-        String forwardedFor = req.getHeader("X-Forwarded-For");
-        String ip;
-        if (forwardedFor != null) {
-            if (-1 == forwardedFor.indexOf(',')) {
-                return forwardedFor;
-            }
-            String[] ips = forwardedFor.split(", ");
-            ip = ips[0];
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("X-Forwarded-For: " + forwardedFor + " -> " + ip);
-            }
-        } else {
-            ip = req.getRemoteAddr();
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("X-Forwarded-For missing, ip from servlet request " + ip);
-            }
-        }
-        return ip;
     }
 
     @Override

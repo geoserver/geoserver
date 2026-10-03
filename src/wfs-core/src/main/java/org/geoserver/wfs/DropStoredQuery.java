@@ -36,17 +36,13 @@ public class DropStoredQuery {
             throw new WFSException(request, "No stored query id specified");
         }
 
-        StoredQuery query = storedQueryProvider.getStoredQuery(request.getId());
-        if (query != null) {
-            storedQueryProvider.removeStoredQuery(query);
-        } else {
+        if (!dropStoredQuery(request.getId())) {
             WFSException exception = new WFSException(
                     request,
                     "Stored query %s does not exist.".formatted(request.getId()),
                     ServiceException.INVALID_PARAMETER_VALUE);
             // CITE tests vagary, the XML uses "id" and KVP uses "STOREDQUERY_ID", the CITE tests
-            // mandate "id"
-            // in all bindings
+            // mandate "id" in all bindings
             exception.setLocator("id");
             throw exception;
         }
@@ -55,5 +51,24 @@ public class DropStoredQuery {
         ExecutionStatusType response = factory.createExecutionStatusType();
         response.setStatus("OK");
         return response;
+    }
+
+    /**
+     * Removes the stored query identified by {@code name}, falling back to removing the definition by name if it can no
+     * longer be parsed.
+     *
+     * @return {@code true} if a stored query existed and was removed, {@code false} if none existed with that name.
+     */
+    private boolean dropStoredQuery(String name) {
+        try {
+            StoredQuery query = storedQueryProvider.getStoredQuery(name);
+            if (query == null) {
+                return false;
+            }
+            storedQueryProvider.removeStoredQuery(query);
+            return true;
+        } catch (RuntimeException unparseable) {
+            return storedQueryProvider.removeStoredQueryByName(name);
+        }
     }
 }

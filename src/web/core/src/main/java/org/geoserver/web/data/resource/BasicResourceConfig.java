@@ -13,9 +13,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.feedback.FeedbackMessage;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
@@ -28,6 +32,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.validation.validator.PatternValidator;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -55,13 +60,12 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
     private static final boolean isCssEmpty = IsWicketCssFileEmpty(BasicResourceConfig.class);
 
     @Override
-    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+    public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
         // if the panel-specific CSS file contains actual css then have the browser load the css
         if (!isCssEmpty) {
-            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
-                    new org.apache.wicket.request.resource.PackageResourceReference(
-                            getClass(), getClass().getSimpleName() + ".css")));
+            response.render(CssHeaderItem.forReference(
+                    new PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
         }
     }
 
@@ -98,6 +102,28 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         final EnvelopePanel nativeBBox = new EnvelopePanel("nativeBoundingBox", nativeBBoxModel);
         nativeBBox.setOutputMarkupId(true);
         refForm.add(nativeBBox);
+
+        // Warning label shown when CRS has no defined bounds (e.g. EPSG:404000)
+        final Label noBoundsWarning = new Label("noBoundsWarning", "");
+        noBoundsWarning.setOutputMarkupId(true);
+        noBoundsWarning.setOutputMarkupPlaceholderTag(true);
+        noBoundsWarning.add(new Behavior() {
+            @Override
+            public void onConfigure(Component component) {
+                super.onConfigure(component);
+                ResourceInfo resource = (ResourceInfo) BasicResourceConfig.this.getDefaultModelObject();
+                String srs = resource.getSRS();
+                boolean hasBounds = hasCrsBounds(srs);
+                component.setVisible(!hasBounds);
+                if (!hasBounds) {
+                    ((Label) component)
+                            .setDefaultModel(new StringResourceModel("noBoundsWarning", BasicResourceConfig.this)
+                                    .setParameters(srs));
+                }
+            }
+        });
+        refForm.add(noBoundsWarning);
+
         AjaxSubmitLink nativeBoundsLink = computeNativeBoundsLink(refForm, nativeBBox);
 
         // lat/lon bbox
@@ -134,7 +160,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         refForm.add(declaredCRS);
 
         // compute from native or declared crs links
-        refForm.add(computeBoundsFromSRS(refForm, nativeBBox));
+        refForm.add(computeBoundsFromSRS(refForm, nativeBBox, noBoundsWarning));
 
         projectionPolicy = new DropDownChoice<>(
                 "srsHandling",
@@ -189,7 +215,8 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
      * Compute the native bounds from the native CRS. Acts as an alternative to computing the bounds from the data
      * itself.
      */
-    AjaxSubmitLink computeBoundsFromSRS(final Form<ResourceInfo> refForm, final EnvelopePanel nativeBoundsPanel) {
+    AjaxSubmitLink computeBoundsFromSRS(
+            final Form<ResourceInfo> refForm, final EnvelopePanel nativeBoundsPanel, final Label noBoundsWarning) {
 
         return new AjaxSubmitLink("computeLatLonFromNativeSRS", refForm) {
             @Serial
@@ -208,6 +235,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                 }
 
                 target.add(nativeBoundsPanel);
+                target.add(noBoundsWarning);
             }
 
             @Override
@@ -261,6 +289,21 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                 return false;
             }
         };
+    }
+
+    /**
+     * Returns true if the given SRS code has defined geographic bounds (domain of validity). CRS codes from the EPSG
+     * database generally have bounds; WKT-defined CRS typically do not.
+     */
+    private boolean hasCrsBounds(String srs) {
+        if (srs == null) return false;
+        try {
+            CoordinateReferenceSystem crs = CRS.decode(srs);
+            return CRS.getEnvelope(crs) != null;
+        } catch (Exception e) {
+            LOGGER.log(Level.FINE, "Could not determine bounds for SRS: " + srs, e);
+            return false;
+        }
     }
 
     class ProjectionPolicyRenderer extends ChoiceRenderer<ProjectionPolicy> {

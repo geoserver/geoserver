@@ -161,6 +161,8 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
                 .andReturn(new TreeSet<>(Arrays.asList("test1", "test2", "test3", "test4")))
                 .anyTimes();
 
+        expect(secMgr.listFilters()).andReturn(new TreeSet<>()).anyTimes();
+
         replay(roleService1, roleService2, roleService3, roleService4, activeRoleService, secMgr);
 
         validator = new XMLSecurityConfigValidator(secMgr);

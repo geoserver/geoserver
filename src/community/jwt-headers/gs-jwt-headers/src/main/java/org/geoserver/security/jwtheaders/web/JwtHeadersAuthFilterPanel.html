@@ -39,6 +39,13 @@
             </label>
             <input class="field text" wicket:id="userNameJsonPath"/>
         </div>
+        <div class="flex padTopSmall">
+            <input class="field autoTopBottom" id="allowAdminLogin"
+                   type="checkbox" wicket:id="allowAdminLogin"/>
+            <label class="padLeftSmall">
+                <wicket:message key="allowAdminLogin"></wicket:message>
+            </label>
+        </div>
 
         <br>
         <legend>
@@ -80,6 +87,13 @@
                 </label>
                 <input class="field text" wicket:id="validateTokenSignatureURL"/>
             </div>
+
+        <div class="padTopLarge">
+            <label>
+                <wicket:message key="validateTokenIssuer"></wicket:message>
+            </label>
+            <input class="field" wicket:id="validateTokenIssuer" type="text"/>
+        </div>
 
 
         <div  class="padTopLarge">
@@ -134,6 +148,16 @@
 
             </div>
             </div>
+
+        <div class="padTopLarge">
+            <div class="flex">
+                <input class="field autoTopBottom" id="trustUnvalidatedRolesHeader"
+                       type="checkbox" wicket:id="trustUnvalidatedRolesHeader"/>
+                <label class="padLeftSmall">
+                    <wicket:message key="trustUnvalidatedRolesHeader"></wicket:message>
+                </label>
+            </div>
+        </div>
         </div>
 
 

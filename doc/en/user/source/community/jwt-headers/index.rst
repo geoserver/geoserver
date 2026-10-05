@@ -25,7 +25,7 @@ If you are using `OAUTH2/OIDC Access Tokens  <https://www.oauth.com/oauth2-serve
    * Validate the token against a token verifier URL ("userinfo_endpoint") and check that subjects match
    * Validate components of the Access Token (like `aud (audience)  <https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-token-claims>`_) 
    
-#. The user's roles can also be from any of the standard GeoServer providers (i.e. User Group Service, Role Service, or Request Header).
+#. The user's roles can also be from the User Group Service or Role Service providers. A Request Header (or any header other than the validated Access Token) is only used for roles when it is explicitly trusted, see :ref:`community_jwtheaders_config`.
 #. You can also extract roles from the JWT Access Token (via a JSON path).
 
 

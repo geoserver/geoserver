@@ -21,8 +21,9 @@ import org.geoserver.security.jwtheaders.JwtConfiguration;
 /**
  * This validates the signature of the JWT.
  *
- * <p>We cache to things (both for 1 hour) for performance reasons; 1. The JWKSet enpoint (set of public keys we use to
- * check the signature). 2. The validated token
+ * <p>We cache two things (both for 1 hour) for performance reasons; 1. The JWKSet endpoint (set of public keys we use
+ * to check the signature). 2. The tokens whose signature was verified, keyed by the key set URL and a digest of the
+ * token, so a token verified against one key set is never taken as verified against another.
  *
  * <p>This will ensure that the token hasn't been tampered with.
  */
@@ -38,6 +39,7 @@ public class TokenSignatureValidator {
                 }
             });
 
+    // keyed by key set URL + token digest, see cacheKey()
     public static Cache<Object, Object> validAccessKeys = CacheBuilder.newBuilder()
             .maximumSize(50000)
             .expireAfterWrite(1, TimeUnit.HOURS)
@@ -59,7 +61,8 @@ public class TokenSignatureValidator {
     public void validate(String accessToken) throws Exception {
         if (!jwtHeadersConfig.isValidateTokenSignature()) return; // don't validate
 
-        if (validAccessKeys.getIfPresent(accessToken) != null) return; // we already know this is a good accessToken
+        String cacheKey = cacheKey(accessToken);
+        if (validAccessKeys.getIfPresent(cacheKey) != null) return; // already verified against this key set
 
         JWSObject jwsToken = JWSObject.parse(accessToken);
         String keyId = jwsToken.getHeader().getKeyID();
@@ -70,7 +73,11 @@ public class TokenSignatureValidator {
         validateSignature(rsaKey, jwsToken);
 
         // its good - put in cache, so we don't do the signature validation all the time.
-        validAccessKeys.put(accessToken, Boolean.TRUE);
+        validAccessKeys.put(cacheKey, Boolean.TRUE);
+    }
+
+    private String cacheKey(String accessToken) {
+        return TokenCacheKey.of(String.valueOf(jwtHeadersConfig.getValidateTokenSignatureURL()), accessToken);
     }
 
     /**

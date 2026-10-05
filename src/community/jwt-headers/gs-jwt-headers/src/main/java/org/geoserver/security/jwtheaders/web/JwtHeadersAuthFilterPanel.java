@@ -64,6 +64,7 @@ public class JwtHeadersAuthFilterPanel extends PreAuthenticatedUserNameFilterPan
         add(new TextField("userNameHeaderAttributeName").setRequired(true));
 
         add(new TextField("userNameJsonPath").setRequired(false));
+        add(new CheckBox("allowAdminLogin").setRequired(false));
 
         add(new CheckBox("validateToken").setRequired(false));
         add(new HelpLink("validateTokenHelp", this).setDialog(dialog));
@@ -72,6 +73,7 @@ public class JwtHeadersAuthFilterPanel extends PreAuthenticatedUserNameFilterPan
 
         add(new CheckBox("validateTokenSignature").setRequired(false));
         add(new TextField("validateTokenSignatureURL").setRequired(false));
+        add(new TextField("validateTokenIssuer").setRequired(false));
 
         add(new CheckBox("validateTokenAgainstURL").setRequired(false));
         add(new TextField("validateTokenAgainstURLEndpoint").setRequired(false));
@@ -80,6 +82,8 @@ public class JwtHeadersAuthFilterPanel extends PreAuthenticatedUserNameFilterPan
         add(new CheckBox("validateTokenAudience").setRequired(false));
         add(new TextField("validateTokenAudienceClaimName").setRequired(false));
         add(new TextField("validateTokenAudienceClaimValue").setRequired(false));
+
+        add(new CheckBox("trustUnvalidatedRolesHeader").setRequired(false));
 
         userNameFormatChoice = new DropDownChoice(
                 "userNameFormatChoice",

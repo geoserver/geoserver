@@ -7,6 +7,7 @@ package org.geoserver.security.jwtheaders.roles;
 
 import com.nimbusds.jose.JWSObject;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -69,6 +70,21 @@ public class JwtHeadersRolesExtractor {
             return roles;
         }
         return null;
+    }
+
+    /**
+     * Extracts the roles from the claims of an already validated token, using the rolesJsonPath, then applies the role
+     * conversion. Use this instead of {@link #getRoles(String)} whenever the token was validated, so the roles come
+     * from the very token that was checked rather than from a header read again.
+     *
+     * @param claims claims of the validated token (may be null)
+     * @return converted roles, empty if there are none
+     */
+    public List<String> getRolesFromClaims(Map<String, Object> claims) {
+        String rolesPath = jwtHeadersConfig.getRolesJsonPath();
+        if (claims == null || rolesPath == null || rolesPath.isBlank()) return new ArrayList<>();
+        List<String> roleNames = asStringList(JwtHeaderUserNameExtractor.getClaim(claims, rolesPath));
+        return this.roleConverter.convert(roleNames);
     }
 
     /**

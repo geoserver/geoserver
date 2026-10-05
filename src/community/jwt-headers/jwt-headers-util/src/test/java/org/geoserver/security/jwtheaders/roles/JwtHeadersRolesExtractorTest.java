@@ -10,6 +10,7 @@ import static org.geoserver.security.jwtheaders.JwtConfiguration.UserNameHeaderF
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.geoserver.security.jwtheaders.JwtConfiguration;
 import org.junit.Assert;
@@ -63,5 +64,20 @@ public class JwtHeadersRolesExtractorTest {
                         .collect(Collectors.toList());
         Assert.assertEquals(1, roles.size());
         Assert.assertEquals("GeoserverAdministrator", roles.get(0));
+    }
+
+    @Test
+    public void testRolesFromValidatedClaims() {
+        Map<String, Object> claims = Map.of(
+                "resource_access", Map.of("live-key2", Map.of("roles", List.of("GeoserverAdministrator", "Other"))));
+
+        JwtHeadersRolesExtractor extractor = getExtractor(
+                JWT.toString(), "GeoserverAdministrator=ROLE_ADMINISTRATOR", "resource_access.live-key2.roles");
+        Assert.assertEquals(List.of("ROLE_ADMINISTRATOR", "Other"), extractor.getRolesFromClaims(claims));
+
+        Assert.assertTrue(extractor.getRolesFromClaims(null).isEmpty());
+        Assert.assertTrue(getExtractor(JWT.toString(), "", null)
+                .getRolesFromClaims(claims)
+                .isEmpty());
     }
 }

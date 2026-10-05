@@ -1,12 +1,12 @@
 # OGC API Service Configuration
 
-The OGC API modules provide additional services alongside the existing Open Web Services (OWS).
+The OGC API services provide additional services alongside the existing Open Web Services (OWS).
 
 ## Service
 
-The OGC API modules primarily use the same configurations as their equivalent OWS services. So, for example, setting the WFS limited SRS list will also limit the SRS list for OGC API - Features.
+The OGC API services primarily share the same configurations with their equivalent OWS services. For example, setting the limited SRS list on the **Services > Vectors** page also limits the SRS list for **OGC API - Features**.
 
-In addition, the OGC API modules will have some unique configuration options.
+In addition, the OGC API services will have some unique configuration options.
 
 ## Security
 
@@ -17,6 +17,56 @@ In addition, the OGC API modules will have some unique configuration options.
   ![](img/service_rule.png)
 
   *Service rule for OGC API Features getLandingPage*
+
+## Conformance
+
+Each OGC API web service is modular, with supported functionality listed in a `conformance` document.
+
+- OpenAPI service description is mandatory and may not be disabled.
+
+- Built-in output formats (such as HTML and JSON) may not be disabled.
+
+The **Conformance Table** is used to manage each group of standards:
+
+ *  You may enable/disable the functionality included using checkboxes provided.
+
+    The checkboxes cycle through **Enabled** to include a conformance, **Disabled** to exclude, and **Unset** (shown as a `-` line).
+
+ *  The appearance of each conformance **Identifier** is normal when included in the `conformance` document,
+and light gray when not included.
+  
+    The table reflects interaction between conformance settings. For example **Filtering** requires at least one
+    filter language (CQL2 or ECQL) to be enabled in order to specify a filter parameter.
+
+ *  When a checkbox is **Unset** the conformance is included depending on how stable a Standard is (Draft standards are still subject to change),
+    the GeoServer implementation (Implementing indicates functionality that is under development), and the **Strict CITE compliance** setting used to limit functionality to
+    endorsed OGC standards.
+    
+    | Standard           | Endorsed | Stable    | Default   | Strict    | Description  |
+    | ------------------ | -------- | --------- | --------- | -----     | ------------ |
+    | Standard           | OGC      | Stable    | Enabled   | Enabled   | Finalized standard |
+    | Implementing       | OGC      |           |           |           | Finalized standard, implementation under development. |
+    | Draft              | OGC      |           |           |           | Draft standard, subject to change. |
+    | Retired            |          | Stable    | Enabled   |           | Retired standard, implementation available for backwards compatibility. |
+    | Community Standard |          | Stable    | Enabled   |           | Non-OGC Standard |
+    | Community Draft    |          |           |           |           | Non-OGC Standard, subject to change. |
+  
+    ![](../../services/features/img/feature-service-configuration.png)
+
+    *OGC API - Features conformance table*
+  
+    As an example the GeoServer project lists our own **ECQL** query language alongside the official **CQL2** query language. When using strict
+    only the **CQL2** query language would be available by default.
+    
+    ![](../../services/features/img/ecql-configuration.png)
+
+    *ECQL conformance table*
+
+!!! note
+
+    This approach allows GeoServer to share work-in-progress (both draft standards and implementations being worked on). Use
+    the checkboxes to **Enable** such functionality for feedback and review, or leave **Unset** and it will only be included
+    when ready.
 
 ## Collections
 

@@ -10,21 +10,26 @@ In addition, the OGC API services will have some unique configuration options.
 
 ## Security
 
-- Data security: Data security is managed independently of web service. The same data security restrictions placed on a workspace or layer content are enforced for both OWS services and OGC API web services
+ -  Data security: Data security is managed independently of web service. The same data security restrictions placed on a workspace or layer content are enforced for both OWS services and OGC API web services
 
-- Service security: OGC API web services are managed directly in **Security > Services** page. New access rules can be defined for OGC API services.
+ -  Service security: OGC API web services are managed directly in **Security > Services** page. New access rules can be defined for OGC API services.
 
-  ![](img/service_rule.png)
-
-  *Service rule for OGC API Features getLandingPage*
+    ![](img/service_rule.png)  
+    *Service rule for OGC API Features getLandingPage*
 
 ## Conformance
 
 Each OGC API web service is modular, with supported functionality listed in a `conformance` document.
 
+What happens when a conformance is enabled or disabled depends on the kind of class: some classes list additional
+output formats, while others add resource pages or manage request parameters. In each case the `api` document, and the
+list in the `conformance` document, reflect the configuration change.
+
 - OpenAPI service description is mandatory and may not be disabled.
 
 - Built-in output formats (such as HTML and JSON) may not be disabled.
+
+- Mandatory conformance classes are not included in the conformance table, as they cannot be configured.
 
 The **Conformance Table** is used to manage each group of standards:
 
@@ -62,11 +67,11 @@ and light gray when not included.
 
     *ECQL conformance table*
 
-!!! note
+    !!! note
 
-    This approach allows GeoServer to share work-in-progress (both draft standards and implementations being worked on). Use
-    the checkboxes to **Enable** such functionality for feedback and review, or leave **Unset** and it will only be included
-    when ready.
+        This approach allows GeoServer to share work-in-progress (both draft standards and implementations being worked
+        on). Use the checkboxes to **Enable** such functionality for feedback and review, or leave **Unset** and it will
+        only be included when ready.
 
 ## Collections
 

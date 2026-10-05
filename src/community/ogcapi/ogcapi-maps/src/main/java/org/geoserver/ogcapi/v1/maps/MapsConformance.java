@@ -10,6 +10,7 @@ import static org.geoserver.ogcapi.APIConformance.Level.STANDARD;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.ogcapi.APIConformance;
+import org.geoserver.ogcapi.APIConformance.Type;
 import org.geoserver.ogcapi.APIFilterParser;
 import org.geoserver.ogcapi.CQL2Conformance;
 import org.geoserver.ogcapi.ConformanceClass;
@@ -35,33 +36,29 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
     /** The {@link WMSInfo} metadata key holding the SVG renderer choice, see {@code WMS#getSvgRenderer()}. */
     private static final String SVG_RENDERER_KEY = "svgRenderer";
 
-    public static final APIConformance CORE = new APIConformance(BASE + "core", STANDARD);
-    public static final APIConformance COLLECTION_MAP = CORE.extend(BASE + "collection-map");
-    public static final APIConformance STYLED_MAP = CORE.extend(BASE + "styled-map");
-    public static final APIConformance HTML = CORE.extend(BASE + "html");
-    public static final APIConformance API_OPERATIONS = CORE.extend(BASE + "api-operations");
-    public static final APIConformance PNG = CORE.extend(BASE + "png");
-    public static final APIConformance JPEG = CORE.extend(BASE + "jpeg");
+    public static final APIConformance CORE = new APIConformance(BASE + "core", STANDARD, Type.CORE).builtIn(true);
+    public static final APIConformance COLLECTION_MAP =
+            CORE.extend("collection-map").builtIn(true);
+    public static final APIConformance STYLED_MAP = CORE.extend("styled-map").builtIn(true);
+    public static final APIConformance HTML = CORE.extend("html").builtIn(true);
+    public static final APIConformance API_OPERATIONS =
+            CORE.extend("api-operations").builtIn(true);
+    public static final APIConformance PNG = CORE.extend("png").builtIn(true);
+    public static final APIConformance JPEG = CORE.extend("jpeg").builtIn(true);
 
-    // configurable parameter and format classes; hyphenated ids need an explicit property matching the Java field,
-    // since the default property (last id segment) would not resolve by reflection in ConformanceInfo
-    public static final APIConformance SPATIAL_SUBSETTING = new APIConformance(
-            BASE + "spatial-subsetting", STANDARD, APIConformance.Type.EXTENSION, CORE, "spatialSubsetting");
-    public static final APIConformance SCALING = CORE.extend(BASE + "scaling");
-    public static final APIConformance DATASET_MAP =
-            new APIConformance(BASE + "dataset-map", STANDARD, APIConformance.Type.EXTENSION, CORE, "datasetMap");
-    public static final APIConformance COLLECTIONS_SELECTION = new APIConformance(
-            BASE + "collections-selection", STANDARD, APIConformance.Type.EXTENSION, CORE, "collectionsSelection");
-    public static final APIConformance DISPLAY_RESOLUTION = new APIConformance(
-            BASE + "display-resolution", STANDARD, APIConformance.Type.EXTENSION, CORE, "displayResolution");
-    public static final APIConformance DATETIME = CORE.extend(BASE + "datetime");
-    public static final APIConformance CRS = CORE.extend(BASE + "crs");
-    public static final APIConformance BACKGROUND = CORE.extend(BASE + "background");
-    public static final APIConformance ORIENTATION = CORE.extend(BASE + "orientation");
-    public static final APIConformance TIFF = CORE.extend(BASE + "tiff");
-    public static final APIConformance SVG = CORE.extend(BASE + "svg");
-    public static final APIConformance GENERAL_SUBSETTING = new APIConformance(
-            BASE + "general-subsetting", STANDARD, APIConformance.Type.EXTENSION, CORE, "generalSubsetting");
+    // configurable parameter and format classes
+    public static final APIConformance SPATIAL_SUBSETTING = CORE.extend("spatial-subsetting");
+    public static final APIConformance SCALING = CORE.extend("scaling");
+    public static final APIConformance DATASET_MAP = CORE.extend("dataset-map");
+    public static final APIConformance COLLECTIONS_SELECTION = CORE.extend("collections-selection");
+    public static final APIConformance DISPLAY_RESOLUTION = CORE.extend("display-resolution");
+    public static final APIConformance DATETIME = CORE.extend("datetime");
+    public static final APIConformance CRS = CORE.extend("crs");
+    public static final APIConformance BACKGROUND = CORE.extend("background");
+    public static final APIConformance ORIENTATION = CORE.extend("orientation");
+    public static final APIConformance TIFF = CORE.extend("tiff");
+    public static final APIConformance SVG = CORE.extend("svg");
+    public static final APIConformance GENERAL_SUBSETTING = CORE.extend("general-subsetting");
 
     /**
      * Attribute filtering is not part of OGC API - Maps 1.0.0; the Features Part 3 classes are reused because their
@@ -75,28 +72,17 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
     public static final APIConformance QUERYABLES = CORE.extend(ConformanceClass.QUERYABLES);
 
     /** GeoServer extension: binds the filter parameters to the map resources. */
-    public static final APIConformance MAP_FILTER = new APIConformance(
-            "http://geoserver.org/spec/ogcapi-maps/1.0/conf/map-filter",
-            COMMUNITY_STANDARD,
-            APIConformance.Type.EXTENSION,
-            CORE,
-            "mapFilter");
+    public static final APIConformance MAP_FILTER =
+            CORE.extend("http://geoserver.org/spec/ogcapi-maps/1.0/conf/map-filter", COMMUNITY_STANDARD);
 
     /** GeoServer extension: WMS-style GetFeatureInfo on a map, not part of the OGC API - Maps standard. */
-    public static final APIConformance FEATURE_INFO = new APIConformance(
-            "http://geoserver.org/spec/ogcapi-maps/1.0/conf/featureinfo",
-            COMMUNITY_STANDARD,
-            APIConformance.Type.EXTENSION,
-            CORE,
-            "featureInfo");
+    public static final APIConformance FEATURE_INFO = CORE.extend(
+                    "http://geoserver.org/spec/ogcapi-maps/1.0/conf/featureinfo", COMMUNITY_STANDARD)
+            .property("featureInfo");
 
     /** GeoServer extension: WMS-style GetLegendGraphic for a style, not part of the OGC API - Maps standard. */
-    public static final APIConformance LEGEND = new APIConformance(
-            "http://geoserver.org/spec/ogcapi-maps/1.0/conf/legend",
-            COMMUNITY_STANDARD,
-            APIConformance.Type.EXTENSION,
-            CORE,
-            "legend");
+    public static final APIConformance LEGEND =
+            CORE.extend("http://geoserver.org/spec/ogcapi-maps/1.0/conf/legend", COMMUNITY_STANDARD);
 
     private Boolean core = null;
     private Boolean datasetMap = null;
@@ -197,8 +183,10 @@ public class MapsConformance extends ConformanceInfo<WMSInfo> {
             conformance.add(FILTER);
             conformance.add(MAP_FILTER);
             if (queryables(wmsInfo)) conformance.add(QUERYABLES);
+
             conformance.addAll(ECQLConformance.configuration(wmsInfo).conformances(wmsInfo));
             conformance.addAll(CQL2Conformance.configuration(wmsInfo).conformances(wmsInfo));
+            conformance.remove(CQL2Conformance.CQL2_FUNCTIONS); // not implemented yet
         }
         if (featureInfo(wmsInfo)) conformance.add(FEATURE_INFO);
         if (legend(wmsInfo)) conformance.add(LEGEND);

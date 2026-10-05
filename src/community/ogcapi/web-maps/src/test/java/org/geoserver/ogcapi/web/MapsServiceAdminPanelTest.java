@@ -79,6 +79,8 @@ public class MapsServiceAdminPanelTest extends GeoServerWicketTestSupport {
         }) {
             assertThat("Missing conformance class row: " + label, markup, containsString(label));
         }
+        // Maps has no /functions resource, so the row would have no effect
+        assertThat(markup, not(containsString("CQL2 Functions")));
     }
 
     /** The collection count of a default dataset map is edited on the page and stored in the WMS configuration. */

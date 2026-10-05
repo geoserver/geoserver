@@ -27,12 +27,15 @@ import org.geoserver.security.jwtheaders.JwtConfiguration;
  * <p>It also CAN verify that the userinfo and access token refer to the same user (SUBject). The OIDC spec recommends
  * this validation.
  *
- * <p>NOTE - we cache results for 1 hour for performance. TokenExpiryValidator will catch a token expiring.
+ * <p>NOTE - we cache results for 1 hour for performance. TokenExpiryValidator will catch a token expiring. The cache is
+ * keyed by endpoint URL, subject setting and a digest of the token, so a token accepted by one endpoint is never taken
+ * as accepted by another.
  */
 public class TokenEndpointValidator {
 
     JwtConfiguration jwtHeadersConfig;
 
+    // keyed by endpoint URL + subject setting + token digest, see cacheKey()
     public static Cache<Object, Object> validEndpoints = CacheBuilder.newBuilder()
             .maximumSize(50000)
             .expireAfterWrite(1, TimeUnit.HOURS)
@@ -45,12 +48,19 @@ public class TokenEndpointValidator {
     public void validate(String accessToken) throws Exception {
         if (!jwtHeadersConfig.isValidateTokenAgainstURL()) return; // nothing to do
 
-        if (validEndpoints.getIfPresent(accessToken) != null) return; // we already know this is a good accessToken
+        String cacheKey = cacheKey(accessToken);
+        if (validEndpoints.getIfPresent(cacheKey) != null) return; // already accepted by this endpoint
 
         validateEndpoint(accessToken);
 
         // its good - put in cache, so we don't do the endpoint validation all the time.
-        validEndpoints.put(accessToken, Boolean.TRUE);
+        validEndpoints.put(cacheKey, Boolean.TRUE);
+    }
+
+    private String cacheKey(String accessToken) {
+        String context = jwtHeadersConfig.getValidateTokenAgainstURLEndpoint() + "|"
+                + jwtHeadersConfig.isValidateSubjectWithEndpoint();
+        return TokenCacheKey.of(context, accessToken);
     }
 
     public void validateEndpoint(String accessToken) throws Exception {

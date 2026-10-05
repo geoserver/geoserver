@@ -5,6 +5,9 @@
 
 package org.geoserver.security.jwtheaders.token;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.*;
 
 import org.geoserver.security.jwtheaders.JwtConfiguration;
@@ -43,6 +46,37 @@ public class TokenValidatorTest {
         verify(validator.tokenExpiryValidator).validate(ArgumentMatchers.any());
         verify(validator.tokenEndpointValidator).validate(ArgumentMatchers.any());
         verify(validator.tokenAudienceValidator).validate(ArgumentMatchers.any());
+    }
+
+    /** The endpoint is not called for a token the local checks already rejected. */
+    @Test
+    public void testValidator_localChecksBeforeEndpoint() throws Exception {
+        JwtConfiguration config = new JwtConfiguration();
+        config.setValidateToken(true);
+
+        TokenValidator validator = new TokenValidator(config);
+
+        validator.tokenSignatureValidator = Mockito.mock(TokenSignatureValidator.class);
+        validator.tokenExpiryValidator = Mockito.mock(TokenExpiryValidator.class);
+        validator.tokenEndpointValidator = Mockito.mock(TokenEndpointValidator.class);
+        validator.tokenAudienceValidator = Mockito.mock(TokenAudienceValidator.class);
+
+        doThrow(new Exception("boom")).when(validator.tokenAudienceValidator).validate(ArgumentMatchers.any());
+
+        Exception thrown =
+                assertThrows(Exception.class, () -> validator.validate(JwtHeaderUserNameExtractorTest.accessToken));
+        assertEquals("boom", thrown.getMessage());
+
+        verify(validator.tokenEndpointValidator, never()).validate(ArgumentMatchers.any());
+    }
+
+    /** With validation disabled no claims are returned, since none of them can be trusted. */
+    @Test
+    public void testValidateAndParse_disabled() throws Exception {
+        JwtConfiguration config = new JwtConfiguration();
+        config.setValidateToken(false);
+
+        assertNull(new TokenValidator(config).validateAndParse(JwtHeaderUserNameExtractorTest.accessToken));
     }
 
     /**

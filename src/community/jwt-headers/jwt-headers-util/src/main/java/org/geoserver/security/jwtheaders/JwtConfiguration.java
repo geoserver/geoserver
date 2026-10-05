@@ -51,6 +51,9 @@ public class JwtConfiguration implements Serializable {
     protected String validateTokenAudienceClaimName;
     protected String validateTokenAudienceClaimValue;
 
+    // accepted "iss" values, comma separated. When set, a validated token must carry one of them.
+    protected String validateTokenIssuer;
+
     // --token validation
     // what HTTP header is the user's name stored in
     protected String userNameHeaderAttributeName;
@@ -234,6 +237,14 @@ public class JwtConfiguration implements Serializable {
 
     public void setValidateTokenAudienceClaimValue(String validateTokenAudienceClaimValue) {
         this.validateTokenAudienceClaimValue = validateTokenAudienceClaimValue;
+    }
+
+    public String getValidateTokenIssuer() {
+        return validateTokenIssuer;
+    }
+
+    public void setValidateTokenIssuer(String validateTokenIssuer) {
+        this.validateTokenIssuer = validateTokenIssuer;
     }
 
     public String getUserNameHeaderAttributeName() {

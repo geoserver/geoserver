@@ -66,6 +66,8 @@ public class JwtHeadersIntegrationTest extends AbstractAuthenticationProviderTes
         filterConfig.getJwtConfiguration().setUserNameJsonPath("preferred_username");
         filterConfig.getJwtConfiguration().setUserNameFormatChoice(JwtConfiguration.UserNameHeaderFormat.JSON);
         filterConfig.getJwtConfiguration().setUserNameHeaderAttributeName("json-header");
+        // the fixtures are unsigned test tokens: header trusted as set by a proxy, no token validation
+        filterConfig.getJwtConfiguration().setValidateToken(false);
 
         // roles
         filterConfig.setRoleSource(JSON);
@@ -99,6 +101,8 @@ public class JwtHeadersIntegrationTest extends AbstractAuthenticationProviderTes
         filterConfig.getJwtConfiguration().setUserNameJsonPath("preferred_username");
         filterConfig.getJwtConfiguration().setUserNameFormatChoice(JwtConfiguration.UserNameHeaderFormat.JWT);
         filterConfig.getJwtConfiguration().setUserNameHeaderAttributeName("json-header");
+        // the fixtures are unsigned test tokens: header trusted as set by a proxy, no token validation
+        filterConfig.getJwtConfiguration().setValidateToken(false);
 
         // roles
         filterConfig.setRoleSource(JWT);
@@ -132,6 +136,8 @@ public class JwtHeadersIntegrationTest extends AbstractAuthenticationProviderTes
         filterConfig.getJwtConfiguration().setUserNameJsonPath("preferred_username");
         filterConfig.getJwtConfiguration().setUserNameFormatChoice(JwtConfiguration.UserNameHeaderFormat.JWT);
         filterConfig.getJwtConfiguration().setUserNameHeaderAttributeName("Authorization");
+        // the fixtures are unsigned test tokens: header trusted as set by a proxy, no token validation
+        filterConfig.getJwtConfiguration().setValidateToken(false);
 
         // roles
         filterConfig.setRoleSource(JWT);

@@ -72,37 +72,49 @@ Use the provided [Conformance tables](../../../configuration/ogc-api-services/in
 
  -  OGC API Maps conformances
 
-    Disabling a class removes it from the `conformance` document; what happens to a request that still uses it
-    depends on the kind of class:
+    Disabling a class removes it from the `conformance` document. What else changes depends on the kind of class:
+    some manage the contents of the API document, while others add resources or request parameters to the service.
+
+    **Standard**:
 
     -  A parameter class (`spatialSubsetting`, `generalSubsetting`, `scaling`, `displayResolution`, `datetime`,
-       `crs`, `background`, `orientation`): the parameter is ignored, following the OGC API convention of ignoring
-       unsupported query parameters, and the map is returned as if it had not been provided. With `generalSubsetting`
-       off, the elevation and custom-dimension axes of a `subset` are dropped rather than rejected.
-       
-    -  An output format class (`tiff`, `svg`): the format is no longer offered, so a request for it fails HTTP content
-       negotiation with a `406` status.
-       
-    -  The two GeoServer extension resources, `featureInfo` and `legend`: each is a whole resource, so it answers
-       with a `404` status once disabled. Turning `legend` off also leaves the styles document with no legend
-       formats to offer.
+       `crs`, `background`, `orientation`): when disabled, the parameter is ignored, following the OGC API convention
+       of ignoring unsupported query parameters, and the map is returned as if it had not been provided. With
+       `generalSubsetting` disabled, the elevation and custom-dimension axes of a `subset` are dropped rather than
+       rejected.
 
-    -  `datasetMap`: the `/map` resource and its feature info go away, and the landing page stops linking them and
-       stops publishing an `extent`. Collection maps are not affected.
-    
-    -  `collectionsSelection`: the `collections` parameter is ignored, so the dataset map always draws the default
-       contents, and the preview offers no palette. The class needs `datasetMap` to mean anything, so turning that
-       off disables both.
+    -  An output format class (`tiff`, `svg`): when disabled, the format is no longer offered, so a request for it
+       fails HTTP content negotiation with a `406` status.
+
+    -  `datasetMap`: when disabled, the `/map` resource and its feature info go away, and the landing page stops
+       linking them and stops publishing an `extent`. Collection maps are not affected.
+
+    -  `collectionsSelection`: when disabled, the `collections` parameter is ignored, so the dataset map always draws
+       the default contents, and the preview offers no palette. The class needs `datasetMap` to mean anything, so
+       disabling that disables both.
+
+    **Community standard**:
+
+    -  `featureInfo`: when disabled, the feature info resource answers with a `404` status.
+
+    -  `legend`: when disabled, the legend resource answers with a `404` status, and the styles document offers no
+       legend formats.
+
+    -  `mapFilter`: see the filter classes below.
 
     ![](img/maps-service-configuration.png)  
     *Maps conformance classes*
 
  -  CQL2 Filter conformances.
 
-    -  Both the Text and JSON formats for CQL2 are available and may be enabled or disabled.
+    Both the Text and JSON formats for CQL2 are available and may be enabled or disabled.
 
-    -  The remaining conformances describe the CQL2 capabilities implemented by GeoServer, and are only included when CQL2 Text or CQL2 JSON is enabled.
-    
+    The CQL2 capabilities implemented by GeoServer (basic, advanced comparison, arithmetic, property-property, and
+    spatial operators) are built-in, and included in the `conformance` document when CQL2 Text or CQL2 JSON is
+    enabled.
+
+    CQL2 Functions is not used by Maps, which does not provide a `/functions` resource.
+
     ![](img/maps-cql2-configuration.png)  
     *CQL2 filter configuration*
 

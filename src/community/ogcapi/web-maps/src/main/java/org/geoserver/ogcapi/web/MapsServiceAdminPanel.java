@@ -24,7 +24,7 @@ public class MapsServiceAdminPanel extends AdminPagePanel {
         super(id, info);
         // resolve the configuration from the live WMSInfo on each access: the service is reloaded per request
         IModel<ConformanceInfo<?>> maps = IModel.of(() -> MapsConformance.configuration((WMSInfo) info.getObject()));
-        add(new ConformanceTable("mapsConformance", maps, this));
+        add(new ConformanceTable("mapsConformance", info, maps, this));
 
         // how many collections a dataset map draws by itself is a setting rather than a conformance class, so it has
         // its own WMS metadata entry and sits beside the table
@@ -36,8 +36,14 @@ public class MapsServiceAdminPanel extends AdminPagePanel {
         defaultCollections.setMinimum(1);
         add(defaultCollections);
         add(new ConformanceTable(
-                "cqlConformance", IModel.of(() -> CQL2Conformance.configuration((WMSInfo) info.getObject())), this));
+                "cqlConformance",
+                info,
+                IModel.of(() -> CQL2Conformance.configuration((WMSInfo) info.getObject())),
+                this));
         add(new ConformanceTable(
-                "ecqlConformance", IModel.of(() -> ECQLConformance.configuration((WMSInfo) info.getObject())), this));
+                "ecqlConformance",
+                info,
+                IModel.of(() -> ECQLConformance.configuration((WMSInfo) info.getObject())),
+                this));
     }
 }

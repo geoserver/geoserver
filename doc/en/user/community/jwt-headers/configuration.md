@@ -8,6 +8,10 @@ The JWT Headers module covers three main use cases:
 
 ## Configuration Options
 
+Create the filter from **Security > Authentication > Authentication Filters > Add new > JWT Headers**. This is a new filter set up for bearer tokens in the `Authorization` header, with the roles read from the same token:
+
+![JWT Headers filter panel for a new filter, validating the token signature against a JSON Web Key Set with an accepted issuer, and taking the roles from the same validated token](images/jwt-headers-filter-panel.png)
+
 ### User Name Options
 
 | Config Option | Meaning |
@@ -15,6 +19,9 @@ The JWT Headers module covers three main use cases:
 | Request header attribute for User Name | The name of the HTTP header item that contains the user name. |
 | Format the Header value is in | Format that the user name is in: Simple String (user name is the header's value), JSON (header is a JSON string, use JSON path), or JWT (header is a base64 JWT string, use JSON path). |
 | JSON path for the User Name | If the user name is in JSON or JWT format, this is the JSON path to the user's name. |
+| Allow the header to log in the built-in "admin" account | If unchecked, a request whose user name is `admin` is not authenticated by this filter. Unchecked for filters created in the web administration interface; filters created before this option existed, or through the REST API without it, keep allowing it. |
+
+The built-in `root` account is never accepted from the header, whatever the configuration: it is the emergency account backed by the master password and cannot be represented by an external identity.
 
 If you are using [Apache's mod_auth_openidc](https://github.com/OpenIDC/mod_auth_openidc), then Apache will typically add:
 
@@ -59,6 +66,10 @@ You can use the standard role source options in GeoServer (`Request Header`, `Us
 | Role Source | Which Role Source to use: Header containing JSON String (header contains a JSON claims object) or Header Containing JWT (header contains a Base64 JWT Access Token). |
 | Request Header attribute for Roles | Name of the header item the JSON or JWT is contained in |
 | JSON Path | Path in the JSON object or JWT claims that contains the roles. This should either be a simple string (single role) or a list of strings. |
+
+When **Validate JWT (Access Token)** is enabled, the roles must come from the token that was validated: use `Header Containing JWT` with the same header as the user name, or take the roles from a Role Service or User Group Service. A roles header that is not the validated token, `Header Containing JSON String` and `Request Header` are refused when the filter is saved. A filter saved before this check keeps authenticating its users but takes no roles from such a header, and the GeoServer log reports it when the filter is loaded.
+
+If roles are deliberately carried by a separate header that a proxy in front of GeoServer always removes or overwrites on incoming requests, check **Trust a roles header that is not the validated token** to keep reading it.
 
 Using the example `OIDC_id_token_payload` (JSON) or `OIDC_access_token` (JWT) shown above, the claims are:
 
@@ -148,9 +159,17 @@ You can also extract roles from the Access Token in a similar manner - make sure
 | Validate Token Expiry | If checked, validate the `exp` claim in the JWT and ensure it is in the future. This should always be checked so you do not allow expired tokens. |
 | Validate JWT (Access Token) Signature | If checked, validate the Token's Signature |
 | JSON Web Key Set URL (jwks_uri) | URL for a JWK Set. This is typically called `jwks_uri` in the OIDC metadata configuration. This will be downloaded and used to check the JWT's signature. This should always be checked to ensure that the JWT has not been modified. |
+| Accepted issuers (iss) | The `iss` values accepted, separated by commas. This is typically called `issuer` in the OIDC metadata configuration. When set, it is checked whenever the token is validated. Required when the signature is validated, since a signing key set can be shared by several issuers (for example the tenants of a multi-tenant identity provider). |
 | Validate JWT (Access Token) Against Endpoint | If checked, validate the access token against an IDP's token verification URL. |
 | URL (userinfo_endpoint) | IDP's token validation URL. This URL will be retrieved by adding the Access Token to the `Authentication: Bearer <access token>` header. It should return a HTTP 200 status code if the token is valid. This is recommended by the OIDC specification. |
 | Also validate Subject | If checked, the `sub` claim of the Access Token and the "userinfo_endpoint" `sub` claim will be checked to ensure they are equal. This is recommended by the OIDC specification. |
 | Validate JWT (Access Token) Audience | If checked, the audience of the Access Token is checked. This is recommended by the OIDC specification since this verifies that the Access Token is meant for us. |
 | Claim Name | The name of the claim the audience is in (`aud`, `azp`, or `appid` claim) the Access Token. |
 | Required Claim Value | The value this claim must be (if the claim is a list of string, then it must contain this value). |
+| Trust a roles header that is not the validated token | See the role source options above. Only check it when a proxy always removes or overwrites that header. |
+
+A filter created in the web administration interface starts out validating the token, its signature and its expiry, and only accepts the external roles listed in the role converter. Filters created through the REST API get only the settings they are sent.
+
+With validation enabled the filter cannot be saved unless the user name format is JWT and the signature or the endpoint check is configured, with a valid URL and, for the signature, at least one accepted issuer. Saving also checks that a role source is selected and that the selected role or user/group service exists. Filters saved before these checks keep their stored settings; the GeoServer log reports, when the filter is loaded, one that validates without a signature or endpoint check, one that validates signatures without accepted issuers, and one whose roles are not taken from the validated token.
+
+To accept only tokens issued for GeoServer, and not tokens the same identity provider issued to other applications, also validate the audience.

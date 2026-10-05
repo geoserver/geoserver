@@ -6,6 +6,7 @@ WPS longitudinal profile process provides the ability to calculate an altitude p
 
 - Reproject result to different CRS
 - Adjust altitude profile based on additional layer
+- Measure distances on the ground (default) or on the plane of a projected CRS
 
 ## Installing the WPS longitudinal profile process
 
@@ -32,11 +33,12 @@ Process accepts following parameters:
 
 ### Optional:
 
-1.  distance - maximum distance (in meters) between points in the altitude profile. If not specified, this distance will be automatically determined based on the coverage resolution, by calculating the diagonal length of a central pixel.
+1.  distance - maximum distance (in meters, measured on the ground) between consecutive points in the altitude profile. If not specified, this distance will be automatically determined based on the coverage resolution, by calculating the diagonal length of a pixel.
 2.  adjustmentLayerName - name of the layer with altitude, which will be used to adjust altitude values. Layer should have polygon or multipolygon geometry, and altitude attribute. Layer should be configured in the GeoServer
-3.  targetProjection - target CRS of result
+3.  targetProjection - target CRS of result.
 4.  altitudeIndex - index of altitude field in the array of coverage coordinates (0 by default)
 5.  altitudeName - name of the altitude attribute on adjustment layer feature type
+6.  projectedDistance - when true, distances are measured on the targetProjection plane rather than on the ground (false by default). See [Distances and slopes](#distances-and-slopes).
 
 ### Response contains following objects:
 
@@ -47,11 +49,11 @@ The profile object contains an array of points.
 
 ### Each point has following values:
 
-1.  totalDistanceToThisPoint - distance to this point from the beginning of the profile (first point) in units of CRS
+1.  totalDistanceToThisPoint - distance to this point from the beginning of the profile (first point)
 2.  x - x coordinate of point
 3.  y - y coordinate of point
 4.  altitude - altitude of this point
-5.  slope - slope between previous and current altitude
+5.  slope - slope percentage between previous and current point, the altitude difference over the distance from the previous point
 
 ### Infos object fields:
 
@@ -65,6 +67,18 @@ The profile object contains an array of points.
 8.  representation - target CRS of resulting points
 9.  processedpoints - total number of processed points
 10. executedtime - duration of process execution in milliseconds
+
+## Distances and slopes
+
+By default distances are measured on the ground, along the ellipsoid, whatever the targetProjection. A profile has the same length whether its points are returned in the native CRS of the coverage, in EPSG:4326 or in EPSG:3857. This avoids the scale distortion of projections: in particular EPSG:3857 stretches distances by about 40% at a latitude of 45 degrees, and should never be used to measure lengths.
+
+When **projectedDistance** is true, distances are instead measured on the plane of the targetProjection, as straight lines between the returned coordinates. Use it when distances in a projected CRS have a value of their own, e.g. a legal one in a national grid. It is to be noted that the result then carries the scale distortion of that projection. **The targetProjection must be a projected CRS**: when targetProjection is missing, the CRS of the ewkt geometry is used, or the coverage CRS for a wkt geometry. A geographic CRS is rejected with an error, since a straight line in degrees is not a distance.
+
+In both cases:
+
+- Distances are expressed in the unit of the targetProjection, e.g. feet for a CRS in feet, and in meters for geographic CRSs, since degrees are not a ground unit.
+- The distance parameter is always in meters on the ground, and only controls how densely the line is sampled.
+- Slopes compare altitudes and distances in the same unit, so they do not depend on the unit of the targetProjection. Altitudes are taken in the unit declared for the coverage band (e.g. feet), when missing in the unit of the coverage CRS if projected, and in meters otherwise. Altitudes are reported as found in the coverage, without conversion.
 
 !!! note
     It's possible to set wpsLongitudinalMaxThreadPoolSize (integer value) environment variable to limit the size of the extension's thread pool. It's possible to set wpsLongitudinalVerticesChunkSize (integer value) environment variable to define number of vertices processed in a chunk.

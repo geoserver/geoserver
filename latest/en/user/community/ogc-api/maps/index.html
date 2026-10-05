@@ -30438,38 +30438,72 @@ the collections, the dataset map and the conformance classes.</p>
 <h2 id="configuration-of-ogc-api-maps-module">Configuration of OGC API - Maps module<a class="headerlink" href="#configuration-of-ogc-api-maps-module" title="Permanent link">&para;</a></h2>
 <p>The module shares the same mapping engine as WMS, follows the same configuration and exposes the same layers. As a significant difference, Maps does not have a concept of layer tree, so only individual layers and groups can be exposed.</p>
 <h3 id="turning-optional-functionality-off">Turning optional functionality off<a class="headerlink" href="#turning-optional-functionality-off" title="Permanent link">&para;</a></h3>
-<p>As with other OGC APIs, Maps exposes conformance classes, which can be turned off individually from the
+<p>As with other OGC APIs, Maps exposes conformance classes, which can be managed individually from the
 <strong>Services &gt; Mapping</strong> settings page in the admin UI, on the <strong>Maps</strong> tab.</p>
 <p>A table lists each optional class with an Enabled checkbox, plus the <strong>Collections in a dataset map</strong> field described in
 <a href="#requesting-a-map-of-several-collections">Requesting a map of several collections</a>.</p>
+<p>Use the provided <a href="../../../configuration/ogc-api-services/#conformance">Conformance tables</a> to manage each group of standards:</p>
+<ul>
+<li>
+<p>OGC API Maps conformances</p>
+<p>Disabling a class removes it from the <code>conformance</code> document; what happens to a request that still uses it
+depends on the kind of class:</p>
+<ul>
+<li>
+<p>A parameter class (<code>spatialSubsetting</code>, <code>generalSubsetting</code>, <code>scaling</code>, <code>displayResolution</code>, <code>datetime</code>,
+   <code>crs</code>, <code>background</code>, <code>orientation</code>): the parameter is ignored, following the OGC API convention of ignoring
+   unsupported query parameters, and the map is returned as if it had not been provided. With <code>generalSubsetting</code>
+   off, the elevation and custom-dimension axes of a <code>subset</code> are dropped rather than rejected.</p>
+</li>
+<li>
+<p>An output format class (<code>tiff</code>, <code>svg</code>): the format is no longer offered, so a request for it fails HTTP content
+   negotiation with a <code>406</code> status.</p>
+</li>
+<li>
+<p>The two GeoServer extension resources, <code>featureInfo</code> and <code>legend</code>: each is a whole resource, so it answers
+   with a <code>404</code> status once disabled. Turning <code>legend</code> off also leaves the styles document with no legend
+   formats to offer.</p>
+</li>
+<li>
+<p><code>datasetMap</code>: the <code>/map</code> resource and its feature info go away, and the landing page stops linking them and
+   stops publishing an <code>extent</code>. Collection maps are not affected.</p>
+</li>
+<li>
+<p><code>collectionsSelection</code>: the <code>collections</code> parameter is ignored, so the dataset map always draws the default
+   contents, and the preview offers no palette. The class needs <code>datasetMap</code> to mean anything, so turning that
+   off disables both.</p>
+</li>
+</ul>
 <p><img alt="" src="img/maps-service-configuration.png" /><br />
 <em>Maps conformance classes</em></p>
-<p>The same tab lists the CQL2 and ECQL filter languages, and the CQL2 capabilities, in two further tables.</p>
+</li>
+<li>
+<p>CQL2 Filter conformances.</p>
+<ul>
+<li>
+<p>Both the Text and JSON formats for CQL2 are available and may be enabled or disabled.</p>
+</li>
+<li>
+<p>The remaining conformances describe the CQL2 capabilities implemented by GeoServer, and are only included when CQL2 Text or CQL2 JSON is enabled.</p>
+</li>
+</ul>
 <p><img alt="" src="img/maps-cql2-configuration.png" /><br />
 <em>CQL2 filter configuration</em></p>
+</li>
+<li>
+<p>Control of ECQL Filter conformances</p>
 <p><img alt="" src="img/maps-ecql-configuration.png" /><br />
 <em>ECQL filter configuration</em></p>
-<p>Disabling a class removes it from the <code>conformance</code> document, and removes its parameters, or its whole
-resource, from the API document; a resource that is gone answers with a <code>404</code> status. The kind of class decides
-what happens to a request that still uses the disabled functionality:</p>
-<ul>
-<li>A parameter class (<code>spatialSubsetting</code>, <code>generalSubsetting</code>, <code>scaling</code>, <code>displayResolution</code>, <code>datetime</code>,
-  <code>crs</code>, <code>background</code>, <code>orientation</code>): the parameter is ignored, following the OGC API convention of ignoring
-  unsupported query parameters, and the map is returned as if it had not been provided. With <code>generalSubsetting</code>
-  off, the elevation and custom-dimension axes of a <code>subset</code> are dropped rather than rejected.</li>
-<li>An output format class (<code>tiff</code>, <code>svg</code>): the format is no longer offered, so a request for it fails HTTP content
-  negotiation with a <code>406</code> status.</li>
-<li>The two GeoServer extension resources, <code>featureInfo</code> and <code>legend</code>: each is a whole resource, so it answers
-  with a <code>404</code> status once disabled. Turning <code>legend</code> off also leaves the styles document with no legend
-  formats to offer.</li>
-<li><code>datasetMap</code>: the <code>/map</code> resource and its feature info go away, and the landing page stops linking them and
-  stops publishing an <code>extent</code>. Collection maps are not affected.</li>
-<li><code>collectionsSelection</code>: the <code>collections</code> parameter is ignored, so the dataset map always draws the default
-  contents, and the preview offers no palette. The class needs <code>datasetMap</code> to mean anything, so turning that
-  off disables both.</li>
-<li>The filter classes (<code>filter</code>, <code>mapFilter</code>, the language ones) and <code>queryables</code>: filtering needs <code>filter</code>,
-  <code>mapFilter</code> and at least one language, so turning off any of them ignores the <code>filter</code> parameter and takes the
-  queryables away with it. See <a href="#filtering-a-map">Filtering a map</a>.</li>
+</li>
+<li>
+<p>The filter classes (<code>filter</code>, <code>mapFilter</code>, the language ones) and <code>queryables</code>: filtering needs <code>filter</code>,
+    <code>mapFilter</code> and at least one language, so turning off any of them ignores the <code>filter</code> parameter and takes the
+    queryables away with it. See <a href="#filtering-a-map">Filtering a map</a>.</p>
+<p>In the figure below <strong>Filter on maps</strong> is disabled, so <strong>Filter</strong> and <strong>Queryables</strong> are shown in light gray even
+though both are left to their default, which is enabled.</p>
+<p><img alt="" src="img/maps-filter-dependency.png" /><br />
+<em>Filter and Queryables require Filter on maps</em></p>
+</li>
 </ul>
 <h2 id="requesting-a-map">Requesting a map<a class="headerlink" href="#requesting-a-map" title="Permanent link">&para;</a></h2>
 <p>A map of a collection is retrieved from <code>/ogc/maps/v1/collections/{collectionId}/map</code>, or from

@@ -10951,6 +10951,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#conformance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conformance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#collections" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30255,6 +30266,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#conformance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conformance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#collections" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30347,10 +30369,10 @@
 
 
 <h1 id="ogc-api-service-configuration">OGC API Service Configuration<a class="headerlink" href="#ogc-api-service-configuration" title="Permanent link">&para;</a></h1>
-<p>The OGC API modules provide additional services alongside the existing Open Web Services (OWS).</p>
+<p>The OGC API services provide additional services alongside the existing Open Web Services (OWS).</p>
 <h2 id="service">Service<a class="headerlink" href="#service" title="Permanent link">&para;</a></h2>
-<p>The OGC API modules primarily use the same configurations as their equivalent OWS services. So, for example, setting the WFS limited SRS list will also limit the SRS list for OGC API - Features.</p>
-<p>In addition, the OGC API modules will have some unique configuration options.</p>
+<p>The OGC API services primarily share the same configurations with their equivalent OWS services. For example, setting the limited SRS list on the <strong>Services &gt; Vectors</strong> page also limits the SRS list for <strong>OGC API - Features</strong>.</p>
+<p>In addition, the OGC API services will have some unique configuration options.</p>
 <h2 id="security">Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -30362,6 +30384,108 @@
 </ul>
 <p><img alt="" src="img/service_rule.png" /></p>
 <p><em>Service rule for OGC API Features getLandingPage</em></p>
+<h2 id="conformance">Conformance<a class="headerlink" href="#conformance" title="Permanent link">&para;</a></h2>
+<p>Each OGC API web service is modular, with supported functionality listed in a <code>conformance</code> document.</p>
+<ul>
+<li>
+<p>OpenAPI service description is mandatory and may not be disabled.</p>
+</li>
+<li>
+<p>Built-in output formats (such as HTML and JSON) may not be disabled.</p>
+</li>
+</ul>
+<p>The <strong>Conformance Table</strong> is used to manage each group of standards:</p>
+<ul>
+<li>
+<p>You may enable/disable the functionality included using checkboxes provided.</p>
+<p>The checkboxes cycle through <strong>Enabled</strong> to include a conformance, <strong>Disabled</strong> to exclude, and <strong>Unset</strong> (shown as a <code>-</code> line).</p>
+</li>
+<li>
+<p>The appearance of each conformance <strong>Identifier</strong> is normal when included in the <code>conformance</code> document,
+and light gray when not included.</p>
+<p>The table reflects interaction between conformance settings. For example <strong>Filtering</strong> requires at least one
+filter language (CQL2 or ECQL) to be enabled in order to specify a filter parameter.</p>
+</li>
+<li>
+<p>When a checkbox is <strong>Unset</strong> the conformance is included depending on how stable a Standard is (Draft standards are still subject to change),
+    the GeoServer implementation (Implementing indicates functionality that is under development), and the <strong>Strict CITE compliance</strong> setting used to limit functionality to
+    endorsed OGC standards.</p>
+<table>
+<thead>
+<tr>
+<th>Standard</th>
+<th>Endorsed</th>
+<th>Stable</th>
+<th>Default</th>
+<th>Strict</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard</td>
+<td>OGC</td>
+<td>Stable</td>
+<td>Enabled</td>
+<td>Enabled</td>
+<td>Finalized standard</td>
+</tr>
+<tr>
+<td>Implementing</td>
+<td>OGC</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Finalized standard, implementation under development.</td>
+</tr>
+<tr>
+<td>Draft</td>
+<td>OGC</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Draft standard, subject to change.</td>
+</tr>
+<tr>
+<td>Retired</td>
+<td></td>
+<td>Stable</td>
+<td>Enabled</td>
+<td></td>
+<td>Retired standard, implementation available for backwards compatibility.</td>
+</tr>
+<tr>
+<td>Community Standard</td>
+<td></td>
+<td>Stable</td>
+<td>Enabled</td>
+<td></td>
+<td>Non-OGC Standard</td>
+</tr>
+<tr>
+<td>Community Draft</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Non-OGC Standard, subject to change.</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="" src="../../services/features/img/feature-service-configuration.png" /></p>
+<p><em>OGC API - Features conformance table</em></p>
+<p>As an example the GeoServer project lists our own <strong>ECQL</strong> query language alongside the official <strong>CQL2</strong> query language. When using strict
+only the <strong>CQL2</strong> query language would be available by default.</p>
+<p><img alt="" src="../../services/features/img/ecql-configuration.png" /></p>
+<p><em>ECQL conformance table</em></p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This approach allows GeoServer to share work-in-progress (both draft standards and implementations being worked on). Use
+the checkboxes to <strong>Enable</strong> such functionality for feedback and review, or leave <strong>Unset</strong> and it will only be included
+when ready.</p>
+</div>
 <h2 id="collections">Collections<a class="headerlink" href="#collections" title="Permanent link">&para;</a></h2>
 <p>OGCAPI web services provides a <code>collections</code> resource describing the published content.</p>
 <p>As an example OGC API - Features collections lists:</p>

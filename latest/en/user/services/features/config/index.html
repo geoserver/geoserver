@@ -9446,7 +9446,7 @@
   <a href="#feature-service-conformances" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Feature Service conformances
+        Feature Service Conformances
       
     </span>
   </a>
@@ -30182,7 +30182,7 @@
   <a href="#feature-service-conformances" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Feature Service conformances
+        Feature Service Conformances
       
     </span>
   </a>
@@ -30219,10 +30219,10 @@
 <h2 id="service-configuration">Service configuration<a class="headerlink" href="#service-configuration" title="Permanent link">&para;</a></h2>
 <p>The service is configured using:</p>
 <ul>
-<li>The existing <a href="../../wfs/">Web Feature Service (WFS)</a> settings to define title, abstract, and output formats.</li>
-</ul>
+<li>
+<p>The existing <a href="../../wfs/">Web Feature Service (WFS)</a> settings to define title, abstract, and output formats.</p>
 <p>This is why the service page is titled <code>GeoServer Web Feature Service</code> by default.</p>
-<ul>
+</li>
 <li>
 <p>Contact information defined in <a href="../../../configuration/contact/">Contact Information</a>.</p>
 </li>
@@ -30230,12 +30230,9 @@
 <p>Extra links can be added on a per-service or per-collection basis as indicated in <a href="../../../configuration/ogc-api-services/">OGC API Service Configuration</a>.</p>
 </li>
 </ul>
-<h2 id="feature-service-conformances">Feature Service conformances<a class="headerlink" href="#feature-service-conformances" title="Permanent link">&para;</a></h2>
-<p>The OGC API Feature Service is modular, allowing you to enable/disable the functionality you wish to include.</p>
+<h2 id="feature-service-conformances">Feature Service Conformances<a class="headerlink" href="#feature-service-conformances" title="Permanent link">&para;</a></h2>
+<p>The OGC API Feature Service is modular, with supported functionality listed in a <code>conformance</code> document.</p>
 <ul>
-<li>
-<p>By default stable Standards and Community Standards are enabled. If WFS is strict, only official Standards are enabled and community standards are disabled.</p>
-</li>
 <li>
 <p>The OpenAPI service description is mandatory and may not be disabled.</p>
 </li>
@@ -30243,27 +30240,35 @@
 <p>The HTML and GeoJSON output formats are built-in and may not be disabled.</p>
 </li>
 </ul>
-<p><img alt="" src="../img/feature-service-configuration.png" /></p>
-<p><em>Feature Service Configuration</em></p>
+<p>Use the provided <a href="../../../configuration/ogc-api-services/#conformance">Conformance tables</a> to manage each group of standards:</p>
 <ul>
-<li>CQL2 Filter conformances.</li>
-</ul>
+<li>
+<p>OGC API Feature conformances.</p>
+<p><img alt="" src="../img/feature-service-configuration.png" /><br />
+<em>Feature Service Configuration</em></p>
+</li>
+<li>
+<p>CQL2 Filter conformances.</p>
 <p>Both the Text and JSON formats for CQL2 are available and may be enabled or disabled.</p>
-<p>The remaining conformances reflect the built-in CQL2 implementation and may not be edited. The conformances marked enabled have been implemented, and the disabled conformances have not yet been implemented.</p>
-<p><img alt="" src="../img/cql2-configuration.png" /></p>
-<p><em>CQL2 Filter configuration</em></p>
-<ul>
-<li>Control of ECQL Filter conformances</li>
+<p>The remaining conformances describe the CQL2 capabilities implemented by GeoServer, and are only included when CQL2 Text or CQL2 JSON is enabled.</p>
+<p><img alt="" src="../img/cql2-configuration.png" /><br />
+<em>CQL2 Filter configuration</em></p>
+</li>
+<li>
+<p>Control of ECQL Filter conformances</p>
+<p><img alt="" src="../img/ecql-configuration.png" /><br />
+<em>ECQL Filter configuration</em></p>
+</li>
+<li>
+<p>The enabled filter languages are listed in the <code>filter-lang</code> parameter of the API document, and the first one is
+    its default. A request using any other language gets a <code>400</code> status.</p>
+<p>With every language disabled the filter parameters are not available at all: the filter conformance classes are no longer included in the <code>conformance</code> document, the parameters are removed from the API document, and a <code>filter</code> sent anyway is ignored.</p>
+<p>In the tables this shows as <strong>Filter</strong> and <strong>Features Filter</strong> in light gray when every filter language is disabled. <strong>Features Filter</strong> also needs <strong>Filter</strong>.</p>
+<p><img alt="" src="../img/features-filter-dependency.png" /><br />
+<em>Filter and Features Filter require a filter language to be enabled</em></p>
+</li>
 </ul>
-<p><img alt="" src="../img/ecql-configuration.png" /></p>
-<p><em>ECQL Filter configuration</em></p>
-<ul>
-<li>The enabled filter languages are listed in the <code>filter-lang</code> parameter of the API document, and the first one is
-  its default. A request using any other language gets a <code>400</code> status. With every language disabled the filter
-  parameters are not available at all: the filter conformance classes disappear from the <code>conformance</code> document,
-  the parameters are removed from the API document, and a <code>filter</code> sent anyway is ignored.</li>
-</ul>
-<p>For more information see <a href="../status/">Status</a>.</p>
+<p>For more information see <a href="../status/">Status</a> and <a href="../../../configuration/ogc-api-services/#conformance">Conformance table</a>.</p>
 
 
 

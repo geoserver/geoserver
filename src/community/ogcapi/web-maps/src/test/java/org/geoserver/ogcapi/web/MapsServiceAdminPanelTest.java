@@ -103,7 +103,7 @@ public class MapsServiceAdminPanelTest extends GeoServerWicketTestSupport {
         }
     }
 
-    /** In strict mode a COMMUNITY_EXTENSION is off by default and shown disabled by default. */
+    /** In strict mode a COMMUNITY_STANDARD is off by default and shown disabled by default. */
     @Test
     public void testDefaultDisabledConformanceShownDisabled() {
         WMSInfo wms = getGeoServer().getService(WMSInfo.class);
@@ -168,7 +168,7 @@ public class MapsServiceAdminPanelTest extends GeoServerWicketTestSupport {
         }
     }
 
-    /** Filter, Filter on maps and Queryables all need at least one filter language from the CQL2 or ECQL. */
+    /** Filter, Filter on maps and Queryables all need at least one filter language from the CQL2 or ECQL tables. */
     @Test
     public void testFilterRequiresFilterLanguage() {
         login();

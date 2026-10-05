@@ -16,17 +16,18 @@ public class CQL2Conformance extends ConformanceInfo<ServiceInfo> {
     /** CQL Text conformance. */
     public static final APIConformance CQL2_TEXT = new APIConformance(ConformanceClass.CQL2_TEXT, STANDARD, "text");
 
-    /** CQL JSON conformance - not implemented yet (very different from the binding we have) */
+    /** CQL JSON conformance. */
     public static final APIConformance CQL2_JSON = new APIConformance(ConformanceClass.CQL2_JSON, STANDARD, "json");
 
-    // CQL is optional
+    // CQL2 functionality built-in to the parser
     public static final APIConformance CQL2_ADVANCED =
-            new APIConformance(ConformanceClass.CQL2_ADVANCED, STANDARD, "advanced");
+            new APIConformance(ConformanceClass.CQL2_ADVANCED, STANDARD, "advanced").builtIn(true);
     public static final APIConformance CQL2_ARITHMETIC =
-            new APIConformance(ConformanceClass.CQL2_ARITHMETIC, STANDARD, "arithmetic");
-    public static final APIConformance CQL2_BASIC = new APIConformance(ConformanceClass.CQL2_BASIC, STANDARD, "basic");
+            new APIConformance(ConformanceClass.CQL2_ARITHMETIC, STANDARD, "arithmetic").builtIn(true);
+    public static final APIConformance CQL2_BASIC =
+            new APIConformance(ConformanceClass.CQL2_BASIC, STANDARD, "basic").builtIn(true);
     public static final APIConformance CQL2_BASIC_SPATIAL =
-            new APIConformance(ConformanceClass.CQL2_BASIC_SPATIAL, STANDARD, "basicSpatial");
+            new APIConformance(ConformanceClass.CQL2_BASIC_SPATIAL, STANDARD, "basicSpatial").builtIn(true);
 
     /**
      * Indicates CQL2 Functions are supported.
@@ -39,16 +40,17 @@ public class CQL2Conformance extends ConformanceInfo<ServiceInfo> {
 
     /** CQL2_TEMPORAL excluded for now, no support for all operators. */
     public static final APIConformance CQL2_TEMPORAL =
-            new APIConformance(ConformanceClass.CQL2_TEMPORAL, STANDARD, "temporal");
+            new APIConformance(ConformanceClass.CQL2_TEMPORAL, STANDARD, "temporal").builtIn(false);
 
     /** CQL2_ARRAY excluded, no support for array operations now. */
-    public static final APIConformance CQL2_ARRAY =
-            new APIConformance("http://www.opengis.net/spec/ogcapi-features-3/1.0/req/arrays", STANDARD, "array");
+    public static final APIConformance CQL2_ARRAY = new APIConformance(
+                    "http://www.opengis.net/spec/ogcapi-features-3/1.0/req/arrays", STANDARD, "array")
+            .builtIn(false);
 
     public static final APIConformance CQL2_PROPERTY_PROPERTY =
-            new APIConformance(ConformanceClass.CQL2_PROPERTY_PROPERTY, STANDARD, "propertyProperty");
+            new APIConformance(ConformanceClass.CQL2_PROPERTY_PROPERTY, STANDARD, "propertyProperty").builtIn(true);
     public static final APIConformance CQL2_SPATIAL =
-            new APIConformance(ConformanceClass.CQL2_SPATIAL, STANDARD, "spatial");
+            new APIConformance(ConformanceClass.CQL2_SPATIAL, STANDARD, "spatial").builtIn(true);
 
     // CQL2 formats
     private Boolean json;
@@ -100,16 +102,7 @@ public class CQL2Conformance extends ConformanceInfo<ServiceInfo> {
 
     @Override
     public List<APIConformance> configurableConformances() {
-        return List.of(
-                CQL2_TEXT,
-                CQL2_JSON,
-                CQL2_BASIC,
-                CQL2_ADVANCED,
-                CQL2_ARITHMETIC,
-                CQL2_PROPERTY_PROPERTY,
-                CQL2_BASIC_SPATIAL,
-                CQL2_SPATIAL,
-                CQL2_FUNCTIONS);
+        return List.of(CQL2_TEXT, CQL2_JSON, CQL2_FUNCTIONS);
     }
 
     @Override

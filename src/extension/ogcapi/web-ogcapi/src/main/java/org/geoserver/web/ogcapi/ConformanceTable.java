@@ -230,7 +230,6 @@ public class ConformanceTable extends GeoServerTablePanel<APIConformance> {
 
         static final Property<APIConformance> ID = new BeanProperty<>("id");
         static final Property<APIConformance> LEVEL = new BeanProperty<>("level");
-        static final Property<APIConformance> TYPE = new BeanProperty<>("type");
 
         private final IModel<ConformanceInfo<?>> conformanceModel;
         private final Component parent;
@@ -272,7 +271,7 @@ public class ConformanceTable extends GeoServerTablePanel<APIConformance> {
                     return super.getModel(itemModel);
                 }
             };
-            return List.of(enabled, name, ID, LEVEL, TYPE);
+            return List.of(enabled, name, ID, LEVEL);
         }
 
         @Override

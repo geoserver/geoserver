@@ -70,9 +70,9 @@ public class MapsServiceAdminPanelTest extends GeoServerWicketTestSupport {
             "SVG output",
             "Filter",
             "Queryables",
-            "Filter on maps (GeoServer extension)",
-            "Feature info (GeoServer extension)",
-            "Legend (GeoServer extension)",
+            "Filter on maps",
+            "Feature info",
+            "Legend",
             "CQL2 Text",
             "CQL2 JSON",
             "ECQL Text"

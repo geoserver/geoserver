@@ -102,7 +102,7 @@ public class APIConformance implements Serializable {
         EXTENSION
     }
 
-    @SuppressWarnings("PMD.UnusedPrivateField")
+    /** Parent conformance class, {@code null} if not an extension. */
     private final APIConformance parent;
 
     /** Conformance class identifier. */

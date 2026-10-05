@@ -113,7 +113,7 @@ Use the provided [Conformance tables](../../../configuration/ogc-api-services/in
     spatial operators) are built-in, and included in the `conformance` document when CQL2 Text or CQL2 JSON is
     enabled.
 
-    CQL2 Functions is not used by Maps, which does not provide a `/functions` resource.
+    CQL2 Functions is not listed, as Maps does not provide a `/functions` resource.
 
     ![](img/maps-cql2-configuration.png)  
     *CQL2 filter configuration*

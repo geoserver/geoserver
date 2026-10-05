@@ -33,15 +33,19 @@ public abstract class ConformanceInfo<S extends ServiceInfo> implements Serializ
     /**
      * Checks conformance configuration, to see if enabled.
      *
-     * If {@code enabled} is {@code null} this method delegates to {@link #enabledDefault(ServiceInfo, APIConformance)},
-     * allowing conformance to determine if it wishes to be on by default.
+     * <p>Built-in conformance ignores configuration, see {@link APIConformance#getBuiltIn()}.
+     *
+     * <p>If {@code enabled} is {@code null} this method delegates to {@link #enabledDefault(ServiceInfo,
+     * APIConformance)}, allowing conformance to determine if it wishes to be on by default.
      *
      * @param enabled Enabled status, if {@code null} conformance default used
      * @param conformance APIConformance used to determine default enabled status
      * @return enabled status
      */
     protected boolean isEnabled(S serviceInfo, Boolean enabled, APIConformance conformance) {
-        if (enabled == null) {
+        if (conformance != null && !conformance.isConfigurable()) {
+            return conformance.getBuiltIn();
+        } else if (enabled == null) {
             return enabledDefault(serviceInfo, conformance);
         } else {
             return enabled;
@@ -56,8 +60,8 @@ public abstract class ConformanceInfo<S extends ServiceInfo> implements Serializ
      *   <li>Or if cite compliance{@code false} conformance is only required to be stable.
      * </ul>
      *
-     * Subclasses may override if they wish greater control on if they should be
-     * on-by-default (for example checking additional configuration settings).
+     * Subclasses may override if they wish greater control on if they should be on-by-default (for example checking
+     * additional configuration settings).
      *
      * @param conformance APIConformance
      * @return {@code true} if conformance is enabled based on service info settings.

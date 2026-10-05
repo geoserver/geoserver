@@ -64,6 +64,8 @@ public class ConformanceTest extends MapsTestSupport {
                         CQL2Conformance.CQL2_SPATIAL.getId()));
         // features-filter is bound to the items resource, Maps must not claim it
         assertThat(classes, not(hasItem(ConformanceClass.FEATURES_FILTER)));
+        // CQL2 functions requires a /functions endpoint, Maps does not provide one
+        assertThat(classes, not(hasItem(CQL2Conformance.CQL2_FUNCTIONS.getId())));
         // the pre-1.0.0 draft URIs must be gone
         assertThat(
                 classes,

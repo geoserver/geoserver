@@ -173,3 +173,18 @@ A filter created in the web administration interface starts out validating the t
 With validation enabled the filter cannot be saved unless the user name format is JWT and the signature or the endpoint check is configured, with a valid URL and, for the signature, at least one accepted issuer. Saving also checks that a role source is selected and that the selected role or user/group service exists. Filters saved before these checks keep their stored settings; the GeoServer log reports, when the filter is loaded, one that validates without a signature or endpoint check, one that validates signatures without accepted issuers, and one whose roles are not taken from the validated token.
 
 To accept only tokens issued for GeoServer, and not tokens the same identity provider issued to other applications, also validate the audience.
+
+## Troubleshooting
+
+The module includes a `JWT_HEADERS_LOGGING` logging profile, installed in the data directory on startup. It quiets most GeoServer logging and turns on detailed logging for the JWT Headers filter.
+
+Each filter also has a **Log sensitive information (do not use in production)** option. When checked, the filter logs the decoded header and claims of the incoming tokens, the full reason a token is rejected, and the claims the user name and roles are taken from. Without it the filter only logs the reason a request is rejected, the user name and the roles.
+
+This option puts personal data and token content in the logs, so only use it while setting things up, and clear the logs afterwards: the `JWT_HEADERS_LOGGING` profile writes to the GeoServer log, including its rolled `geoserver-N.log` files, and to the standard output, which may end up in container or aggregated logs. The token signature is never logged.
+
+To troubleshoot a JWT Headers filter:
+
+1.  Navigate to **Server > Global Settings** and select the logging profile `JWT_HEADERS_LOGGING`.
+2.  Navigate to **Security > Authentication**, open the JWT Headers filter and check **Log sensitive information (do not use in production)**.
+3.  Send a few requests and look at the GeoServer log.
+4.  Uncheck the option, switch back to your usual logging profile and clear the logs, the rolled ones and any copy of the standard output included.

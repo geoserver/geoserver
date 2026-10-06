@@ -158,7 +158,7 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
 
     /** Logs the usual FINE level details: rejection reason, user name and roles, never token content. */
     protected void logFine(String message) {
-        LOG.fine(message);
+        LOG.fine(printable(message));
     }
 
     /**

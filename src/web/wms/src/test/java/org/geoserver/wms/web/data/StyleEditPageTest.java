@@ -692,6 +692,24 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    public void testLayerPreviewTabStyleNameWithQuote() throws IOException {
+        Catalog catalog = getCatalog();
+        StyleInfo style = catalog.getFactory().createStyle();
+        style.setName("O'Neil");
+        style.setFilename("oneil.sld");
+        catalog.getResourcePool().writeStyle(style, buildingsStyle.getStyle());
+        catalog.add(style);
+        try {
+            tester.startPage(new StyleEditPage(style));
+            tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:2:link", "click");
+
+            assertThat(tester.getLastResponseAsString(), containsString("'STYLES': 'O\\'Neil',"));
+        } finally {
+            catalog.remove(style);
+        }
+    }
+
+    @Test
     public void testLayerPreviewTabStyleGroup() {
 
         LayerInfo l = getCatalog().getLayers().get(0);

@@ -15,12 +15,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,6 +32,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.ogcapi.APIConformance;
 import org.geoserver.ogcapi.APIContentNegotiationManager;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.ogcapi.APIException;
@@ -155,7 +156,9 @@ public class StylesService {
     @ResponseBody
     @HTMLResponseBody(templateName = "conformance.ftl", fileName = "conformance.html")
     public ConformanceDocument conformance() {
-        List<String> classes = Arrays.asList(CORE, HTML, JSON, MAPBOX, SLD10, SLD11);
+        StylesServiceInfo service = getService();
+        List<String> classes = new StylesConformance()
+                .conformances(service).stream().map(APIConformance::getId).collect(Collectors.toList());
         return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 
@@ -289,6 +292,16 @@ public class StylesService {
         ImageIO.write(image, "PNG", response.getOutputStream());
     }
 
+    private void checkManageStyles() {
+        if (StylesConformance.manageStyles()) return;
+        // a 405 must list the methods the resource supports, see RFC 9110 section 15.5.6
+        APIRequestInfo.get().getResponse().setHeader(HttpHeaders.ALLOW, "GET");
+        throw new APIException(
+                APIException.METHOD_NOT_ALLOWED,
+                "Style management is not enabled on this server",
+                HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
     @PostMapping(
             path = "styles",
             name = "addStyle",
@@ -299,6 +312,7 @@ public class StylesService {
             @RequestParam(name = "validate", required = false, defaultValue = "no") ValidationMode validate,
             HttpServletRequest request)
             throws IOException {
+        checkManageStyles();
         // Extracting mimeType and charset
         MediaType mediaType = MediaType.parseMediaType(request.getContentType());
         String mimeType = mediaType.getType() + "/" + mediaType.getSubtype();
@@ -378,6 +392,7 @@ public class StylesService {
             @RequestParam(name = "validate", required = false, defaultValue = "no") ValidationMode validate,
             HttpServletRequest request)
             throws IOException {
+        checkManageStyles();
         // Extracting mimeType and charset
         MediaType mediaType = MediaType.parseMediaType(request.getContentType());
         String mimeType = mediaType.getType() + "/" + mediaType.getSubtype();
@@ -450,6 +465,7 @@ public class StylesService {
     @DeleteMapping(path = "styles/{styleId}", name = "deleteStyle")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteStyle(@PathVariable(name = "styleId") String styleId) {
+        checkManageStyles();
         StyleInfo styleInfo = getStyleInfo(styleId, true);
         geoServer.getCatalog().remove(styleInfo);
     }
@@ -458,6 +474,7 @@ public class StylesService {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void putStyleMetadata(@PathVariable("styleId") String styleId, @RequestBody StyleMetadataDocument metadata)
             throws IOException {
+        checkManageStyles();
         StyleInfo styleInfo = getStyleInfo(styleId, true);
         StyleMetadataInfo metadataInfo = Optional.ofNullable(
                         styleInfo.getMetadata().get(StyleMetadataInfo.METADATA_KEY, StyleMetadataInfo.class))
@@ -486,6 +503,7 @@ public class StylesService {
             name = "patchStyleMetadata")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void patchMetadata(@PathVariable("styleId") String styleId, @RequestBody StyleMetadataDocument metadata) {
+        checkManageStyles();
         StyleInfo styleInfo = getStyleInfo(styleId, true);
         StyleMetadataInfo metadataInfo = Optional.ofNullable(
                         styleInfo.getMetadata().get(StyleMetadataInfo.METADATA_KEY, StyleMetadataInfo.class))

@@ -60,4 +60,10 @@ public class StylesTestSupport extends OGCApiTestSupport {
         new CatalogBuilder(catalog).calculateLayerGroupBounds(lg);
         catalog.add(lg);
     }
+
+    /** Sets the style management property, {@code null} restores the default. */
+    protected void setManageStyles(Boolean enabled) {
+        if (enabled == null) System.clearProperty(StylesConformance.MANAGE_STYLES_PROPERTY);
+        else System.setProperty(StylesConformance.MANAGE_STYLES_PROPERTY, enabled.toString());
+    }
 }

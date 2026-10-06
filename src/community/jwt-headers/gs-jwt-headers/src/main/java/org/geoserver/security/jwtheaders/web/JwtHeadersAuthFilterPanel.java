@@ -8,16 +8,13 @@ package org.geoserver.security.jwtheaders.web;
 import static org.geoserver.security.jwtheaders.filter.GeoServerJwtHeadersFilterConfig.JWTHeaderRoleSource.JSON;
 import static org.geoserver.security.jwtheaders.filter.GeoServerJwtHeadersFilterConfig.JWTHeaderRoleSource.JWT;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.jwtheaders.JwtConfiguration;
 import org.geoserver.security.jwtheaders.filter.GeoServerJwtHeadersFilterConfig;
@@ -58,6 +55,9 @@ public class JwtHeadersAuthFilterPanel extends PreAuthenticatedUserNameFilterPan
 
         add(new CheckBox("trustUnvalidatedRolesHeader").setRequired(false));
 
+        add(new CheckBox("logSensitiveInformation").setRequired(false));
+        add(new HelpLink("logSensitiveInformationHelp", this).setDialog(dialog));
+
         userNameFormatChoice = new DropDownChoice(
                 "userNameFormatChoice",
                 Arrays.asList(JwtConfiguration.UserNameHeaderFormat.values()),
@@ -68,10 +68,11 @@ public class JwtHeadersAuthFilterPanel extends PreAuthenticatedUserNameFilterPan
 
     @Override
     protected DropDownChoice<RoleSource> createRoleSourceDropDown() {
-        List<RoleSource> sources =
-                new ArrayList<>(Arrays.asList(GeoServerJwtHeadersFilterConfig.JWTHeaderRoleSource.values()));
-        sources.addAll(Arrays.asList(PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.values()));
-        return new DropDownChoice<>("roleSource", sources, new RoleSourceChoiceRenderer());
+        // already includes the request header, user group service and role service sources
+        return new DropDownChoice<>(
+                "roleSource",
+                Arrays.asList(GeoServerJwtHeadersFilterConfig.JWTHeaderRoleSource.values()),
+                new RoleSourceChoiceRenderer());
     }
 
     @Override

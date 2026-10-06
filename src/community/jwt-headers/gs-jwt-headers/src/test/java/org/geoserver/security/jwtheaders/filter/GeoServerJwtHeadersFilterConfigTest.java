@@ -42,6 +42,18 @@ public class GeoServerJwtHeadersFilterConfigTest {
         assertFalse(config.isValidateToken());
     }
 
+    @Test
+    public void testSensitiveLoggingOffUnlessEnabled() {
+        GeoServerJwtHeadersFilterConfig config = new GeoServerJwtHeadersFilterConfig();
+        assertFalse(config.getLogSensitiveInformation());
+
+        config.setLogSensitiveInformation(true);
+        assertTrue(config.getLogSensitiveInformation());
+
+        config.setLogSensitiveInformation(null);
+        assertFalse(config.getLogSensitiveInformation());
+    }
+
     /** Configurations written before these options existed read them back as null. */
     @Test
     public void testUnsetOptionsKeepPreviousBehaviour() {

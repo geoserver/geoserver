@@ -34,5 +34,21 @@ Installing the GeoServer OGC API - Styles module
 Configuration of OGC API - Styles module
 ----------------------------------------
 
-At the time of writing the module has no configuration, it's simply exposing all available
-GeoServer styles.
+The module exposes all available GeoServer styles.
+
+Conformance classes
+'''''''''''''''''''
+
+The service always supports reading styles, as Mapbox styles, SLD 1.0 and SLD 1.1. These classes are always enabled and are listed in the conformance declaration.
+
+The **Manage styles** conformance class allows clients to create, update and delete styles, and to update style metadata. It is disabled by default. Set the ``OGCAPI_STYLES_MANAGE`` variable to ``true`` to enable it, as a Java system property, an environment variable or a servlet context parameter.
+
+Managing styles changes the GeoServer catalog, so decide who may do it before enabling the class. Service security rules control this, in **Security > Services** or in ``security/services.properties``. A good starting point allows only administrators::
+
+   styles.addStyle=ROLE_ADMINISTRATOR
+   styles.updateStyle=ROLE_ADMINISTRATOR
+   styles.deleteStyle=ROLE_ADMINISTRATOR
+   styles.updateStyleMetadata=ROLE_ADMINISTRATOR
+   styles.patchStyleMetadata=ROLE_ADMINISTRATOR
+
+Add other roles to these rules to allow more users to manage styles. Use a rule for each operation, as above: a ``styles.*`` rule also applies to the operations that read styles.

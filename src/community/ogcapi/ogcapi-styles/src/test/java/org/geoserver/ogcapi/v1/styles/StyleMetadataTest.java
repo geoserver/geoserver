@@ -51,6 +51,7 @@ public class StyleMetadataTest extends StylesTestSupport {
 
     @Before
     public void clearMetadata() {
+        setManageStyles(true);
         StyleInfo polygon = getCatalog().getStyleByName("polygon");
         StyleMetadataInfo metadata = new StyleMetadataInfo();
         metadata.setTitle(POLYGON_TITLE);

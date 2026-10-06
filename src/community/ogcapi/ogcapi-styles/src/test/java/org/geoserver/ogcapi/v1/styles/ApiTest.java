@@ -147,6 +147,7 @@ public class ApiTest extends StylesTestSupport {
                         "cssSample",
                         "PolygonComment",
                         "ws:NamedPlacesWS",
+                        "ws2:NamedPlacesWS2",
                         "generic",
                         "polygon",
                         "line",

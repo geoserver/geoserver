@@ -5,6 +5,9 @@
 
 package org.geoserver.security.jwtheaders.filter;
 
+import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.util.JSONArrayUtils;
+import com.nimbusds.jose.util.JSONObjectUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +28,7 @@ import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
 import org.geoserver.security.impl.GeoServerRole;
+import org.geoserver.security.jwtheaders.JwtConfiguration;
 import org.geoserver.security.jwtheaders.filter.GeoServerJwtHeadersFilterConfig.JWTHeaderRoleSource;
 import org.geoserver.security.jwtheaders.filter.details.JwtHeadersWebAuthDetailsSource;
 import org.geoserver.security.jwtheaders.filter.details.JwtHeadersWebAuthenticationDetails;
@@ -59,6 +63,12 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
 
     // claims of the validated identity token, suffixed with the configuration ID
     private static final String HTTP_ATTRIBUTE_VALIDATED_CLAIMS = "GeoServerJwtHeadersFilter.validatedClaims.";
+
+    // marks a request whose identity header was already logged in detail, suffixed with the configuration ID
+    private static final String HTTP_ATTRIBUTE_SENSITIVE_LOGGED = "GeoServerJwtHeadersFilter.sensitiveLogged.";
+
+    // longest troubleshooting line written, so a client cannot flood the log through its headers
+    private static final int MAX_SENSITIVE_MESSAGE = 4000;
 
     // configuration diagnostics already logged (filter name, kind and the settings involved), so that loading the
     // filter again, e.g. from the admin pages, does not repeat them
@@ -135,6 +145,64 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
 
     private String identityHeaderName() {
         return filterConfig.getJwtConfiguration().getUserNameHeaderAttributeName();
+    }
+
+    /** True when this filter logs token content for troubleshooting: only when enabled, and only at FINE level. */
+    protected boolean isSensitiveLoggingEnabled() {
+        return filterConfig.getLogSensitiveInformation() && isFineLoggable();
+    }
+
+    protected boolean isFineLoggable() {
+        return LOG.isLoggable(Level.FINE);
+    }
+
+    /** Logs the usual FINE level details: rejection reason, user name and roles, never token content. */
+    protected void logFine(String message) {
+        LOG.fine(message);
+    }
+
+    /**
+     * Logs troubleshooting details that may contain token content or personal data. Control characters are escaped and
+     * the line is shortened, as the content comes from the request.
+     */
+    protected void logSensitive(String message, Throwable cause) {
+        LOG.log(Level.FINE, "JWT Headers filter '" + filterConfig.getName() + "' " + printable(message), cause);
+    }
+
+    /** Escapes control characters, so a header value cannot start a new log line, and caps the length. */
+    static String printable(String message) {
+        StringBuilder out = new StringBuilder();
+        message.codePoints().forEach(cp -> {
+            if (cp == '\n') out.append("\\n");
+            else if (cp == '\r') out.append("\\r");
+            else if (Character.isISOControl(cp)) out.append(String.format("\\u%04x", cp));
+            else out.appendCodePoint(cp);
+        });
+        return out.length() > MAX_SENSITIVE_MESSAGE
+                ? out.substring(0, MAX_SENSITIVE_MESSAGE) + "... (" + out.length() + " characters)"
+                : out.toString();
+    }
+
+    /**
+     * Readable form of a header value for troubleshooting. Whatever the configured format, a value that is a JWT is
+     * shown as its decoded header and claims, never with its signature, and an encrypted token is not shown at all. Any
+     * other value, such as a JSON claims header or a plain user name, is shown as is.
+     */
+    static String describeHeaderValue(String headerValue) {
+        if (headerValue == null) return "no value";
+        String value = headerValue.trim().replaceFirst("(?i)^bearer\\s*", "");
+        if (value.matches("[A-Za-z0-9_-]*(\\.[A-Za-z0-9_-]*){4}")) return "an encrypted token (not shown)";
+        if (value.matches("[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]*")) {
+            try {
+                JWSObject jws = JWSObject.parse(value);
+                return "JWT header "
+                        + JSONObjectUtils.toJSONString(jws.getHeader().toJSONObject()) + ", claims "
+                        + JSONObjectUtils.toJSONString(jws.getPayload().toJSONObject());
+            } catch (Exception e) {
+                return "a value shaped like a JWT that could not be decoded (" + e.getMessage() + ")";
+            }
+        }
+        return headerValue;
     }
 
     /**
@@ -234,14 +302,23 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
                 new JwtHeaderUserNameExtractor(getFilterConfig().getJwtConfiguration());
         String userName;
         Map<String, Object> validatedClaims;
+        // the principal is looked up twice per request, log the details only once
+        String loggedAttribute = HTTP_ATTRIBUTE_SENSITIVE_LOGGED + filterConfig.getId();
+        boolean sensitive = isSensitiveLoggingEnabled() && request.getAttribute(loggedAttribute) == null;
+        if (sensitive) {
+            request.setAttribute(loggedAttribute, Boolean.TRUE);
+            logSensitive("received in " + identityHeaderName() + ": " + describeHeaderValue(headerValue), null);
+        }
 
         try {
             userName = extractor.extractUserName(headerValue);
             // null when validation is off
             validatedClaims = tokenValidator.validateAndParse(headerValue);
         } catch (Exception e) {
-            if (LOG.isLoggable(Level.FINE)) {
-                LOG.fine("JWT Headers filter '" + filterConfig.getName() + "' rejected the request header: "
+            if (sensitive) {
+                logSensitive("rejected the request header", e);
+            } else if (isFineLoggable()) {
+                logFine("JWT Headers filter '" + filterConfig.getName() + "' rejected the request header: "
                         + e.getMessage());
             }
             return null;
@@ -266,8 +343,14 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
         if (validatedClaims != null) {
             request.setAttribute(HTTP_ATTRIBUTE_VALIDATED_CLAIMS + filterConfig.getId(), validatedClaims);
         }
-        if (LOG.isLoggable(Level.FINE)) {
-            LOG.fine("Extracted user name from JWT token: " + userName);
+        if (sensitive) {
+            String source = filterConfig.getJwtConfiguration().getUserNameFormatChoice()
+                            == JwtConfiguration.UserNameHeaderFormat.STRING
+                    ? "the value of " + identityHeaderName()
+                    : "'" + filterConfig.getJwtConfiguration().getUserNameJsonPath() + "'";
+            logSensitive("took the user name '" + userName + "' from " + source, null);
+        } else if (isFineLoggable()) {
+            logFine("Extracted user name from JWT token: " + userName);
         }
 
         return userName;
@@ -299,6 +382,9 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
                 @SuppressWarnings("unchecked")
                 Map<String, Object> claims =
                         (Map<String, Object>) request.getAttribute(HTTP_ATTRIBUTE_VALIDATED_CLAIMS + id);
+                if (isSensitiveLoggingEnabled()) {
+                    logSensitive(describeRolesClaim(claims), null);
+                }
                 try {
                     return toGeoServerRoles(extractor.getRolesFromClaims(claims));
                 } catch (RuntimeException e) {
@@ -316,6 +402,12 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
             String rolesHeader = filterConfig.rolesHeaderIsUserNameHeader()
                     ? identityHeaderName()
                     : filterConfig.getJwtConfiguration().getRolesHeaderName();
+            if (isSensitiveLoggingEnabled()) {
+                logSensitive(
+                        "reads the roles from " + rolesHeader + ": "
+                                + describeHeaderValue(request.getHeader(rolesHeader)),
+                        null);
+            }
             try {
                 return toGeoServerRoles(extractor.getRoles(request.getHeader(rolesHeader)));
             } catch (RuntimeException e) {
@@ -327,12 +419,30 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
         return super.getRoles(request, principal);
     }
 
-    private static List<GeoServerRole> toGeoServerRoles(Collection<String> roles) {
+    private String describeRolesClaim(Map<String, Object> claims) {
+        String path = filterConfig.getJwtConfiguration().getRolesJsonPath();
+        Object value;
+        try {
+            value = claims == null || path == null ? null : JwtHeaderUserNameExtractor.getClaim(claims, path);
+        } catch (RuntimeException e) {
+            value = "not readable (" + e.getMessage() + ")";
+        }
+        return "reads the roles from the validated token, claim '" + path + "': " + jsonOf(value);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static String jsonOf(Object value) {
+        if (value instanceof List<?> list) return JSONArrayUtils.toJSONString(list);
+        if (value instanceof Map<?, ?> map) return JSONObjectUtils.toJSONString((Map<String, ?>) map);
+        return String.valueOf(value);
+    }
+
+    private List<GeoServerRole> toGeoServerRoles(Collection<String> roles) {
         if (roles == null) {
             return new ArrayList<>();
         }
-        if (LOG.isLoggable(Level.FINE)) {
-            LOG.fine("Extracted roles from JWT token: " + String.join(", ", roles));
+        if (isFineLoggable()) {
+            logFine("Extracted roles from JWT token: " + String.join(", ", roles));
         }
         return roles.stream().map(GeoServerRole::new).collect(Collectors.toList());
     }

@@ -20,6 +20,10 @@
     padding-left:20px;
 }
 
+#jwt-headers label .help-link {
+    margin-left: 0.25rem;
+}
+
 #jwt-headers .padTopLarge,#roleSource .padTopLarge {
     padding-top:20px;
 }

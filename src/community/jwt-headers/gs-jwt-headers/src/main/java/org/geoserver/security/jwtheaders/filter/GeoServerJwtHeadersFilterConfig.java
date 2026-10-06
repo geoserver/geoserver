@@ -48,6 +48,9 @@ public class GeoServerJwtHeadersFilterConfig extends PreAuthenticatedUserNameFil
      */
     private Boolean trustUnvalidatedRolesHeader;
 
+    /** Whether token content is logged at FINE level, for troubleshooting a setup. Null means off. */
+    private Boolean logSensitiveInformation;
+
     /**
      * Defaults for a newly created filter: validate the token and its signature and expiry, only accept explicitly
      * mapped roles, and do not let the header assert the built-in {@code admin} account.
@@ -99,6 +102,20 @@ public class GeoServerJwtHeadersFilterConfig extends PreAuthenticatedUserNameFil
 
     public void setTrustUnvalidatedRolesHeader(Boolean trustUnvalidatedRolesHeader) {
         this.trustUnvalidatedRolesHeader = trustUnvalidatedRolesHeader;
+    }
+
+    /**
+     * Whether the decoded token content, the full reason a token is rejected and the claims the user name and roles are
+     * taken from are logged at FINE level. Meant for troubleshooting only, the logs then contain personal data.
+     *
+     * @return never null
+     */
+    public Boolean getLogSensitiveInformation() {
+        return logSensitiveInformation == null ? Boolean.FALSE : logSensitiveInformation;
+    }
+
+    public void setLogSensitiveInformation(Boolean logSensitiveInformation) {
+        this.logSensitiveInformation = logSensitiveInformation;
     }
 
     /**

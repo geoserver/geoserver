@@ -23913,6 +23913,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -30309,6 +30320,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -30342,6 +30364,8 @@
 <li>Getting roles from a JSON header or an attached JWT Access Token claim</li>
 </ol>
 <h2 id="configuration-options">Configuration Options<a class="headerlink" href="#configuration-options" title="Permanent link">&para;</a></h2>
+<p>Create the filter from <strong>Security &gt; Authentication &gt; Authentication Filters &gt; Add new &gt; JWT Headers</strong>. This is a new filter set up for bearer tokens in the <code>Authorization</code> header, with the roles read from the same token:</p>
+<p><img alt="JWT Headers filter panel for a new filter, validating the token signature against a JSON Web Key Set with an accepted issuer, and taking the roles from the same validated token" src="../images/jwt-headers-filter-panel.png" /></p>
 <h3 id="user-name-options">User Name Options<a class="headerlink" href="#user-name-options" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -30363,8 +30387,13 @@
 <td>JSON path for the User Name</td>
 <td>If the user name is in JSON or JWT format, this is the JSON path to the user's name.</td>
 </tr>
+<tr>
+<td>Allow the header to log in the built-in "admin" account</td>
+<td>If unchecked, a request whose user name is <code>admin</code> is not authenticated by this filter. Unchecked for filters created in the web administration interface; filters created before this option existed, or through the REST API without it, keep allowing it.</td>
+</tr>
 </tbody>
 </table>
+<p>The built-in <code>root</code> account is never accepted from the header, whatever the configuration: it is the emergency account backed by the master password and cannot be represented by an external identity.</p>
 <p>If you are using <a href="https://github.com/OpenIDC/mod_auth_openidc">Apache's mod_auth_openidc</a>, then Apache will typically add:</p>
 <ul>
 <li>an <code>OIDC_id_token_payload</code> header item (containing a JSON string of the ID token claims)</li>
@@ -30415,6 +30444,8 @@
 </tr>
 </tbody>
 </table>
+<p>When <strong>Validate JWT (Access Token)</strong> is enabled, the roles must come from the token that was validated: use <code>Header Containing JWT</code> with the same header as the user name, or take the roles from a Role Service or User Group Service. A roles header that is not the validated token, <code>Header Containing JSON String</code> and <code>Request Header</code> are refused when the filter is saved. A filter saved before this check keeps authenticating its users but takes no roles from such a header, and the GeoServer log reports it when the filter is loaded.</p>
+<p>If roles are deliberately carried by a separate header that a proxy in front of GeoServer always removes or overwrites on incoming requests, check <strong>Trust a roles header that is not the validated token</strong> to keep reading it.</p>
 <p>Using the example <code>OIDC_id_token_payload</code> (JSON) or <code>OIDC_access_token</code> (JWT) shown above, the claims are:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">   </span><span class="nt">"exp"</span><span class="p">:</span><span class="w"> </span><span class="mi">1708555947</span><span class="p">,</span>
@@ -30514,6 +30545,10 @@
 <td>URL for a JWK Set. This is typically called <code>jwks_uri</code> in the OIDC metadata configuration. This will be downloaded and used to check the JWT's signature. This should always be checked to ensure that the JWT has not been modified.</td>
 </tr>
 <tr>
+<td>Accepted issuers (iss)</td>
+<td>The <code>iss</code> values accepted, separated by commas. This is typically called <code>issuer</code> in the OIDC metadata configuration. When set, it is checked whenever the token is validated. Required when the signature is validated, since a signing key set can be shared by several issuers (for example the tenants of a multi-tenant identity provider).</td>
+</tr>
+<tr>
 <td>Validate JWT (Access Token) Against Endpoint</td>
 <td>If checked, validate the access token against an IDP's token verification URL.</td>
 </tr>
@@ -30537,8 +30572,26 @@
 <td>Required Claim Value</td>
 <td>The value this claim must be (if the claim is a list of string, then it must contain this value).</td>
 </tr>
+<tr>
+<td>Trust a roles header that is not the validated token</td>
+<td>See the role source options above. Only check it when a proxy always removes or overwrites that header.</td>
+</tr>
 </tbody>
 </table>
+<p>A filter created in the web administration interface starts out validating the token, its signature and its expiry, and only accepts the external roles listed in the role converter. Filters created through the REST API get only the settings they are sent.</p>
+<p>With validation enabled the filter cannot be saved unless the user name format is JWT and the signature or the endpoint check is configured, with a valid URL and, for the signature, at least one accepted issuer. Saving also checks that a role source is selected and that the selected role or user/group service exists. Filters saved before these checks keep their stored settings; the GeoServer log reports, when the filter is loaded, one that validates without a signature or endpoint check, one that validates signatures without accepted issuers, and one whose roles are not taken from the validated token.</p>
+<p>To accept only tokens issued for GeoServer, and not tokens the same identity provider issued to other applications, also validate the audience.</p>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<p>The module includes a <code>JWT_HEADERS_LOGGING</code> logging profile, installed in the data directory on startup. It quiets most GeoServer logging and turns on detailed logging for the JWT Headers filter.</p>
+<p>Each filter also has a <strong>Log sensitive information (do not use in production)</strong> option. When checked, the filter logs the decoded header and claims of the incoming tokens, the full reason a token is rejected, and the claims the user name and roles are taken from. Without it the filter only logs the reason a request is rejected, the user name and the roles.</p>
+<p>This option puts personal data and token content in the logs, so only use it while setting things up, and clear the logs afterwards: the <code>JWT_HEADERS_LOGGING</code> profile writes to the GeoServer log, including its rolled <code>geoserver-N.log</code> files, and to the standard output, which may end up in container or aggregated logs. The token signature is never logged.</p>
+<p>To troubleshoot a JWT Headers filter:</p>
+<ol>
+<li>Navigate to <strong>Server &gt; Global Settings</strong> and select the logging profile <code>JWT_HEADERS_LOGGING</code>.</li>
+<li>Navigate to <strong>Security &gt; Authentication</strong>, open the JWT Headers filter and check <strong>Log sensitive information (do not use in production)</strong>.</li>
+<li>Send a few requests and look at the GeoServer log.</li>
+<li>Uncheck the option, switch back to your usual logging profile and clear the logs, the rolled ones and any copy of the standard output included.</li>
+</ol>
 
 
 

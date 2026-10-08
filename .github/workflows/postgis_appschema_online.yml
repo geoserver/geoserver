@@ -37,6 +37,10 @@ jobs:
         with:
           java-version: 17
           distribution: 'temurin'
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v5.1
+        with:
+          maven-version: 3.9.16
       - uses: actions/checkout@v7
       - name: Maven repository caching
         uses: actions/cache@v6

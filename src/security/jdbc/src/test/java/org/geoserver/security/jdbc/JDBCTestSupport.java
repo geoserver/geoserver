@@ -62,7 +62,7 @@ public class JDBCTestSupport {
             String serviceName, GeoServerSecurityManager securityManager) {
         JDBCUserGroupServiceConfig config = new JDBCUserGroupServiceConfig();
         config.setName(serviceName);
-        config.setConnectURL("jdbc:h2:target/h2/security");
+        config.setConnectURL("jdbc:h2:target/h2/security;DB_CLOSE_DELAY=-1");
         config.setDriverClassName("org.h2.Driver");
         config.setUserName("sa");
         config.setPassword("");
@@ -140,7 +140,7 @@ public class JDBCTestSupport {
         JDBCRoleServiceConfig config = new JDBCRoleServiceConfig();
 
         config.setName(serviceName);
-        config.setConnectURL("jdbc:h2:target/h2/security");
+        config.setConnectURL("jdbc:h2:target/h2/security;DB_CLOSE_DELAY=-1");
         config.setDriverClassName("org.h2.Driver");
         config.setUserName("sa");
         config.setPassword("");

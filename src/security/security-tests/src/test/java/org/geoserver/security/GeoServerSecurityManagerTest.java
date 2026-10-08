@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import org.geoserver.platform.GeoServerEnvironment;
@@ -21,7 +22,16 @@ import org.geoserver.security.password.PasswordValidator;
 import org.geoserver.test.SystemTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.springframework.context.ApplicationListener;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
+import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
+import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 
 @Category(SystemTest.class)
 public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
@@ -34,6 +44,123 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
                 new TestingAuthenticationToken("admin", "geoserver", List.of(GeoServerRole.ADMIN_ROLE));
         auth.setAuthenticated(true);
         assertTrue(secMgr.checkAuthenticationForAdminRole(auth));
+    }
+
+    /**
+     * checkForDefaultAdminPassword() probes the default admin credentials to decide whether to show the "change your
+     * password" warning. That probe must never be visible to the rest of the application as a real login:
+     * {@link org.geoserver.web.GeoServerApplication} (and potentially other listeners, e.g. audit logging) reacts to
+     * any {@link AuthenticationSuccessEvent} as if the user had just logged in interactively, which would incorrectly
+     * fire for every admin page view while the default password is still active.
+     */
+    @Test
+    public void testCheckForDefaultAdminPasswordDoesNotPublishAuthenticationEvent() throws Exception {
+        GeoServerSecurityManager secMgr = getSecurityManager();
+
+        List<AuthenticationSuccessEvent> captured = new ArrayList<>();
+        ApplicationListener<AuthenticationSuccessEvent> listener = captured::add;
+        applicationContext.addApplicationListener(listener);
+        try {
+            // sanity check: the probe itself must still correctly report the default password as
+            // unchanged, otherwise this test would trivially pass for the wrong reason
+            assertTrue(secMgr.checkForDefaultAdminPassword());
+
+            assertTrue(
+                    "checkForDefaultAdminPassword() must not publish a real AuthenticationSuccessEvent - doing so "
+                            + "is indistinguishable from an actual admin login to any listener in the application",
+                    captured.isEmpty());
+        } finally {
+            applicationContext.removeApplicationListener(listener);
+        }
+    }
+
+    /**
+     * The failure path leaks just as badly as the success path: before the fix, probing with the default credentials
+     * against an account whose password has actually been changed would still authenticate against the shared,
+     * event-publishing {@code providerMgr}, publishing a real {@link AuthenticationFailureBadCredentialsEvent} on every
+     * admin landing-page view. {@link BruteForceListener} listens for exactly that event type to drive its
+     * login-delay/lockout tracking - so, without this fix, an admin who did the right thing and changed the default
+     * password could have every landing-page view recorded as a failed login attempt against their own account. The
+     * [GEOS-12083] {@code withThrottlingDisabled()} wrapper only ever masked this for {@link BruteForceListener}
+     * specifically (it checks a thread-local before acting on the event) - it never stopped the event from being
+     * published, so any other listener was still fooled.
+     */
+    @Test
+    public void testCheckForDefaultAdminPasswordFailurePathDoesNotLeakEvent() throws Exception {
+        GeoServerSecurityManager secMgr = getSecurityManager();
+        List<AuthenticationProvider> originalProviders = new ArrayList<>(secMgr.getProviders());
+
+        List<AbstractAuthenticationEvent> captured = new ArrayList<>();
+        ApplicationListener<AbstractAuthenticationEvent> listener = captured::add;
+        applicationContext.addApplicationListener(listener);
+        try {
+            secMgr.setProviders(List.of(new AlwaysFailAuthenticationProvider()));
+
+            assertFalse(
+                    "sanity check: the probe must correctly report a changed password as such",
+                    secMgr.checkForDefaultAdminPassword());
+
+            assertTrue(
+                    "a failed probe must not leak any AbstractAuthenticationEvent (success or failure) - this is "
+                            + "what BruteForceListener listens for to drive login delays/lockouts",
+                    captured.isEmpty());
+        } finally {
+            applicationContext.removeApplicationListener(listener);
+            secMgr.setProviders(originalProviders);
+        }
+    }
+
+    /**
+     * Guards against a plausible future "optimization": caching the private probe {@code ProviderManager} as a field
+     * instead of building it fresh on every call, to avoid the small per-call allocation. If that's ever done without
+     * invalidating the cache on {@code reload()}/{@code setProviders()}, the probe would silently keep authenticating
+     * against a stale provider list.
+     */
+    @Test
+    public void testCheckForDefaultAdminPasswordReflectsLiveProviderListNotACachedCopy() throws Exception {
+        GeoServerSecurityManager secMgr = getSecurityManager();
+        List<AuthenticationProvider> originalProviders = new ArrayList<>(secMgr.getProviders());
+
+        try {
+            // the real provider list currently authenticates admin/geoserver successfully; swapping
+            // in a provider that always fails must change the probe's answer on the very next call
+            secMgr.setProviders(List.of(new AlwaysFailAuthenticationProvider()));
+            assertFalse(secMgr.checkForDefaultAdminPassword());
+
+            // swapping back to a provider that always succeeds must flip the answer again
+            secMgr.setProviders(List.of(new AlwaysSucceedAuthenticationProvider()));
+            assertTrue(secMgr.checkForDefaultAdminPassword());
+        } finally {
+            secMgr.setProviders(originalProviders);
+        }
+    }
+
+    /** Always throws {@link BadCredentialsException}, regardless of the credentials offered. */
+    private static final class AlwaysFailAuthenticationProvider implements AuthenticationProvider {
+        @Override
+        public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+            throw new BadCredentialsException("stub: always fails");
+        }
+
+        @Override
+        public boolean supports(Class<?> authentication) {
+            return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
+        }
+    }
+
+    /** Always authenticates successfully, regardless of the credentials offered. */
+    private static final class AlwaysSucceedAuthenticationProvider implements AuthenticationProvider {
+        @Override
+        public Authentication authenticate(Authentication authentication) {
+            UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(
+                    authentication.getPrincipal(), authentication.getCredentials(), List.of());
+            return result;
+        }
+
+        @Override
+        public boolean supports(Class<?> authentication) {
+            return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
+        }
     }
 
     @Test

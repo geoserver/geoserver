@@ -39,11 +39,5 @@
       <version>${gs.version}</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-web-maps</artifactId>
-      <version>${gs.version}</version>
-    </dependency>
-
   </dependencies>
 </project>

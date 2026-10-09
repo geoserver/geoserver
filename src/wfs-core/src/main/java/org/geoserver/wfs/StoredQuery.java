@@ -28,8 +28,6 @@ import net.opengis.wfs20.Wfs20Factory;
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wfs.kvp.QNameKvpParser;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.gml3.v3_2.GML;
@@ -283,14 +281,11 @@ public class StoredQuery {
     }
 
     /**
-     * Returns the entity resolver to use when parsing a stored query, falling back to the globally configured one when
-     * this instance isn't backed by a catalog (e.g. the built-in {@link #DEFAULT} query).
+     * Returns the entity resolver to use when parsing a stored query, or {@code null} when none is configured. A
+     * catalog-backed query uses the resolver from the catalog {@link org.geoserver.catalog.ResourcePool}; the built-in
+     * {@link #DEFAULT} query has no catalog, so none is applied.
      */
     private EntityResolver getEntityResolver() {
-        if (catalog != null) {
-            return catalog.getResourcePool().getEntityResolver();
-        }
-        EntityResolverProvider resolverProvider = GeoServerExtensions.bean(EntityResolverProvider.class);
-        return resolverProvider != null ? resolverProvider.getEntityResolver() : null;
+        return catalog != null ? catalog.getResourcePool().getEntityResolver() : null;
     }
 }

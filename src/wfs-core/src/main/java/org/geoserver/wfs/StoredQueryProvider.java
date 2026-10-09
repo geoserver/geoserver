@@ -22,12 +22,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.LocalWorkspace;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.exception.GeoServerRuntimException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
-import org.geoserver.util.EntityResolverProvider;
 import org.geotools.util.logging.Logging;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
@@ -277,8 +275,7 @@ public class StoredQueryProvider {
     }
 
     private EntityResolver getEntityResolver() {
-        EntityResolverProvider resolverProvider = GeoServerExtensions.bean(EntityResolverProvider.class);
-        return resolverProvider != null ? resolverProvider.getEntityResolver() : null;
+        return catalog.getResourcePool().getEntityResolver();
     }
 
     public boolean supportsLanguage(String language) {

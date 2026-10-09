@@ -265,6 +265,27 @@ public class GeoServerOAuth2LoginFilterConfigValidatorTest extends GeoServerMock
     }
 
     @Test
+    public void testMicrosoftTenantIdValidation() throws Exception {
+        GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
+        config.setClassName(GeoServerOAuth2LoginAuthenticationFilter.class.getName());
+        config.setName("testMicrosoftTenant");
+        config.setMsEnabled(true);
+        config.setMsClientId("mid");
+        config.setMsClientSecret("ms");
+
+        config.setMsTenantId("not-a-tenant-id");
+        try {
+            validator.validateOAuth2FilterConfig(config);
+            fail("FilterConfigException expected.");
+        } catch (FilterConfigException ex) {
+            assertExceptionCodeWithArgCount(ex, OAuth2FilterConfigException.MS_TENANT_ID_INVALID, 0);
+        }
+
+        config.setMsTenantId("12345678-1234-1234-1234-123456789abc");
+        validator.validateOAuth2FilterConfig(config);
+    }
+
+    @Test
     public void testRoleSourceUserInfo() throws Exception {
         GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
         config.setClassName(GeoServerOAuth2LoginAuthenticationFilter.class.getName());

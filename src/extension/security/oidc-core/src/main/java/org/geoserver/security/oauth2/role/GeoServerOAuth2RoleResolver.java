@@ -8,8 +8,6 @@ import static java.util.logging.Level.SEVERE;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.geoserver.security.filter.GeoServerRoleResolvers.PRE_AUTH_ROLE_SOURCE_RESOLVER;
-import static org.geoserver.security.impl.GeoServerUser.ADMIN_USERNAME;
-import static org.geoserver.security.impl.GeoServerUser.ROOT_USERNAME;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -112,7 +110,7 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
             throw new IllegalArgumentException(OAuth2ResolverParam.class.getSimpleName() + " required");
         }
         String principal = pParam.getPrincipal();
-        if (ADMIN_USERNAME.equalsIgnoreCase(principal) || ROOT_USERNAME.equalsIgnoreCase(principal)) {
+        if (config.isPrincipalBlocked(principal)) {
             // Avoid unintentional match with pre-existing administrator
             LOGGER.log(
                     Level.WARNING,

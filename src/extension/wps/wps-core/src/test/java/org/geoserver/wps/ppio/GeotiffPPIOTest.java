@@ -174,28 +174,19 @@ public class GeotiffPPIOTest {
     }
 
     @Test
-    public void testDecodeValidArcGrid() throws Exception {
-        try (InputStream is = getClass().getResourceAsStream("arcGrid.asc")) {
-            doAnswer(inv -> {
-                        resource = inv.getArgument(0, GridCoverageReaderResource.class);
-                        return null;
-                    })
-                    .when(resources)
-                    .addResource(any(GridCoverageReaderResource.class));
-            Object result = ppio.decode(is);
-            assertThat(result, instanceOf(GridCoverage2D.class));
-            coverage = (GridCoverage2D) result;
-            verify(resources).addResource(any(GridCoverageReaderResource.class));
+    public void testDecodeInvalid() throws Exception {
+        try (InputStream is = getClass().getResourceAsStream("empty-shapefile.zip")) {
+            WPSException exception = assertThrows(WPSException.class, () -> ppio.decode(is));
+            assertEquals("Input could not be read as a GeoTIFF", exception.getMessage());
+            verify(resources, never()).addResource(any());
         }
     }
 
     @Test
-    public void testDecodeInvalid() throws Exception {
-        try (InputStream is = getClass().getResourceAsStream("empty-shapefile.zip")) {
+    public void testDecodeNonGeoTIFF() throws Exception {
+        try (InputStream is = getClass().getResourceAsStream("arcGrid.asc")) {
             WPSException exception = assertThrows(WPSException.class, () -> ppio.decode(is));
-            assertEquals(
-                    "Could not find the GeoTIFF GT2 format, please check it's in the classpath",
-                    exception.getMessage());
+            assertEquals("Input could not be read as a GeoTIFF", exception.getMessage());
             verify(resources, never()).addResource(any());
         }
     }

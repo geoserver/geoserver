@@ -6,10 +6,12 @@ package org.geoserver.rat;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 
 import it.geosolutions.imageio.pam.PAMDataset;
 import it.geosolutions.imageio.pam.PAMParser;
@@ -267,5 +269,61 @@ public class RasterAttributeTableTest {
         assertEquals(1, dataset.getPAMRasterBand().size());
         RasterAttributeTable rat = new CoverageRATs(dataset).getRasterAttributeTable(0);
         assertNull(rat);
+    }
+
+    @Test
+    public void testGdal312Classifications() throws Exception {
+        RasterAttributeTable rat = new CoverageRATs(getDataset("gdal312.xml")).getRasterAttributeTable(0);
+        assertThat(rat, CoreMatchers.instanceOf(RasterAttributeTable.Recode.class));
+        // every generic field but the geometry one
+        assertThat(
+                rat.getClassifications(),
+                containsInAnyOrder(
+                        "dataAssessment",
+                        "fullSeafloorCoverageAchieved",
+                        "surveyDateRange.dateStart",
+                        "surveyDateRange.dateEnd",
+                        "surveyAuthority",
+                        "depthRange.minimumDepth"));
+        assertThrows(IllegalArgumentException.class, () -> rat.classify("footprint"));
+    }
+
+    @Test
+    public void testGdal312GeometryOnlyTable() throws Exception {
+        // the only generic field is a geometry, so there is nothing to classify on
+        assertNull(new CoverageRATs(getDataset("web/geomonly.tiff.aux.xml")).getRasterAttributeTable(0));
+    }
+
+    @Test
+    public void testGdal312DateTimeClassification() throws Exception {
+        RasterAttributeTable rat = new CoverageRATs(getDataset("gdal312.xml")).getRasterAttributeTable(0);
+        ColorMap cm = getColorMap(rat, "surveyDateRange.dateStart", 0);
+        printStyle(cm);
+
+        assertEquals(ColorMap.TYPE_VALUES, cm.getType());
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(4, entries.length);
+        // quantities are the survey ids, the pixel values, labels are the dates as GDAL wrote them
+        assertColorMapEntry(entries[0], "2024-03-01T00:00:00.000+00:00", 54602, "#57208E", 1);
+        assertColorMapEntry(entries[1], "2024-02-29T23:00:00.000-05:00", 54603, "#EA1F1F", 1);
+        assertColorMapEntry(entries[2], "2025-01-02T23:59:59.000+01:15", 61001, "#1EA7A7", 1);
+        // the row where only the survey id is set: GDAL writes the date as an empty element
+        assertColorMapEntry(entries[3], "", 61004, "#8DCD4E", 1);
+    }
+
+    @Test
+    public void testGdal312BooleanClassification() throws Exception {
+        RasterAttributeTable rat = new CoverageRATs(getDataset("gdal312.xml")).getRasterAttributeTable(0);
+        ColorMap cm = getColorMap(rat, "fullSeafloorCoverageAchieved", 0);
+        printStyle(cm);
+
+        assertEquals(ColorMap.TYPE_VALUES, cm.getType());
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(4, entries.length);
+        // two values only, so the two false rows share a color
+        assertColorMapEntry(entries[0], "true", 54602, "#4ECDCD", 1);
+        assertColorMapEntry(entries[1], "false", 54603, "#EA1F1F", 1);
+        assertColorMapEntry(entries[2], "true", 61001, "#4ECDCD", 1);
+        assertColorMapEntry(entries[3], "false", 61004, "#EA1F1F", 1);
     }
 }

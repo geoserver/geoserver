@@ -75,6 +75,10 @@ This filter allows gathering user credentials (username and password) from reque
 | Regular Expression for Password | Regular Expression used to extract the password from the related Header. Must define a group that will match the password. |
 | Parse Arguments as Uri Components | If checked username and password are URI decoded before being used as credentials |
 
+### Remember me
+
+The **rememberme** filter keeps a user logged in through a browser cookie. In a cluster, set the `GEOSERVER_REMEMBERME_KEY` environment variable to the same value on every node, so a cookie issued by one node is accepted by the others. Choose a long value that mixes upper and lower case letters, digits and punctuation.
+
 ## Authentication providers
 
 This section manages the `security_auth_providers` (adding, removing, and editing). The default authentication provider uses basic [username/password authentication](../auth/providers.md#security_auth_provider_userpasswd)_. [JDBC](../auth/providers.md#security_auth_provider_jdbc) and [LDAP](../auth/providers.md#security_auth_provider_ldap) authentication can also be used.

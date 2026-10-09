@@ -18,14 +18,17 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.config.GeoServer;
+import org.geoserver.ogcapi.APIBBoxParser;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractServiceHTMLMessageConverter;
 import org.geoserver.ogcapi.FreemarkerTemplateSupport;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSMapContent;
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.crs.ProjectedCRS;
+import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -50,10 +53,20 @@ public class HTMLMapMessageConverter extends AbstractServiceHTMLMessageConverter
         GetMapRequest getMapRequest = htmlMap.getMapContent().getRequest();
         HashMap<String, Object> model = setupModel(getMapRequest);
         model.put("units", getUnits(htmlMap.getMapContent()));
+        // hand the client the OGC API - Maps CRS reference (SafeCURIE) and the axis order that goes with it, so it
+        // does not have to work out either on its own
+        String crsId = crsIdentifier(getMapRequest.getCrs());
+        String crsCurie = crsId != null ? "[" + crsId + "]" : getMapRequest.getSRS();
+        model.put("crsCurie", crsCurie);
+        model.put("axisOrder", axisOrder(crsCurie).name());
         APIRequestInfo ri = APIRequestInfo.get();
         HttpServletRequest httpRequest = ri.getRequest();
         model.put("url", httpRequest.getRequestURL());
         model.put("parameters", getLayerParameter(getMapRequest.getRawKvp()));
+        // the layer chooser of a dataset map preview, empty for the map of a single collection
+        model.put("collections", htmlMap.getCollections());
+        model.put("selectedCollections", htmlMap.getSelectedCollections());
+        model.put("collectionsCut", htmlMap.isCollectionsCut());
         Charset defaultCharset = getDefaultCharset();
         if (outputMessage != null && outputMessage.getBody() != null && defaultCharset != null) {
             templateSupport.processTemplate(
@@ -67,6 +80,31 @@ public class HTMLMapMessageConverter extends AbstractServiceHTMLMessageConverter
             LOGGER.warning("Either the default character set, output message or body was null, so the "
                     + "htmlmap.ftl template could not be processed.");
         }
+    }
+
+    /** Authority code of the CRS, e.g. {@code EPSG:4326}, or null when it has none. */
+    private static String crsIdentifier(CoordinateReferenceSystem crs) {
+        try {
+            return crs == null ? null : CRS.lookupIdentifier(crs, true);
+        } catch (FactoryException e) {
+            LOGGER.log(Level.FINE, "Could not determine the CRS identifier", e);
+            return null;
+        }
+    }
+
+    /**
+     * Axis order of the coordinates the server will read under this CRS reference. It is resolved through the same
+     * parser the map requests use, so the client cannot disagree with it: the request CRS is no help here, it is always
+     * forced to longitude/latitude while rendering.
+     */
+    private static CRS.AxisOrder axisOrder(String crsReference) {
+        try {
+            CoordinateReferenceSystem parsed = APIBBoxParser.parseCRS(crsReference);
+            if (parsed != null) return CRS.getAxisOrder(parsed);
+        } catch (FactoryException e) {
+            LOGGER.log(Level.FINE, "Could not determine the axis order of " + crsReference, e);
+        }
+        return CRS.AxisOrder.INAPPLICABLE;
     }
 
     /**

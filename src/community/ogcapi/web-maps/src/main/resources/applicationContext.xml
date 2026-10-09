@@ -18,4 +18,11 @@
 
     <bean id="mapsServiceDescriptor" class="org.geoserver.ogcapi.v1.maps.MapsServiceDescriptionProvider">
     </bean>
+
+    <bean id="mapsServiceAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
+        <property name="id" value="mapsConformanceAdminPanel"/>
+        <property name="componentClass" value="org.geoserver.ogcapi.web.MapsServiceAdminPanel"/>
+        <property name="serviceClass" value="org.geoserver.wms.WMSInfo"/>
+        <property name="specificServiceType" value="Maps"/>
+    </bean>
 </beans>

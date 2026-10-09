@@ -404,6 +404,9 @@ public class OAuth2LoginAuthProviderPanel
         add(new HelpLink("oidcAllowUnSecureLoggingHelp", this).setDialog(dialog));
         add(new CheckBox("oidcAllowUnSecureLogging"));
 
+        add(new HelpLink("allowAdminLoginHelp", this).setDialog(dialog));
+        add(new CheckBox("allowAdminLogin"));
+
         add(new HelpLink("connectionParametersHelp", this).setDialog(dialog));
 
         add(new HelpLink("postLogoutRedirectUriHelp", this).setDialog(dialog));
@@ -454,6 +457,15 @@ public class OAuth2LoginAuthProviderPanel
             lScopeContainer.add(new HelpLink("scopesHelp", this).setDialog(dialog));
         } else {
             lScopeContainer.setVisible(false);
+        }
+
+        WebMarkupContainer lMicrosoftContainer = new WebMarkupContainer("displayOnMicrosoft");
+        lSHContainer.add(lMicrosoftContainer);
+        if (provider == OAuth2Provider.MICROSOFT) {
+            lMicrosoftContainer.add(createTextField("tenantId", pProviderKey));
+            lMicrosoftContainer.add(new HelpLink("tenantIdHelp", this).setDialog(dialog));
+        } else {
+            lMicrosoftContainer.setVisible(false);
         }
 
         WebMarkupContainer lOidcContainer = new WebMarkupContainer("displayOnOidc");

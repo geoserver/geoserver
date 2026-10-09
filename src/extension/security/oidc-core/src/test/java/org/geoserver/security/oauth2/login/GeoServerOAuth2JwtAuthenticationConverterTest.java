@@ -5,6 +5,7 @@
 package org.geoserver.security.oauth2.login;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -176,8 +177,32 @@ public class GeoServerOAuth2JwtAuthenticationConverterTest {
         assertEquals("authorized-party", result.getName());
     }
 
+    /** With the default configuration the provider is authoritative for "admin", so roles are granted. */
     @Test
-    public void testConvertWithAdminPrincipalGrantsNoRoles() {
+    public void testConvertWithAdminPrincipalGrantsRolesByDefault() {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("sub", "admin");
+        claims.put("preferred_username", "admin");
+        claims.put("iss", "https://issuer.example.com");
+
+        Jwt jwt = createJwt(claims);
+
+        GeoServerOAuth2JwtAuthenticationConverter converter =
+                new GeoServerOAuth2JwtAuthenticationConverter(mockSecurityManager, config);
+
+        AbstractAuthenticationToken result = converter.convert(jwt);
+
+        assertNotNull(result);
+        assertEquals("admin", result.getName());
+        assertFalse(
+                "Admin should receive roles when allowAdminLogin is on",
+                result.getAuthorities().isEmpty());
+    }
+
+    @Test
+    public void testConvertWithAdminPrincipalGrantsNoRolesWhenDisallowed() {
+        config.setAllowAdminLogin(Boolean.FALSE);
+
         Map<String, Object> claims = new HashMap<>();
         claims.put("sub", "admin");
         claims.put("preferred_username", "admin");
@@ -195,8 +220,11 @@ public class GeoServerOAuth2JwtAuthenticationConverterTest {
         assertTrue("Admin should have no roles", result.getAuthorities().isEmpty());
     }
 
+    /** "root" stays unusable even where "admin" is deliberately allowed through. */
     @Test
     public void testConvertWithRootPrincipalGrantsNoRoles() {
+        config.setAllowAdminLogin(Boolean.TRUE);
+
         Map<String, Object> claims = new HashMap<>();
         claims.put("sub", "root");
         claims.put("preferred_username", "root");
@@ -212,6 +240,28 @@ public class GeoServerOAuth2JwtAuthenticationConverterTest {
         assertNotNull(result);
         assertEquals("root", result.getName());
         assertTrue("Root should have no roles", result.getAuthorities().isEmpty());
+    }
+
+    /** Turning the option off must not affect anybody else. */
+    @Test
+    public void testConvertWithRegularPrincipalUnaffectedWhenAdminDisallowed() {
+        config.setAllowAdminLogin(Boolean.FALSE);
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("sub", "james");
+        claims.put("preferred_username", "james");
+        claims.put("iss", "https://issuer.example.com");
+
+        Jwt jwt = createJwt(claims);
+
+        GeoServerOAuth2JwtAuthenticationConverter converter =
+                new GeoServerOAuth2JwtAuthenticationConverter(mockSecurityManager, config);
+
+        AbstractAuthenticationToken result = converter.convert(jwt);
+
+        assertNotNull(result);
+        assertEquals("james", result.getName());
+        assertFalse("Regular users keep their roles", result.getAuthorities().isEmpty());
     }
 
     @Test
@@ -574,6 +624,8 @@ public class GeoServerOAuth2JwtAuthenticationConverterTest {
 
     @Test
     public void testConvertWithCaseInsensitiveAdminCheck() {
+        config.setAllowAdminLogin(Boolean.FALSE);
+
         Map<String, Object> claims = new HashMap<>();
         claims.put("sub", "ADMIN"); // uppercase
         claims.put("preferred_username", "ADMIN");

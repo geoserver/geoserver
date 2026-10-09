@@ -411,6 +411,36 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilderTest {
         assertNotNull(lClientReg);
         assertEquals("msClientId", lClientReg.getClientId());
         assertEquals("msClientSecret", lClientReg.getClientSecret());
+        assertEquals(
+                "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+                lClientReg.getProviderDetails().getAuthorizationUri());
+    }
+
+    @Test
+    public void testMicrosoftClientRegistrationUsesConfiguredTenant() throws Exception {
+        assignDependencies();
+        when(mockHttp.build()).thenReturn(new DefaultSecurityFilterChain(mock(RequestMatcher.class), List.of()));
+
+        configuration.setMsEnabled(true);
+        configuration.setMsClientId("msClientId");
+        configuration.setMsClientSecret("msClientSecret");
+        configuration.setMsTenantId("12345678-1234-1234-1234-123456789abc");
+
+        sut.build();
+
+        ClientRegistration registration = sut.getClientRegistrationRepository().findByRegistrationId(REG_ID_MICROSOFT);
+        assertEquals(
+                "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789abc/oauth2/v2.0/authorize",
+                registration.getProviderDetails().getAuthorizationUri());
+        assertEquals(
+                "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789abc/oauth2/v2.0/token",
+                registration.getProviderDetails().getTokenUri());
+        assertEquals(
+                "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789abc/discovery/v2.0/keys",
+                registration.getProviderDetails().getJwkSetUri());
+        assertEquals(
+                "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789abc/oauth2/v2.0/logout",
+                registration.getProviderDetails().getConfigurationMetadata().get("end_session_endpoint"));
     }
 
     @Test

@@ -1,0 +1,21 @@
+<PAMDataset>
+  <PAMRasterBand band="1">
+    <Description>QualityOfBathymetryCoverage</Description>
+    <GDALRasterAttributeTable tableType="thematic">
+      <FieldDefn index="0">
+        <Name>id</Name>
+        <Type typeAsString="Integer">0</Type>
+        <Usage usageAsString="MinMax">5</Usage>
+      </FieldDefn>
+      <FieldDefn index="1">
+        <Name>footprint</Name>
+        <Type typeAsString="WKBGeometry">5</Type>
+        <Usage usageAsString="Generic">0</Usage>
+      </FieldDefn>
+      <Row index="0">
+        <F>54602</F>
+        <F>POLYGON ((0 0,1 0,1 1,0 1,0 0))</F>
+      </Row>
+    </GDALRasterAttributeTable>
+  </PAMRasterBand>
+</PAMDataset>

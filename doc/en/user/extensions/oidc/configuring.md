@@ -34,6 +34,7 @@ The following table describes each field:
 | Redirect URI | The full OAuth2 callback URL that GeoServer uses to receive the authorization code from the IDP. | **Read-only.** Automatically calculated from the Redirect Base URI. Copy this value when registering GeoServer with your IDP. |
 | Skip GeoServer login dialog | When checked and only one provider is active, unauthenticated users are redirected directly to the IDP login page. | Bypasses the GeoServer login form entirely. Use with caution --- local administrator login will no longer be available through the web UI. |
 | Enable Resource Server (Bearer JWT) | When checked, the same filter also accepts machine-to-machine requests using an `Authorization: Bearer <JWT>` header. | Enabled by default. Disable if you only need browser-based interactive login. |
+| Allow the provider to log in the built-in "admin" account | When checked, an identity whose principal is `admin` is treated like any other user and receives whatever roles the role source assigns it. | Enabled by default. Uncheck it when the local `admin` account is managed inside GeoServer and must never be assertable by the IDP. See [Built-in administrator accounts](#oidc_admin_accounts). |
 
 ### Redirect Base URI {: #oidc_redirect_base_uri }
 
@@ -101,3 +102,43 @@ Choose the appropriate behavior for your deployment:
 
 !!! tip
     The After-Logout Redirect URI must be registered with your IDP as a permitted post-logout redirect URI. Check your IDP's client configuration.
+
+## Built-in administrator accounts {: #oidc_admin_accounts }
+
+GeoServer ships with two built-in accounts whose names carry special weight: `admin`, the default administrator held in the user/group service, and `root`, the emergency account backed by the master password. An identity provider is free to issue a token for a user called `admin`, and without a rule for it that token would silently take over the local administrator identity.
+
+![](img/allow-admin-login-default.png)
+
+*The option as it appears on a newly created filter, enabled by default.*
+
+The OIDC filter therefore applies one rule, consistently, to all three of the paths that can turn an identity-provider principal into a GeoServer identity --- the interactive browser login, a bearer JWT, and a bearer opaque token validated by introspection:
+
+- **`root` is never assertable.** A token naming `root` authenticates but is granted no roles at all, so it can read and write nothing. There is no setting for this: `root` is defined by the master password and cannot have an external identity.
+- **`admin` is governed by the checkbox**, *Allow the provider to log in the built-in "admin" account*, which is **enabled by default**. When enabled, `admin` is an ordinary principal and gets the roles your role source assigns to it. When disabled, a token naming `admin` authenticates but is granted no roles, exactly like `root`.
+
+Both comparisons ignore case, so `ADMIN` and `Root` are treated the same as `admin` and `root`.
+
+!!! note
+    "Granted no roles" is not the same as "rejected". The request is still authenticated; it simply carries no authorities, so every secured resource refuses it. This is deliberate --- it keeps the failure visible in the logs rather than looking like a bad password.
+
+### When to leave it enabled
+
+Leave it enabled when the identity provider is the authority for administrators. This is the normal arrangement when GeoServer is driven by an external platform that provisions its own `admin` user and expects GeoServer to honour it; the IDP asserts the account, your role source maps it to `ROLE_ADMINISTRATOR`, and GeoServer follows.
+
+### When to disable it
+
+Disable it when the local `admin` account is managed inside GeoServer and the IDP has no business asserting it. With the option off, someone who can create a user named `admin` at the identity provider gains nothing in GeoServer.
+
+![](img/allow-admin-login-disabled.png)
+
+*The same setting with the option turned off.*
+
+!!! warning "Name-based role sources"
+    The consequence is sharpest when the filter's [role source](role-config.md) is **User Group Service** or **Role Service**, because those resolve roles by looking the principal name up in GeoServer's own database. With the option enabled, an identity provider that asserts a user called `admin` is handed the local `admin` account's roles --- normally `ROLE_ADMINISTRATOR` --- without the IDP having asserted any role at all. If you use one of those role sources, and the local `admin` account exists, turn this option off.
+
+    With an IDP-asserted role source (ID Token, Access Token, UserInfo, MS Graph, Keycloak Admin API), and on both bearer-token paths, roles come from the token and no local lookup happens, so the option only decides whether the roles the IDP asserted are honoured.
+
+!!! warning "Upgrading from an earlier GeoServer 3.x"
+    Earlier releases refused roles to `admin` unconditionally; the option did not exist. It defaults to **enabled**, so after the upgrade an IDP-asserted `admin` **will** receive roles where it previously received none. If your deployment relied on that refusal as a security control, open each OIDC filter and uncheck the option.
+
+    A filter saved before the option existed has no `allowAdminLogin` entry in its `config.xml`, and GeoServer reads that absence as enabled. The checkbox shown above is what such a filter displays when you open it, so what you see in the form is what the filter is actually doing --- there is no hidden state to reason about. The entry is written to `config.xml` the first time you save the filter.

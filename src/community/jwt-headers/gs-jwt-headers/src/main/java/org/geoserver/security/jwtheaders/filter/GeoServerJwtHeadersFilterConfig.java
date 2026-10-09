@@ -5,7 +5,11 @@
 
 package org.geoserver.security.jwtheaders.filter;
 
+import static org.geoserver.security.impl.GeoServerUser.ADMIN_USERNAME;
+import static org.geoserver.security.impl.GeoServerUser.ROOT_USERNAME;
+
 import java.io.Serial;
+import java.text.Normalizer;
 import java.util.logging.Logger;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
@@ -32,8 +36,36 @@ public class GeoServerJwtHeadersFilterConfig extends PreAuthenticatedUserNameFil
 
     protected JwtConfiguration jwtConfiguration = new JwtConfiguration();
 
+    /**
+     * Whether the built-in {@code admin} account may be asserted by the header. Null (configurations written before
+     * this option existed) means allowed.
+     */
+    private Boolean allowAdminLogin;
+
+    /**
+     * Whether roles may be read from a header that is not the validated token while token validation is on. Null
+     * (configurations written before this option existed) means not trusted.
+     */
+    private Boolean trustUnvalidatedRolesHeader;
+
+    /** Whether token content is logged at FINE level, for troubleshooting a setup. Null means off. */
+    private Boolean logSensitiveInformation;
+
+    /**
+     * Defaults for a newly created filter: validate the token and its signature and expiry, only accept explicitly
+     * mapped roles, and do not let the header assert the built-in {@code admin} account.
+     *
+     * <p>Configurations read from the data directory or the REST API do not go through this constructor, so existing
+     * filters keep their stored settings.
+     */
     public GeoServerJwtHeadersFilterConfig() {
         jwtConfiguration = new JwtConfiguration();
+        jwtConfiguration.setUserNameFormatChoice(JwtConfiguration.UserNameHeaderFormat.JWT);
+        jwtConfiguration.setValidateToken(true);
+        jwtConfiguration.setValidateTokenSignature(true);
+        jwtConfiguration.setValidateTokenExpiry(true);
+        jwtConfiguration.setOnlyExternalListedRoles(true);
+        allowAdminLogin = Boolean.FALSE;
     }
 
     public org.geoserver.security.jwtheaders.JwtConfiguration getJwtConfiguration() {
@@ -41,7 +73,103 @@ public class GeoServerJwtHeadersFilterConfig extends PreAuthenticatedUserNameFil
     }
 
     public void setJwtConfiguration(org.geoserver.security.jwtheaders.JwtConfiguration jwtConfiguration) {
-        jwtConfiguration = jwtConfiguration;
+        this.jwtConfiguration = jwtConfiguration;
+    }
+
+    /**
+     * Whether the header may assert the built-in {@code admin} account. Defaults to {@code true} for configurations
+     * written before this option existed, {@code false} for new filters.
+     *
+     * @return never null
+     */
+    public Boolean getAllowAdminLogin() {
+        return allowAdminLogin == null ? Boolean.TRUE : allowAdminLogin;
+    }
+
+    public void setAllowAdminLogin(Boolean allowAdminLogin) {
+        this.allowAdminLogin = allowAdminLogin;
+    }
+
+    /**
+     * Whether roles may be read from a header that is not the validated token while token validation is on. Only safe
+     * when a proxy in front of GeoServer always removes or overwrites that header.
+     *
+     * @return never null
+     */
+    public Boolean getTrustUnvalidatedRolesHeader() {
+        return trustUnvalidatedRolesHeader == null ? Boolean.FALSE : trustUnvalidatedRolesHeader;
+    }
+
+    public void setTrustUnvalidatedRolesHeader(Boolean trustUnvalidatedRolesHeader) {
+        this.trustUnvalidatedRolesHeader = trustUnvalidatedRolesHeader;
+    }
+
+    /**
+     * Whether the decoded token content, the full reason a token is rejected and the claims the user name and roles are
+     * taken from are logged at FINE level. Meant for troubleshooting only, the logs then contain personal data.
+     *
+     * @return never null
+     */
+    public Boolean getLogSensitiveInformation() {
+        return logSensitiveInformation == null ? Boolean.FALSE : logSensitiveInformation;
+    }
+
+    public void setLogSensitiveInformation(Boolean logSensitiveInformation) {
+        this.logSensitiveInformation = logSensitiveInformation;
+    }
+
+    /**
+     * Tells whether a principal taken from the header must be refused because it is a built-in administrator account.
+     *
+     * <p>{@code root} is always refused: it is the emergency account backed by the master password and can never be
+     * represented by an external identity. {@code admin} is refused when {@link #getAllowAdminLogin()} is false.
+     *
+     * @param principal the principal name from the header, may be null
+     * @return true when the principal must not be authenticated by this filter
+     */
+    public boolean isPrincipalBlocked(String principal) {
+        if (principal == null) {
+            return false;
+        }
+        String name = canonicalName(principal);
+        if (ROOT_USERNAME.equalsIgnoreCase(name)) {
+            return true;
+        }
+        return ADMIN_USERNAME.equalsIgnoreCase(name) && !getAllowAdminLogin();
+    }
+
+    /** Compatibility-normalised name without whitespace, control or invisible formatting characters. */
+    private static String canonicalName(String principal) {
+        String normalized = Normalizer.normalize(principal, Normalizer.Form.NFKC);
+        StringBuilder name = new StringBuilder(normalized.length());
+        normalized
+                .codePoints()
+                .filter(cp -> !Character.isWhitespace(cp)
+                        && !Character.isSpaceChar(cp)
+                        && !Character.isISOControl(cp)
+                        && Character.getType(cp) != Character.FORMAT)
+                .forEach(name::appendCodePoint);
+        return name.toString();
+    }
+
+    /** True when the roles header is the user name header (a blank roles header name means the user name header). */
+    public boolean rolesHeaderIsUserNameHeader() {
+        String rolesHeader = jwtConfiguration.getRolesHeaderName();
+        return rolesHeader == null
+                || rolesHeader.isBlank()
+                || rolesHeader.trim().equalsIgnoreCase(jwtConfiguration.getUserNameHeaderAttributeName());
+    }
+
+    /**
+     * True when the token is validated but the role source reads a request header other than the validated token, and
+     * that header is not explicitly trusted. No roles are taken from such a header.
+     */
+    public boolean readsRolesFromUnvalidatedHeader() {
+        if (!jwtConfiguration.isValidateToken() || getTrustUnvalidatedRolesHeader()) return false;
+
+        RoleSource source = getRoleSource();
+        if (JWTHeaderRoleSource.JWT.equals(source)) return !rolesHeaderIsUserNameHeader();
+        return JWTHeaderRoleSource.JSON.equals(source) || JWTHeaderRoleSource.Header.equals(source);
     }
 
     @Override
@@ -273,6 +401,14 @@ public class GeoServerJwtHeadersFilterConfig extends PreAuthenticatedUserNameFil
 
     public void setValidateTokenAudienceClaimValue(String validateTokenAudienceClaimValue) {
         jwtConfiguration.setValidateTokenAudienceClaimValue(validateTokenAudienceClaimValue);
+    }
+
+    public String getValidateTokenIssuer() {
+        return jwtConfiguration.getValidateTokenIssuer();
+    }
+
+    public void setValidateTokenIssuer(String validateTokenIssuer) {
+        jwtConfiguration.setValidateTokenIssuer(validateTokenIssuer);
     }
 
     public String getUserNameHeaderAttributeName() {

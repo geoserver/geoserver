@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Timer;
@@ -143,81 +144,41 @@ public class GeorectifyConfiguration implements ApplicationListener {
                 envVariables = Maps.newHashMap();
                 while (keys.hasNext()) {
                     String key = (String) keys.next();
-                    if (key.equalsIgnoreCase(GRKeys.GDAL_CACHEMAX)) {
-                        // Setting GDAL_CACHE_MAX Environment variable if available
-                        String cacheMax = null;
-                        try {
-                            cacheMax = (String) props.get(GRKeys.GDAL_CACHEMAX);
-                            if (cacheMax != null) {
-                                envVariables.put(GRKeys.GDAL_CACHEMAX, cacheMax);
+                    String value = (String) props.get(key);
+                    switch (key.toUpperCase(Locale.ROOT)) {
+                        case GRKeys.GDAL_CACHEMAX:
+                            if (value != null) {
+                                envVariables.put(GRKeys.GDAL_CACHEMAX, value);
                             }
-                        } catch (NumberFormatException nfe) {
-                            if (LOGGER.isLoggable(Level.WARNING)) {
-                                LOGGER.log(
-                                        Level.WARNING,
-                                        "Unable to parse the specified property as a number: " + cacheMax,
-                                        nfe);
-                            }
-                        }
-                    } else if (key.equalsIgnoreCase(GRKeys.GDAL_DATA)
-                            || key.equalsIgnoreCase(GRKeys.GDAL_LOGGING_DIR)
-                            || key.equalsIgnoreCase(GRKeys.TEMP_DIR)) {
-                        // Parsing specified folder path
-                        String path = (String) props.get(key);
-                        if (path != null) {
-                            final File directory = new File(path);
-                            if (directory.exists()
-                                    && directory.isDirectory()
-                                    && ((key.equalsIgnoreCase(GRKeys.GDAL_DATA) && directory.canRead())
-                                            || directory.canWrite())) {
-                                envVariables.put(key, path);
-                            } else {
-                                if (LOGGER.isLoggable(Level.WARNING)) {
-                                    LOGGER.log(
-                                            Level.WARNING,
-                                            "The specified folder for "
-                                                    + key
-                                                    + " variable isn't valid, "
-                                                    + "or it doesn't exist or it isn't a readable"
-                                                    + " directory or it is a "
-                                                    + "destination folder which can't be written: "
-                                                    + path);
+                            break;
+                        case GRKeys.GDAL_DATA:
+                        case GRKeys.GDAL_LOGGING_DIR:
+                        case GRKeys.TEMP_DIR:
+                            putFolderVariable(key, value);
+                            break;
+                        case GRKeys.EXECUTION_TIMEOUT:
+                            if (value != null) {
+                                try {
+                                    executionTimeout = Long.parseLong(value);
+                                } catch (NumberFormatException nfe) {
+                                    if (LOGGER.isLoggable(Level.WARNING)) {
+                                        LOGGER.log(Level.WARNING, "Unable to parse as a number: " + value, nfe);
+                                    }
                                 }
                             }
-                        }
-                    } else if (key.equalsIgnoreCase(GRKeys.EXECUTION_TIMEOUT)) {
-                        // Parsing execution timeout
-                        String timeout = null;
-                        try {
-                            timeout = (String) props.get(GRKeys.EXECUTION_TIMEOUT);
-                            if (timeout != null) {
-                                executionTimeout = Long.parseLong(timeout); // Only for validation
+                            break;
+                        case GRKeys.GDAL_WARP_PARAMS:
+                            if (value != null) {
+                                gdalWarpingParameters = value.trim();
                             }
-                        } catch (NumberFormatException nfe) {
-                            if (LOGGER.isLoggable(Level.WARNING)) {
-                                LOGGER.log(
-                                        Level.WARNING,
-                                        "Unable to parse the specified property as a number: " + timeout,
-                                        nfe);
+                            break;
+                        case GRKeys.GDAL_TRANSLATE_PARAMS:
+                            if (value != null) {
+                                gdalTranslateParameters = value.trim();
                             }
-                        }
-                    } else if (key.equalsIgnoreCase(GRKeys.GDAL_WARP_PARAMS)
-                            || key.equalsIgnoreCase(GRKeys.GDAL_TRANSLATE_PARAMS)) {
-                        // Parsing gdal operations custom option parameters
-                        String param = (String) props.get(key);
-                        if (param != null) {
-                            if (key.equalsIgnoreCase(GRKeys.GDAL_WARP_PARAMS)) {
-                                gdalWarpingParameters = param.trim();
-                            } else {
-                                gdalTranslateParameters = param.trim();
-                            }
-                        }
-                    } else if (key.endsWith("PATH")) {
-                        // Dealing with properties like LD_LIBRARY_PATH, PATH, ...
-                        String param = (String) props.get(key);
-                        if (param != null) {
-                            envVariables.put(key, param);
-                        }
+                            break;
+                        default:
+                            break;
                     }
                 }
 
@@ -226,6 +187,20 @@ public class GeorectifyConfiguration implements ApplicationListener {
                     LOGGER.log(Level.WARNING, "Unable to parse the config file: " + configFile.path(), e);
                 }
             }
+        }
+    }
+
+    /** Store a folder path as an environment variable, when the folder exists and is accessible. */
+    private void putFolderVariable(String key, String path) {
+        if (path == null) {
+            return;
+        }
+        File directory = new File(path);
+        boolean readable = key.equalsIgnoreCase(GRKeys.GDAL_DATA) && directory.canRead();
+        if (directory.exists() && directory.isDirectory() && (readable || directory.canWrite())) {
+            envVariables.put(key, path);
+        } else if (LOGGER.isLoggable(Level.WARNING)) {
+            LOGGER.warning("Folder for " + key + " is missing, not a directory, or not accessible: " + path);
         }
     }
 

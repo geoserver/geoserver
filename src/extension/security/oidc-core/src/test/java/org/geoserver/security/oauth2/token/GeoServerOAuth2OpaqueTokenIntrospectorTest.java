@@ -5,6 +5,7 @@
 package org.geoserver.security.oauth2.token;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -291,8 +292,32 @@ public class GeoServerOAuth2OpaqueTokenIntrospectorTest {
         assertTrue(scopes.contains("email"));
     }
 
+    /** With the default configuration the provider is authoritative for "admin", so roles are granted. */
     @Test
-    public void testIntrospectWithAdminPrincipalGrantsNoRoles() {
+    public void testIntrospectWithAdminPrincipalGrantsRolesByDefault() {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("active", true);
+        claims.put("sub", "admin");
+        claims.put("preferred_username", "admin");
+
+        when(mockDelegate.introspectToken(anyString())).thenReturn(claims);
+
+        GeoServerOAuth2OpaqueTokenIntrospector introspector =
+                new GeoServerOAuth2OpaqueTokenIntrospector(mockDelegate, mockSecurityManager, config);
+
+        OAuth2AuthenticatedPrincipal principal = introspector.introspect("valid-token");
+
+        assertNotNull(principal);
+        assertEquals("admin", principal.getName());
+        assertFalse(
+                "Admin should receive roles when allowAdminLogin is on",
+                principal.getAuthorities().isEmpty());
+    }
+
+    @Test
+    public void testIntrospectWithAdminPrincipalGrantsNoRolesWhenDisallowed() {
+        config.setAllowAdminLogin(Boolean.FALSE);
+
         Map<String, Object> claims = new HashMap<>();
         claims.put("active", true);
         claims.put("sub", "admin");
@@ -310,8 +335,11 @@ public class GeoServerOAuth2OpaqueTokenIntrospectorTest {
         assertTrue("Admin should have no roles", principal.getAuthorities().isEmpty());
     }
 
+    /** "root" stays unusable even where "admin" is deliberately allowed through. */
     @Test
     public void testIntrospectWithRootPrincipalGrantsNoRoles() {
+        config.setAllowAdminLogin(Boolean.TRUE);
+
         Map<String, Object> claims = new HashMap<>();
         claims.put("active", true);
         claims.put("sub", "root");
@@ -327,6 +355,28 @@ public class GeoServerOAuth2OpaqueTokenIntrospectorTest {
         assertNotNull(principal);
         assertEquals("root", principal.getName());
         assertTrue("Root should have no roles", principal.getAuthorities().isEmpty());
+    }
+
+    /** Turning the option off must not affect anybody else. */
+    @Test
+    public void testIntrospectWithRegularPrincipalUnaffectedWhenAdminDisallowed() {
+        config.setAllowAdminLogin(Boolean.FALSE);
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("active", true);
+        claims.put("sub", "james");
+        claims.put("preferred_username", "james");
+
+        when(mockDelegate.introspectToken(anyString())).thenReturn(claims);
+
+        GeoServerOAuth2OpaqueTokenIntrospector introspector =
+                new GeoServerOAuth2OpaqueTokenIntrospector(mockDelegate, mockSecurityManager, config);
+
+        OAuth2AuthenticatedPrincipal principal = introspector.introspect("valid-token");
+
+        assertNotNull(principal);
+        assertEquals("james", principal.getName());
+        assertFalse("Regular users keep their roles", principal.getAuthorities().isEmpty());
     }
 
     @Test

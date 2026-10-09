@@ -62,19 +62,7 @@ class AttributeTableEnricher {
         List<PAMDataset.PAMRasterBand.FieldDefn> fields =
                 pamRasterBand.getGdalRasterAttributeTable().getFieldDefn();
         for (PAMDataset.PAMRasterBand.FieldDefn field : fields) {
-            Class type = String.class;
-            switch (field.getType()) {
-                case Integer:
-                    type = Long.class;
-                    break;
-                case Real:
-                    type = Double.class;
-                    break;
-                default:
-                    break;
-            }
-
-            builder.add(field.getName(), type);
+            builder.add(field.getName(), RasterAttributeTableTypes.getBinding(field.getType()));
         }
     }
 
@@ -106,16 +94,7 @@ class AttributeTableEnricher {
                 List<String> fields = row.getF();
                 List<PAMDataset.PAMRasterBand.FieldDefn> defs = rat.getFieldDefn();
                 for (int i = 0; i < fields.size(); i++) {
-                    switch (defs.get(i).getType()) {
-                        case Integer:
-                            values.add(Long.parseLong(fields.get(i)));
-                            break;
-                        case Real:
-                            values.add(Double.parseDouble(fields.get(i)));
-                            break;
-                        default:
-                            values.add(fields.get(i));
-                    }
+                    values.add(RasterAttributeTableTypes.toValue(defs.get(i).getType(), fields.get(i)));
                 }
                 // done, no need to continue
                 return;

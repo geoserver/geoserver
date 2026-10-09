@@ -16,6 +16,10 @@
   <packaging>jar</packaging>
   <name>GeoServer PMTiles store Extension</name>
 
+  <properties>
+    <tileverse-geoserver.version>3.1-SNAPSHOT</tileverse-geoserver.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.geotools</groupId>
@@ -44,6 +48,12 @@
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <!-- the tileverse-storage aware store edit panels: provider selector, per-backend parameters, widgets -->
+      <groupId>io.tileverse.geoserver</groupId>
+      <artifactId>tileverse-geoserver-storage-web</artifactId>
+      <version>${tileverse-geoserver.version}</version>
     </dependency>
     <dependency>
       <groupId>org.wicketstuff</groupId>
@@ -80,6 +90,20 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <repositories>
+    <repository>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <id>central-portal-snapshots</id>
+      <name>Central Portal Snapshots</name>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+    </repository>
+  </repositories>
 
   <build>
     <testResources>

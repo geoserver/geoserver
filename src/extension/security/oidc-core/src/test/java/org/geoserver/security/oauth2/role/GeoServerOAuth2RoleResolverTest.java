@@ -26,9 +26,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import org.geoserver.security.GeoServerRoleConverter;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
 import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.filter.GeoServerRoleResolvers.DefaultResolverContext;
 import org.geoserver.security.filter.GeoServerRoleResolvers.ResolverParam;
@@ -90,21 +93,110 @@ public class GeoServerOAuth2RoleResolverTest {
     }
 
     /**
-     * Verifies that users named "admin" or "root" at identity provider do not receive any roles to prevent from
-     * accidental local admin access.
+     * Verifies that a user named "root" at the identity provider never receives roles, whatever the administrator
+     * setting is: "root" is backed by the master password and can have no external identity.
      */
     @Test
-    public void testGetRolesIsEmptyForGsLocalAdmins() {
-        for (String lName : new String[] {"admin", "root"}) {
+    public void testGetRolesIsEmptyForRootWhateverTheAdminSetting() {
+        for (Boolean lAllowAdmin : new Boolean[] {null, Boolean.TRUE, Boolean.FALSE}) {
             // given
-            OAuth2ResolverParam lParam = new OAuth2ResolverParam(lName, mockRequest, context, userRequest);
+            config.setAllowAdminLogin(lAllowAdmin);
+            OAuth2ResolverParam lParam = new OAuth2ResolverParam("root", mockRequest, context, userRequest);
 
             // when
             Collection<GeoServerRole> lRoles = sut.convert(lParam);
 
             // then
-            assertTrue("Expecting no roles for " + lName, lRoles.isEmpty());
+            assertTrue("Expecting no roles for root, allowAdminLogin=" + lAllowAdmin, lRoles.isEmpty());
         }
+    }
+
+    /**
+     * Verifies that a user named "admin" at the identity provider is refused roles once the administrator account is
+     * declared local only.
+     */
+    @Test
+    public void testGetRolesIsEmptyForAdminWhenAdminLoginDisallowed() {
+        // given
+        config.setAllowAdminLogin(Boolean.FALSE);
+        OAuth2ResolverParam lParam = new OAuth2ResolverParam("admin", mockRequest, context, userRequest);
+
+        // when
+        Collection<GeoServerRole> lRoles = sut.convert(lParam);
+
+        // then
+        assertTrue("Expecting no roles for admin", lRoles.isEmpty());
+    }
+
+    /**
+     * Verifies that by default a user named "admin" at the identity provider is treated like any other user. This is
+     * the case of a platform provisioning its own administrator account and expecting GeoServer to honour it.
+     */
+    @Test
+    public void testGetRolesForAdminByDefault() {
+        // given
+        OAuth2ResolverParam lParam = new OAuth2ResolverParam("admin", mockRequest, context, userRequest);
+
+        // when
+        Collection<GeoServerRole> lRoles = sut.convert(lParam);
+
+        // then
+        assertThat(lRoles, containsInAnyOrder(equalTo(ROLE_NAME_AUTHENTICATED)));
+    }
+
+    /**
+     * Pins the consequence of allowing the administrator account through when roles are resolved by looking the
+     * principal name up locally, rather than from the token: the identity provider's "admin" inherits the roles of the
+     * local "admin", without having asserted any role itself. That is the reason the option exists, and the reason the
+     * documentation tells operators using a name-based role source to turn it off.
+     */
+    @Test
+    public void testAdminInheritsLocalRolesFromRoleServiceWhenAllowed() throws Exception {
+        // given: roles come from the local role service, which grants ROLE_ADMINISTRATOR to "admin"
+        SortedSet<GeoServerRole> localRoles = new TreeSet<>();
+        localRoles.add(new GeoServerRole("ROLE_ADMINISTRATOR"));
+        when(mockSecurityManager.loadRoleService("default")).thenReturn(mockRoleService);
+        when(mockRoleService.getRolesForUser("admin")).thenReturn(localRoles);
+        context = newResolverContext(PreAuthenticatedUserNameRoleSource.RoleService);
+
+        OAuth2ResolverParam lParam = new OAuth2ResolverParam("admin", mockRequest, context, userRequest);
+
+        // when
+        Collection<GeoServerRole> lRoles = sut.convert(lParam);
+
+        // then: the local administrator's role arrives, on top of the usual authenticated marker
+        assertThat(lRoles, containsInAnyOrder(equalTo("ROLE_ADMINISTRATOR"), equalTo(ROLE_NAME_AUTHENTICATED)));
+    }
+
+    /** ... and that turning the option off closes exactly that path. */
+    @Test
+    public void testAdminInheritsNothingFromRoleServiceWhenDisallowed() throws Exception {
+        SortedSet<GeoServerRole> localRoles = new TreeSet<>();
+        localRoles.add(new GeoServerRole("ROLE_ADMINISTRATOR"));
+        when(mockSecurityManager.loadRoleService("default")).thenReturn(mockRoleService);
+        when(mockRoleService.getRolesForUser("admin")).thenReturn(localRoles);
+        context = newResolverContext(PreAuthenticatedUserNameRoleSource.RoleService);
+        config.setAllowAdminLogin(Boolean.FALSE);
+
+        OAuth2ResolverParam lParam = new OAuth2ResolverParam("admin", mockRequest, context, userRequest);
+
+        Collection<GeoServerRole> lRoles = sut.convert(lParam);
+
+        assertTrue("Expecting no roles for admin", lRoles.isEmpty());
+    }
+
+    /** Verifies that disallowing the administrator account leaves every other user alone. */
+    @Test
+    public void testGetRolesForRegularUserWhenAdminLoginDisallowed() {
+        // given
+        config.setAllowAdminLogin(Boolean.FALSE);
+        OAuth2ResolverParam lParam = new OAuth2ResolverParam(PRINCIPAL_NAME, mockRequest, context, userRequest);
+
+        // when
+        Collection<GeoServerRole> lRoles = sut.convert(lParam);
+
+        // then
+        assertThat(lRoles, containsInAnyOrder(equalTo(ROLE_NAME_AUTHENTICATED)));
     }
 
     /** Verifies that extracting roles from access token works as expected when claim is missing */

@@ -17,10 +17,12 @@ import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.NoSuchAuthorityCodeException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.GeographicCRS;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
+import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.Geometry;
@@ -114,16 +116,67 @@ public class APIBBoxParser {
         return parse(value, parseCRS(crs));
     }
 
-    private static CoordinateReferenceSystem parseCRS(String crs) throws FactoryException {
+    /**
+     * Decodes an OGC API CRS identifier: the SafeCURIE {@code [authority:code]} and URN/URI forms keep the authority
+     * axis order, a bare {@code authority:code} keeps the GeoServer longitude/latitude default. Returns null on null.
+     */
+    public static CoordinateReferenceSystem parseCRS(String crs) throws FactoryException {
+        if (crs == null) {
+            return null;
+        }
         try {
-            return crs != null ? CRS.decode(crs, true) : null;
+            // the global forceXY hint would flatten a plain decode back to XY even with longitudeFirst=false, so map
+            // the CURIE to the URN form, which honors the authority axis order regardless of that hint
+            if (crs.startsWith("[") && crs.endsWith("]")) {
+                return CRS.decode(toUrn(crs.substring(1, crs.length() - 1).trim()), false);
+            }
+            return CRS.decode(crs, true);
         } catch (NoSuchAuthorityCodeException e) {
             throw new APIException(INVALID_PARAMETER_VALUE, "Invalid CRS: " + crs, HttpStatus.BAD_REQUEST);
         }
     }
 
+    /** The bbox ordinates in longitude/latitude order, with the CRS swapped to its XY twin when needed. */
+    private record Ordinates(
+            int countco,
+            double minx,
+            double miny,
+            double minz,
+            double maxx,
+            double maxy,
+            double maxz,
+            CoordinateReferenceSystem crs) {}
+
     /** Parses a BBOX with the given CRS, if null {@link DefaultGeographicCRS#WGS84} will be used */
     public static ReferencedEnvelope[] parse(String value, CoordinateReferenceSystem crs) throws FactoryException {
+        Ordinates o = parseOrdinates(value, crs);
+        if (o == null) return null;
+        return buildEnvelopes(o.countco, o.minx, o.miny, o.minz, o.maxx, o.maxy, o.maxz, o.crs);
+    }
+
+    /**
+     * Parses a BBOX as one continuous envelope, for callers drawing on a single canvas. Longitudes are kept as written,
+     * so a box crossing the antimeridian comes out as a range beyond 180 (170,-170 becomes 170..190) rather than the
+     * two boxes {@link #parse(String, CoordinateReferenceSystem)} splits it into, and -185..185 stays the whole world
+     * with its edges repeated.
+     */
+    public static ReferencedEnvelope parseContinuous(String value, CoordinateReferenceSystem crs)
+            throws FactoryException {
+        Ordinates o = parseOrdinates(value, crs);
+        if (o == null) return null;
+        CoordinateReferenceSystem target = o.crs != null ? o.crs : defaultCRS(o.countco);
+        double maxx = o.maxx;
+        // in degrees a high longitude below the low one crosses the antimeridian; a projected box in that order is
+        // an error, and buildSingleEnvelope rejects it
+        if (maxx < o.minx && target instanceof GeographicCRS) maxx += 360;
+        return buildSingleEnvelope(o.countco, o.minx, o.miny, o.minz, maxx, o.maxy, o.maxz, target);
+    }
+
+    private static CoordinateReferenceSystem defaultCRS(int countco) {
+        return countco == 6 ? DefaultGeographicCRS.WGS84_3D : DefaultGeographicCRS.WGS84;
+    }
+
+    private static Ordinates parseOrdinates(String value, CoordinateReferenceSystem crs) throws FactoryException {
         if (value == null || value.trim().isEmpty()) {
             return null;
         }
@@ -152,6 +205,14 @@ public class APIBBoxParser {
             }
         }
 
+        // the rest of the code, and every downstream consumer, works in longitude/latitude (XY) order: when the CRS
+        // is expressed in authority latitude/longitude order, swap the horizontal ordinates and the CRS to its XY twin
+        if (crs != null && CRS.getAxisOrder(crs) == CRS.AxisOrder.NORTH_EAST) {
+            swap(bbox, 0, 1);
+            swap(bbox, countco == 6 ? 3 : 2, countco == 6 ? 4 : 3);
+            crs = toLonLat(crs);
+        }
+
         // ensure the values are sane
         double minx = bbox[0];
         double miny = bbox[1];
@@ -166,7 +227,7 @@ public class APIBBoxParser {
             maxy = bbox[3];
         }
 
-        return buildEnvelopes(countco, minx, miny, minz, maxx, maxy, maxz, crs);
+        return new Ordinates(countco, minx, miny, minz, maxx, maxy, maxz, crs);
     }
 
     private static ReferencedEnvelope[] buildEnvelopes(
@@ -179,13 +240,7 @@ public class APIBBoxParser {
             double maxz,
             CoordinateReferenceSystem crs)
             throws NoSuchAuthorityCodeException, FactoryException {
-        if (crs == null) {
-            if (countco == 4) {
-                crs = DefaultGeographicCRS.WGS84;
-            } else if (countco == 6) {
-                crs = DefaultGeographicCRS.WGS84_3D;
-            }
-        }
+        if (crs == null) crs = defaultCRS(countco);
 
         if (CRS.equalsIgnoreMetadata(crs, DefaultGeographicCRS.WGS84)
                 || CRS.equalsIgnoreMetadata(crs, DefaultGeographicCRS.WGS84_3D)) {
@@ -236,6 +291,29 @@ public class APIBBoxParser {
                 throw new InvalidParameterValueException("Unexpected BBOX, can only handle 2D or 3D ones");
             }
         }
+    }
+
+    /** Maps a {@code authority:code} CURIE body to the equivalent OGC URN, leaving anything else untouched. */
+    private static String toUrn(String curie) {
+        int colon = curie.indexOf(':');
+        if (colon < 0 || curie.indexOf(':', colon + 1) >= 0) {
+            return curie; // not a simple authority:code, let the decoder try as-is
+        }
+        return SrsSyntax.OGC_URN.getSRS(curie);
+    }
+
+    private static void swap(double[] values, int i, int j) {
+        double tmp = values[i];
+        values[i] = values[j];
+        values[j] = tmp;
+    }
+
+    /**
+     * Returns the longitude/latitude (forceXY) twin of an authority-ordered CRS, or the input if it has no EPSG code.
+     */
+    public static CoordinateReferenceSystem toLonLat(CoordinateReferenceSystem crs) throws FactoryException {
+        Integer code = CRS.lookupEpsgCode(crs, false);
+        return code != null ? CRS.decode("EPSG:" + code, true) : crs;
     }
 
     private static double rollLongitude(final double x) {

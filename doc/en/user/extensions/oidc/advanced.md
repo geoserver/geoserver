@@ -93,6 +93,8 @@ When enabled, the same OAuth2 / OpenID Connect login filter also accepts machine
 
 Disable this option if you only want browser-based login, and you do not want this filter chain to accept bearer tokens.
 
+Bearer tokens go through the same rule for the built-in `admin` and `root` accounts as an interactive login does --- see [Built-in administrator accounts](configuring.md#oidc_admin_accounts).
+
 ## Opaque Token Support (JWE)
 
 ![](images/opaque_token.png)
@@ -104,6 +106,8 @@ When enabled, the same OAuth2 / OpenID Connect login filter will perform the tok
 An opaque token is just an identifier. GeoServer can't validate or extract claims from it locally (there's nothing to decode like a JWT). So the only way to "understand" it is to ask the Authorization Server.
 
 So the token is validated remotely, and any "claims" GeoServer sees come from the introspection JSON.
+
+The principal that comes back from introspection is subject to the same rule for the built-in `admin` and `root` accounts --- see [Built-in administrator accounts](configuring.md#oidc_admin_accounts).
 
 ## Proof Key of Code Exchange (PKCE)
 
@@ -149,6 +153,8 @@ Optional: It is no longer required to use the `User Info URI` - if you leave tha
 ## Disable token signature validation
 
 This option (**Disable token signature validation**, field `disableSignatureValidation`) is **unchecked by default**, so GeoServer validates the token signature out of the box --- the secure default. Check it only to **disable** signature validation (for example against a development IDP whose keys you do not want to verify); leave it unchecked in production.
+
+The option belongs to the custom **OpenID Connect** provider and applies to it alone, which is why the checkbox only appears when that provider is selected. Tokens from Google, GitHub and Microsoft are always signature-verified regardless of this setting: their key sets are fixed and publicly documented, so there is no case for skipping verification, and for Microsoft it would defeat any confinement based on the token's issuer, which only means something on a signature that was actually checked.
 
 !!! note
     This replaces the legacy `enforceTokenValidation` flag, whose polarity was the opposite (it defaulted to `true` and was checked to *enforce* validation). The new `disableSignatureValidation` flag is inverted: the unchecked default already enforces validation. See [Migrating from the legacy OAuth2/OIDC plugins](migrating.md#geoserver-field-renames).

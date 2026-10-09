@@ -259,7 +259,7 @@ Although it is not required, we may still specify targetAttributeNode for the ro
 ```xml
 <AttributeMapping>
       <targetAttribute>om:result</targetAttribute>
-      <targetAttributeNode>gsml:MappedFeatureType<targetAttributeNode>
+      <targetAttributeNode>gsml:MappedFeatureType</targetAttributeNode>
 </AttributeMapping> 
 <AttributeMapping>
       <targetAttribute>om:result/gsml:MappedFeature/gml:name</targetAttribute>

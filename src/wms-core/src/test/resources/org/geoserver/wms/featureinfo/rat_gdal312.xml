@@ -1,0 +1,87 @@
+<PAMDataset>
+  <PAMRasterBand band="1">
+    <Description>QualityOfBathymetryCoverage</Description>
+    <GDALRasterAttributeTable tableType="thematic">
+      <FieldDefn index="0">
+        <Name>id</Name>
+        <Type typeAsString="Integer">0</Type>
+        <Usage usageAsString="MinMax">5</Usage>
+      </FieldDefn>
+      <FieldDefn index="1">
+        <Name>dataAssessment</Name>
+        <Type typeAsString="Integer">0</Type>
+        <Usage usageAsString="Generic">0</Usage>
+      </FieldDefn>
+      <FieldDefn index="2">
+        <Name>fullSeafloorCoverageAchieved</Name>
+        <Type typeAsString="Boolean">3</Type>
+        <Usage usageAsString="Generic">0</Usage>
+      </FieldDefn>
+      <FieldDefn index="3">
+        <Name>surveyDateRange.dateStart</Name>
+        <Type typeAsString="DateTime">4</Type>
+        <Usage usageAsString="Generic">0</Usage>
+      </FieldDefn>
+      <FieldDefn index="4">
+        <Name>surveyDateRange.dateEnd</Name>
+        <Type typeAsString="DateTime">4</Type>
+        <Usage usageAsString="Generic">0</Usage>
+      </FieldDefn>
+      <FieldDefn index="5">
+        <Name>surveyAuthority</Name>
+        <Type typeAsString="String">2</Type>
+        <Usage usageAsString="Generic">0</Usage>
+      </FieldDefn>
+      <FieldDefn index="6">
+        <Name>depthRange.minimumDepth</Name>
+        <Type typeAsString="Real">1</Type>
+        <Usage usageAsString="Generic">0</Usage>
+      </FieldDefn>
+      <FieldDefn index="7">
+        <Name>footprint</Name>
+        <Type typeAsString="WKBGeometry">5</Type>
+        <Usage usageAsString="Generic">0</Usage>
+      </FieldDefn>
+      <Row index="0">
+        <F>54602</F>
+        <F>1</F>
+        <F>true</F>
+        <F>2024-03-01T00:00:00.000+00:00</F>
+        <F>2024-03-14T23:59:59.000+00:00</F>
+        <F>NOAA</F>
+        <F>4.75</F>
+        <F>POLYGON ((0 0,1 0,1 1,0 1,0 0))</F>
+      </Row>
+      <Row index="1">
+        <F>54603</F>
+        <F>2</F>
+        <F>false</F>
+        <F>2024-02-29T23:00:00.000-05:00</F>
+        <F>2024-03-16T06:00:00.000-05:00</F>
+        <F>NOAA</F>
+        <F>12.5</F>
+        <F>POLYGON ((1 0,2 0,2 1,1 1,1 0))</F>
+      </Row>
+      <Row index="2">
+        <F>61001</F>
+        <F>3</F>
+        <F>true</F>
+        <F>2025-01-02T23:59:59.000+01:15</F>
+        <F>2025-01-09T12:00:00.000+01:15</F>
+        <F>USACE</F>
+        <F>31</F>
+        <F>POINT (2 3)</F>
+      </Row>
+      <Row index="3">
+        <F>61004</F>
+        <F>0</F>
+        <F>false</F>
+        <F />
+        <F />
+        <F />
+        <F>0</F>
+        <F />
+      </Row>
+    </GDALRasterAttributeTable>
+  </PAMRasterBand>
+</PAMDataset>

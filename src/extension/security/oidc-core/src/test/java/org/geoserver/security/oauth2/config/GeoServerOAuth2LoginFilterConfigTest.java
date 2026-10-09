@@ -11,7 +11,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.config.util.XStreamPersisterFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +31,12 @@ import org.junit.Test;
  * </ul>
  */
 public class GeoServerOAuth2LoginFilterConfigTest {
+
+    private static final String CONFIG_XML_HEADER =
+            "<org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig>\n" + "  <name>oidc</name>\n";
+
+    private static final String CONFIG_XML_FOOTER =
+            "</org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig>\n";
 
     @Before
     public void setup() {
@@ -392,5 +402,115 @@ public class GeoServerOAuth2LoginFilterConfigTest {
         assertEquals(
                 "https://geoserver-dev.corp.example.com/geoserver/web/login/oauth2/code/oidc",
                 config.getOidcRedirectUri());
+    }
+
+    // -- allowAdminLogin ----------------------------------------------------
+
+    /** A config that was never told otherwise allows the provider to assert "admin". */
+    @Test
+    public void testAllowAdminLogin_defaultsToTrue() {
+        GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
+
+        assertEquals(Boolean.TRUE, config.getAllowAdminLogin());
+    }
+
+    /** An explicit false is honoured, and so is an explicit true. */
+    @Test
+    public void testAllowAdminLogin_explicitValuesHonoured() {
+        GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
+
+        config.setAllowAdminLogin(Boolean.FALSE);
+        assertEquals(Boolean.FALSE, config.getAllowAdminLogin());
+
+        config.setAllowAdminLogin(Boolean.TRUE);
+        assertEquals(Boolean.TRUE, config.getAllowAdminLogin());
+    }
+
+    /** Clearing the value returns to the default rather than to false. */
+    @Test
+    public void testAllowAdminLogin_nullFallsBackToTrue() {
+        GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
+        config.setAllowAdminLogin(Boolean.FALSE);
+
+        config.setAllowAdminLogin(null);
+
+        assertEquals(Boolean.TRUE, config.getAllowAdminLogin());
+    }
+
+    /** "root" is never assertable by a provider, whatever allowAdminLogin says. */
+    @Test
+    public void testIsPrincipalBlocked_rootAlwaysBlocked() {
+        GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
+
+        assertTrue(config.isPrincipalBlocked("root"));
+        assertTrue(config.isPrincipalBlocked("ROOT"));
+
+        config.setAllowAdminLogin(Boolean.TRUE);
+        assertTrue(config.isPrincipalBlocked("root"));
+
+        config.setAllowAdminLogin(Boolean.FALSE);
+        assertTrue(config.isPrincipalBlocked("root"));
+    }
+
+    /** "admin" is blocked only when the option is off, and the comparison ignores case. */
+    @Test
+    public void testIsPrincipalBlocked_adminFollowsTheFlag() {
+        GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
+
+        assertFalse(config.isPrincipalBlocked("admin"));
+        assertFalse(config.isPrincipalBlocked("Admin"));
+
+        config.setAllowAdminLogin(Boolean.FALSE);
+        assertTrue(config.isPrincipalBlocked("admin"));
+        assertTrue(config.isPrincipalBlocked("ADMIN"));
+    }
+
+    /** Ordinary principals are never blocked, and a missing principal is not a built-in account. */
+    @Test
+    public void testIsPrincipalBlocked_regularPrincipalsUnaffected() {
+        GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
+        config.setAllowAdminLogin(Boolean.FALSE);
+
+        assertFalse(config.isPrincipalBlocked("james"));
+        assertFalse(config.isPrincipalBlocked("administrator"));
+        assertFalse(config.isPrincipalBlocked("rooted"));
+        assertFalse(config.isPrincipalBlocked(null));
+    }
+
+    /**
+     * A config.xml written before this option existed has no allowAdminLogin element. Security configurations are
+     * deserialized through an Unsafe-based reflection provider, so neither the constructor nor the field initializers
+     * run: the value has to come from the getter, not from a field default. This is the upgrade path, so it is worth
+     * asserting against the real persister rather than a hand-built object.
+     */
+    @Test
+    public void testAllowAdminLogin_absentFromXmlDeserializesToTrue() throws Exception {
+        String xml = CONFIG_XML_HEADER + "  <oidcEnabled>true</oidcEnabled>\n" + CONFIG_XML_FOOTER;
+
+        GeoServerOAuth2LoginFilterConfig config = load(xml);
+
+        assertEquals("oidc", config.getName());
+        assertEquals(Boolean.TRUE, config.getAllowAdminLogin());
+    }
+
+    /** An explicitly disabled option is read back as disabled. */
+    @Test
+    public void testAllowAdminLogin_falseInXmlDeserializesToFalse() throws Exception {
+        String xml = CONFIG_XML_HEADER
+                + "  <oidcEnabled>true</oidcEnabled>\n"
+                + "  <allowAdminLogin>false</allowAdminLogin>\n"
+                + CONFIG_XML_FOOTER;
+
+        GeoServerOAuth2LoginFilterConfig config = load(xml);
+
+        assertEquals(Boolean.FALSE, config.getAllowAdminLogin());
+        assertTrue(config.isPrincipalBlocked("admin"));
+    }
+
+    private GeoServerOAuth2LoginFilterConfig load(String xml) throws Exception {
+        XStreamPersister persister = new XStreamPersisterFactory().createXMLPersister();
+        try (ByteArrayInputStream in = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))) {
+            return persister.load(in, GeoServerOAuth2LoginFilterConfig.class);
+        }
     }
 }

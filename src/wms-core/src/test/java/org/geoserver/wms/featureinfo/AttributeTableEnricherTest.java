@@ -11,7 +11,9 @@ import it.geosolutions.imageio.pam.PAMDataset;
 import it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand;
 import it.geosolutions.imageio.pam.PAMParser;
 import java.io.File;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -107,5 +109,65 @@ public class AttributeTableEnricherTest {
         for (int i = 0; i < 8; i++) {
             assertNull(values.get(i));
         }
+    }
+
+    @Test
+    public void testGdal312Types() throws Exception {
+        PAMParser parser = new PAMParser();
+        PAMDataset pam = parser.parsePAM(new File(ROOT, "rat_gdal312.xml"));
+        PAMRasterBand band = pam.getPAMRasterBand().get(0);
+
+        AttributeTableEnricher enricher = new AttributeTableEnricher(band);
+        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+        tb.setName("test");
+        tb.add("gray", Integer.class);
+        enricher.addAttributes(tb);
+        SimpleFeatureType schema = tb.buildFeatureType();
+        assertEquals(9, schema.getAttributeCount());
+        assertEquals(Long.class, schema.getDescriptor("id").getType().getBinding());
+        assertEquals(
+                Long.class, schema.getDescriptor("dataAssessment").getType().getBinding());
+        assertEquals(
+                Boolean.class,
+                schema.getDescriptor("fullSeafloorCoverageAchieved").getType().getBinding());
+        assertEquals(
+                Date.class,
+                schema.getDescriptor("surveyDateRange.dateStart").getType().getBinding());
+        assertEquals(
+                Date.class,
+                schema.getDescriptor("surveyDateRange.dateEnd").getType().getBinding());
+        assertEquals(
+                String.class, schema.getDescriptor("surveyAuthority").getType().getBinding());
+        assertEquals(
+                Double.class,
+                schema.getDescriptor("depthRange.minimumDepth").getType().getBinding());
+        // a geometry stays text, a geometry attribute would become the default geometry
+        assertEquals(String.class, schema.getDescriptor("footprint").getType().getBinding());
+
+        // the row whose dates carry a -05:00 offset, so the instant is not what the text reads
+        List<Object> values = new ArrayList<>();
+        enricher.addRowValues(values, new double[] {54603});
+        assertEquals(8, values.size());
+        assertEquals(54603l, values.get(0));
+        assertEquals(2l, values.get(1));
+        assertEquals(Boolean.FALSE, values.get(2));
+        assertEquals(Date.from(Instant.parse("2024-03-01T04:00:00Z")), values.get(3));
+        assertEquals(Date.from(Instant.parse("2024-03-16T11:00:00Z")), values.get(4));
+        assertEquals("NOAA", values.get(5));
+        assertEquals(12.5d, (Double) values.get(6), EPS);
+        assertEquals("POLYGON ((1 0,2 0,2 1,1 1,1 0))", values.get(7));
+
+        // the row where only the survey id is set: GDAL writes zeros and empty elements
+        values = new ArrayList<>();
+        enricher.addRowValues(values, new double[] {61004});
+        assertEquals(8, values.size());
+        assertEquals(61004l, values.get(0));
+        assertEquals(0l, values.get(1));
+        assertEquals(Boolean.FALSE, values.get(2));
+        assertNull(values.get(3));
+        assertNull(values.get(4));
+        assertEquals("", values.get(5));
+        assertEquals(0d, (Double) values.get(6), EPS);
+        assertEquals("", values.get(7));
     }
 }

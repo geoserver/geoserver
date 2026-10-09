@@ -23,6 +23,7 @@ import org.geoserver.rat.RasterAttributeTableTest;
 import org.geoserver.rat.web.RasterAttributeTableConfigTest;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.geotools.api.style.ColorMap;
+import org.geotools.api.style.ColorMapEntry;
 import org.geotools.api.style.RasterSymbolizer;
 import org.geotools.api.style.Style;
 import org.hamcrest.Matchers;
@@ -34,11 +35,12 @@ import org.w3c.dom.Document;
 public class PAMControllerTest extends CatalogRESTTestSupport {
 
     QName RAT = new QName(MockTestData.CITE_URI, "rat", MockTestData.CITE_PREFIX);
+    QName GDAL312 = new QName(MockTestData.CITE_URI, "gdal312", MockTestData.CITE_PREFIX);
 
     @Before
     public void cleanupStyles() throws Exception {
         CascadeDeleteVisitor deleter = new CascadeDeleteVisitor(getCatalog());
-        String[] styles = {"test123", "rat_b0_test"};
+        String[] styles = {"test123", "rat_b0_test", "gdal312_dates"};
         for (String name : styles) {
             StyleInfo style = getCatalog().getStyleByName(name);
             if (style != null) {
@@ -59,12 +61,17 @@ public class PAMControllerTest extends CatalogRESTTestSupport {
 
         Class<RasterAttributeTableConfigTest> clazz = RasterAttributeTableConfigTest.class;
         testData.addRasterLayer(RAT, "rat.tiff", "tiff", null, clazz, getCatalog());
-        GeoServerDataDirectory dd = getDataDirectory();
-        Resource aux = dd.get("rat", "rat.tiff.aux.xml");
-        try (InputStream is = clazz.getResourceAsStream("rat.tiff.aux.xml");
+        copySidecar("rat", "rat.tiff.aux.xml");
+        testData.addRasterLayer(GDAL312, "gdal312.tiff", "tiff", null, clazz, getCatalog());
+        copySidecar("gdal312", "gdal312.tiff.aux.xml");
+    }
+
+    /** Copies a sidecar next to the coverage, the readers pick it up from there. */
+    private void copySidecar(String store, String name) throws Exception {
+        Resource aux = getDataDirectory().get(store, name);
+        try (InputStream is = RasterAttributeTableConfigTest.class.getResourceAsStream(name);
                 OutputStream os = aux.out()) {
             IOUtils.copy(is, os);
-            os.close();
         }
     }
 
@@ -183,5 +190,54 @@ public class PAMControllerTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response = postAsServletResponse(command, "", null);
         assertEquals(400, response.getStatus());
         assertEquals(message, response.getErrorMessage());
+    }
+
+    @Test
+    public void testGetGdal312PAMDataset() throws Exception {
+        Document doc = getAsDOM("rest/workspaces/cite/coveragestores/gdal312/coverages/gdal312/pam.xml");
+        String rat = "/PAMDataset/PAMRasterBand/GDALRasterAttributeTable";
+        assertXpathEvaluatesTo("thematic", rat + "/@tableType", doc);
+        assertXpathEvaluatesTo("8", "count(" + rat + "/FieldDefn)", doc);
+        // the three field types GDAL 3.12 added, kept across the round trip
+        assertXpathEvaluatesTo("3", rat + "/FieldDefn[@index=2]/Type", doc);
+        assertXpathEvaluatesTo("4", rat + "/FieldDefn[@index=3]/Type", doc);
+        assertXpathEvaluatesTo("5", rat + "/FieldDefn[@index=7]/Type", doc);
+        assertXpathEvaluatesTo("4", "count(" + rat + "/Row)", doc);
+        assertXpathEvaluatesTo("true", rat + "/Row[@index=0]/F[3]", doc);
+        assertXpathEvaluatesTo("2024-03-01T00:00:00.000+00:00", rat + "/Row[@index=0]/F[4]", doc);
+        assertXpathEvaluatesTo("POLYGON ((0 0,1 0,1 1,0 1,0 0))", rat + "/Row[@index=0]/F[8]", doc);
+        // the row where only the survey id is set
+        assertXpathEvaluatesTo("", rat + "/Row[@index=3]/F[4]", doc);
+    }
+
+    @Test
+    public void testCreateGdal312DateStyle() throws Exception {
+        String createCommand = "rest/workspaces/cite/coveragestores/gdal312/coverages/gdal312/pam"
+                + "?band=0&styleName=gdal312_dates&classification=surveyDateRange.dateStart";
+        MockHttpServletResponse response = postAsServletResponse(createCommand, "", null);
+        assertEquals(201, response.getStatus());
+
+        StyleInfo si = getCatalog().getStyleByName("cite:gdal312_dates");
+        assertNotNull(si);
+        RasterSymbolizer rs = (RasterSymbolizer) si.getStyle()
+                .featureTypeStyles()
+                .get(0)
+                .rules()
+                .get(0)
+                .symbolizers()
+                .get(0);
+        ColorMap cm = rs.getColorMap();
+        assertEquals(ColorMap.TYPE_VALUES, cm.getType());
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(4, entries.length);
+        RasterAttributeTableTest.assertColorMapEntry(entries[0], "2024-03-01T00:00:00.000+00:00", 54602, "#57208E", 1);
+        RasterAttributeTableTest.assertColorMapEntry(entries[3], "", 61004, "#8DCD4E", 1);
+    }
+
+    @Test
+    public void testGeometryNotAClassification() throws Exception {
+        testErrorMessage(
+                "rest/workspaces/cite/coveragestores/gdal312/coverages/gdal312/pam?band=0&classification=footprint",
+                "Raster attribute table found, but has no classification field named: 'footprint'");
     }
 }

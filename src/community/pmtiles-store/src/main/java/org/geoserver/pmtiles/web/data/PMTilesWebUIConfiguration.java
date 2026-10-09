@@ -4,12 +4,7 @@
  */
 package org.geoserver.pmtiles.web.data;
 
-import java.util.List;
-import org.apache.wicket.markup.html.WebPage;
-import org.geoserver.web.HeaderContribution;
 import org.geoserver.web.data.resource.DataStorePanelInfo;
-import org.geoserver.web.data.store.DataAccessEditPage;
-import org.geoserver.web.data.store.DataAccessNewPage;
 import org.geoserver.web.data.store.StoreEditPanel;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,9 +17,6 @@ import org.springframework.context.annotation.Configuration;
  * <ul>
  *   <li>{@link DataStorePanelInfo} {@code pmtilesDataStorePanel}: data store edit panel metadata for
  *       {@link PMTilesDataStoreEditPanel}
- *   <li>{@link HeaderContribution} {@code ratioGroupParamPanelCssContribution}:
- *   CSS contribution ({@code RadioGroupParamPanel.css) to use radio buttons
- *       as toggle buttons for {@link RadioGroupParamPanel} on {@link PMTilesDataStoreEditPanel}
  * </ul>
  *
  * @see PMTilesPluginConfiguration
@@ -44,27 +36,5 @@ public class PMTilesWebUIConfiguration {
         panelInfo.setIconBase(org.geoserver.pmtiles.web.data.PMTilesDataStoreEditPanel.class);
         panelInfo.setIcon("img/protomaps_icon.svg");
         return panelInfo;
-    }
-
-    /** Contributes {@code RadioGroupParamPanel.css} to {@link PMTilesDataStoreEditPanel} */
-    @Bean
-    HeaderContribution radioGroupParamPanelCssContribution() {
-        return new CssContribution("RadioGroupParamPanel.css", DataAccessEditPage.class, DataAccessNewPage.class);
-    }
-
-    static class CssContribution extends HeaderContribution {
-
-        private List<Class<? extends WebPage>> appliesTo;
-
-        @SafeVarargs
-        CssContribution(String cssFile, Class<? extends WebPage>... pages) {
-            this.appliesTo = List.of(pages);
-            setCSSFilename(cssFile);
-            setScope(PMTilesDataStoreEditPanel.class);
-        }
-
-        public @Override boolean appliesTo(WebPage page) {
-            return appliesTo.stream().anyMatch(c -> c.isInstance(page));
-        }
     }
 }

@@ -166,9 +166,11 @@ public class JaxbRule extends AbstractPayload {
 
         private String catalogMode;
 
-        private Set<String> allowedStyles = new HashSet<>();
+        // Null until the payload actually carries the element - toLayerDetails tells "omitted" (leave the stored
+        // value alone) from "sent empty" (clear it) by that, so a partial update can't wipe what it didn't mention.
+        private Set<String> allowedStyles;
 
-        private Set<LayerAttribute> layerAttributes = new HashSet<>();
+        private Set<LayerAttribute> layerAttributes;
 
         @XmlElement
         public String getLayerType() {
@@ -239,8 +241,12 @@ public class JaxbRule extends AbstractPayload {
             this.catalogMode = catalogMode;
         }
 
+        /** Lazily created: JAXB populates collections through the getter, so it must never hand back null. */
         @XmlElement(name = "allowedStyle")
         public Set<String> getAllowedStyles() {
+            if (allowedStyles == null) {
+                allowedStyles = new HashSet<>();
+            }
             return allowedStyles;
         }
 
@@ -250,6 +256,9 @@ public class JaxbRule extends AbstractPayload {
 
         @XmlElement(name = "attribute")
         public Set<LayerAttribute> getAttributes() {
+            if (layerAttributes == null) {
+                layerAttributes = new HashSet<>();
+            }
             return layerAttributes;
         }
 

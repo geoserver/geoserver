@@ -29,6 +29,7 @@ For more information see [Configuration Considerations](../../production/config.
 | COMPARISON_TOLERANCE<br>Referencing tolerance when matching PRJ to EPSG code (default 0.00000001) | x               | x             | x            |
 | GEOSERVER_CSRF_DISABLED<br>[/security/webadmin/csrf](../../security/webadmin/csrf.md) | x               | x             | x            |
 | GEOSERVER_CSRF_WHITELIST<br>[/security/webadmin/csrf](../../security/webadmin/csrf.md) | x               | x             | x            |
+| GEOSERVER_REMEMBERME_KEY<br>Shared key that signs remember-me cookies across a cluster. See [/security/webadmin/auth](../../security/webadmin/auth.md#remember-me). | x               | x             | x            |
 | org.geoserver.web.csp.strict<br>[User interface non-responsive](../../production/troubleshooting.md#csp_strict), default true. | x               |               |              |
 | org.geoserver.catalog.loadingThreads<br>Number of threads used to load catalogue (Default 4). | x               | x             | x            |
 | CAPABILITIES_CACHE_CONTROL_ENABLED<br>Use false to disable, defaults to true.    | x               | x             | x            |

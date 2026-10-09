@@ -26936,6 +26936,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#distances-and-slopes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distances and slopes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tunables-and-safeguards" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30343,6 +30354,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#distances-and-slopes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distances and slopes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tunables-and-safeguards" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30384,6 +30406,7 @@
 <ul>
 <li>Reproject result to different CRS</li>
 <li>Adjust altitude profile based on additional layer</li>
+<li>Measure distances on the ground (default) or on the plane of a projected CRS</li>
 </ul>
 <h2 id="installing-the-wps-longitudinal-profile-process">Installing the WPS longitudinal profile process<a class="headerlink" href="#installing-the-wps-longitudinal-profile-process" title="Permanent link">&para;</a></h2>
 <ol>
@@ -30412,11 +30435,12 @@
 </ol>
 <h3 id="optional">Optional:<a class="headerlink" href="#optional" title="Permanent link">&para;</a></h3>
 <ol>
-<li>distance - maximum distance (in meters) between points in the altitude profile. If not specified, this distance will be automatically determined based on the coverage resolution, by calculating the diagonal length of a central pixel.</li>
+<li>distance - maximum distance (in meters, measured on the ground) between consecutive points in the altitude profile. If not specified, this distance will be automatically determined based on the coverage resolution, by calculating the diagonal length of a pixel.</li>
 <li>adjustmentLayerName - name of the layer with altitude, which will be used to adjust altitude values. Layer should have polygon or multipolygon geometry, and altitude attribute. Layer should be configured in the GeoServer</li>
-<li>targetProjection - target CRS of result</li>
+<li>targetProjection - target CRS of result.</li>
 <li>altitudeIndex - index of altitude field in the array of coverage coordinates (0 by default)</li>
 <li>altitudeName - name of the altitude attribute on adjustment layer feature type</li>
+<li>projectedDistance - when true, distances are measured on the targetProjection plane rather than on the ground (false by default). See <a href="#distances-and-slopes">Distances and slopes</a>.</li>
 </ol>
 <h3 id="response-contains-following-objects">Response contains following objects:<a class="headerlink" href="#response-contains-following-objects" title="Permanent link">&para;</a></h3>
 <ol>
@@ -30426,11 +30450,11 @@
 <p>The profile object contains an array of points.</p>
 <h3 id="each-point-has-following-values">Each point has following values:<a class="headerlink" href="#each-point-has-following-values" title="Permanent link">&para;</a></h3>
 <ol>
-<li>totalDistanceToThisPoint - distance to this point from the beginning of the profile (first point) in units of CRS</li>
+<li>totalDistanceToThisPoint - distance to this point from the beginning of the profile (first point)</li>
 <li>x - x coordinate of point</li>
 <li>y - y coordinate of point</li>
 <li>altitude - altitude of this point</li>
-<li>slope - slope between previous and current altitude</li>
+<li>slope - slope percentage between previous and current point, the altitude difference over the distance from the previous point</li>
 </ol>
 <h3 id="infos-object-fields">Infos object fields:<a class="headerlink" href="#infos-object-fields" title="Permanent link">&para;</a></h3>
 <ol>
@@ -30445,6 +30469,15 @@
 <li>processedpoints - total number of processed points</li>
 <li>executedtime - duration of process execution in milliseconds</li>
 </ol>
+<h2 id="distances-and-slopes">Distances and slopes<a class="headerlink" href="#distances-and-slopes" title="Permanent link">&para;</a></h2>
+<p>By default distances are measured on the ground, along the ellipsoid, whatever the targetProjection. A profile has the same length whether its points are returned in the native CRS of the coverage, in EPSG:4326 or in EPSG:3857. This avoids the scale distortion of projections: in particular EPSG:3857 stretches distances by about 40% at a latitude of 45 degrees, and should never be used to measure lengths.</p>
+<p>When <strong>projectedDistance</strong> is true, distances are instead measured on the plane of the targetProjection, as straight lines between the returned coordinates. Use it when distances in a projected CRS have a value of their own, e.g. a legal one in a national grid. It is to be noted that the result then carries the scale distortion of that projection. <strong>The targetProjection must be a projected CRS</strong>: when targetProjection is missing, the CRS of the ewkt geometry is used, or the coverage CRS for a wkt geometry. A geographic CRS is rejected with an error, since a straight line in degrees is not a distance.</p>
+<p>In both cases:</p>
+<ul>
+<li>Distances are expressed in the unit of the targetProjection, e.g. feet for a CRS in feet, and in meters for geographic CRSs, since degrees are not a ground unit.</li>
+<li>The distance parameter is always in meters on the ground, and only controls how densely the line is sampled.</li>
+<li>Slopes compare altitudes and distances in the same unit, so they do not depend on the unit of the targetProjection. Altitudes are taken in the unit declared for the coverage band (e.g. feet), when missing in the unit of the coverage CRS if projected, and in meters otherwise. Altitudes are reported as found in the coverage, without conversion.</li>
+</ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>It's possible to set wpsLongitudinalMaxThreadPoolSize (integer value) environment variable to limit the size of the extension's thread pool. It's possible to set wpsLongitudinalVerticesChunkSize (integer value) environment variable to define number of vertices processed in a chunk.</p>

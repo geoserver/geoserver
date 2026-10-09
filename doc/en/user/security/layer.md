@@ -153,7 +153,7 @@ The mapping of roles to permissions is as follows:
 
 ### Providing restricted administrative access
 
-The following provides administrative access on a single workspace to a specific role, in additional to the full administrator role:
+The following provides [workspace administration](workspaceadmin/index.md) access on a single workspace to a specific role, in addition to the full administrator role:
 
     *.*.a=ROLE_ADMINISTRATOR
     topp.*.a=ROLE_TOPP_ADMIN,ROLE_ADMINISTRATOR

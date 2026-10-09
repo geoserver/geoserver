@@ -11,10 +11,17 @@ import freemarker.template.SimpleHash;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
+import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.workspaceadmin.WorkspaceAdminAuthorizer;
 import org.geoserver.template.TemplateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,7 +32,8 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 /**
  * The IndexController lists the paths available for the Spring MVC RequestMappingHandler Specifically, it
- * auto-generates an index page containing all non-templated paths relative to the router root.
+ * auto-generates an index page containing all non-templated paths relative to the router root. Workspace administrators
+ * only see the endpoints they have access to.
  */
 @RestController
 @RequestMapping(
@@ -38,16 +46,32 @@ public class IndexController extends RestBaseController {
     @Autowired
     private RequestMappingHandlerMapping requestMappingHandlerMapping;
 
+    @Autowired
+    private WorkspaceAdminAuthorizer wsAdminAuthorizer;
+
     @GetMapping(
             value = {"", "index"},
             produces = {MediaType.TEXT_HTML_VALUE})
     public RestWrapper get() {
-
         SimpleHash model = new SimpleHash(this.wrapper);
-        model.put("links", getLinks());
+
+        Set<String> links = getLinks();
+        if (!isAdmin()) {
+            links = filterLinksForWorkspaceAdmin(links);
+        }
+
+        model.put("links", links);
         model.put("page", RequestInfo.get());
 
         return wrapObject(model, SimpleHash.class);
+    }
+
+    /** Retains only the links the current user can access according to the workspace admin access rules. */
+    private Set<String> filterLinksForWorkspaceAdmin(Set<String> links) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return links.stream()
+                .filter(uri -> wsAdminAuthorizer.canAccess(authentication, "/rest/" + uri, HttpMethod.GET))
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     /**
@@ -55,9 +79,7 @@ public class IndexController extends RestBaseController {
      *
      * @return A sorted set of unique link paths.
      */
-    @SuppressWarnings("deprecation")
     protected Set<String> getLinks() {
-
         // Ensure sorted, unique keys
         Set<String> s = new TreeSet<>();
 
@@ -95,5 +117,10 @@ public class IndexController extends RestBaseController {
     @Override
     public String getTemplateName(Object o) {
         return "index";
+    }
+
+    private boolean isAdmin() {
+        GeoServerSecurityManager manager = GeoServerExtensions.bean(GeoServerSecurityManager.class);
+        return manager.checkAuthenticationForAdminRole();
     }
 }

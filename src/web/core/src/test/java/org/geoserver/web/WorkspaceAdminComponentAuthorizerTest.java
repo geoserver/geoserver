@@ -4,18 +4,23 @@
  */
 package org.geoserver.web;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.function.Supplier;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.ResourceAccessManager;
+import org.geoserver.security.SecureCatalogImpl;
+import org.geoserver.security.workspaceadmin.WorkspaceAdminAuthorizer;
+import org.geoserver.security.workspaceadmin.WorkspaceAdminRESTAccessRuleDAO;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,15 +35,32 @@ public class WorkspaceAdminComponentAuthorizerTest extends GeoServerWicketTestSu
 
     private WorkspaceAdminComponentAuthorizer authorizer;
     private ResourceAccessManager accessManager;
+    private TestWorkspaceAdminAuthorizer adminAuthorizer;
+
+    private static class TestWorkspaceAdminAuthorizer extends WorkspaceAdminAuthorizer {
+        private Supplier<ResourceAccessManager> ram;
+
+        public TestWorkspaceAdminAuthorizer(WorkspaceAdminRESTAccessRuleDAO dao, Supplier<ResourceAccessManager> ram) {
+            super(dao);
+            this.ram = ram;
+        }
+
+        @Override
+        public ResourceAccessManager getAccessManager() {
+            return ram.get();
+        }
+    }
 
     @Before
     @SuppressWarnings("serial")
     public void setUp() {
-        this.accessManager = new WorkspaceAdminComponentAuthorizer().getAccessManager();
+        this.accessManager = GeoServerExtensions.bean(SecureCatalogImpl.class).getResourceAccessManager();
+        WorkspaceAdminRESTAccessRuleDAO dao = GeoServerExtensions.bean(WorkspaceAdminRESTAccessRuleDAO.class);
+        adminAuthorizer = new TestWorkspaceAdminAuthorizer(dao, () -> this.accessManager);
         authorizer = new WorkspaceAdminComponentAuthorizer() {
             @Override
-            ResourceAccessManager getAccessManager() {
-                return accessManager;
+            WorkspaceAdminAuthorizer getWorkspaceAdminAuthorizer() {
+                return adminAuthorizer;
             }
         };
     }
@@ -56,7 +78,7 @@ public class WorkspaceAdminComponentAuthorizerTest extends GeoServerWicketTestSu
     @Test
     public void testGetAccessManager() {
         authorizer = new WorkspaceAdminComponentAuthorizer();
-        assertNotNull(authorizer.getAccessManager());
+        assertNotNull(adminAuthorizer.getAccessManager());
     }
 
     @Test
@@ -72,7 +94,7 @@ public class WorkspaceAdminComponentAuthorizerTest extends GeoServerWicketTestSu
     @Test
     public void testNoAccessManager() {
         this.accessManager = null;
-        assertNull(authorizer.getAccessManager());
+        assertNull(adminAuthorizer.getAccessManager());
         Authentication user = user("test", "ROLE_1");
         assertFalse(isAccessAllowed(user));
     }
@@ -107,18 +129,11 @@ public class WorkspaceAdminComponentAuthorizerTest extends GeoServerWicketTestSu
         RequestAttributes atts = new ServletRequestAttributes(new MockHttpServletRequest());
         RequestContextHolder.setRequestAttributes(atts);
 
-        authorizer = spy(authorizer);
-
         assertTrue(isAccessAllowed(user));
         assertTrue(isAccessAllowed(user));
         assertTrue(isAccessAllowed(user));
 
-        verify(authorizer, times(1)).setCachedValue(true);
-        verify(authorizer, times(1)).isWorkspaceAdmin(user);
-
-        Object cached = atts.getAttribute(
-                WorkspaceAdminComponentAuthorizer.REQUEST_CONTEXT_CACHE_KEY, RequestAttributes.SCOPE_REQUEST);
-        assertEquals(Boolean.TRUE, cached);
+        verify(accessManager, times(1)).isWorkspaceAdmin(same(user), any());
     }
 
     private Authentication admin() {

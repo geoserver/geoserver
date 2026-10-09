@@ -4,6 +4,10 @@ In addition to providing the ability to secure OWS style services, GeoServer als
 
 As with layer and service security, RESTful security configuration is based on `security_roles`. The mapping of request URI to role is defined in a file named `rest.properties`, located in the `security` directory of the GeoServer data directory.
 
+!!! note
+
+    For information on workspace administrator access to the REST API, please see [Workspace Administration](workspaceadmin/index.md).
+
 ## Syntax
 
 The following syntax defines access control rules for RESTful services (parameters in brackets [] are optional):

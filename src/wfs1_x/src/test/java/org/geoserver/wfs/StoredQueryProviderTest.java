@@ -26,17 +26,15 @@ import java.util.List;
 import net.opengis.wfs20.StoredQueryDescriptionType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.ResourcePool;
-import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.util.EntityResolverProvider;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
 import org.geotools.xsd.Parser;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.EntityResolver2;
@@ -83,6 +81,8 @@ public class StoredQueryProviderTest {
 
     private GeoServerResourceLoader loader;
 
+    private EntityResolver configuredEntityResolver;
+
     @Before
     public void setup() throws IOException {
         baseDirectory = tmpFolder.newFolder();
@@ -90,16 +90,13 @@ public class StoredQueryProviderTest {
         loader = new GeoServerResourceLoader(baseDirectory);
         expect(catalog.getResourceLoader()).andReturn(loader);
         ResourcePool resourcePool = createNiceMock(ResourcePool.class);
+        expect(resourcePool.getEntityResolver())
+                .andAnswer(() -> configuredEntityResolver)
+                .anyTimes();
         replay(resourcePool);
         expect(catalog.getResourcePool()).andReturn(resourcePool).anyTimes();
         replay(catalog);
         storedQueryProvider = new StoredQueryProvider(catalog, new WFSInfoImpl(), false);
-    }
-
-    @After
-    public void resetEntityResolverProvider() {
-        EntityResolverProvider.setEntityResolver(null);
-        GeoServerExtensionsHelper.clear();
     }
 
     @Test
@@ -194,11 +191,7 @@ public class StoredQueryProviderTest {
         }
 
         RecordingEntityResolver configuredResolver = new RecordingEntityResolver();
-        EntityResolverProvider.setEntityResolver(configuredResolver);
-        GeoServerExtensionsHelper.singleton(
-                "entityResolverProvider",
-                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER,
-                EntityResolverProvider.class);
+        configuredEntityResolver = configuredResolver;
 
         createIncludeStoredQueryDefinitionFile(
                 storedQueryProvider.storedQueryDir().dir(), referencedFile);

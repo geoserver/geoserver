@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.config.GeoServer;
@@ -52,7 +53,7 @@ public class DirectDownload {
         }
 
         /** The underlying FileGroupProvider used to collect the files */
-        private FileGroupProvider fileGroupProvider;
+        private final FileGroupProvider fileGroupProvider;
 
         /**
          * Only collect the subset of files available from the fileGroupProvider, which match the provided fileId.
@@ -61,8 +62,11 @@ public class DirectDownload {
          * will be added to the list
          */
         private void collectSubset(String fileId, List<File> result) {
+            // a SHA-1 hex digest is 40 chars, then the "-" separator and the file name
+            if (fileId.length() <= 41) {
+                throw invalidParameter(INVALID_FILE + fileId, DownloadLinkHandler.FILE_PARAMETER);
+            }
             String hash = fileId;
-            // SHA-1 are 20 bytes in length
             String fileBaseName = hash.substring(41);
             Query query = new Query();
 
@@ -85,7 +89,7 @@ public class DirectDownload {
                     }
                 }
             } catch (NoSuchAlgorithmException | IOException e) {
-                throw new ServiceException("Exception occurred while looking for raw files for :" + fileId, e);
+                throw new ServiceException("Exception occurred while looking for raw files for: " + fileId, e);
             }
         }
 
@@ -101,7 +105,7 @@ public class DirectDownload {
                     }
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new ServiceException("Exception occurred while looking for raw files", e);
             }
         }
     }
@@ -114,7 +118,14 @@ public class DirectDownload {
 
     static final Logger LOGGER = Logging.getLogger(DirectDownload.class);
 
+    // Define exception messages here so we can refer them in tests
     static final String LIMIT_MESSAGE = "This request is trying to download too much data. ";
+
+    static final String INVALID_RESOURCE = "Invalid resourceId, expected namespace:layerName: ";
+
+    static final String INVALID_COVERAGE_DOWNLOAD = "No direct download available for ";
+
+    static final String INVALID_FILE = "Invalid file identifier: ";
 
     CSWInfo csw;
 
@@ -128,7 +139,10 @@ public class DirectDownload {
         this.geoserver = csw.getGeoServer();
     }
 
-    /** Prepare the list of files to be downloaded from the current request. */
+    /**
+     * Prepare the list of files to be downloaded from the current request. Throws an InvalidParameterValue
+     * {@link ServiceException} if resourceId or file do not identify downloadable data.
+     */
     public List<File> run(DirectDownloadType request) {
         List<File> result = new ArrayList<>();
         String resourceId = request.getResourceId();
@@ -136,16 +150,17 @@ public class DirectDownload {
 
         // Extract namespace, layername from the resourceId
         String[] identifiers = resourceId.split(":");
-        assert identifiers.length == 2;
-        String nameSpace = identifiers[0];
-        String layerName = identifiers[1];
-
-        Name coverageName = new NameImpl(nameSpace, layerName);
+        if (identifiers.length != 2) {
+            throw invalidParameter(INVALID_RESOURCE + resourceId, DownloadLinkHandler.RESOURCE_ID_PARAMETER);
+        }
+        Name coverageName = new NameImpl(identifiers[0], identifiers[1]);
 
         // Get the underlying coverage from the catalog
         CoverageInfo info = geoserver.getCatalog().getCoverageByName(coverageName);
-        if (info == null) {
-            throw new ServiceException("No object available for the specified name:" + coverageName);
+        DirectDownloadSettings settings =
+                info != null ? DirectDownloadSettings.getEnabledSettings(info.getMetadata(), csw) : null;
+        if (settings == null) {
+            throw invalidParameter(INVALID_COVERAGE_DOWNLOAD + resourceId, DownloadLinkHandler.RESOURCE_ID_PARAMETER);
         }
 
         // Get the reader to access the coverage
@@ -167,10 +182,17 @@ public class DirectDownload {
             // (As an instance, shapefile index, indexers, property files...)
             getExtraFiles(reader, result);
         }
-        if (result == null || result.isEmpty()) {
+        if (result.isEmpty() && fileId != null) {
+            throw invalidParameter(INVALID_FILE + fileId, DownloadLinkHandler.FILE_PARAMETER);
+        }
+        if (result.isEmpty()) {
             throw new ServiceException("Unable to get any data for resourceId=" + resourceId + " and file=" + fileId);
         }
-        checkSizeLimit(result, info);
+
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Checking download size limit for resourceId=" + resourceId);
+        }
+        checkSizeLimit(result, settings);
         return result;
     }
 
@@ -222,10 +244,8 @@ public class DirectDownload {
      * Check the current download is not exceeding the maxDownloadSize limit (if activated). Throws a
      * {@link CSWException} in case the limit is exceeded
      */
-    private void checkSizeLimit(List<File> fileList, CoverageInfo info) {
-        DirectDownloadSettings settings = DirectDownloadSettings.getSettingsFromMetadata(info.getMetadata(), csw);
-        long maxSize = settings != null ? settings.getMaxDownloadSize() : 0;
-        long sizeLimit = maxSize * 1024;
+    private void checkSizeLimit(List<File> fileList, DirectDownloadSettings settings) {
+        long sizeLimit = settings.getMaxDownloadSize() * 1024;
         if (fileList != null && !fileList.isEmpty() && sizeLimit > 0) {
             long cumulativeSize = 0;
             for (File file : fileList) {
@@ -233,9 +253,9 @@ public class DirectDownload {
             }
             if (cumulativeSize > sizeLimit) {
                 throw new CSWException(LIMIT_MESSAGE
-                        + "The limit is "
+                        + "The configured maxDownloadSize limit is "
                         + formatBytes(sizeLimit)
-                        + " but the amount of raw data to be downloaded is "
+                        + ", but the amount of raw data to be downloaded is "
                         + formatBytes(cumulativeSize));
             }
         }
@@ -254,6 +274,7 @@ public class DirectDownload {
         }
     }
 
+    /** Returns the name of the coverage inside its reader, or null if coverageInfo is null. */
     public static String extractName(CoverageInfo coverageInfo) {
         String name = null;
         if (coverageInfo != null) {
@@ -266,5 +287,9 @@ public class DirectDownload {
             }
         }
         return name;
+    }
+
+    private static ServiceException invalidParameter(String message, String locator) {
+        return new ServiceException(message, ServiceException.INVALID_PARAMETER_VALUE, locator);
     }
 }

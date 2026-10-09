@@ -57,4 +57,10 @@ public class DirectDownloadSettings implements Serializable {
         }
         return settings;
     }
+
+    /** Same lookup as {@link #getSettingsFromMetadata}, returning null when direct download is not enabled. */
+    public static DirectDownloadSettings getEnabledSettings(MetadataMap map, CSWInfo csw) {
+        DirectDownloadSettings settings = getSettingsFromMetadata(map, csw);
+        return settings != null && settings.isDirectDownloadEnabled() ? settings : null;
+    }
 }

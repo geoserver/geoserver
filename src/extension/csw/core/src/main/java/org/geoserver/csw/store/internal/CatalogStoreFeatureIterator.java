@@ -23,7 +23,6 @@ import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
@@ -166,34 +165,20 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
     /** Get a {@link FeatureCustomizer} for this info. */
     private FeatureCustomizer getCustomizer(CatalogInfo info) {
-        FeatureCustomizer customizer = null;
-
         // DirectDownload capability is only checked for Coverage layers
-        if (info instanceof CoverageInfo) {
-            CoverageInfo coverageInfo = (CoverageInfo) info;
-            MetadataMap metadata = coverageInfo.getMetadata();
-
-            boolean directDownloadEnabled = false;
-            // Look for specific settings for this layer
-            DirectDownloadSettings settings = DirectDownloadSettings.getSettingsFromMetadata(
-                    metadata, GeoServerExtensions.bean(GeoServer.class).getService(CSWInfo.class));
-            if (settings != null) {
-                directDownloadEnabled = settings.isDirectDownloadEnabled();
-            }
-
-            if (directDownloadEnabled) {
-                String typeName =
-                        outputRecordDescriptor.getFeatureType().getName().getLocalPart();
-                // customizer = FeatureCustomizer.getCustomizer(typeName);
-                customizer = FeatureCustomizer.getCustomizer(typeName);
-                if (customizer == null) {
-                    if (LOGGER.isLoggable(Level.WARNING)) {
-                        LOGGER.warning("No Mapping customizer have been found for "
-                                + typeName
-                                + ". Mapping customizations will not be made");
-                    }
-                }
-            }
+        if (!(info instanceof CoverageInfo)) {
+            return null;
+        }
+        CoverageInfo coverageInfo = (CoverageInfo) info;
+        CSWInfo csw = GeoServerExtensions.bean(GeoServer.class).getService(CSWInfo.class);
+        if (DirectDownloadSettings.getEnabledSettings(coverageInfo.getMetadata(), csw) == null) {
+            return null;
+        }
+        String typeName = outputRecordDescriptor.getFeatureType().getName().getLocalPart();
+        FeatureCustomizer customizer = FeatureCustomizer.getCustomizer(typeName);
+        if (customizer == null) {
+            LOGGER.warning("No Mapping customizer have been found for " + typeName
+                    + ". Mapping customizations will not be made");
         }
         return customizer;
     }

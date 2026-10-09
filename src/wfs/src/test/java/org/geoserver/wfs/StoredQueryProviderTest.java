@@ -9,11 +9,9 @@ import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
@@ -26,19 +24,16 @@ import java.util.List;
 import net.opengis.wfs20.StoredQueryDescriptionType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.ResourcePool;
-import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.util.EntityResolverProvider;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
 import org.geotools.xsd.Parser;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 import org.xml.sax.ext.EntityResolver2;
 
 public class StoredQueryProviderTest {
@@ -81,6 +76,8 @@ public class StoredQueryProviderTest {
 
     private GeoServerResourceLoader loader;
 
+    private EntityResolver configuredEntityResolver;
+
     @Before
     public void setup() throws IOException {
         baseDirectory = tmpFolder.newFolder();
@@ -88,16 +85,13 @@ public class StoredQueryProviderTest {
         loader = new GeoServerResourceLoader(baseDirectory);
         expect(catalog.getResourceLoader()).andReturn(loader);
         ResourcePool resourcePool = createNiceMock(ResourcePool.class);
+        expect(resourcePool.getEntityResolver())
+                .andAnswer(() -> configuredEntityResolver)
+                .anyTimes();
         replay(resourcePool);
         expect(catalog.getResourcePool()).andReturn(resourcePool).anyTimes();
         replay(catalog);
         storedQueryProvider = new StoredQueryProvider(catalog, new WFSInfoImpl(), false);
-    }
-
-    @After
-    public void resetEntityResolverProvider() {
-        EntityResolverProvider.setEntityResolver(null);
-        GeoServerExtensionsHelper.clear();
     }
 
     @Test
@@ -185,36 +179,29 @@ public class StoredQueryProviderTest {
 
     @Test
     public void reloadingAStoredQueryRespectsTheConfiguredEntityResolver() throws IOException {
-        String markerContent = "MARKER-CONTENT-1234567890";
-        File referencedFile = tmpFolder.newFile("referenced.txt");
-        try (Writer writer = new FileWriter(referencedFile)) {
-            writer.write(markerContent);
-        }
-
+        File dtd = tmpFolder.newFile("storedQuery.dtd");
         RecordingEntityResolver configuredResolver = new RecordingEntityResolver();
-        EntityResolverProvider.setEntityResolver(configuredResolver);
-        GeoServerExtensionsHelper.singleton(
-                "entityResolverProvider",
-                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER,
-                EntityResolverProvider.class);
-
+        configuredEntityResolver = configuredResolver;
         createIncludeStoredQueryDefinitionFile(
-                storedQueryProvider.storedQueryDir().dir(), referencedFile);
+                storedQueryProvider.storedQueryDir().dir(), dtd);
 
-        String queryExpressionText;
-        try {
-            storedQueryProvider.listStoredQueries();
-            queryExpressionText = queryExpressionTextOf(storedQueryProvider.getStoredQuery(INCLUDE_STORED_QUERY));
-        } catch (RuntimeException entityResolutionFailed) {
-            queryExpressionText = "";
-        }
+        storedQueryProvider.listStoredQueries();
+        String queryExpressionText = storedQueryProvider
+                .getStoredQuery(INCLUDE_STORED_QUERY)
+                .getQuery()
+                .getQueryExpressionText()
+                .get(0)
+                .getValue();
 
-        assertThat(configuredResolver.wasConsulted(), is(true));
-        assertThat(queryExpressionText, not(containsString(markerContent)));
+        assertThat(configuredResolver.getSystemId(), is(equalTo(dtd.toURI().toString())));
+        assertThat(
+                queryExpressionText.trim(),
+                is(equalTo("<wfs:Query typeNames=\"topp:states\" xmlns:wfs=\"http://www.opengis.net/wfs/2.0\""
+                        + " xmlns:xml=\"http://www.w3.org/XML/1998/namespace\"></wfs:Query>")));
     }
 
     private static final class RecordingEntityResolver implements EntityResolver2 {
-        private boolean consulted;
+        private String systemId;
 
         @Override
         public InputSource getExternalSubset(String name, String baseURI) {
@@ -222,28 +209,19 @@ public class StoredQueryProviderTest {
         }
 
         @Override
-        public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId)
-                throws SAXException {
-            consulted = true;
-            throw new SAXException("resolution not supported by this test resolver");
+        public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId) {
+            return resolveEntity(publicId, systemId);
         }
 
         @Override
-        public InputSource resolveEntity(String publicId, String systemId) throws SAXException {
-            consulted = true;
-            throw new SAXException("resolution not supported by this test resolver");
+        public InputSource resolveEntity(String publicId, String systemId) {
+            this.systemId = systemId;
+            return new InputSource(new StringReader(""));
         }
 
-        boolean wasConsulted() {
-            return consulted;
+        String getSystemId() {
+            return systemId;
         }
-    }
-
-    private String queryExpressionTextOf(StoredQuery query) {
-        if (query == null) {
-            return "";
-        }
-        return query.getQuery().getQueryExpressionText().get(0).getValue();
     }
 
     private File createMyStoredQueryDefinitionFile(File storedQueryDir) throws IOException {
@@ -263,23 +241,19 @@ public class StoredQueryProviderTest {
         }
     }
 
-    private File createIncludeStoredQueryDefinitionFile(File storedQueryDir, File fileToInclude) throws IOException {
+    private File createIncludeStoredQueryDefinitionFile(File storedQueryDir, File dtd) throws IOException {
         String definition = String.format(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<wfs:StoredQueryDescription id='%s'"
-                        + " xmlns:wfs=\"http://www.opengis.net/wfs/2.0\""
-                        + " xmlns:xi=\"http://www.w3.org/2001/XInclude\">\n"
+                        + "<!DOCTYPE wfs:StoredQueryDescription SYSTEM \"%s\">\n"
+                        + "<wfs:StoredQueryDescription id='%s' xmlns:wfs=\"http://www.opengis.net/wfs/2.0\">\n"
                         + "  <wfs:QueryExpressionText\n"
                         + "   returnFeatureTypes='topp:states'\n"
                         + "   language='urn:ogc:def:queryLanguage:OGC-WFS::WFS_QueryExpression'\n"
                         + "   isPrivate='false'>\n"
-                        + "    <wfs:Query typeNames='topp:states'>\n"
-                        + "      <xi:include href='%s' parse='text'/>\n"
-                        + "    </wfs:Query>\n"
+                        + "    <wfs:Query typeNames='topp:states'/>\n"
                         + "  </wfs:QueryExpressionText>\n"
                         + "</wfs:StoredQueryDescription>",
-                INCLUDE_STORED_QUERY,
-                fileToInclude.toURI());
+                dtd.toURI(), INCLUDE_STORED_QUERY);
         File storedQueryDefinition = new File(storedQueryDir, INCLUDE_STORED_QUERY + ".xml");
         try (Writer writer = new FileWriter(storedQueryDefinition)) {
             writer.write(definition);

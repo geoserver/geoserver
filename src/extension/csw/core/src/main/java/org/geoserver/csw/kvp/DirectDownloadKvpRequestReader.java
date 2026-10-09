@@ -7,6 +7,7 @@ package org.geoserver.csw.kvp;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.geoserver.csw.DirectDownloadType;
 import org.geoserver.csw.DownloadLinkHandler;
 import org.geoserver.ows.KvpRequestReader;
@@ -28,11 +29,15 @@ public class DirectDownloadKvpRequestReader extends KvpRequestReader {
 
         // Force the ResourceID element to be a simple String instead of an array
         Object resourceId = kvp.get(DownloadLinkHandler.RESOURCE_ID_PARAMETER);
-        if (resourceId != null && resourceId instanceof List list && !list.isEmpty()) {
-            kvp.put(DownloadLinkHandler.RESOURCE_ID_PARAMETER, list.get(0));
+        if (resourceId instanceof List list && !list.isEmpty()) {
+            Object resId = list.get(0);
+            kvp.put(DownloadLinkHandler.RESOURCE_ID_PARAMETER, resId);
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("DirectDownload resourceID: " + resId);
+            }
         }
         Object fileParameter = kvp.get(DownloadLinkHandler.FILE_PARAMETER);
-        if (fileParameter != null && fileParameter instanceof List list && !list.isEmpty()) {
+        if (fileParameter instanceof List list && !list.isEmpty()) {
             kvp.put(DownloadLinkHandler.FILE_PARAMETER, list.get(0));
         }
         DirectDownloadType request = (DirectDownloadType) super.read(req, kvp, rawKvp);

@@ -4,6 +4,7 @@
  */
 package org.geoserver.ogcapi.web;
 
+import java.util.List;
 import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -35,11 +36,13 @@ public class MapsServiceAdminPanel extends AdminPagePanel {
                 Integer.class);
         defaultCollections.setMinimum(1);
         add(defaultCollections);
+        // no /functions resource in Maps, so CQL2 functions is never declared
         add(new ConformanceTable(
                 "cqlConformance",
                 info,
                 IModel.of(() -> CQL2Conformance.configuration((WMSInfo) info.getObject())),
-                this));
+                this,
+                List.of(CQL2Conformance.CQL2_FUNCTIONS)));
         add(new ConformanceTable(
                 "ecqlConformance",
                 info,

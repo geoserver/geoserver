@@ -102,7 +102,7 @@ public class APIConformance implements Serializable {
         EXTENSION
     }
 
-    @SuppressWarnings("PMD.UnusedPrivateField")
+    /** Parent conformance class, {@code null} if not an extension. */
     private final APIConformance parent;
 
     /** Conformance class identifier. */
@@ -111,11 +111,14 @@ public class APIConformance implements Serializable {
     /** Indicates standard approval level. */
     private final Level level;
 
-    @SuppressWarnings("PMD.UnusedPrivateField")
+    /** Indicates conformance class type, either core or extension. */
     private final Type type;
 
     /** Bean property name. */
     private final String property;
+
+    /** Built-in status, {@code null} if configurable. */
+    private final Boolean builtIn;
 
     /**
      * Conformance class declaration, defaulting to APPROVED.
@@ -135,6 +138,18 @@ public class APIConformance implements Serializable {
     public APIConformance(String id, Level level) {
         this(id, level, Type.EXTENSION, null);
     }
+
+    /**
+     * Conformance class declaration.
+     *
+     * @param id conformance class
+     * @param level standard approval status
+     * @param type conformance class type
+     */
+    public APIConformance(String id, Level level, Type type) {
+        this(id, level, type, null);
+    }
+
     /**
      * Conformance class declaration.
      *
@@ -155,7 +170,7 @@ public class APIConformance implements Serializable {
      * @param parent parent conformance class (if this is an extension)
      */
     public APIConformance(String id, Level level, Type type, APIConformance parent) {
-        this(id, level, type, parent, id.substring(id.lastIndexOf('/') + 1));
+        this(id, level, type, parent, propertyName(id));
     }
     /**
      * Conformance class declaration.
@@ -167,19 +182,68 @@ public class APIConformance implements Serializable {
      * @param property bean property name
      */
     public APIConformance(String id, Level level, Type type, APIConformance parent, String property) {
+        this(id, level, type, parent, property, null);
+    }
+
+    private APIConformance(String id, Level level, Type type, APIConformance parent, String property, Boolean builtIn) {
         this.id = id;
         this.level = level;
         this.type = type;
         this.parent = parent;
         this.property = property;
+        this.builtIn = builtIn;
     }
 
+    /**
+     * Extension of this conformance class.
+     *
+     * @param id conformance class, or a name resolved against this conformance class identifier
+     * @return extension conformance class declaration
+     * @see #extend(String, Level)
+     */
     public APIConformance extend(String id) {
-        return new APIConformance(id, Level.STANDARD, Type.EXTENSION, this);
+        return extend(id, Level.STANDARD);
     }
 
+    /**
+     * Extension of this conformance class.
+     *
+     * <p>A name such as {@code "html"} is resolved against this conformance class identifier, so extending
+     * {@code https://www.opengis.net/spec/ogcapi-maps-1/1.0/conf/core} produces
+     * {@code https://www.opengis.net/spec/ogcapi-maps-1/1.0/conf/html}.
+     *
+     * @param id conformance class, or a name resolved against this conformance class identifier
+     * @param level standard approval status
+     * @return extension conformance class declaration
+     */
     public APIConformance extend(String id, Level level) {
-        return new APIConformance(id, level, Type.EXTENSION, this);
+        String extensionId = id.contains(":") ? id : this.id.substring(0, this.id.lastIndexOf('/') + 1) + id;
+        return new APIConformance(extensionId, level, Type.EXTENSION, this);
+    }
+
+    /**
+     * Conformance class declaration that is not configurable.
+     *
+     * <p>Use {@code true} for functionality that is always available and cannot be disabled, or {@code false} to
+     * document functionality that is not implemented.
+     *
+     * @param implemented {@code true} if always enabled, {@code false} if not implemented
+     * @return built-in conformance class declaration
+     */
+    public APIConformance builtIn(boolean implemented) {
+        return new APIConformance(id, level, type, parent, property, implemented);
+    }
+
+    /**
+     * Conformance class declaration with the provided bean property name.
+     *
+     * <p>Use when the property cannot be derived from the conformance class identifier.
+     *
+     * @param property bean property name
+     * @return conformance class declaration using the provided property
+     */
+    public APIConformance property(String property) {
+        return new APIConformance(id, level, type, parent, property, builtIn);
     }
 
     /**
@@ -189,6 +253,26 @@ public class APIConformance implements Serializable {
      */
     public String getId() {
         return id;
+    }
+
+    /**
+     * Derive bean property name from the last segment of the conformance class identifier.
+     *
+     * <p>Hyphenated segments are converted to camel case, so {@code spatial-subsetting} becomes
+     * {@code spatialSubsetting}.
+     *
+     * @param id conformance class
+     * @return bean property name
+     */
+    static String propertyName(String id) {
+        String[] words = id.substring(id.lastIndexOf('/') + 1).split("-");
+        StringBuilder property = new StringBuilder(words[0]);
+        for (int i = 1; i < words.length; i++) {
+            if (!words[i].isEmpty()) {
+                property.append(Character.toUpperCase(words[i].charAt(0))).append(words[i].substring(1));
+            }
+        }
+        return property.toString();
     }
 
     /**
@@ -204,12 +288,39 @@ public class APIConformance implements Serializable {
     }
 
     /**
+     * Built-in conformance status, not subject to configuration.
+     *
+     * @return {@code true} if always enabled, {@code false} if not implemented, or {@code null} if configurable.
+     */
+    public Boolean getBuiltIn() {
+        return builtIn;
+    }
+
+    /**
+     * Conformance class can be enabled or disabled by configuration.
+     *
+     * @return {@code true} if configurable, {@code false} for built-in conformance.
+     */
+    public boolean isConfigurable() {
+        return builtIn == null;
+    }
+
+    /**
      * Conformance class standard level.
      *
      * @return conformance class standard level.
      */
     public Level getLevel() {
         return level;
+    }
+
+    /**
+     * Conformance class type, either core or extension.
+     *
+     * @return conformance class type.
+     */
+    public Type getType() {
+        return type;
     }
 
     @Override

@@ -10,6 +10,7 @@ import static org.geoserver.ogcapi.APIConformance.Level.STANDARD;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.ogcapi.APIConformance;
+import org.geoserver.ogcapi.APIConformance.Type;
 import org.geoserver.ogcapi.APIFilterParser;
 import org.geoserver.ogcapi.ConformanceClass;
 import org.geoserver.ogcapi.ConformanceInfo;
@@ -20,36 +21,28 @@ import org.geoserver.wfs.WFSInfo;
 public class FeatureConformance extends ConformanceInfo<WFSInfo> {
     public static String METADATA_KEY = "ogcapiFeatures";
 
-    public static final APIConformance CORE =
-            new APIConformance("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core", STANDARD);
+    public static final APIConformance CORE = new APIConformance(
+                    "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core", STANDARD, Type.CORE)
+            .builtIn(true);
 
     // required resource formats
-    public static final APIConformance HTML =
-            CORE.extend("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html");
-    public static final APIConformance GEOJSON =
-            CORE.extend("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson");
-    public static final APIConformance OAS30 =
-            CORE.extend("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30");
+    public static final APIConformance HTML = CORE.extend("html").builtIn(true);
+    public static final APIConformance GEOJSON = CORE.extend("geojson").builtIn(true);
+    public static final APIConformance OAS30 = CORE.extend("oas30").builtIn(true);
 
     // optional output format from WFS
     public static final APIConformance GML321 = // this is not a recognized conformance class though??
             new APIConformance("http://schemas.opengis.net/gml/3.2.1/gml.xsd", STANDARD, "gml321");
 
     // not-implemented resource formats
-    public static final APIConformance GMLSF0 =
-            CORE.extend("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/gmlsf0");
-    public static final APIConformance GMLSF2 =
-            CORE.extend("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/gmlsf2");
+    public static final APIConformance GMLSF0 = CORE.extend("gmlsf0").builtIn(false);
+    public static final APIConformance GMLSF2 = CORE.extend("gmlsf2").builtIn(false);
 
     // optional
-    public static final APIConformance CRS_BY_REFERENCE = new APIConformance(
-            "http://www.opengis.net/spec/ogcapi-features-2/1.0/conf/crs",
-            STANDARD,
-            APIConformance.Type.EXTENSION,
-            CORE,
-            "crsByReference");
-    public static final APIConformance FEATURES_FILTER = new APIConformance(
-            ConformanceClass.FEATURES_FILTER, STANDARD, APIConformance.Type.EXTENSION, CORE, "featuresFilter");
+    public static final APIConformance CRS_BY_REFERENCE = CORE.extend(
+                    "http://www.opengis.net/spec/ogcapi-features-2/1.0/conf/crs")
+            .property("crsByReference");
+    public static final APIConformance FEATURES_FILTER = CORE.extend(ConformanceClass.FEATURES_FILTER);
     public static final APIConformance FILTER = CORE.extend(ConformanceClass.FILTER);
     public static final APIConformance QUERYABLES = CORE.extend(ConformanceClass.QUERYABLES);
 

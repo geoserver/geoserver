@@ -161,6 +161,7 @@ public class FeatureService {
                 FeatureConformance.SORTBY,
                 ECQLConformance.ECQL_TEXT,
                 CQL2Conformance.CQL2_TEXT,
+                CQL2Conformance.CQL2_JSON,
                 CQL2Conformance.CQL2_ADVANCED,
                 CQL2Conformance.CQL2_ARITHMETIC,
                 CQL2Conformance.CQL2_BASIC,
@@ -169,7 +170,6 @@ public class FeatureService {
                 CQL2Conformance.CQL2_PROPERTY_PROPERTY,
                 CQL2Conformance.CQL2_SPATIAL);
         // FeatureConformance.GMLSF0, // does not use the gmlsf namespace
-        // CQL2Conformance.CQL2_JSON, // Very different from the binding we have
         // CQL2Conformance.CQL2_ARRAY, // excluded, no support for array operations now
         // CQL2Conformance.CQL2_TEMPORAL, // excluded for now, no support for all operators
         return conformances;

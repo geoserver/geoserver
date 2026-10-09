@@ -115,7 +115,7 @@
     <eclipse.emf.version>2.15.0</eclipse.emf.version>
     <errorProne.version>2.31.0</errorProne.version>
     <gf.version>3.9-SNAPSHOT</gf.version>
-    <hazelcast.version>5.3.8</hazelcast.version>
+    <hazelcast.version>5.7.0</hazelcast.version>
     <cors.version>3.1</cors.version>
     <!-- BouncyCastle coordinates. Kept as properties because the regular and the
          FIPS-validated product lines share the org.bouncycastle package space and so

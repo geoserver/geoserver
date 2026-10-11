@@ -1,0 +1,41 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:extend>
+<div wicket:id="status" class="gs-updates-checker-status-section"></div>
+<form wicket:id="form">
+  <fieldset>
+    <legend><span><wicket:message key="UpdatesCheckerPage.legend">Settings</wicket:message></span></legend>
+    <div class="gs-form">
+      <div class="gs-form-group">
+        <label for="feedUrl"><wicket:message key="UpdatesCheckerPage.feedUrl">Feed URL</wicket:message></label>
+        <input id="feedUrl" type="text" class="w-lg gs-updates-checker-feed-url" wicket:id="feedUrl" />
+      </div>
+      <div class="choiceItem">
+        <input id="enabled" type="checkbox" wicket:id="enabled" />
+        <label for="enabled"><wicket:message key="UpdatesCheckerPage.enabled">Enable update check at login and startup</wicket:message></label>
+      </div>
+      <div class="choiceItem">
+        <input id="logUpdateChecks" type="checkbox" wicket:id="logUpdateChecks" />
+        <label for="logUpdateChecks"><wicket:message key="UpdatesCheckerPage.logUpdateChecks">Write check results to logs</wicket:message></label>
+      </div>
+      <div class="choiceItem">
+        <input id="hideVersionNumbersInLogs" type="checkbox" wicket:id="hideVersionNumbersInLogs" />
+        <label for="hideVersionNumbersInLogs"><wicket:message key="UpdatesCheckerPage.hideVersionNumbersInLogs">Hide version numbers in logs</wicket:message></label>
+      </div>
+    </div>
+  </fieldset>
+  <div class="button-group toolbar-sticky selfclear">
+    <button type="submit" class="form-button-save primary" wicket:id="submit"><wicket:message key="save">save</wicket:message></button>
+    <button type="submit" class="form-button-cancel outline-danger" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
+  </div>
+</form>
+<p>
+  <a href="https://docs.geoserver.org/latest/en/user/community/updates-checker/" target="_blank" rel="noopener"><wicket:message key="UpdatesCheckerPage.documentation">Documentation</wicket:message></a>
+  &mdash;
+  <wicket:message key="UpdatesCheckerPage.maintainer">Contact the community module maintainer for improvements:</wicket:message>
+  <a href="mailto:gs-updates-checker@geoguru.africa">GeoGuru.Africa</a>
+</p>
+</wicket:extend>
+</body>
+</html>

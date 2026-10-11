@@ -95,6 +95,7 @@ For more information see [Configuration Considerations](../../production/config.
 | GEOSERVER_DATA_DIR_LOADER_ENABLED<br>[/datadirectory/setting](../../datadirectory/setting.md) | x               |               | x            |
 | GEOSERVER_DATA_DIR_LOADER_THREADS<br>[/datadirectory/setting](../../datadirectory/setting.md) | x               |               | x            |
 | TRACK_USER<br>Flag to enable user tracking in GeoServer. Allows to store the username of user that performed creation/modification of layer, layergroup, store, style, workspace. Has precedence over "Display the user who performed last modification" option in global settings. | x               |               |              |
+| UPDATES_CHECKER_FEED_URL<br>[Check for Updates](../../community/updates-checker/index.md) community module, `https` URL of the version feed to use instead of the default. | x               | x             | x            |
 
 ## Setting Application property {: #application_properties_setting }
 

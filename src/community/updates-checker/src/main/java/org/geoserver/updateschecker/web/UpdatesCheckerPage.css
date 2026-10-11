@@ -1,0 +1,16 @@
+.gs-updates-checker-banner {
+  padding-bottom: 1.25rem;
+}
+
+/* readonly (not disabled), so the URL stays selectable/copyable - text colored gray to still read as non-editable */
+.gs-updates-checker-feed-url[readonly] {
+  color: #6c757d;
+  cursor: default;
+}
+
+/* 3.x sizes the field with the w-lg class, which 2.x does not have */
+:where(.gs-updates-checker-feed-url) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 40em;
+}

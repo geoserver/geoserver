@@ -25321,10 +25321,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#use-default-credentials-provider" class="md-nav__link">
+  <a href="#anonymous-public-bucket" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Use Default Credentials Provider
+        Anonymous (public bucket)
       
     </span>
   </a>
@@ -25465,10 +25465,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#use-default-application-credentials" class="md-nav__link">
+  <a href="#anonymous-public-bucket_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Use default application credentials
+        Anonymous (public bucket)
       
     </span>
   </a>
@@ -30936,10 +30936,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#use-default-credentials-provider" class="md-nav__link">
+  <a href="#anonymous-public-bucket" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Use Default Credentials Provider
+        Anonymous (public bucket)
       
     </span>
   </a>
@@ -31080,10 +31080,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#use-default-application-credentials" class="md-nav__link">
+  <a href="#anonymous-public-bucket_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Use default application credentials
+        Anonymous (public bucket)
       
     </span>
   </a>
@@ -31264,16 +31264,17 @@
 <p>These parameters appear when using S3 URLs or when connecting to S3-compatible services:</p>
 <h4 id="configure-the-aws-region">Configure the AWS region<a class="headerlink" href="#configure-the-aws-region" title="Permanent link">&para;</a></h4>
 <p>:   AWS region for the S3 bucket (e.g., <code>us-west-2</code>, <code>eu-central-1</code>).</p>
-<h4 id="use-default-credentials-provider">Use Default Credentials Provider<a class="headerlink" href="#use-default-credentials-provider" title="Permanent link">&para;</a></h4>
-<p>:   Checkbox to use the AWS default credentials chain (environment variables, IAM roles, credential file).</p>
+<h4 id="anonymous-public-bucket">Anonymous (public bucket)<a class="headerlink" href="#anonymous-public-bucket" title="Permanent link">&para;</a></h4>
+<p>:   Checkbox to send unsigned requests, for public buckets that allow anonymous reads.</p>
 <h4 id="aws-access-key">AWS Access Key<a class="headerlink" href="#aws-access-key" title="Permanent link">&para;</a></h4>
-<p>:   AWS access key ID for authentication (if not using default credentials).</p>
+<p>:   AWS access key ID, used together with the secret access key.</p>
 <h4 id="aws-secret-access-key">AWS Secret Access Key<a class="headerlink" href="#aws-secret-access-key" title="Permanent link">&para;</a></h4>
 <p>:   AWS secret access key (hidden, password field).</p>
 <h4 id="default-credentials-profile">Default Credentials Profile<a class="headerlink" href="#default-credentials-profile" title="Permanent link">&para;</a></h4>
 <p>:   AWS credential profile name to use from the credentials file.</p>
 <h4 id="enable-s3-path-style-access">Enable S3 path style access<a class="headerlink" href="#enable-s3-path-style-access" title="Permanent link">&para;</a></h4>
 <p>:   Checkbox to use path-style URLs (<code>https://s3.region.amazonaws.com/bucket/key</code>) instead of virtual-hosted-style URLs. Required for S3-compatible services like MinIO.</p>
+<p>The store takes the first credentials configured in this order: anonymous access, the access key pair, the credentials profile. With none of them set, it uses the AWS default credentials provider chain: system properties, environment variables, a web identity token, the <code>~/.aws</code> files (the profile named by <code>AWS_PROFILE</code>, or <code>default</code>), then container and EC2 instance roles.</p>
 <h3 id="azure-blob-storage-parameters">Azure Blob Storage Parameters<a class="headerlink" href="#azure-blob-storage-parameters" title="Permanent link">&para;</a></h3>
 <p>These parameters appear when using Azure Blob Storage URLs:</p>
 <h4 id="set-the-blob-name-if-the-endpoint-points-to-the-account-url">Set the blob name if the endpoint points to the account URL<a class="headerlink" href="#set-the-blob-name-if-the-endpoint-points-to-the-account-url" title="Permanent link">&para;</a></h4>
@@ -31288,8 +31289,9 @@
 <p>:   Your GCP project ID.</p>
 <h4 id="quota-project-id">Quota Project ID<a class="headerlink" href="#quota-project-id" title="Permanent link">&para;</a></h4>
 <p>:   Optional project ID for quota and billing purposes.</p>
-<h4 id="use-default-application-credentials">Use default application credentials<a class="headerlink" href="#use-default-application-credentials" title="Permanent link">&para;</a></h4>
-<p>:   Checkbox to use Google's default application credentials chain (service account, application default credentials, etc.).</p>
+<h4 id="anonymous-public-bucket_1">Anonymous (public bucket)<a class="headerlink" href="#anonymous-public-bucket_1" title="Permanent link">&para;</a></h4>
+<p>:   Checkbox to send unsigned requests, for public buckets that allow anonymous reads and for emulators.</p>
+<p>Unless the store is anonymous, Google Application Default Credentials authenticate the requests (<code>GOOGLE_APPLICATION_CREDENTIALS</code>, <code>gcloud auth application-default login</code>, or the attached service account on GCE, GKE and Cloud Run). The store fails to open when none can be found. A store saved with "Use default application credentials" unchecked opens as anonymous.</p>
 <h2 id="performance-tuning">Performance Tuning<a class="headerlink" href="#performance-tuning" title="Permanent link">&para;</a></h2>
 <p>To optimize performance for cloud-based PMTiles archives:</p>
 <ol>

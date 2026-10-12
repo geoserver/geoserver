@@ -4,6 +4,7 @@
  */
 package org.geoserver.backuprestore;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
@@ -52,6 +53,24 @@ public class WmsWmtsRestoreTest extends BackupRestoreTestSupport {
         assertNotNull(wmsLayer);
         LayerInfo wmtsLayer = restoreCatalog.getLayerByName("gs:wmtsLayer");
         assertNotNull(wmtsLayer);
+    }
+
+    /**
+     * Without best-effort mode, so that a failure to write a cascaded resource fails the restore rather than ending up
+     * as a warning next to a resource that is in the catalog but was never saved.
+     */
+    @Test
+    public void testWmsWmtsRestoreWithoutBestEffort() throws Exception {
+        cleanCatalogInternal();
+
+        RestoreExecutionAdapter restoreExecution =
+                backupFacade.runRestoreAsync(file("testWmsWmtsLayers.zip"), null, null, null, new HashMap<>());
+        waitForExecution(restoreExecution);
+
+        assertEquals(BatchStatus.COMPLETED, restoreExecution.getStatus());
+        final Catalog restoreCatalog = restoreExecution.getRestoreCatalog();
+        assertNotNull(restoreCatalog.getLayerByName("gs:wmsLayer"));
+        assertNotNull(restoreCatalog.getLayerByName("gs:wmtsLayer"));
     }
 
     private void cleanCatalogInternal() {

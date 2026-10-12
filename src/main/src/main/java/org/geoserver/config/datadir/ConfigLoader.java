@@ -212,16 +212,16 @@ class ConfigLoader {
             this.readFileCount.incrementAndGet();
         } catch (Exception t) {
             if (Resources.exists(directory)) {
-                log(
+                LOGGER.log(
                         Level.SEVERE,
-                        "Failed to load the service configuration in directory: {0} with XStreamServiceLoader for {1}",
-                        directory,
-                        serviceLoader.getServiceClass());
+                        "Failed to load the service configuration in directory: {0} with XStreamServiceLoader for {1}"
+                                .formatted(directory, serviceLoader.getServiceClass()),
+                        t);
             } else {
-                log(
+                LOGGER.log(
                         Level.SEVERE,
-                        "Failed to load the root service configuration with loader for {0}",
-                        serviceLoader.getServiceClass(),
+                        "Failed to load the root service configuration with XStreamServiceLoader for "
+                                + serviceLoader.getServiceClass(),
                         t);
             }
         }

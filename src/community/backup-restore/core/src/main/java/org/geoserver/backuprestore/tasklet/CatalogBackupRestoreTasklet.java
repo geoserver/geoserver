@@ -43,6 +43,7 @@ import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.Filter;
+import org.geowebcache.config.ConfigurationResourceProvider;
 import org.geowebcache.config.XMLConfiguration;
 import org.geowebcache.storage.blobstore.file.FilePathUtils;
 import org.springframework.batch.core.job.JobExecution;
@@ -759,6 +760,10 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
 
                     doWrite(getCatalog().getNamespaceByPrefix(ws.getName()), wsFolder, "namespace.xml");
                     doWrite(ws, wsFolder, "workspace.xml");
+
+                    // The workspace's layer groups live in the folder just wiped and nothing else writes them back,
+                    // so they were lost as soon as the catalog was reloaded from the data directory.
+                    restoreWorkspaceLayerGroups(ws, wsFolder);
                 }
 
                 // Restore DataStores/CoverageStores
@@ -873,6 +878,17 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                         restoreWMTSStoreInfo(sourceRestoreFolder, ws, wsFolder, wmts);
                     }
                 }
+            }
+        }
+    }
+
+    /** Writes a workspace's layer groups into its {@code layergroups} folder, where the data directory keeps them. */
+    private void restoreWorkspaceLayerGroups(WorkspaceInfo ws, Resource wsFolder) throws Exception {
+        List<LayerGroupInfo> layerGroups = getCatalog().getLayerGroupsByWorkspace(ws);
+        if (!layerGroups.isEmpty()) {
+            Resource layerGroupsFolder = BackupUtils.dir(wsFolder, "layergroups");
+            for (LayerGroupInfo lg : layerGroups) {
+                doWrite(lg, layerGroupsFolder, lg.getName() + ".xml");
             }
         }
     }
@@ -1007,11 +1023,20 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             Resource targetGWCProviderBackupDir =
                     BackupUtils.dir(targetBackupFolder, GeoserverXMLResourceProvider.DEFAULT_CONFIGURATION_DIR_NAME);
 
-            for (GeoserverXMLResourceProvider gwcProvider :
-                    GeoServerExtensions.extensions(GeoserverXMLResourceProvider.class)) {
-                Resource providerConfigFile = Resources.fromPath(gwcProvider.getLocation());
-                if (Resources.exists(providerConfigFile) && FileUtils.sizeOf(providerConfigFile.file()) > 0) {
-                    Resources.copy(gwcProvider.in(), targetGWCProviderBackupDir, providerConfigFile.name());
+            // Every GWC configuration provider, not only GeoServer's own class: GeoServer Cloud provides
+            // geowebcache.xml with a class of its own, so it was never backed up there.
+            for (ConfigurationResourceProvider gwcProvider : gwcConfigProviders()) {
+                try {
+                    Resource providerConfigFile = Resources.fromPath(gwcProvider.getLocation());
+                    if (Resources.exists(providerConfigFile) && FileUtils.sizeOf(providerConfigFile.file()) > 0) {
+                        // closed here: Resources.copy leaves the stream open, and an open stream keeps the
+                        // resource lock on the live configuration file
+                        try (InputStream in = gwcProvider.in()) {
+                            Resources.copy(in, targetGWCProviderBackupDir, providerConfigFile.name());
+                        }
+                    }
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Skipped the GWC configuration of provider " + gwcProvider.getId(), e);
                 }
             }
 
@@ -1105,6 +1130,22 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
     }
 
     /**
+     * The GWC configuration providers (geowebcache.xml and the disk quota ones), looked up by the GWC interface:
+     * GeoServer provides them as {@link GeoserverXMLResourceProvider}, GeoServer Cloud with a class of its own.
+     */
+    private static List<ConfigurationResourceProvider> gwcConfigProviders() {
+        return GeoServerExtensions.extensions(ConfigurationResourceProvider.class);
+    }
+
+    /** Whether the archive carries at least one GWC provider configuration file to restore. */
+    private static boolean hasGwcProviderConfig(Resource sourceRestoreFolder) {
+        Resource dir = sourceRestoreFolder.get(GeoserverXMLResourceProvider.DEFAULT_CONFIGURATION_DIR_NAME);
+        return Resources.exists(dir)
+                && dir.list().stream()
+                        .anyMatch(r -> r.getType() == Type.RESOURCE && r.name().endsWith(".xml"));
+    }
+
+    /**
      * TODO: When Restoring
      *
      * <p>1. the securityManager should issue the listeners 2. the GWCInitializer should be re-initialized
@@ -1113,22 +1154,33 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         // Restore configuration files form source and Test that everything went well
         try {
             // - Prepare folder
-            GeoserverXMLResourceProvider gwcConfigProvider =
-                    (GeoserverXMLResourceProvider) GeoServerExtensions.bean("gwcXmlConfigResourceProvider");
-            Resource targetGWCProviderRestoreDir = gwcConfigProvider.getConfigDirectory();
+            // Through the GWC interface: GeoServer Cloud provides geowebcache.xml with a class of its own, so the cast
+            // to GeoServer's failed there and nothing of GWC was restored.
+            ConfigurationResourceProvider gwcConfigProvider =
+                    (ConfigurationResourceProvider) GeoServerExtensions.bean("gwcXmlConfigResourceProvider");
+            Resource targetGWCProviderRestoreDir =
+                    Resources.fromPath(gwcConfigProvider.getLocation()).parent();
             // Only wipe + replace the target's GWC provider configuration on a full PURGE restore. On a merge
             // (BK_PURGE_RESOURCES=false) or a filtered restore the target keeps its existing GWC configuration.
-            if (!filterIsValid() && purge) {
+            // It keeps it on a dry run too, and when the archive carries none (one taken where the backup could
+            // not read it) rather than wiping it with nothing to put back.
+            if (!filterIsValid() && purge && !isDryRun() && hasGwcProviderConfig(sourceRestoreFolder)) {
                 Files.delete(targetGWCProviderRestoreDir.dir());
 
                 // Restore GWC Providers Configurations
-                for (GeoserverXMLResourceProvider gwcProvider :
-                        GeoServerExtensions.extensions(GeoserverXMLResourceProvider.class)) {
-                    Resource providerConfigFile = sourceRestoreFolder.get(Paths.path(
-                            GeoserverXMLResourceProvider.DEFAULT_CONFIGURATION_DIR_NAME,
-                            gwcProvider.getConfigFileName()));
-                    if (Resources.exists(providerConfigFile) && FileUtils.sizeOf(providerConfigFile.file()) > 0) {
-                        Resources.copy(providerConfigFile.in(), targetGWCProviderRestoreDir, providerConfigFile.name());
+                for (ConfigurationResourceProvider gwcProvider : gwcConfigProviders()) {
+                    try {
+                        Resource providerConfigFile = sourceRestoreFolder.get(Paths.path(
+                                GeoserverXMLResourceProvider.DEFAULT_CONFIGURATION_DIR_NAME,
+                                Resources.fromPath(gwcProvider.getLocation()).name()));
+                        if (Resources.exists(providerConfigFile) && FileUtils.sizeOf(providerConfigFile.file()) > 0) {
+                            try (InputStream in = providerConfigFile.in()) {
+                                Resources.copy(in, targetGWCProviderRestoreDir, providerConfigFile.name());
+                            }
+                        }
+                    } catch (Exception e) {
+                        LOGGER.log(
+                                Level.WARNING, "Skipped the GWC configuration of provider " + gwcProvider.getId(), e);
                     }
                 }
             }
@@ -1138,9 +1190,10 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             // safe to save tons of single XML files.
             //       Nonetheless, given the default implementation of GWC Catalog does not have much
             // sense to refactor this code now.
-            restoreGwcLayers(sourceRestoreFolder, targetGWCProviderRestoreDir);
+            restoreGwcLayers(sourceRestoreFolder);
 
         } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error restoring the GWC configuration", e);
             if (getCurrentJobExecution() != null) {
                 getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
             }
@@ -1148,8 +1201,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
     }
 
     /** Restores GWC Layers Configurations. */
-    private void restoreGwcLayers(Resource sourceRestoreFolder, Resource targetGWCProviderRestoreDir)
-            throws IOException {
+    private void restoreGwcLayers(Resource sourceRestoreFolder) throws IOException {
         final TileLayerCatalog gwcCatalog = (TileLayerCatalog) GeoServerExtensions.bean("GeoSeverTileLayerCatalog");
         if (gwcCatalog == null) return;
         BiMap<String, String> layersByName = null;
@@ -1168,10 +1220,13 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         // Only wipe the target's gwc-layers on a full PURGE restore. On a merge (BK_PURGE_RESOURCES=false) or a
         // filtered restore the target keeps its existing tile layers, so wiping them would drop the GWC config of
         // every layer not present in the archive; restoreGWCTileLayersInfos below then merges the archive's on top.
-        if (!filterIsValid() && purge) {
-            Resource gwcCatalogPersistenceLocation =
-                    targetGWCProviderRestoreDir.parent().get(gwcCatalog.getPersistenceLocation());
-            Files.delete(gwcCatalogPersistenceLocation.dir());
+        // Emptied through the catalog rather than by deleting its directory, which a catalog caching its tile layers
+        // (GeoServer Cloud's) does not see: its next lookup failed and no tile layer was restored. Never on a dry run,
+        // which must leave the live configuration alone.
+        if (!filterIsValid() && purge && !isDryRun()) {
+            for (String id : new java.util.HashSet<>(gwcCatalog.getLayerIds())) {
+                gwcCatalog.delete(id);
+            }
         }
         // restore tile layers
         restoreGWCTileLayersInfos(gwcCatalog, layersByName, gwcRestoreCatalog);

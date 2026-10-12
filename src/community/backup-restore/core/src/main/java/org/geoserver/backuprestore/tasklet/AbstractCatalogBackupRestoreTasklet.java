@@ -180,6 +180,9 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
     @SuppressWarnings("unchecked")
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+        // The tasklet is a singleton: a stop requested for an earlier job must not stop this one, which otherwise
+        // ended STOPPED as soon as a step outlasted the check interval. A stop of this job is still seen below.
+        stopped = false;
         super.retrieveInterstepData(chunkContext.getStepContext().getStepExecution());
         JobExecution jobExecution =
                 chunkContext.getStepContext().getStepExecution().getJobExecution();
@@ -249,17 +252,25 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
                             .split(";");
                 }
             }
+            // Never the folder holding this job's archive, when it lies in the data directory: a backup took along
+            // the archives already there and an empty copy of the one being written, and a full restore copied them
+            // back over the live ones, emptying the very archive it was restoring from.
+            final String archiveFolder = archiveFolderInDataDirectory();
             for (Entry<String, Filter<Resource>> entry : resources.entrySet()) {
                 Resource resource = resourceStore.get(entry.getKey());
 
                 List<Resource> resourcesToExclude = checkReosourcesToExclude(resourceStore, resource, excludeFilePaths);
 
-                if (resource != null && Resources.exists(resource) && !resourcesToExclude.contains(resource)) {
+                if (resource != null
+                        && Resources.exists(resource)
+                        && !resourcesToExclude.contains(resource)
+                        && !inFolder(resource, archiveFolder)) {
 
                     List<Resource> resources = Resources.list(resource, entry.getValue(), false);
 
                     Resource targetDir = BackupUtils.dir(baseDir, resource.name());
-                    copyResources(resourceStore, excludeFilePaths, resources, entry.getValue(), targetDir);
+                    copyResources(
+                            resourceStore, excludeFilePaths, archiveFolder, resources, entry.getValue(), targetDir);
                 }
             }
         } catch (Exception e) {
@@ -277,12 +288,15 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
     private void copyResources(
             ResourceStore resourceStore,
             String[] excludeFilePaths,
+            String archiveFolder,
             List<Resource> resources,
             Filter<Resource> filter,
             Resource targetDir) {
         for (Resource res : resources) {
             try {
-                if (!checkReosourcesToExclude(resourceStore, res, excludeFilePaths)
+                if (inFolder(res, archiveFolder)) {
+                    LOGGER.log(Level.INFO, "Skipped " + res.path() + ", the folder holding the archive");
+                } else if (!checkReosourcesToExclude(resourceStore, res, excludeFilePaths)
                         .contains(res)) {
                     if (res.getType() != Type.DIRECTORY) {
                         Resources.copy(res.file(), targetDir);
@@ -291,7 +305,8 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
                         if (sub_resources.isEmpty()) {
                             Resources.copy(res, BackupUtils.dir(targetDir, res.path()));
                         } else {
-                            copyResources(resourceStore, excludeFilePaths, sub_resources, filter, targetDir);
+                            copyResources(
+                                    resourceStore, excludeFilePaths, archiveFolder, sub_resources, filter, targetDir);
                         }
                     }
                 } else {
@@ -330,6 +345,44 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
             }
         }
         return resourcesToExclude;
+    }
+
+    /**
+     * The folder holding this job's archive, relative to the data directory, when the archive lies inside it (and not
+     * at its root, which is never copied as a whole); {@code null} otherwise. A backup's source and a restore's
+     * extracted archive both have the data directory's layout, so the same relative path names the folder in either.
+     */
+    private String archiveFolderInDataDirectory() {
+        try {
+            Resource archive =
+                    getCurrentJobExecution() != null ? getCurrentJobExecution().getArchiveFile() : null;
+            if (archive == null) {
+                return null;
+            }
+            java.nio.file.Path dataDir = backupFacade
+                    .getGeoServerDataDirectory()
+                    .root()
+                    .getCanonicalFile()
+                    .toPath();
+            java.nio.file.Path folder =
+                    archive.parent().dir().getCanonicalFile().toPath();
+            if (folder.equals(dataDir) || !folder.startsWith(dataDir)) {
+                return null;
+            }
+            return Paths.convert(dataDir.relativize(folder).toString());
+        } catch (Exception e) {
+            LOGGER.log(Level.FINE, "Could not tell where the archive lies", e);
+            return null;
+        }
+    }
+
+    /** Whether a resource is the given folder (a path relative to its store) or lies inside it. */
+    private static boolean inFolder(Resource resource, String folder) {
+        if (folder == null || resource == null) {
+            return false;
+        }
+        String path = resource.path();
+        return path.equals(folder) || path.startsWith(folder + "/");
     }
 
     //

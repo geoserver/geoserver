@@ -161,7 +161,9 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
         if (source == null
                 && getCatalog().getResourceByName(resourceInfo.getName(), FeatureTypeInfo.class) == null
                 && getCatalog().getResourceByName(resourceInfo.getName(), CoverageInfo.class) == null) {
-            Class<? extends ResourceInfo> clz = null;
+            // A cascaded WMS or WMTS layer is neither of the two below: read it back as any resource. A null class
+            // made the lookup fail, so the resource was added but never saved.
+            Class<? extends ResourceInfo> clz = ResourceInfo.class;
             if (resourceInfo instanceof FeatureTypeInfo) {
                 clz = FeatureTypeInfo.class;
             } else if (resourceInfo instanceof CoverageInfo) {

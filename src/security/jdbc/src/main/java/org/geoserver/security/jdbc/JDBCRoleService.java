@@ -151,7 +151,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
                 rs2 = ps2.executeQuery();
                 while (rs2.next()) {
                     String propName = rs2.getString(1);
-                    Object propValue = rs2.getObject(2);
+                    String propValue = rs2.getString(2);
                     if (propName != null) {
                         roleObject.getProperties().put(propName, propValue == null ? "" : propValue);
                     }
@@ -265,7 +265,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
             while (rs.next()) {
                 String rolename = rs.getString(1);
                 String propName = rs.getString(2);
-                Object propValue = rs.getObject(3);
+                String propValue = rs.getString(3);
                 GeoServerRole roleObject = map.get(rolename);
                 if (roleObject != null) {
                     roleObject.getProperties().put(propName, propValue == null ? "" : propValue);
@@ -311,7 +311,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
             while (rs.next()) {
                 String rolename = rs.getString(1);
                 String propName = rs.getString(2);
-                Object propValue = rs.getObject(3);
+                String propValue = rs.getString(3);
                 GeoServerRole roleObject = map.get(rolename);
                 if (roleObject != null) {
                     roleObject.getProperties().put(propName, propValue == null ? "" : propValue);
@@ -358,7 +358,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
                     rs2 = ps2.executeQuery();
                     while (rs2.next()) {
                         String propName = rs2.getString(1);
-                        Object propValue = rs2.getObject(2);
+                        String propValue = rs2.getString(2);
                         roleObject.getProperties().put(propName, propValue == null ? "" : propValue);
                     }
                 }

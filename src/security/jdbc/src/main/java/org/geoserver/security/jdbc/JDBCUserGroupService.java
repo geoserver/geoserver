@@ -176,7 +176,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
                 rs2 = ps2.executeQuery();
                 while (rs2.next()) {
                     String propName = rs2.getString(1);
-                    Object propValue = rs2.getObject(2);
+                    String propValue = rs2.getString(2);
                     u.getProperties().put(propName, propValue == null ? "" : propValue);
                 }
             }
@@ -376,7 +376,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
             while (rs.next()) {
                 String userName = rs.getString(1);
                 String propName = rs.getString(2);
-                Object propValue = rs.getObject(3);
+                String propValue = rs.getString(3);
                 GeoServerUser u = map.get(userName);
                 if (u != null) {
                     u.getProperties().put(propName, propValue == null ? "" : propValue);

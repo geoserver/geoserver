@@ -129,6 +129,48 @@ public class StoredQueryTest extends WFS20TestSupport {
         checkOws11Exception(dom, "2.0.0", WFSException.DUPLICATE_STORED_QUERY_ID_VALUE, "myStoredQuery");
     }
 
+    @Test
+    public void testGetFeatureOverLongStoredQueryId() throws Exception {
+        String id = "a".repeat(StoredQueryProvider.MAX_ID_LENGTH + 1);
+        MockHttpServletResponse response =
+                getAsServletResponse("wfs?service=WFS&version=2.0.0&request=GetFeature&storedQuery_id=" + id);
+        assertEquals(400, response.getStatus());
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+        String text = checkOws11Exception(dom, "2.0.0", ServiceException.INVALID_PARAMETER_VALUE, "STOREDQUERY_ID");
+        assertEquals("No such stored query: " + id, text);
+    }
+
+    @Test
+    public void testCreateStoredQueryOverLongId() throws Exception {
+        String id = "a".repeat(StoredQueryProvider.MAX_ID_LENGTH + 1);
+        MockHttpServletResponse response = postAsServletResponse("wfs", getCreatePrimitiveWithinQuery(false, id));
+        assertEquals(400, response.getStatus());
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+        String text = checkOws11Exception(dom, "2.0.0", ServiceException.INVALID_PARAMETER_VALUE, "STOREDQUERY_ID");
+        assertEquals("Stored query id too long", text);
+    }
+
+    @Test
+    public void testCreateStoredQueryIdLengthIgnoresStrippedCharacters() throws Exception {
+        // the colon is stripped from the file name, so the id fits although it is one character over the limit
+        String id = "a:" + "a".repeat(StoredQueryProvider.MAX_ID_LENGTH - 1);
+        Document dom = postAsDOM("wfs", getCreatePrimitiveWithinQuery(false, id));
+        assertEquals("wfs:CreateStoredQueryResponse", dom.getDocumentElement().getNodeName());
+        assertEquals("OK", dom.getDocumentElement().getAttribute("status"));
+
+        dom = getAsDOM("wfs?request=ListStoredQueries");
+        XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:StoredQuery)", dom);
+        XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = '" + id + "']", dom);
+    }
+
+    @Test
+    public void testDropOverLongStoredQueryId() throws Exception {
+        String id = "a".repeat(StoredQueryProvider.MAX_ID_LENGTH + 1);
+        Document dom = getAsDOM("wfs?request=DropStoredQuery&storedQuery_Id=" + id, 400);
+        String text = checkOws11Exception(dom, "2.0.0", ServiceException.INVALID_PARAMETER_VALUE, "id");
+        assertEquals("Stored query " + id + " does not exist.", text);
+    }
+
     public String getCreatePrimitiveWithinQuery(boolean emptyReturnFeatureTypes) {
         return getCreatePrimitiveWithinQuery(emptyReturnFeatureTypes, "myStoredQuery");
     }

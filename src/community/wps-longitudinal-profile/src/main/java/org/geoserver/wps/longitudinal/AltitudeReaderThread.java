@@ -111,19 +111,18 @@ class AltitudeReaderThread implements Callable<List<ProfileVertice>> {
             pv.setAltitude(roundedAltitude - altCorrection);
 
             // reproject if necessary
-            if (this.tx != null) {
-                point = (Point) JTS.transform(point, tx);
-                pv.setCoordinate(point.getCoordinate());
-            }
+            Point target = tx != null ? (Point) JTS.transform(point, tx) : point;
 
-            // compute distance and slope
-            calculator.next(point, pv.getAltitude());
+            // compute distance and slope, on the coverage CRS point unless measuring on the projection plane
+            calculator.next(calculator.isProjectedDistance() ? target : point, pv.getAltitude());
             if (first) {
                 first = false;
             } else {
                 pv.setDistancePrevious(calculator.getDistance());
                 pv.setSlope(calculator.getSlope());
             }
+
+            if (tx != null) pv.setCoordinate(target.getCoordinate());
 
             if (monitor.isCanceled()) return null;
         }

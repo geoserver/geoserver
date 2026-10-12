@@ -95,6 +95,22 @@ public class StoredQueryProviderTest {
     }
 
     @Test
+    public void overLongIdIsNotFound() {
+        // the query directory must exist so the lookup resolves against it
+        storedQueryProvider.storedQueryDir().dir();
+        String id = "a".repeat(StoredQueryProvider.MAX_ID_LENGTH + 1);
+        assertThat(storedQueryProvider.getStoredQuery(id), is(nullValue()));
+    }
+
+    @Test
+    public void idLengthIsCheckedAfterStrippingNonWordCharacters() {
+        String max = "a".repeat(StoredQueryProvider.MAX_ID_LENGTH);
+        assertThat(StoredQueryProvider.isIdTooLong(max), is(false));
+        assertThat(StoredQueryProvider.isIdTooLong(max + "a"), is(true));
+        assertThat(StoredQueryProvider.isIdTooLong(max + ":"), is(false));
+    }
+
+    @Test
     public void whenNoStoredQueriesDefinedAGetFeatureByIdQueryIsReturned() {
         List<StoredQuery> queries = storedQueryProvider.listStoredQueries();
         assertThat(queries, hasSize(1));

@@ -60,15 +60,16 @@ public class DropStoredQuery {
      * @return {@code true} if a stored query existed and was removed, {@code false} if none existed with that name.
      */
     private boolean dropStoredQuery(String name) {
+        StoredQuery query;
         try {
-            StoredQuery query = storedQueryProvider.getStoredQuery(name);
-            if (query == null) {
-                return false;
-            }
-            storedQueryProvider.removeStoredQuery(query);
-            return true;
+            query = storedQueryProvider.getStoredQuery(name);
         } catch (RuntimeException unparseable) {
             return storedQueryProvider.removeStoredQueryByName(name);
         }
+        if (query == null) {
+            return false;
+        }
+        storedQueryProvider.removeStoredQuery(query);
+        return true;
     }
 }

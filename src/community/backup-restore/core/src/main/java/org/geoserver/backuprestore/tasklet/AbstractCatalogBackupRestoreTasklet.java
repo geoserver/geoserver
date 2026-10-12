@@ -180,6 +180,9 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
     @SuppressWarnings("unchecked")
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+        // The tasklet is a singleton: a stop requested for an earlier job must not stop this one, which otherwise
+        // ended STOPPED as soon as a step outlasted the check interval. A stop of this job is still seen below.
+        stopped = false;
         super.retrieveInterstepData(chunkContext.getStepContext().getStepExecution());
         JobExecution jobExecution =
                 chunkContext.getStepContext().getStepExecution().getJobExecution();

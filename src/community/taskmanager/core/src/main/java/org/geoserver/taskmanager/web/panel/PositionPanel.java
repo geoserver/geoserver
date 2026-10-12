@@ -72,32 +72,29 @@ public class PositionPanel extends Panel {
         upLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("up", PositionPanel.this)));
         add(upLink);
 
-        downLink =
-                new ImageAjaxLink<Object>(
-                        "down", "gs-icon-arrow-down") {
-                    @Serial
-                    private static final long serialVersionUID = -8005026702401617344L;
+        downLink = new ImageAjaxLink<Object>("down", "gs-icon-arrow-down") {
+            @Serial
+            private static final long serialVersionUID = -8005026702401617344L;
 
-                    @Override
-                    protected void onClick(AjaxRequestTarget target) {
-                        int index = batch.getElements().indexOf(be);
-                        batch.getElements().remove(index);
-                        batch.getElements().add(index + 1, be);
-                        tablePanel.clearSelection();
-                        ((MarkupContainer) tablePanel.get("listContainer").get("items")).removeAll();
-                        target.add(tablePanel);
-                    }
+            @Override
+            protected void onClick(AjaxRequestTarget target) {
+                int index = batch.getElements().indexOf(be);
+                batch.getElements().remove(index);
+                batch.getElements().add(index + 1, be);
+                tablePanel.clearSelection();
+                ((MarkupContainer) tablePanel.get("listContainer").get("items")).removeAll();
+                target.add(tablePanel);
+            }
 
-                    @Override
-                    protected void onComponentTag(ComponentTag tag) {
-                        if (batch.getElements().indexOf(be)
-                                == batch.getElements().size() - 1) {
-                            tag.put("class", "visibility-hidden");
-                        } else {
-                            tag.put("class", "visibility-visible");
-                        }
-                    }
-                };
+            @Override
+            protected void onComponentTag(ComponentTag tag) {
+                if (batch.getElements().indexOf(be) == batch.getElements().size() - 1) {
+                    tag.put("class", "visibility-hidden");
+                } else {
+                    tag.put("class", "visibility-visible");
+                }
+            }
+        };
         downLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("down", PositionPanel.this)));
         add(downLink);
     }

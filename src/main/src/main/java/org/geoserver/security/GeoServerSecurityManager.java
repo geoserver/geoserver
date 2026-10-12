@@ -1738,16 +1738,12 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 GeoServerUser.ADMIN_USERNAME, GeoServerUser.DEFAULT_ADMIN_PASSWD);
 
         try {
-            // Probe with a private ProviderManager, not the shared providerMgr: the shared one fires
-            // its AuthenticationEventPublisher, so a probe through it broadcasts a real
-            // AuthenticationSuccessEvent app-wide whenever the default password is still active -
-            // indistinguishable from an actual admin login.
+            // Use a separate manager with no event publisher. The shared providerMgr publishes an
+            // authentication event on every attempt, and listeners such as the session renewal in
+            // GeoServerApplication and BruteForceListener would treat this check as a real login.
             ProviderManager probeMgr = new ProviderManager(providerMgr.getProviders());
             probeMgr.setEraseCredentialsAfterAuthentication(true);
-            // withThrottlingDisabled() is kept as defense-in-depth even though probeMgr publishes no
-            // event for it to react to - harmless no-op today, cheap insurance if this ever again
-            // authenticates against something event-publishing.
-            Authentication result = BruteForceListener.withThrottlingDisabled(() -> probeMgr.authenticate(token));
+            Authentication result = probeMgr.authenticate(token);
             return result.isAuthenticated();
         } catch (Exception e) {
             // authentication failed

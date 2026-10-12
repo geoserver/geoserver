@@ -10,12 +10,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import org.custommonkey.xmlunit.XMLAssert;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.StoredQueryProvider;
 import org.geoserver.wfs.WFSException;
@@ -678,7 +682,7 @@ public class StoredQueryTest extends WFS20TestSupport {
             wfsInfo.setAllowGlobalQueries(true);
             geoServer.save(wfsInfo);
             geoServerInfo = geoServer.getGlobal();
-            geoServerInfo.setAllowStoredQueriesPerWorkspace(false);
+            geoServerInfo.setAllowStoredQueriesPerWorkspace(true);
             geoServer.save(geoServerInfo);
         }
     }
@@ -710,6 +714,47 @@ public class StoredQueryTest extends WFS20TestSupport {
             wfsInfo.setDisableStoredQueriesManagement(false);
             geoServer.save(wfsInfo);
         }
+    }
+
+    @Test
+    public void testDropGlobalStoredQueryFromVirtualService() throws Exception {
+        // create a global stored query
+        Document dom = postAsDOM("wfs", getCreatePrimitiveWithinQuery(false));
+        assertEquals("OK", dom.getDocumentElement().getAttribute("status"));
+
+        // cannot be dropped from a virtual service, and the error says why
+        String xml = "<wfs:DropStoredQuery xmlns:wfs='" + WFS.NAMESPACE + "' service='WFS' id='myStoredQuery'/>";
+        dom = postAsDOM("sf/wfs", xml);
+        assertThat(
+                XMLUnit.newXpathEngine().evaluate("//ows:ExceptionText", dom),
+                containsString("Global query can not be deleted from a virtual service"));
+        XMLAssert.assertXpathExists(
+                "//wfs:StoredQuery[@id = 'myStoredQuery']", getAsDOM("wfs?request=ListStoredQueries"));
+
+        // but can be dropped globally
+        dom = postAsDOM("wfs", xml);
+        assertEquals("OK", dom.getDocumentElement().getAttribute("status"));
+    }
+
+    @Test
+    public void testDropUnparseableStoredQuery() throws Exception {
+        Resource broken = getResourceLoader().get("wfs/query/brokenQuery.xml");
+        try (OutputStream out = broken.out()) {
+            out.write("not a stored query".getBytes(StandardCharsets.UTF_8));
+        }
+        String xml = "<wfs:DropStoredQuery xmlns:wfs='" + WFS.NAMESPACE + "' service='WFS' id='brokenQuery'/>";
+
+        // global and unparseable, still cannot be dropped from a virtual service
+        Document dom = postAsDOM("sf/wfs", xml);
+        assertThat(
+                XMLUnit.newXpathEngine().evaluate("//ows:ExceptionText", dom),
+                containsString("Global query can not be deleted from a virtual service"));
+        assertEquals(Resource.Type.RESOURCE, broken.getType());
+
+        // dropped globally, even if it cannot be parsed
+        dom = postAsDOM("wfs", xml);
+        assertEquals("OK", dom.getDocumentElement().getAttribute("status"));
+        assertEquals(Resource.Type.UNDEFINED, broken.getType());
     }
 
     private void removeAllLocalStoredQueries() {

@@ -149,18 +149,7 @@ public class StoredQueryProvider {
      * @param query The stored query
      */
     public void removeStoredQuery(StoredQuery query) {
-        final String filename = toFilename(query.getName());
-        Resource resource = storedQueryDirByContext().get(filename);
-        // resource exists? Delete it
-        if (resource.getType() == Type.RESOURCE) {
-            resource.delete();
-        } else {
-            // resource doesn't exists
-            // are we inside a virtual service and global query exists ?
-            if (localWorkspaceDir() != null && storedQueryDir().get(filename).getType() == Type.RESOURCE) {
-                throw new GeoServerRuntimException("Global query can not be deleted from a virtual service.");
-            }
-        }
+        removeStoredQueryByName(query.getName());
     }
 
     /**
@@ -168,15 +157,22 @@ public class StoredQueryProvider {
      *
      * @param name Identifying name of the stored query.
      * @return {@code true} if a definition existed and was removed, {@code false} otherwise.
+     * @throws GeoServerRuntimException if called from a virtual service and the query is a global one
      */
     boolean removeStoredQueryByName(String name) {
         final String filename = toFilename(name);
         Resource resource = storedQueryDirByContext().get(filename);
-        if (resource.getType() != Type.RESOURCE) {
-            return false;
+        // resource exists? Delete it
+        if (resource.getType() == Type.RESOURCE) {
+            resource.delete();
+            return true;
         }
-        resource.delete();
-        return true;
+        // resource doesn't exists
+        // are we inside a virtual service and global query exists ?
+        if (localWorkspaceDir() != null && storedQueryDir().get(filename).getType() == Type.RESOURCE) {
+            throw new GeoServerRuntimException("Global query can not be deleted from a virtual service.");
+        }
+        return false;
     }
 
     /** Removes all stored queries. */

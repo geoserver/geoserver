@@ -12,8 +12,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.util.Map;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.ows.Request;
@@ -59,7 +57,7 @@ public enum JSONType {
     /** The key of the property to enable the JSonp responses This property is set default to false. */
     public static final String ENABLE_JSONP_KEY = "ENABLE_JSONP";
 
-    private static boolean jsonpEnabled = isJsonpPropertyEnabled();
+    private static volatile boolean jsonpEnabled = isJsonpPropertyEnabled();
 
     /**
      * Check if the passed MimeType is a valid jsonp
@@ -82,16 +80,9 @@ public enum JSONType {
         return JSONType.isJsonpEnabled() && JSONType.isJsonpMimeType(type);
     }
 
-    private static ReadWriteLock lock = new ReentrantReadWriteLock(true);
-
     /** @return The boolean returned represents the value of the jsonp toggle (if true jsonp is enabled) */
     public static boolean isJsonpEnabled() {
-        lock.readLock().lock();
-        try {
-            return jsonpEnabled;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return jsonpEnabled;
     }
 
     /**
@@ -101,14 +92,7 @@ public enum JSONType {
      * @param jsonpEnabled true to enable jsonp
      */
     public static void setJsonpEnabled(boolean jsonpEnabled) {
-        if (jsonpEnabled != JSONType.jsonpEnabled) {
-            lock.writeLock().lock();
-            try {
-                JSONType.jsonpEnabled = jsonpEnabled;
-            } finally {
-                lock.writeLock().unlock();
-            }
-        }
+        JSONType.jsonpEnabled = jsonpEnabled;
     }
 
     /**

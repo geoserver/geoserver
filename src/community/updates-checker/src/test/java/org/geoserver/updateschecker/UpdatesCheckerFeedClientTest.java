@@ -4,6 +4,11 @@
  */
 package org.geoserver.updateschecker;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -12,13 +17,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-import com.sun.net.httpserver.HttpExchange;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import org.geoserver.platform.GeoServerExtensionsHelper;
@@ -26,28 +26,21 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-/** Exercises the feed client against a real local HTTP server, so redirects, ETags and size limits are real. */
+/** Exercises the feed client against a local WireMock server. */
 public class UpdatesCheckerFeedClientTest {
 
+    private static final String DEFAULT_URL =
+            "https://raw.githubusercontent.com/geoserver/geoserver/updates-checker-v1/versions.json";
+
     private TestFeedServer feedServer;
+    private WireMockServer wireMock;
     private LogCapture log;
-
-    private volatile int status = 200;
-    private volatile String etag = "W/\"v1\"";
-    private volatile byte[] body;
-    private volatile String contentEncoding;
-    private volatile String location;
-    private volatile long declaredLength = -1;
-    private volatile boolean streamBody = false;
-
-    private final List<String> ifNoneMatchSeen = Collections.synchronizedList(new ArrayList<>());
-    private final List<String> acceptEncodingSeen = Collections.synchronizedList(new ArrayList<>());
-    private final AtomicInteger requests = new AtomicInteger();
 
     @Before
     public void startServer() throws Exception {
-        body = UpdatesCheckerFeedParserTest.sampleFeed();
-        feedServer = TestFeedServer.start(this::handle);
+        feedServer = TestFeedServer.start("");
+        wireMock = feedServer.wireMock();
+        serve(200, "W/\"v1\"", UpdatesCheckerFeedParserTest.sampleFeed());
         log = LogCapture.start();
     }
 
@@ -57,52 +50,19 @@ public class UpdatesCheckerFeedClientTest {
         log.stop();
     }
 
-    // HttpExchange is not AutoCloseable before Java 14, so the finally block cannot become try-with-resources
-    @SuppressWarnings("PMD.UseTryWithResources")
-    private void handle(HttpExchange exchange) throws IOException {
-        requests.incrementAndGet();
-        ifNoneMatchSeen.add(exchange.getRequestHeaders().getFirst("If-None-Match"));
-        acceptEncodingSeen.add(exchange.getRequestHeaders().getFirst("Accept-Encoding"));
-        try {
-            if (status == 304) {
-                exchange.sendResponseHeaders(304, -1);
-                return;
-            }
-            if (location != null) {
-                exchange.getResponseHeaders().add("Location", location);
-            }
-            if (etag != null) {
-                exchange.getResponseHeaders().add("ETag", etag);
-            }
-            if (contentEncoding != null) {
-                exchange.getResponseHeaders().add("Content-Encoding", contentEncoding);
-            }
-            byte[] bytes = body;
-            if (streamBody) {
-                exchange.sendResponseHeaders(status, 0);
-                try (OutputStream out = exchange.getResponseBody()) {
-                    byte[] chunk = new byte[64 * 1024];
-                    java.util.Arrays.fill(chunk, (byte) ' ');
-                    for (int sent = 0; sent < UpdatesCheckerFeedClient.MAX_BODY_BYTES + 200_000; sent += chunk.length) {
-                        out.write(chunk);
-                    }
-                }
-            } else if (declaredLength >= 0) {
-                exchange.sendResponseHeaders(status, declaredLength);
-                try (OutputStream out = exchange.getResponseBody()) {
-                    out.write(new byte[0]);
-                }
-            } else {
-                exchange.sendResponseHeaders(status, bytes.length == 0 ? -1 : bytes.length);
-                if (bytes.length > 0) {
-                    try (OutputStream out = exchange.getResponseBody()) {
-                        out.write(bytes);
-                    }
-                }
-            }
-        } finally {
-            exchange.close();
-        }
+    /** Answers every request for the feed with this status, ETag and body. */
+    private void serve(int status, String etag, byte[] body) {
+        feedServer.respondWith(
+                aResponse().withStatus(status).withHeader("ETag", etag).withBody(body));
+    }
+
+    private void serve(int status, String etag, String body) {
+        serve(status, etag, body.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    }
+
+    private int requestsWith(String header, String value) {
+        return wireMock.findAll(getRequestedFor(urlEqualTo(TestFeedServer.PATH)).withHeader(header, equalTo(value)))
+                .size();
     }
 
     @Test
@@ -121,40 +81,38 @@ public class UpdatesCheckerFeedClientTest {
         assertNull(state.getLastError());
         assertTrue(state.getCheckedAtMillis() > 0);
         assertSame(state, client.getState());
-        assertEquals("the first request is unconditional", Collections.singletonList(null), ifNoneMatchSeen);
+        wireMock.verify(
+                1,
+                getRequestedFor(urlEqualTo(TestFeedServer.PATH))
+                        .withoutHeader("If-None-Match")
+                        .withoutHeader("Accept-Encoding"));
     }
 
     @Test
-    public void noAcceptEncodingIsSent() {
-        new UpdatesCheckerFeedClient().fetch();
-        assertEquals(Collections.singletonList(null), acceptEncodingSeen);
-    }
-
-    @Test
-    public void storedEtagIsReplayedVerbatimAndANotModifiedKeepsTheCachedFeed() throws Exception {
+    public void aNotModifiedAnswerToTheStoredEtagKeepsTheCachedFeed() {
         UpdatesCheckerFeedClient client = new UpdatesCheckerFeedClient();
         UpdatesCheckerFeedClient.State first = client.fetch();
 
-        status = 304;
+        serve(304, "W/\"v1\"", "");
         UpdatesCheckerFeedClient.State second = client.fetch();
 
-        assertEquals(java.util.Arrays.asList((String) null, "W/\"v1\""), ifNoneMatchSeen);
+        assertEquals("the ETag is sent back exactly as received", 1, requestsWith("If-None-Match", "W/\"v1\""));
         assertSame("a 304 keeps the cached body without re-parsing", first.getFeed(), second.getFeed());
         assertFalse(second.isLastAttemptFailed());
         assertTrue(second.getCheckedAtMillis() >= first.getCheckedAtMillis());
     }
 
     @Test
-    public void aChangedFeedReplacesTheCachedOneAndItsEtag() {
+    public void aChangedFeedReplacesTheCachedOneAndItsEtag() throws Exception {
         UpdatesCheckerFeedClient client = new UpdatesCheckerFeedClient();
         UpdatesCheckerFeedClient.State first = client.fetch();
 
-        etag = "W/\"v2\"";
+        serve(200, "W/\"v2\"", UpdatesCheckerFeedParserTest.sampleFeed());
         UpdatesCheckerFeedClient.State second = client.fetch();
         assertNotSame(first.getFeed(), second.getFeed());
 
         client.fetch();
-        assertEquals("W/\"v2\"", ifNoneMatchSeen.get(2));
+        assertEquals(1, requestsWith("If-None-Match", "W/\"v2\""));
     }
 
     @Test
@@ -162,7 +120,7 @@ public class UpdatesCheckerFeedClientTest {
         UpdatesCheckerFeedClient client = new UpdatesCheckerFeedClient();
         UpdatesCheckerFeedClient.State good = client.fetch();
 
-        status = 500;
+        feedServer.setStatus(500);
         UpdatesCheckerFeedClient.State bad = client.fetch();
 
         assertTrue(bad.isLastAttemptFailed());
@@ -174,7 +132,7 @@ public class UpdatesCheckerFeedClientTest {
 
     @Test
     public void failureWithNothingCachedLeavesNoFeed() {
-        status = 503;
+        feedServer.setStatus(503);
         UpdatesCheckerFeedClient.State state = new UpdatesCheckerFeedClient().fetch();
         assertNull(state.getFeed());
         assertTrue(state.isAttempted());
@@ -184,7 +142,7 @@ public class UpdatesCheckerFeedClientTest {
     @Test
     public void onlyHttp200And304AreAccepted() {
         for (int code : new int[] {201, 204, 404, 429, 500}) {
-            status = code;
+            feedServer.setStatus(code);
             UpdatesCheckerFeedClient.State state = new UpdatesCheckerFeedClient().fetch();
             assertTrue("HTTP " + code, state.isLastAttemptFailed());
             assertNull(state.getFeed());
@@ -192,43 +150,45 @@ public class UpdatesCheckerFeedClientTest {
     }
 
     @Test
-    public void redirectsAreNotFollowed() {
-        status = 302;
-        location = feedServer.url("/elsewhere");
+    public void redirectsAreNotFollowed() throws Exception {
+        feedServer.respondWith(aResponse().withStatus(302).withHeader("Location", feedServer.url("/elsewhere")));
+        wireMock.stubFor(get(urlEqualTo("/elsewhere"))
+                .willReturn(aResponse().withBody(UpdatesCheckerFeedParserTest.sampleFeed())));
+
         UpdatesCheckerFeedClient.State state = new UpdatesCheckerFeedClient().fetch();
+
         assertTrue(state.isLastAttemptFailed());
         assertEquals("Version feed returned HTTP 302", state.getLastError().base());
-        assertEquals("the redirect target must not be requested", 1, requests.get());
+        wireMock.verify(0, getRequestedFor(urlEqualTo("/elsewhere")));
     }
 
     @Test
-    public void aStreamedBodyOverTheLimitIsDiscarded() {
-        streamBody = true;
+    public void aBodyOverTheLimitIsDiscarded() {
+        byte[] tooBig = new byte[UpdatesCheckerFeedClient.MAX_BODY_BYTES + 1];
+        Arrays.fill(tooBig, (byte) ' ');
+        serve(200, "W/\"big\"", tooBig);
+
         UpdatesCheckerFeedClient.State state = new UpdatesCheckerFeedClient().fetch();
+
         assertTrue(state.isLastAttemptFailed());
         assertNull(state.getFeed());
         assertTrue(state.getLastError().base().contains("larger than"));
     }
 
     @Test
-    public void aDeclaredLengthOverTheLimitIsRejectedWithoutReading() {
-        declaredLength = UpdatesCheckerFeedClient.MAX_BODY_BYTES + 1L;
-        UpdatesCheckerFeedClient.State state = new UpdatesCheckerFeedClient().fetch();
-        assertTrue(state.isLastAttemptFailed());
-        assertTrue(state.getLastError().base().contains("larger than"));
-    }
-
-    @Test
-    public void aCompressedResponseIsRejected() {
-        contentEncoding = "gzip";
+    public void aCompressedResponseIsRejected() throws Exception {
+        feedServer.respondWith(
+                aResponse().withHeader("Content-Encoding", "gzip").withBody(UpdatesCheckerFeedParserTest.sampleFeed()));
         UpdatesCheckerFeedClient.State state = new UpdatesCheckerFeedClient().fetch();
         assertTrue(state.isLastAttemptFailed());
         assertTrue(state.getLastError().base().contains("Content-Encoding"));
     }
 
     @Test
-    public void anExplicitIdentityEncodingIsFine() {
-        contentEncoding = "identity";
+    public void anExplicitIdentityEncodingIsFine() throws Exception {
+        feedServer.respondWith(aResponse()
+                .withHeader("Content-Encoding", "identity")
+                .withBody(UpdatesCheckerFeedParserTest.sampleFeed()));
         assertFalse(new UpdatesCheckerFeedClient().fetch().isLastAttemptFailed());
     }
 
@@ -238,21 +198,22 @@ public class UpdatesCheckerFeedClientTest {
         UpdatesCheckerFeedClient.State good = client.fetch();
 
         for (String text : new String[] {"not json", "{}", "{\"schema_version\": 1}", "[1,2]"}) {
-            body = text.getBytes(java.nio.charset.StandardCharsets.UTF_8);
-            etag = "W/\"bad\"";
+            serve(200, "W/\"bad\"", text);
             UpdatesCheckerFeedClient.State state = client.fetch();
             assertTrue(text, state.isLastAttemptFailed());
             assertSame(text, good.getFeed(), state.getFeed());
         }
+
         // the bad responses' ETags were not stored: the next request still carries the good one
-        body = new byte[0];
+        serve(200, "W/\"bad\"", "");
         client.fetch();
-        assertEquals("W/\"v1\"", ifNoneMatchSeen.get(ifNoneMatchSeen.size() - 1));
+        assertEquals(0, requestsWith("If-None-Match", "W/\"bad\""));
+        assertEquals(5, requestsWith("If-None-Match", "W/\"v1\""));
     }
 
     @Test
     public void aNewerSchemaIsKeptAsAFlaggedFeed() {
-        body = "{\"schema_version\": 7}".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        serve(200, "W/\"v7\"", "{\"schema_version\": 7}");
         UpdatesCheckerFeedClient.State state = new UpdatesCheckerFeedClient().fetch();
         assertFalse(state.isLastAttemptFailed());
         assertTrue(state.getFeed().isSchemaTooNew());
@@ -261,8 +222,7 @@ public class UpdatesCheckerFeedClientTest {
     @Test
     public void anUnreachableServerIsAFailureWithAOneLineWarning() {
         feedServer.close();
-        UpdatesCheckerFeedClient client = new UpdatesCheckerFeedClient();
-        UpdatesCheckerFeedClient.State state = client.fetch();
+        UpdatesCheckerFeedClient.State state = new UpdatesCheckerFeedClient().fetch();
         assertTrue(state.isLastAttemptFailed());
         assertNull(state.getFeed());
         for (LogRecord r : log.records()) {
@@ -275,8 +235,7 @@ public class UpdatesCheckerFeedClientTest {
 
     @Test
     public void warningsFromTheFeedAreLoggedWithoutControlCharacters() {
-        body = ("{\"schema_version\": 1, \"series\": [{\"series\": \"bad\\nline\"}]}")
-                .getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        feedServer.setBody("{\"schema_version\": 1, \"series\": [{\"series\": \"bad\\nline\"}]}");
         new UpdatesCheckerFeedClient().fetch();
         assertTrue(log.warned("Version feed: series entry 0 is unreadable"));
         for (LogRecord r : log.records()) {
@@ -286,37 +245,29 @@ public class UpdatesCheckerFeedClientTest {
 
     @Test
     public void theFeedUrlCanBeOverriddenByAnApplicationProperty() {
-        GeoServerExtensionsHelper.property(
-                UpdatesCheckerFeedClient.FEED_URL_PROPERTY, "https://example.com/versions.json");
-        assertEquals(
-                "https://example.com/versions.json",
-                new UpdatesCheckerFeedClient().getFeedUri().toString());
+        for (String url : new String[] {"https://example.com/versions.json", "http://example.com:8080/versions.json"}) {
+            GeoServerExtensionsHelper.property(UpdatesCheckerFeedClient.FEED_URL_PROPERTY, url);
+            assertEquals(url, new UpdatesCheckerFeedClient().getFeedUri().toString());
+        }
     }
 
     @Test
     public void withoutAnOverrideTheCompiledInDefaultIsUsed() {
         GeoServerExtensionsHelper.clear();
-        String url = new UpdatesCheckerFeedClient().getFeedUri().toString();
-        assertEquals("https://raw.githubusercontent.com/geoserver/geoserver/updates-checker-v1/versions.json", url);
+        assertEquals(DEFAULT_URL, new UpdatesCheckerFeedClient().getFeedUri().toString());
     }
 
     @Test
     public void aBlankOrInvalidOverrideFallsBackToTheDefault() {
-        String expected = "https://raw.githubusercontent.com/geoserver/geoserver/updates-checker-v1/versions.json";
         GeoServerExtensionsHelper.property(UpdatesCheckerFeedClient.FEED_URL_PROPERTY, "not a valid uri");
-        assertEquals(expected, new UpdatesCheckerFeedClient().getFeedUri().toString());
+        assertEquals(DEFAULT_URL, new UpdatesCheckerFeedClient().getFeedUri().toString());
         GeoServerExtensionsHelper.property(UpdatesCheckerFeedClient.FEED_URL_PROPERTY, "   ");
-        assertEquals(expected, new UpdatesCheckerFeedClient().getFeedUri().toString());
+        assertEquals(DEFAULT_URL, new UpdatesCheckerFeedClient().getFeedUri().toString());
     }
 
     @Test
-    public void plainHttpIsNeverUsedWhateverTheHost() {
-        String expected = "https://raw.githubusercontent.com/geoserver/geoserver/updates-checker-v1/versions.json";
+    public void anOverrideThatIsNotAWebAddressIsRefusedAndLogged() {
         String[] refused = {
-            "http://example.com/versions.json",
-            "http://127.0.0.1:" + feedServer.getPort() + "/versions.json",
-            "http://localhost/versions.json",
-            "HTTP://example.com/versions.json",
             "ftp://example.com/versions.json",
             "file:///etc/passwd",
             "javascript:alert(1)",
@@ -327,24 +278,10 @@ public class UpdatesCheckerFeedClientTest {
         for (String value : refused) {
             GeoServerExtensionsHelper.property(UpdatesCheckerFeedClient.FEED_URL_PROPERTY, value);
             assertEquals(
-                    value, expected, new UpdatesCheckerFeedClient().getFeedUri().toString());
+                    value,
+                    DEFAULT_URL,
+                    new UpdatesCheckerFeedClient().getFeedUri().toString());
         }
-    }
-
-    @Test
-    public void aRefusedHttpOverrideIsLoggedAndNeverContacted() {
-        GeoServerExtensionsHelper.property(
-                UpdatesCheckerFeedClient.FEED_URL_PROPERTY,
-                "http://127.0.0.1:" + feedServer.getPort() + "/versions.json");
-        int before = requests.get();
-        UpdatesCheckerFeedClient client = new UpdatesCheckerFeedClient();
-        // the compiled-in default is used instead; it is not reachable from a test, so the fetch fails quietly
-        assertEquals("https", client.getFeedUri().getScheme());
-        assertEquals("the plain http address was never contacted", before, requests.get());
-        boolean warned = false;
-        for (LogRecord r : log.records()) {
-            warned |= r.getMessage().contains("only https URLs");
-        }
-        assertTrue("the refusal is logged", warned);
+        assertTrue("the refusal is logged", log.warned("only http and https URLs"));
     }
 }

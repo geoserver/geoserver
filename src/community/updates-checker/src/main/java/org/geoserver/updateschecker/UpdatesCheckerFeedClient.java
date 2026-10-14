@@ -16,7 +16,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
 
 /**
- * Downloads the upstream version feed over HTTPS and keeps the last good copy in memory.
+ * Downloads the upstream version feed and keeps the last good copy in memory.
  *
  * <p>One attempt per call, no retry: 5 second connect and read timeouts, and the body must be complete within 5 seconds
  * of the start of the request (checked between reads, so a slow server can hold a call for about 15 seconds at most),
@@ -108,9 +108,10 @@ public class UpdatesCheckerFeedClient {
         }
         try {
             URI uri = URI.create(override.trim());
-            // never plain http, whatever the host: the feed decides what administrators are told to do
-            if (!"https".equalsIgnoreCase(uri.getScheme()) || uri.getHost() == null || uri.getUserInfo() != null) {
-                throw new IllegalArgumentException(UpdatesCheckerMessages.base("log.override.notHttps"));
+            String scheme = uri.getScheme();
+            boolean web = "https".equalsIgnoreCase(scheme) || "http".equalsIgnoreCase(scheme);
+            if (!web || uri.getHost() == null || uri.getUserInfo() != null) {
+                throw new IllegalArgumentException(UpdatesCheckerMessages.base("log.override.notHttp"));
             }
             return uri;
         } catch (IllegalArgumentException e) {

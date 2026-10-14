@@ -30476,32 +30476,42 @@ the collections, the dataset map and the conformance classes.</p>
 <ul>
 <li>
 <p>OGC API Maps conformances</p>
-<p>Disabling a class removes it from the <code>conformance</code> document; what happens to a request that still uses it
-depends on the kind of class:</p>
+<p>Disabling a class removes it from the <code>conformance</code> document. What else changes depends on the kind of class:
+some manage the contents of the API document, while others add resources or request parameters to the service.</p>
+<p><strong>Standard</strong>:</p>
 <ul>
 <li>
 <p>A parameter class (<code>spatialSubsetting</code>, <code>generalSubsetting</code>, <code>scaling</code>, <code>displayResolution</code>, <code>datetime</code>,
-   <code>crs</code>, <code>background</code>, <code>orientation</code>): the parameter is ignored, following the OGC API convention of ignoring
-   unsupported query parameters, and the map is returned as if it had not been provided. With <code>generalSubsetting</code>
-   off, the elevation and custom-dimension axes of a <code>subset</code> are dropped rather than rejected.</p>
+   <code>crs</code>, <code>background</code>, <code>orientation</code>): when disabled, the parameter is ignored, following the OGC API convention
+   of ignoring unsupported query parameters, and the map is returned as if it had not been provided. With
+   <code>generalSubsetting</code> disabled, the elevation and custom-dimension axes of a <code>subset</code> are dropped rather than
+   rejected.</p>
 </li>
 <li>
-<p>An output format class (<code>tiff</code>, <code>svg</code>): the format is no longer offered, so a request for it fails HTTP content
-   negotiation with a <code>406</code> status.</p>
+<p>An output format class (<code>tiff</code>, <code>svg</code>): when disabled, the format is no longer offered, so a request for it
+   fails HTTP content negotiation with a <code>406</code> status.</p>
 </li>
 <li>
-<p>The two GeoServer extension resources, <code>featureInfo</code> and <code>legend</code>: each is a whole resource, so it answers
-   with a <code>404</code> status once disabled. Turning <code>legend</code> off also leaves the styles document with no legend
-   formats to offer.</p>
+<p><code>datasetMap</code>: when disabled, the <code>/map</code> resource and its feature info go away, and the landing page stops
+   linking them and stops publishing an <code>extent</code>. Collection maps are not affected.</p>
 </li>
 <li>
-<p><code>datasetMap</code>: the <code>/map</code> resource and its feature info go away, and the landing page stops linking them and
-   stops publishing an <code>extent</code>. Collection maps are not affected.</p>
+<p><code>collectionsSelection</code>: when disabled, the <code>collections</code> parameter is ignored, so the dataset map always draws
+   the default contents, and the preview offers no palette. The class needs <code>datasetMap</code> to mean anything, so
+   disabling that disables both.</p>
+</li>
+</ul>
+<p><strong>Community standard</strong>:</p>
+<ul>
+<li>
+<p><code>featureInfo</code>: when disabled, the feature info resource answers with a <code>404</code> status.</p>
 </li>
 <li>
-<p><code>collectionsSelection</code>: the <code>collections</code> parameter is ignored, so the dataset map always draws the default
-   contents, and the preview offers no palette. The class needs <code>datasetMap</code> to mean anything, so turning that
-   off disables both.</p>
+<p><code>legend</code>: when disabled, the legend resource answers with a <code>404</code> status, and the styles document offers no
+   legend formats.</p>
+</li>
+<li>
+<p><code>mapFilter</code>: see the filter classes below.</p>
 </li>
 </ul>
 <p><img alt="" src="img/maps-service-configuration.png" /><br />
@@ -30509,14 +30519,11 @@ depends on the kind of class:</p>
 </li>
 <li>
 <p>CQL2 Filter conformances.</p>
-<ul>
-<li>
 <p>Both the Text and JSON formats for CQL2 are available and may be enabled or disabled.</p>
-</li>
-<li>
-<p>The remaining conformances describe the CQL2 capabilities implemented by GeoServer, and are only included when CQL2 Text or CQL2 JSON is enabled.</p>
-</li>
-</ul>
+<p>The CQL2 capabilities implemented by GeoServer (basic, advanced comparison, arithmetic, property-property, and
+spatial operators) are built-in, and included in the <code>conformance</code> document when CQL2 Text or CQL2 JSON is
+enabled.</p>
+<p>CQL2 Functions is not listed, as Maps does not provide a <code>/functions</code> resource.</p>
 <p><img alt="" src="img/maps-cql2-configuration.png" /><br />
 <em>CQL2 filter configuration</em></p>
 </li>

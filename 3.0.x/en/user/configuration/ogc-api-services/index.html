@@ -30410,18 +30410,24 @@
 </li>
 <li>
 <p>Service security: OGC API web services are managed directly in <strong>Security &gt; Services</strong> page. New access rules can be defined for OGC API services.</p>
+<p><img alt="" src="img/service_rule.png" /><br />
+<em>Service rule for OGC API Features getLandingPage</em></p>
 </li>
 </ul>
-<p><img alt="" src="img/service_rule.png" /></p>
-<p><em>Service rule for OGC API Features getLandingPage</em></p>
 <h2 id="conformance">Conformance<a class="headerlink" href="#conformance" title="Permanent link">&para;</a></h2>
 <p>Each OGC API web service is modular, with supported functionality listed in a <code>conformance</code> document.</p>
+<p>What happens when a conformance is enabled or disabled depends on the kind of class: some classes list additional
+output formats, while others add resource pages or manage request parameters. In each case the <code>api</code> document, and the
+list in the <code>conformance</code> document, reflect the configuration change.</p>
 <ul>
 <li>
 <p>OpenAPI service description is mandatory and may not be disabled.</p>
 </li>
 <li>
 <p>Built-in output formats (such as HTML and JSON) may not be disabled.</p>
+</li>
+<li>
+<p>Mandatory conformance classes are not included in the conformance table, as they cannot be configured.</p>
 </li>
 </ul>
 <p>The <strong>Conformance Table</strong> is used to manage each group of standards:</p>
@@ -30508,14 +30514,14 @@ filter language (CQL2 or ECQL) to be enabled in order to specify a filter parame
 only the <strong>CQL2</strong> query language would be available by default.</p>
 <p><img alt="" src="../../services/features/img/ecql-configuration.png" /></p>
 <p><em>ECQL conformance table</em></p>
-</li>
-</ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This approach allows GeoServer to share work-in-progress (both draft standards and implementations being worked on). Use
-the checkboxes to <strong>Enable</strong> such functionality for feedback and review, or leave <strong>Unset</strong> and it will only be included
-when ready.</p>
+<p>This approach allows GeoServer to share work-in-progress (both draft standards and implementations being worked
+on). Use the checkboxes to <strong>Enable</strong> such functionality for feedback and review, or leave <strong>Unset</strong> and it will
+only be included when ready.</p>
 </div>
+</li>
+</ul>
 <h2 id="collections">Collections<a class="headerlink" href="#collections" title="Permanent link">&para;</a></h2>
 <p>OGCAPI web services provides a <code>collections</code> resource describing the published content.</p>
 <p>As an example OGC API - Features collections lists:</p>

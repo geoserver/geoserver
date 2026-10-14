@@ -30317,7 +30317,7 @@
 <li>* matches zero or more characters</li>
 <li>** matches zero or more 'directories' in a path</li>
 </ul>
-<p>Query String regular expressions will match the full query string (\^ and \$ terminators are automatically appended), so to match only part of it, remember to prefix and postfix the expression with .<em> (e.g. .</em>request=getcapabilities.*)</p>
+<p>Query String regular expressions will match the full query string (\^ and \$ terminators are automatically appended), so to match only part of it, remember to prefix and postfix the expression with .* (e.g. .<em>request=getcapabilities.</em>)</p>
 <h3 id="examples-of-rules-ant-patterns-and-query-string-regular-expressions">Examples of rules (ANT patterns and query string regular expressions)<a class="headerlink" href="#examples-of-rules-ant-patterns-and-query-string-regular-expressions" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -30336,11 +30336,11 @@
 <td>ANT pattern and querystring regex to match one parameter</td>
 </tr>
 <tr>
-<td>/wms|(?=.<em>request=getmap)(?=.</em>format=image/png).*</td>
+<td>/wms|(?=.*request=getmap)(?=.<em>format=image/png).</em></td>
 <td>ANT pattern and querystring regex to match two parameters in any order</td>
 </tr>
 <tr>
-<td>/wms|(?=.<em>request=getmap)(?!.</em>format=image/png).*</td>
+<td>/wms|(?=.*request=getmap)(?!.<em>format=image/png).</em></td>
 <td>ANT pattern and querystring regex to match one parameters and be sure another one is not matched</td>
 </tr>
 </tbody>

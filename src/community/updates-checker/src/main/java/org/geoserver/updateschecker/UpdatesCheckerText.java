@@ -8,9 +8,8 @@ import java.io.Serializable;
 import java.util.Locale;
 
 /**
- * Words that are shown to a person: either a key into {@link UpdatesCheckerMessages} with its arguments, resolved in
- * whatever language is asked for only when the text is needed, or a literal (text that needs no translation). Immutable
- * and serializable, so it can be kept in a notification, a failure reason or a Wicket component.
+ * Words shown to a person: a key into {@link UpdatesCheckerMessages} with its arguments, resolved in the asked-for
+ * language only when needed, or a literal that needs no translation. Serializable, so a Wicket component can hold it.
  */
 public final class UpdatesCheckerText implements Serializable {
 

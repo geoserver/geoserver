@@ -85,10 +85,6 @@ public final class TestFeedServer {
         return server;
     }
 
-    public int getPort() {
-        return server.port();
-    }
-
     /** @return the http URL of a path on this server. */
     public String url(String path) {
         return "http://127.0.0.1:" + server.port() + path;

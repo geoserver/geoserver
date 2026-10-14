@@ -25,10 +25,9 @@ import java.util.regex.Pattern;
  * {@code GeoServerApplication.properties} (and a translation such as {@code GeoServerApplication_fr.properties}), like
  * the labels of the settings page.
  *
- * <p>Used wherever there is no Wicket component to ask: the notifications themselves, the REST response and the result
- * lines in the log. Placeholders are {@code {0}}, {@code {1}}, ... and are simply replaced, so quotes and other
- * {@code MessageFormat} syntax have no special meaning and named placeholders in a configured text such as
- * {@code {version}} are left alone. Log lines use the base (English) text, not the language of any one user.
+ * <p>Used wherever there is no Wicket component to ask: the notifications, the REST response and the log lines, which
+ * use the base (English) text. Only {@code {0}}, {@code {1}}, ... are replaced, so quotes and other
+ * {@code MessageFormat} syntax have no special meaning.
  */
 public final class UpdatesCheckerMessages {
 

@@ -29,13 +29,9 @@ public class UpdatesCheckerStartupChecker implements ApplicationListener<Context
 
     /** @return the started check thread, so a test can wait for it. */
     Thread start() {
-        Thread thread = new Thread(this::runCheck, THREAD_NAME);
+        Thread thread = new Thread(() -> service.check(UpdatesCheckerService.Trigger.STARTUP), THREAD_NAME);
         thread.setDaemon(true);
         thread.start();
         return thread;
-    }
-
-    private void runCheck() {
-        service.check(UpdatesCheckerService.Trigger.STARTUP);
     }
 }

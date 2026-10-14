@@ -18,17 +18,14 @@ public class UpdatesCheckerAsyncPanel extends Panel {
 
     private static final String INNER_ID = "inner";
 
-    private final String username;
-
-    public UpdatesCheckerAsyncPanel(String id, String username) {
+    public UpdatesCheckerAsyncPanel(String id) {
         super(id);
-        this.username = username;
         setOutputMarkupId(true);
 
         if (UpdatesCheckerSessionState.isChecked()) {
             UpdatesCheckerStatus status =
                     GeoServerExtensions.bean(UpdatesCheckerService.class).getStatus();
-            add(UpdatesCheckerBannerFactory.build(INNER_ID, username, status));
+            add(UpdatesCheckerBannerFactory.build(INNER_ID, status));
             return;
         }
 
@@ -46,7 +43,7 @@ public class UpdatesCheckerAsyncPanel extends Panel {
 
     /** Replaces the banner from an already-known status, without fetching. */
     void showStatus(AjaxRequestTarget target, UpdatesCheckerStatus status) {
-        addOrReplace(UpdatesCheckerBannerFactory.build(INNER_ID, username, status));
+        addOrReplace(UpdatesCheckerBannerFactory.build(INNER_ID, status));
         target.add(this);
     }
 }

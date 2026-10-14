@@ -57,14 +57,15 @@ Only full administrators (holders of the `ROLE_ADMINISTRATOR` role) see the bann
 Once installed, the module adds a **Check for Updates** page under the **About & Status** (GeoServer 2) or **GeoServer** (GeoServer 3) menu.
 
 ![GeoServer 2 menu](menu-gs2.png) 
-![Menu](menu.png)
+
+![GeoServer 3 menu](menu.png)
 
 Below the Status section are these settings:
 
 - **Feed URL** - where the feed is fetched from. Read-only in the GUI. To use a different feed, for
   example an internal mirror, set the `UPDATES_CHECKER_FEED_URL` [application
   property](../../configuration/properties/index.md) as a Java system property
-  (`-DUPDATES_CHECKER_FEED_URL=https://example.com/versions.json`), a web application context parameter, or an
+  (`-DUPDATES_CHECKER_FEED_URL=https://raw.githubusercontent.com/geoserver/geoserver/updates-checker-v1/versions.json`), a web application context parameter, or an
   environment variable. If `raw.githubusercontent.com/` is blocked by your organisation, try the jsDelivr copy of the default feed:
   `https://cdn.jsdelivr.net/gh/geoserver/geoserver@updates-checker-v1/versions.json`.
 - **Enable update check at login and startup** - on by default. When off, only **Check Now** and the REST endpoint work.
@@ -75,6 +76,20 @@ Below the Status section are these settings:
   the per-check result lines. The banner and the Status section always show them, and failure lines are not affected.
 
 The settings are saved in `updates-checker/updates-checker.xml` in the data directory.
+
+
+## Feed
+
+The feed is automatically built (every 15 minutes) from these free public sources:
+* `geoserver/geoserver/security/advisories`
+* `geoserver/geoserver/releases`
+* `geoserver/geoserver.github.io/_posts`
+by the _current https://github.com/petersmythe/gs-updates-checker/tree/alpha workflow.  This will be moved into the GeoServer organisation after the merge of this PR, and preferably into the main `geoserver/geoserver` repo for maintainability._
+
+The feed is published at:
+* _https://raw.githubusercontent.com/petersmythe/gs-updates-checker/alpha/versions.json_ (temporarily, until the above feed goes live)
+* https://raw.githubusercontent.com/geoserver/geoserver/updates-checker-v1/versions.json
+* https://cdn.jsdelivr.net/gh/geoserver/geoserver@updates-checker-v1/versions.json
 
 ## Notifications
 

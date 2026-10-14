@@ -32,7 +32,10 @@
     <property name="titleKey" value="UpdatesCheckerPage.page.title"/>
     <property name="descriptionKey" value="UpdatesCheckerPage.page.description"/>
     <property name="componentClass" value="org.geoserver.updateschecker.web.UpdatesCheckerPage"/>
-    <property name="category" ref="settingsCategory"/>
+    <!-- the first menu: geoserverCategory ("GeoServer") from 3.0, aboutStatusCategory ("About & Status") before that;
+         3.x keeps the old name as an alias of its Server menu, so it cannot be used there -->
+    <property name="category"
+              value="#{beanFactory.containsBean('geoserverCategory') ? beanFactory.getBean('geoserverCategory') : beanFactory.getBean('aboutStatusCategory')}"/>
     <!-- a file next to the page class: 3.x also accepts gs-icon-* names, but 2.x only reads file names -->
     <property name="icon" value="updates-checker.png"/>
     <property name="order" value="1000"/>

@@ -54,7 +54,7 @@ Only full administrators (holders of the `ROLE_ADMINISTRATOR` role) see the bann
 
 ## Configuring
 
-Once installed, the module adds a **Check for Updates** page under the **Settings** (GeoServer 2) or **Server** (GeoServer 3) menu.
+Once installed, the module adds a **Check for Updates** page under the **About & Status** (GeoServer 2) or **GeoServer** (GeoServer 3) menu.
 
 ![GeoServer 2 menu](menu-gs2.png) 
 ![Menu](menu.png)

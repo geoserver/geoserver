@@ -36,10 +36,9 @@ public class UpdatesCheckerPage extends GeoServerSecuredPage {
 
     public UpdatesCheckerPage() {
         UpdatesCheckerService service = GeoServerExtensions.bean(UpdatesCheckerService.class);
-        String username = UpdatesCheckerBannerFactory.eligibleUsername();
 
         // filled from the cache now; the first view of the session, or Check Now, refreshes it in place
-        add(new UpdatesCheckerStatusPanel("status", service.getStatus(), username == null ? "" : username));
+        add(new UpdatesCheckerStatusPanel("status", service.getStatus()));
 
         UpdatesCheckerConfig config =
                 GeoServerExtensions.bean(UpdatesCheckerConfigPersister.class).getConfig();

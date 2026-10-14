@@ -71,31 +71,20 @@ public class UpdatesCheckerCheckResponse {
         for (UpdatesCheckerNotification n : s.getNotifications()) {
             notices.add(new Notice(n, locale));
         }
+        UpdatesCheckerState status = s.getUpdateState();
         String error = null;
-        UpdatesCheckerState status;
         String message;
-        if (s.getRunningKind() == UpdatesCheckerRunningVersion.Kind.UNKNOWN) {
-            status = UpdatesCheckerState.CHECK_FAILED;
-            error = UpdatesCheckerMessages.get(locale, "notification.versionUnknown");
-            message = error;
-        } else if (s.isFetchFailed()) {
+        if (s.isFetchFailed() && s.getRunningKind() != UpdatesCheckerRunningVersion.Kind.UNKNOWN) {
             status = UpdatesCheckerState.CHECK_FAILED;
             error = s.getErrorMessage(locale);
             message = UpdatesCheckerMessages.get(locale, "rest.checkFailed", error);
-        } else if (s.getUpdateState() == UpdatesCheckerState.CHECK_FAILED) {
-            status = UpdatesCheckerState.CHECK_FAILED;
+        } else if (!s.getNotifications().isEmpty()) {
             message = s.getNotifications().get(0).getMessage(locale);
-            error = message;
-        } else if (s.getUpdateState() != UpdatesCheckerState.UP_TO_DATE) {
-            status = s.getUpdateState();
-            message = s.getNotifications().get(0).getMessage(locale);
+            error = status == UpdatesCheckerState.CHECK_FAILED ? message : null;
         } else {
-            status = UpdatesCheckerState.UP_TO_DATE;
             boolean development = s.getRunningKind() == UpdatesCheckerRunningVersion.Kind.DEVELOPMENT;
-            message = s.getNotifications().isEmpty()
-                    ? UpdatesCheckerMessages.get(
-                            locale, development ? "rest.devBuild" : "rest.upToDate", s.getRunningVersion())
-                    : s.getNotifications().get(0).getMessage(locale);
+            message = UpdatesCheckerMessages.get(
+                    locale, development ? "rest.devBuild" : "rest.upToDate", s.getRunningVersion());
         }
         return new UpdatesCheckerCheckResponse(
                 status.name(), message, s.getRunningVersion(), s.getNewerVersion(), error, notices);

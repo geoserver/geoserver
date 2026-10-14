@@ -10,7 +10,6 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.updateschecker.UpdatesCheckerConfigPersister;
 import org.geoserver.updateschecker.UpdatesCheckerStatus;
 import org.geoserver.web.spring.security.GeoServerSession;
-import org.springframework.security.core.Authentication;
 
 /**
  * Builds the landing-page banner for the current viewer, who must hold the full {@code ADMIN_ROLE}: workspace and layer
@@ -29,32 +28,24 @@ final class UpdatesCheckerBannerFactory {
         if (!persister.getConfig().isEnabled()) {
             return null;
         }
-        String username = eligibleUsername();
-        if (username == null) {
+        if (!isFullAdministrator()) {
             return null;
         }
-        return new UpdatesCheckerAsyncPanel(id, username);
+        return new UpdatesCheckerAsyncPanel(id);
     }
 
     /** @return the real banner for a status, or an invisible placeholder if there is nothing to show. */
-    static Component build(String id, String username, UpdatesCheckerStatus status) {
+    static Component build(String id, UpdatesCheckerStatus status) {
         if (status.getNotifications().isEmpty()) {
             return invisible(id);
         }
-        return new UpdatesCheckerWarningPanel(id, status.getNotifications(), username);
+        return new UpdatesCheckerWarningPanel(id, status.getNotifications());
     }
 
-    /**
-     * @return the current viewer's username if they hold the full {@code ADMIN_ROLE}, else {@code null}. Note that this
-     *     also passes when security is disabled for the request.
-     */
-    static String eligibleUsername() {
+    /** @return whether the current viewer holds the full {@code ADMIN_ROLE}; also true when security is disabled. */
+    static boolean isFullAdministrator() {
         GeoServerSession session = GeoServerSession.get();
-        Authentication authentication = session.getAuthentication();
-        if (authentication == null || !session.isAdmin()) {
-            return null;
-        }
-        return authentication.getName();
+        return session.getAuthentication() != null && session.isAdmin();
     }
 
     static Component invisible(String id) {

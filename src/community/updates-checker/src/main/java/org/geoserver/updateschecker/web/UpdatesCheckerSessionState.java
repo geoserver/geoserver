@@ -27,9 +27,4 @@ final class UpdatesCheckerSessionState {
     static void markChecked() {
         Session.get().setMetaData(CHECKED, Boolean.TRUE);
     }
-
-    /** Forgets that the session had its check, so the next view fetches again. */
-    static void reset(Session session) {
-        session.setMetaData(CHECKED, null);
-    }
 }

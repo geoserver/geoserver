@@ -4,7 +4,9 @@
  */
 package org.geoserver.updateschecker.web;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Locale;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxCallListener;
@@ -38,44 +40,27 @@ public class UpdatesCheckerStatusPanel extends Panel {
 
     private final WebMarkupContainer root;
 
-    public UpdatesCheckerStatusPanel(String id, UpdatesCheckerStatus initial, String username) {
+    public UpdatesCheckerStatusPanel(String id, UpdatesCheckerStatus initial) {
         super(id);
         setOutputMarkupId(true);
         status = Model.of(initial);
 
         root = new WebMarkupContainer("root");
         root.setOutputMarkupId(true);
-        root.add(AttributeModifier.replace("data-user", username));
         add(root);
 
-        root.add(
-                new Label("error", new LoadableDetachableModel<String>() {
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    protected String load() {
-                        return status.getObject().getCheckFailedMessage(getLocale());
-                    }
-                }) {
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    protected void onConfigure() {
-                        super.onConfigure();
-                        UpdatesCheckerStatus s = status.getObject();
-                        setVisible(
-                                s.isFetchFailed() && s.getRunningKind() != UpdatesCheckerRunningVersion.Kind.UNKNOWN);
-                    }
-                });
-
-        root.add(new Label("feedLine", new LoadableDetachableModel<String>() {
+        root.add(new Label("error", new StatusText(UpdatesCheckerStatus::getCheckFailedMessage)) {
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected String load() {
-                return status.getObject().getFeedLine(getLocale());
+            protected void onConfigure() {
+                super.onConfigure();
+                UpdatesCheckerStatus s = status.getObject();
+                setVisible(s.isFetchFailed() && s.getRunningKind() != UpdatesCheckerRunningVersion.Kind.UNKNOWN);
             }
-        }));
+        });
+
+        root.add(new Label("feedLine", new StatusText(UpdatesCheckerStatus::getFeedLine)));
 
         root.add(new AjaxLink<Void>("checkNow") {
             private static final long serialVersionUID = 1L;
@@ -121,14 +106,7 @@ public class UpdatesCheckerStatusPanel extends Panel {
             });
         }
 
-        Label header = new Label("header", new LoadableDetachableModel<String>() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            protected String load() {
-                return status.getObject().getHeaderHtml(getLocale());
-            }
-        });
+        Label header = new Label("header", new StatusText(UpdatesCheckerStatus::getHeaderHtml));
         // the values in it are escaped by the status; only the emphasis markup is raw
         header.setEscapeModelStrings(false);
         root.add(header);
@@ -176,6 +154,26 @@ public class UpdatesCheckerStatusPanel extends Panel {
                 UpdatesCheckerNotificationItems.populate(item, UpdatesCheckerStatusPanel.this);
             }
         });
+    }
+
+    /** A line of text taken from the shown status, in the language of the page. */
+    private class StatusText extends LoadableDetachableModel<String> {
+        private static final long serialVersionUID = 1L;
+
+        private final SerializableTextSource source;
+
+        StatusText(SerializableTextSource source) {
+            this.source = source;
+        }
+
+        @Override
+        protected String load() {
+            return source.text(status.getObject(), getLocale());
+        }
+    }
+
+    private interface SerializableTextSource extends Serializable {
+        String text(UpdatesCheckerStatus status, Locale locale);
     }
 
     /** Replaces the shown status and redraws the section. */

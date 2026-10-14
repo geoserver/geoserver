@@ -24,9 +24,7 @@ abstract class UpdatesCheckerFirstViewBehavior extends AbstractDefaultAjaxBehavi
 
     private static final long serialVersionUID = 1L;
 
-    // renderHead() runs again for every component included in an AJAX response, including this one once the caller
-    // adds it to the target; without this guard the DOM-ready trigger would be emitted into the very response
-    // respond() is building, and re-fire this same callback forever
+    // stops the AJAX response built in respond() from rendering the DOM-ready trigger again, which would loop
     private boolean triggered = false;
 
     /** Called with the status after the check, to redraw whatever shows it. */
@@ -47,8 +45,7 @@ abstract class UpdatesCheckerFirstViewBehavior extends AbstractDefaultAjaxBehavi
                 .getConfig()
                 .isEnabled();
         if (enabled) {
-            // counted as this session's one check as soon as the fetch is attempted, even if the admin navigates
-            // away before it completes
+            // counted when the fetch starts, so navigating away before it ends does not trigger a second one
             UpdatesCheckerSessionState.markChecked();
         }
         onStatus(

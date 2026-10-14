@@ -6,7 +6,7 @@
 /*
  * Browser-side dismissal and snooze state for the updates-checker notifications. Nothing is sent to the server.
  *
- * Storage key:   updates-checker|<user>|<type>|<discriminator>   (each part passed through encodeURIComponent)
+ * Storage key:   updates-checker|<type>|<discriminator>   (each part passed through encodeURIComponent)
  * Storage value: "dismissed" | "until:<epoch-ms>"
  * Storage:       localStorage, except VERSION_UNKNOWN (sessionStorage: session only)
  *
@@ -20,12 +20,8 @@
     var PREFIX = 'updates-checker';
     var DAY_MS = 24 * 60 * 60 * 1000;
 
-    function key(user, type, discriminator) {
-        return [PREFIX, user, type, discriminator].map(encodeURIComponent).join('|');
-    }
-
-    function userPrefix(user) {
-        return [PREFIX, user].map(encodeURIComponent).join('|') + '|';
+    function key(type, discriminator) {
+        return [PREFIX, type, discriminator].map(encodeURIComponent).join('|');
     }
 
     // longest snooze a notification type may carry; a longer "until:" (hand-edited, clock change) counts as expired
@@ -69,21 +65,21 @@
         };
     }
 
-    function hiddenByStorage(item, user, now) {
+    function hiddenByStorage(item, now) {
         var d = describe(item);
         if (!d.dismissible) {
             return false;
         }
         try {
             var store = storageFor(d.sessionOnly);
-            return !!store && isHidden(store.getItem(key(user, d.type, d.discriminator)), d.type, d.severity, now);
+            return !!store && isHidden(store.getItem(key(d.type, d.discriminator)), d.type, d.severity, now);
         } catch (e) {
             return false;
         }
     }
 
-    // removes this user's entries that no longer apply: another discriminator, expired, or no longer valid
-    function cleanup(items, user, now) {
+    // removes the entries that no longer apply: another discriminator, expired, or no longer valid
+    function cleanup(items, now) {
         [false, true].forEach(function (sessionOnly) {
             try {
                 var store = storageFor(sessionOnly);
@@ -94,11 +90,11 @@
                 for (var i = 0; i < items.length; i++) {
                     var d = describe(items[i]);
                     if (d.dismissible && d.sessionOnly === sessionOnly
-                            && isHidden(store.getItem(key(user, d.type, d.discriminator)), d.type, d.severity, now)) {
-                        keep[key(user, d.type, d.discriminator)] = true;
+                            && isHidden(store.getItem(key(d.type, d.discriminator)), d.type, d.severity, now)) {
+                        keep[key(d.type, d.discriminator)] = true;
                     }
                 }
-                var prefix = userPrefix(user);
+                var prefix = PREFIX + '|';
                 for (var j = store.length - 1; j >= 0; j--) {
                     var k = store.key(j);
                     if (k && k.indexOf(prefix) === 0 && !keep[k]) {
@@ -172,7 +168,7 @@
     function applyAction(link, root, itemSelector) {
         var item = link.closest(itemSelector);
         if (item) {
-            apply(link.getAttribute('data-action'), describe(item), root.getAttribute('data-user'));
+            apply(link.getAttribute('data-action'), describe(item));
         }
         return item;
     }
@@ -182,14 +178,13 @@
             return;
         }
         root.gsUpdatesCheckerInit = true;
-        var user = root.getAttribute('data-user');
         var items = itemsOf(root);
         var now = Date.now();
         var dismissedFlags = items.map(function (item) {
-            return hiddenByStorage(item, user, now);
+            return hiddenByStorage(item, now);
         });
         layout(root, items, dismissedFlags);
-        cleanup(items, user, now);
+        cleanup(items, now);
 
         root.addEventListener('click', function (event) {
             var link = clickedOn(event, root, 'a[data-action]');
@@ -216,7 +211,7 @@
         }
     }
 
-    function apply(action, d, user) {
+    function apply(action, d) {
         var now = Date.now();
         var store = storageFor(d.sessionOnly);
         var value;
@@ -227,23 +222,22 @@
         } else {
             value = 'dismissed';
         }
-        write(store, key(user, d.type, d.discriminator), value);
+        write(store, key(d.type, d.discriminator), value);
         if (d.type === 'SECURITY_RELEASE' && value === 'dismissed' && d.target) {
             // dismissing a security release also settles the plain patch notice for the version to upgrade to
-            write(storageFor(false), key(user, 'PATCH_AVAILABLE', d.target), 'dismissed');
+            write(storageFor(false), key('PATCH_AVAILABLE', d.target), 'dismissed');
         }
     }
 
     // the Status section hides what this browser has dismissed or snoozed, and shows its "nothing active" line when
     // every notification is hidden
     function hideDismissed(root) {
-        var user = root.getAttribute('data-user');
         var now = Date.now();
         var items = root.querySelectorAll('.gs-updates-checker-status-item');
         var visible = 0;
         var dismissed = 0;
         for (var i = 0; i < items.length; i++) {
-            if (hiddenByStorage(items[i], user, now)) {
+            if (hiddenByStorage(items[i], now)) {
                 hide(items[i]);
                 dismissed++;
             } else {
@@ -267,22 +261,21 @@
 
     // forgets this browser's dismissals and snoozes for the notifications the Status section lists
     function clearDismissals(root) {
-        var user = root.getAttribute('data-user');
         var now = Date.now();
         var items = root.querySelectorAll('.gs-updates-checker-status-item');
         for (var i = 0; i < items.length; i++) {
-            if (!hiddenByStorage(items[i], user, now)) {
+            if (!hiddenByStorage(items[i], now)) {
                 continue;
             }
             var d = describe(items[i]);
             try {
                 var store = storageFor(d.sessionOnly);
                 if (store) {
-                    store.removeItem(key(user, d.type, d.discriminator));
+                    store.removeItem(key(d.type, d.discriminator));
                 }
                 if (d.type === 'SECURITY_RELEASE' && d.target) {
                     // dismissing a security release also settled the plain patch notice for the version to upgrade to
-                    storageFor(false).removeItem(key(user, 'PATCH_AVAILABLE', d.target));
+                    storageFor(false).removeItem(key('PATCH_AVAILABLE', d.target));
                 }
             } catch (e) {
                 // storage blocked or broken: nothing to clear

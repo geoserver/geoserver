@@ -62,7 +62,7 @@ public class UpdatesCheckerWebTest extends GeoServerWicketTestSupport {
         UpdatesCheckerConfig config = new UpdatesCheckerConfig();
         persister().save(config);
         // a fresh session has not had its one feed check yet
-        UpdatesCheckerSessionState.reset(tester.getSession());
+        tester.getSession().invalidateNow();
         login();
     }
 
@@ -181,19 +181,6 @@ public class UpdatesCheckerWebTest extends GeoServerWicketTestSupport {
         html = tester.getLastResponseAsString();
         assertFalse(html, html.contains("<script>alert"));
         assertFalse(html, html.contains("javascript:alert"));
-    }
-
-    @Test
-    public void aHostileUserNameCannotBreakOutOfTheMarkup() {
-        String hostile = "x\"><script>alert(9)</script>";
-        login(hostile, "pw", "ROLE_ADMINISTRATOR");
-        tester.startPage(UpdatesCheckerPage.class);
-        tester.clickLink("status:root:checkNow", true);
-        tester.startPage(GeoServerHomePage.class);
-        String html = tester.getLastResponseAsString();
-        assertFalse(html, html.contains("<script>alert(9)"));
-        assertFalse(html, html.contains("data-user=\"x\">"));
-        assertTrue(html, html.contains("data-user=\"x&quot;&gt;&lt;script&gt;alert(9)&lt;/script&gt;\""));
     }
 
     @Test
@@ -332,13 +319,13 @@ public class UpdatesCheckerWebTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    public void eligibleUsernameIsOnlyReturnedForFullAdministrators() {
+    public void theBannerIsOnlyForFullAdministrators() {
         tester.startPage(UpdatesCheckerPage.class);
-        assertEquals("admin", UpdatesCheckerBannerFactory.eligibleUsername());
+        assertTrue(UpdatesCheckerBannerFactory.isFullAdministrator());
 
         logout();
         tester.startPage(GeoServerHomePage.class);
-        assertNull(UpdatesCheckerBannerFactory.eligibleUsername());
+        assertFalse(UpdatesCheckerBannerFactory.isFullAdministrator());
         assertNull(UpdatesCheckerBannerFactory.createIfVisible("x"));
     }
 

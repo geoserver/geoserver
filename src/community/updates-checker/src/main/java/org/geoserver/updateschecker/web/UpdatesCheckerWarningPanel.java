@@ -30,12 +30,11 @@ public class UpdatesCheckerWarningPanel extends Panel {
     private final WebMarkupContainer root;
 
     /** @param notifications at least one notification, most important first */
-    public UpdatesCheckerWarningPanel(String id, List<UpdatesCheckerNotification> notifications, String username) {
+    public UpdatesCheckerWarningPanel(String id, List<UpdatesCheckerNotification> notifications) {
         super(id);
 
         root = new WebMarkupContainer("root");
         root.setOutputMarkupId(true);
-        root.add(AttributeModifier.replace("data-user", username));
         add(root);
 
         final List<UpdatesCheckerNotification> shown = new ArrayList<>(notifications);

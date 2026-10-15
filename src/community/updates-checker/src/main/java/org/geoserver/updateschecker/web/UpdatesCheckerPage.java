@@ -19,6 +19,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.updateschecker.UpdatesCheckerConfig;
@@ -27,6 +28,8 @@ import org.geoserver.updateschecker.UpdatesCheckerFeedClient;
 import org.geoserver.updateschecker.UpdatesCheckerMessages;
 import org.geoserver.updateschecker.UpdatesCheckerService;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.wicket.GeoServerDialog;
+import org.geoserver.web.wicket.HelpLink;
 import org.geotools.util.logging.Logging;
 
 /** Admin page to enable/disable the updates-checker landing page warning. */
@@ -35,6 +38,8 @@ public class UpdatesCheckerPage extends GeoServerSecuredPage {
     private static final Logger LOGGER = Logging.getLogger(UpdatesCheckerService.LOGGER_NAME);
 
     public UpdatesCheckerPage() {
+        GeoServerDialog dialog = new GeoServerDialog("dialog");
+        add(dialog);
         UpdatesCheckerService service = GeoServerExtensions.bean(UpdatesCheckerService.class);
 
         // filled from the cache now; the first view of the session, or Check Now, refreshes it in place
@@ -101,6 +106,17 @@ public class UpdatesCheckerPage extends GeoServerSecuredPage {
         TextField<String> feedUrlField = new TextField<>("feedUrl", Model.of(feedUrl));
         feedUrlField.add(AttributeModifier.replace("readonly", "readonly"));
         form.add(feedUrlField);
+
+        // set by whoever starts the server, so shown here but never editable
+        String suppressed = GeoServerExtensions.bean(UpdatesCheckerService.class)
+                .getSuppression()
+                .toString();
+        TextField<String> suppressedField = new TextField<>("suppressedCves", Model.of(suppressed));
+        suppressedField.add(AttributeModifier.replace("readonly", "readonly"));
+        suppressedField.add(
+                AttributeModifier.replace("placeholder", new ResourceModel("UpdatesCheckerPage.suppressedCves.none")));
+        form.add(suppressedField);
+        form.add(new HelpLink("suppressedCvesHelp").setDialog(dialog));
     }
 
     @Override

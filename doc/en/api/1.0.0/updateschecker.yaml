@@ -29,8 +29,19 @@ paths:
       summary: Check for newer releases and security advisories
       description: |
                    Downloads the version feed, compares it with the running GeoServer version and returns the result.
+      consumes:
+        - application/json
       produces:
         - application/json
+      parameters:
+        - name: body
+          in: body
+          required: false
+          description: |
+                       Optional. Its suppressedCves list replaces the server's UPDATES_CHECKER_SUPPRESSED_CVES list
+                       for this call only. Leave it out, or leave out suppressedCves, to use the server's list.
+          schema:
+            $ref: "#/definitions/CheckRequest"
       responses:
         200:
           description: OK. The body describes the outcome, including a failed check, which has the status CHECK_FAILED.
@@ -44,6 +55,8 @@ paths:
                 "installedVersion": "2.27.0",
                 "newerVersion": "2.27.6",
                 "error": null,
+                "suppressed": [],
+                "suppressedBy": null,
                 "notifications": [
                   {
                     "type": "CVE_CONFIRMED",
@@ -54,6 +67,8 @@ paths:
                   }
                 ]
               }
+        400:
+          description: Bad Request. The body is not a JSON object, suppressedCves is not an array of CVE or GHSA ids, or the body is over 64 KiB.
         401:
           description: Unauthorized
         403:
@@ -76,6 +91,16 @@ paths:
           description: Method Not Allowed
 
 definitions:
+  CheckRequest:
+    title: checkRequest
+    type: object
+    properties:
+      suppressedCves:
+        type: array
+        description: CVE or GHSA ids to leave out of this call's result. An empty array suppresses nothing.
+        items:
+          type: string
+        example: ["CVE-2026-76904"]
   CheckResult:
     title: checkResult
     description: The outcome of a check
@@ -101,6 +126,17 @@ definitions:
       error:
         type: string
         description: Why the check failed, null otherwise
+      suppressed:
+        type: array
+        description: The suppressed advisories that apply to this version
+        items:
+          type: string
+      suppressedBy:
+        type: string
+        description: Where the suppressed list came from, null when nothing was suppressed
+        enum:
+          - environment
+          - request
       notifications:
         type: array
         description: Every active notification, most important first

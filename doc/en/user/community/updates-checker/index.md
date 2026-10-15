@@ -68,6 +68,9 @@ Below the Status section are these settings:
   (`-DUPDATES_CHECKER_FEED_URL=https://raw.githubusercontent.com/geoserver/geoserver/updates-checker-v1/versions.json`), a web application context parameter, or an
   environment variable. If `raw.githubusercontent.com/` is blocked by your organisation, try the jsDelivr copy of the default feed:
   `https://cdn.jsdelivr.net/gh/geoserver/geoserver@updates-checker-v1/versions.json`.
+- **Suppressed advisories** - read-only, empty by default. The security advisories (CVE or GHSA ids) that the server
+  administrator has mitigated and does not want reported. They are set outside GeoServer, see
+  [Suppressing mitigated advisories](#suppressing-mitigated-advisories).
 - **Enable update check at login and startup** - on by default. When off, only **Check Now** and the REST endpoint work.
 - **Write check results to logs** - on by default. Writes one line to the GeoServer log for each check (at startup, on
   the first view of a session and on Check Now) with the result and the versions. Failures to
@@ -128,6 +131,28 @@ good.
 Because the choice lives in the browser, it applies to that browser and that address only: an administrator on another
 device, under another host name, or in a private window sees the notifications again.
 
+## Suppressing mitigated advisories
+
+If you have mitigated a security advisory without upgrading, for example with a firewall rule or by disabling the
+affected service, you can stop the module reporting it. Set the `UPDATES_CHECKER_SUPPRESSED_CVES` [application
+property](../../configuration/properties/index.md) to the ids, separated by commas, semicolons or spaces, as a Java system property
+(`-DUPDATES_CHECKER_SUPPRESSED_CVES="CVE-2026-76904,GHSA-aaaa-bbbb-cccc"`), a web application context parameter, or an
+environment variable. Both CVE and GHSA ids are accepted, in any case. Entries that are not ids are ignored, and at most 100 are used.
+
+Because the property belongs to whoever starts the server, a GeoServer administrator cannot change it from the web interface.
+The **Suppressed advisories** box on the settings page only shows it.
+
+- A suppressed advisory is left out of the banner, the Status section and the REST response, and no longer makes the
+  check report an update.
+- The Status section says that advisories are suppressed and names the ones that apply to your version, so a
+  suppression is never invisible.
+- GeoServer writes one WARN line at startup naming the suppressed advisories. Each check line then ends with the number
+  suppressed, for example `(1 suppressed)`, without the ids.
+- Only advisories are affected. A newer release that was announced as a security release is still reported, because
+  the feed does not say which advisories a release fixes.
+
+The [REST endpoint](#rest-endpoint) can replace the list for a single call.
+
 ## Status and Check Now
 
 The **Status** section on this page shows what GeoServer version is running, when the feed was last checked, and every active
@@ -150,6 +175,8 @@ them back.
   "installedVersion": "2.27.0",
   "newerVersion": "2.27.6",
   "error": null,
+  "suppressed": [],
+  "suppressedBy": null,
   "notifications": [
     {
       "type": "CVE_CONFIRMED",
@@ -171,9 +198,26 @@ them back.
 | `UP_TO_DATE` | Nothing needs action. A series in maintenance, or a development build, still reports this |
 | `CHECK_FAILED` | The check could not tell: the feed could not be read, its schema is newer than the module understands, or the running version is unknown |
 
-`message` is the most important notification, and `notifications` lists everything active, most important first. Access is controlled by GeoServer's standard `/rest`
+`message` is the most important notification, and `notifications` lists everything active, most important first.
+`suppressed` lists the suppressed advisories that apply to this version, and `suppressedBy` is `environment` when the
+server's list was used, `request` when the call supplied its own, and `null` when nothing was suppressed. Access is controlled by GeoServer's standard `/rest`
 rules in `security/rest.properties`, which by default require the administrator role (`ROLE_ADMINISTRATOR`). Only `POST` is
 accepted, and the response is always JSON.
+
+### Suppressing advisories in a request
+
+The call accepts an optional JSON body. Its `suppressedCves` array replaces the server's list, but only for this call:
+the banner, the Status section and later calls are not affected. Leave the body out, or leave out `suppressedCves`, to use
+the server's list; an empty array suppresses nothing.
+
+```bash
+curl -u admin:YOUR_PASSWORD -X POST -H "Content-Type: application/json" \
+     -d '{"suppressedCves": ["CVE-2026-76904"]}' \
+     http://localhost:8080/geoserver/rest/updates-checker/check
+```
+
+A body that is not a JSON object, a `suppressedCves` that is not an array of CVE or GHSA ids, or a body over 64 KiB is refused with
+HTTP 400.
 
 ## Support
 

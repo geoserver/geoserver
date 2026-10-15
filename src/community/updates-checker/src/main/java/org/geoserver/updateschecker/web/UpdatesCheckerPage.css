@@ -3,13 +3,35 @@
 }
 
 /* readonly (not disabled), so the URL stays selectable/copyable - text colored gray to still read as non-editable */
-.gs-updates-checker-feed-url[readonly] {
+.gs-updates-checker-readonly[readonly] {
   color: #6c757d;
   cursor: default;
 }
 
+/* the help icon after the box; the group is one flex item of the form row, and an empty link has no size of its own */
+.gs-updates-checker-with-help {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+/* a flex item does not shrink below its set width unless this is zero, and the 3.x w-lg width is fixed */
+.gs-updates-checker-with-help input {
+  min-width: 0;
+}
+
+.gs-updates-checker-with-help .help-link {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  background-position: center;
+  background-size: contain;
+}
+
 /* 3.x sizes the field with the w-lg class, which 2.x does not have */
-:where(.gs-updates-checker-feed-url) {
+:where(.gs-updates-checker-readonly) {
   box-sizing: border-box;
   width: 100%;
   max-width: 40em;

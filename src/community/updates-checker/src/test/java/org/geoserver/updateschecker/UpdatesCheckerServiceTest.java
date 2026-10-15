@@ -394,4 +394,96 @@ public class UpdatesCheckerServiceTest {
         UpdatesCheckerStatus ok = service(persister(), "2.27.0").check(Trigger.MANUAL);
         assertEquals("Check failed: unknown error.", ok.getCheckFailedMessage(Locale.ROOT));
     }
+    // ---- suppressed advisories ----------------------------------------------------------------------------------
+
+    /** The running 2.27.0 is up to date, and affected by one advisory. */
+    private void serveOneAdvisory() {
+        feed.setBody("{\"schema_version\": 1, \"series\": ["
+                + "{\"series\": \"2.27.x\", \"phase\": \"stable\", \"latest_version\": \"2.27.0\"}],"
+                + "\"advisories\": [{\"ghsa_id\": \"GHSA-aaaa-bbbb-cccc\", \"cve_id\": \"CVE-2026-0001\","
+                + "\"severity\": \"critical\", \"summary\": \"Affects 2.27.0\","
+                + "\"vulnerable_versions\": [\"< 2.27.1\"], \"patched_versions\": {}}]}");
+    }
+
+    @Test
+    public void anAdvisoryNamedByTheServerIsLeftOutAndTheLogSaysHowMany() {
+        serveOneAdvisory();
+        UpdatesCheckerConfigPersister persister = persister();
+        save(persister, true, true, false);
+        UpdatesCheckerService service = service(persister, "2.27.0");
+
+        assertEquals(
+                UpdatesCheckerState.URGENT_UPDATE_AVAILABLE,
+                service.check(Trigger.MANUAL).getUpdateState());
+
+        System.setProperty(UpdatesCheckerSuppression.PROPERTY, "CVE-2026-0001");
+        try {
+            UpdatesCheckerStatus status = service.check(Trigger.MANUAL);
+            assertEquals(UpdatesCheckerState.UP_TO_DATE, status.getUpdateState());
+            assertTrue(status.getNotifications().isEmpty());
+            assertEquals(List.of("CVE-2026-0001"), status.getSuppressed());
+            assertEquals(List.of("CVE-2026-0001"), service.getStatus().getSuppressed());
+            assertEquals(
+                    "Suppressed by the server configuration: CVE-2026-0001.", status.getSuppressedMessage(Locale.ROOT));
+            String line = resultLines().get(1).getMessage();
+            assertEquals("Manual update check: GeoServer 2.27.0 is up to date. (1 suppressed)", line);
+            assertFalse(line, line.contains("CVE-"));
+        } finally {
+            System.clearProperty(UpdatesCheckerSuppression.PROPERTY);
+        }
+    }
+
+    @Test
+    public void aListFromARequestReplacesTheServersForThatCallOnly() {
+        serveOneAdvisory();
+        UpdatesCheckerConfigPersister persister = persister();
+        save(persister, true, true, false);
+        UpdatesCheckerService service = service(persister, "2.27.0");
+        System.setProperty(UpdatesCheckerSuppression.PROPERTY, "CVE-2026-0001");
+        try {
+            UpdatesCheckerSuppression none = UpdatesCheckerSuppression.fromRequest("{\"suppressedCves\": []}");
+            UpdatesCheckerStatus shown = service.check(Trigger.MANUAL, none);
+            assertEquals(UpdatesCheckerState.URGENT_UPDATE_AVAILABLE, shown.getUpdateState());
+            assertTrue(shown.getSuppressed().isEmpty());
+
+            UpdatesCheckerSuppression other =
+                    UpdatesCheckerSuppression.fromRequest("{\"suppressedCves\": [\"GHSA-aaaa-bbbb-cccc\"]}");
+            UpdatesCheckerStatus hidden = service.check(Trigger.MANUAL, other);
+            assertEquals(UpdatesCheckerState.UP_TO_DATE, hidden.getUpdateState());
+            assertEquals(
+                    "Manual update check: GeoServer 2.27.0 is up to date. (1 suppressed by the request)",
+                    resultLines().get(1).getMessage());
+
+            assertEquals(
+                    "the server's list applies again afterwards",
+                    List.of("CVE-2026-0001"),
+                    service.getStatus().getSuppressed());
+        } finally {
+            System.clearProperty(UpdatesCheckerSuppression.PROPERTY);
+        }
+    }
+
+    @Test
+    public void theStartupLogNamesTheSuppressedAdvisoriesAndTheEntriesItIgnored() {
+        UpdatesCheckerService service = service(persister(), "2.27.0");
+        service.logSuppression();
+        assertFalse(log.warned("not CVE or GHSA"));
+
+        System.setProperty(UpdatesCheckerSuppression.PROPERTY, "cve-2026-0002 CVE-2026-0001 nonsense");
+        try {
+            service.logSuppression();
+            boolean named = false;
+            for (LogRecord r : log.records()) {
+                named |= r.getLevel() == Level.WARNING
+                        && r.getMessage()
+                                .equals("Not reporting the advisories named by UPDATES_CHECKER_SUPPRESSED_CVES: "
+                                        + "CVE-2026-0001, CVE-2026-0002");
+            }
+            assertTrue("the suppressed advisories are logged", named);
+            assertTrue(log.warned(
+                    "Ignoring entries of UPDATES_CHECKER_SUPPRESSED_CVES that are not CVE or GHSA ids: nonsense"));
+        } finally {
+            System.clearProperty(UpdatesCheckerSuppression.PROPERTY);
+        }
+    }
 }

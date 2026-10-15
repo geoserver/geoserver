@@ -30,6 +30,7 @@ public final class UpdatesCheckerStatus implements Serializable {
     private final String runningSeries;
     private final String runningPhase;
     private final List<UpdatesCheckerNotification> notifications;
+    private final List<String> suppressed;
     private final long checkedAtMillis;
     private final boolean attempted;
     private final boolean fetchFailed;
@@ -40,11 +41,13 @@ public final class UpdatesCheckerStatus implements Serializable {
             UpdatesCheckerRunningVersion running,
             UpdatesCheckerFeed feed,
             List<UpdatesCheckerNotification> notifications,
+            List<String> suppressed,
             UpdatesCheckerFeedClient.State state) {
         this.runningKind = running.getKind();
         this.runningVersion = running.getRaw();
         this.runningSeries = running.isRelease() ? running.getRelease().getSeries() : null;
         this.notifications = Collections.unmodifiableList(new ArrayList<>(notifications));
+        this.suppressed = Collections.unmodifiableList(new ArrayList<>(suppressed));
         this.checkedAtMillis = state.getCheckedAtMillis();
         this.attempted = state.isAttempted();
         this.fetchFailed = state.isLastAttemptFailed();
@@ -72,6 +75,18 @@ public final class UpdatesCheckerStatus implements Serializable {
     /** @return the notifications, most important first. */
     public List<UpdatesCheckerNotification> getNotifications() {
         return notifications;
+    }
+
+    /** @return the advisories left out of the notifications because the server administrator suppressed them. */
+    public List<String> getSuppressed() {
+        return suppressed;
+    }
+
+    /**
+     * @return the "suppressed by the server configuration" line in the given language, listing {@link #getSuppressed}.
+     */
+    public String getSuppressedMessage(Locale locale) {
+        return UpdatesCheckerMessages.get(locale, "status.suppressed", String.join(", ", suppressed));
     }
 
     /** @return when the feed was last confirmed (epoch milliseconds), or 0 if it never was. */

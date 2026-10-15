@@ -594,4 +594,92 @@ public class UpdatesCheckerEvaluatorTest {
             }
         }
     }
+    // ---- suppressed advisories ----------------------------------------------------------------------------------
+
+    private static List<UpdatesCheckerNotification> evaluateSuppressing(
+            String running, UpdatesCheckerFeed feed, String suppressed) {
+        return UpdatesCheckerEvaluator.evaluate(
+                UpdatesCheckerRunningVersion.of(running),
+                feed,
+                true,
+                UpdatesCheckerSuppression.parse(suppressed, new ArrayList<>()));
+    }
+
+    private static UpdatesCheckerFeed twoAdvisories() throws Exception {
+        return feedWith(
+                false,
+                advisory("GHSA-aaaa-bbbb-cccc", "critical", "\"< 2.28.4\"", "\"2.28.x\": \"2.28.4\"")
+                        + ","
+                        + advisory("GHSA-dddd-eeee-ffff", "medium", "\"< 2.28.4\"", "\"2.28.x\": \"2.28.4\""));
+    }
+
+    @Test
+    public void aSuppressedAdvisoryIsNotReportedWhateverIdNamesIt() throws Exception {
+        UpdatesCheckerFeed feed = twoAdvisories();
+        assertEquals(
+                2,
+                types(evaluate("2.28.3", feed)).stream()
+                        .filter(t -> t == Type.CVE_CONFIRMED)
+                        .count());
+        // both advisories carry the CVE id the test feeds give them
+        for (String id : new String[] {"CVE-2026-0001", "cve-2026-0001"}) {
+            List<UpdatesCheckerNotification> result = evaluateSuppressing("2.28.3", feed, id);
+            assertEquals(id, List.of(Type.PATCH_AVAILABLE, Type.SERIES_MAINTENANCE), types(result));
+        }
+    }
+
+    @Test
+    public void aGhsaIdSuppressesOnlyItsOwnAdvisory() throws Exception {
+        List<UpdatesCheckerNotification> result = evaluateSuppressing("2.28.3", twoAdvisories(), "GHSA-aaaa-bbbb-cccc");
+        assertEquals(List.of(Type.CVE_CONFIRMED, Type.PATCH_AVAILABLE, Type.SERIES_MAINTENANCE), types(result));
+        assertEquals(UpdatesCheckerSeverity.WARN, result.get(0).getSeverity());
+    }
+
+    @Test
+    public void anAdvisoryThatCouldNotBeCheckedCanBeSuppressedToo() throws Exception {
+        UpdatesCheckerFeed feed = feedWith(
+                false, advisory("GHSA-aaaa-bbbb-cccc", "critical", "\"df11a650c650b2b5a73fe6c6b0e6d0d8a6e2a8c1\"", ""));
+        assertTrue(has(evaluate("2.28.3", feed), Type.CVE_UNVERIFIABLE));
+        assertFalse(has(evaluateSuppressing("2.28.3", feed, "GHSA-aaaa-bbbb-cccc"), Type.CVE_UNVERIFIABLE));
+    }
+
+    @Test
+    public void suppressingDoesNotHideAReasonToUpgrade() throws Exception {
+        UpdatesCheckerFeed feed = twoAdvisories();
+        List<UpdatesCheckerNotification> result = evaluateSuppressing("2.28.3", feed, "CVE-2026-0001");
+        assertTrue("a newer patch is still reported", has(result, Type.PATCH_AVAILABLE));
+        // up to date, so only the series notice is left
+        assertEquals(List.of(Type.SERIES_MAINTENANCE), types(evaluateSuppressing("2.28.5", feed, "CVE-2026-0001")));
+    }
+
+    @Test
+    public void theSuppressedAdvisoriesThatApplyAreListed() throws Exception {
+        UpdatesCheckerFeed feed = twoAdvisories();
+        UpdatesCheckerSuppression both =
+                UpdatesCheckerSuppression.parse("GHSA-aaaa-bbbb-cccc GHSA-dddd-eeee-ffff", new ArrayList<>());
+        UpdatesCheckerRunningVersion affected = UpdatesCheckerRunningVersion.of("2.28.3");
+        assertEquals(
+                List.of("CVE-2026-0001", "CVE-2026-0001"),
+                UpdatesCheckerEvaluator.suppressedAdvisories(affected, feed, both));
+        assertTrue(UpdatesCheckerEvaluator.suppressedAdvisories(UpdatesCheckerRunningVersion.of("2.28.4"), feed, both)
+                .isEmpty());
+        assertTrue(UpdatesCheckerEvaluator.suppressedAdvisories(affected, feed, UpdatesCheckerSuppression.none())
+                .isEmpty());
+        assertTrue(UpdatesCheckerEvaluator.suppressedAdvisories(affected, null, both)
+                .isEmpty());
+        assertTrue(UpdatesCheckerEvaluator.suppressedAdvisories(
+                        UpdatesCheckerRunningVersion.of("3.1.0-SNAPSHOT"), feed, both)
+                .isEmpty());
+    }
+
+    @Test
+    public void anAdvisoryWithoutACveIsListedByItsGhsaId() throws Exception {
+        UpdatesCheckerFeed feed = feed("{\"schema_version\": 1, \"series\": [], \"advisories\": ["
+                + "{\"ghsa_id\": \"GHSA-aaaa-bbbb-cccc\", \"severity\": \"high\", \"summary\": \"s\","
+                + " \"vulnerable_versions\": [\"< 2.28.4\"], \"patched_versions\": {}}]}");
+        UpdatesCheckerSuppression s = UpdatesCheckerSuppression.parse("GHSA-aaaa-bbbb-cccc", new ArrayList<>());
+        assertEquals(
+                List.of("GHSA-aaaa-bbbb-cccc"),
+                UpdatesCheckerEvaluator.suppressedAdvisories(UpdatesCheckerRunningVersion.of("2.28.3"), feed, s));
+    }
 }

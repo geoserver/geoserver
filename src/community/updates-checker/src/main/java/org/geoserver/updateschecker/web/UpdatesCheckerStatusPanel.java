@@ -106,6 +106,16 @@ public class UpdatesCheckerStatusPanel extends Panel {
             });
         }
 
+        root.add(new Label("suppressed", new StatusText(UpdatesCheckerStatus::getSuppressedMessage)) {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected void onConfigure() {
+                super.onConfigure();
+                setVisible(!status.getObject().getSuppressed().isEmpty());
+            }
+        });
+
         Label header = new Label("header", new StatusText(UpdatesCheckerStatus::getHeaderHtml));
         // the values in it are escaped by the status; only the emphasis markup is raw
         header.setEscapeModelStrings(false);

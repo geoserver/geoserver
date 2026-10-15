@@ -173,8 +173,8 @@ public class UpdatesCheckerCheckResponseTest {
     }
 
     @Test
-    public void postPerformsTheCheck() {
-        UpdatesCheckerCheckResponse response = new UpdatesCheckerRestController(service("3.0.0")).post();
+    public void postPerformsTheCheck() throws Exception {
+        UpdatesCheckerCheckResponse response = new UpdatesCheckerRestController(service("3.0.0")).post(null);
 
         assertEquals("a POST is a real check, not a cached read", 1, server.getRequests());
         assertEquals("UPDATE_AVAILABLE", response.getStatus());

@@ -25,7 +25,6 @@ public class UpdatesCheckerSuppressionTest {
         List<String> rejected = new ArrayList<>();
         UpdatesCheckerSuppression s =
                 parse(" CVE-2026-0002,CVE-2026-0001;\tGHSA-aaaa-bbbb-cccc\nCVE-2026-0001 ", rejected);
-        assertEquals(List.of("CVE-2026-0001", "CVE-2026-0002", "GHSA-aaaa-bbbb-cccc"), s.ids());
         assertEquals("CVE-2026-0001, CVE-2026-0002, GHSA-aaaa-bbbb-cccc", s.toString());
         assertTrue(rejected.toString(), rejected.isEmpty());
     }
@@ -33,7 +32,7 @@ public class UpdatesCheckerSuppressionTest {
     @Test
     public void idsAreWrittenInTheFormTheFeedUses() {
         UpdatesCheckerSuppression s = parse("cve-2026-0001 ghsa-AAAA-bbbb-CCCC", new ArrayList<>());
-        assertEquals(List.of("CVE-2026-0001", "GHSA-aaaa-bbbb-cccc"), s.ids());
+        assertEquals("CVE-2026-0001, GHSA-aaaa-bbbb-cccc", s.toString());
     }
 
     @Test
@@ -48,7 +47,7 @@ public class UpdatesCheckerSuppressionTest {
     public void whatIsNotAnIdIsRejectedAndTheRestKept() {
         List<String> rejected = new ArrayList<>();
         UpdatesCheckerSuppression s = parse("CVE-2026-0001 nonsense CVE-26-1 GHSA-xyz bad\nline", rejected);
-        assertEquals(List.of("CVE-2026-0001"), s.ids());
+        assertEquals("CVE-2026-0001", s.toString());
         assertEquals(List.of("nonsense", "CVE-26-1", "GHSA-xyz", "bad", "line"), rejected);
     }
 
@@ -67,7 +66,7 @@ public class UpdatesCheckerSuppressionTest {
         }
         List<String> rejected = new ArrayList<>();
         UpdatesCheckerSuppression s = UpdatesCheckerSuppression.of(tokens, rejected);
-        assertEquals(UpdatesCheckerSuppression.MAX_IDS, s.ids().size());
+        assertEquals(UpdatesCheckerSuppression.MAX_IDS, s.toString().split(", ").length);
         assertEquals(5, rejected.size());
     }
 
@@ -90,7 +89,7 @@ public class UpdatesCheckerSuppressionTest {
     public void aListIsReadLikeTheProperty() {
         UpdatesCheckerSuppression s = UpdatesCheckerSuppression.fromRequest(
                 "{\"suppressedCves\": [\"cve-2026-0001\", \"GHSA-aaaa-bbbb-cccc\"]}");
-        assertEquals(List.of("CVE-2026-0001", "GHSA-aaaa-bbbb-cccc"), s.ids());
+        assertEquals("CVE-2026-0001, GHSA-aaaa-bbbb-cccc", s.toString());
     }
 
     @Test

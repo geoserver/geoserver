@@ -80,21 +80,20 @@ public class UpdatesCheckerService {
                 forced == null || forced.isBlank() ? readManifestVersion() : forced.trim());
     }
 
-    /** @return the advisories the server administrator has suppressed. Invalid entries are ignored here. */
+    /** @return the advisories the server administrator has suppressed; entries that are not ids are ignored. */
     public UpdatesCheckerSuppression getSuppression() {
-        return UpdatesCheckerSuppression.parse(
-                GeoServerExtensions.getProperty(UpdatesCheckerSuppression.PROPERTY), new ArrayList<>());
+        return parseSuppression(new ArrayList<>());
     }
 
-    /**
-     * Logs what the server administrator has suppressed, and any entry that is not a CVE or GHSA id. Both are WARN, so
-     * they are written under the production logging profile too: a suppression is something an operator must be able to
-     * find in the log.
-     */
+    private static UpdatesCheckerSuppression parseSuppression(List<String> rejected) {
+        return UpdatesCheckerSuppression.parse(
+                GeoServerExtensions.getProperty(UpdatesCheckerSuppression.PROPERTY), rejected);
+    }
+
+    /** Logs the suppressed advisories and the entries ignored, at WARN so the production logging profile shows them. */
     public void logSuppression() {
         List<String> rejected = new ArrayList<>();
-        UpdatesCheckerSuppression suppression = UpdatesCheckerSuppression.parse(
-                GeoServerExtensions.getProperty(UpdatesCheckerSuppression.PROPERTY), rejected);
+        UpdatesCheckerSuppression suppression = parseSuppression(rejected);
         if (!suppression.isEmpty()) {
             LOGGER.warning(UpdatesCheckerMessages.base(
                     "log.suppression.configured", UpdatesCheckerSuppression.PROPERTY, suppression));

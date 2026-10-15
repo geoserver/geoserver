@@ -8,7 +8,7 @@
   cursor: default;
 }
 
-/* the help icon after the box; the group is one flex item of the form row, and an empty link has no size of its own */
+/* an empty link has no size of its own, so the icon is sized here */
 .gs-updates-checker-with-help {
   display: flex;
   align-items: center;
@@ -16,7 +16,7 @@
   min-width: 0;
 }
 
-/* a flex item does not shrink below its set width unless this is zero, and the 3.x w-lg width is fixed */
+/* lets the box shrink below the fixed 3.x w-lg width */
 .gs-updates-checker-with-help input {
   min-width: 0;
 }

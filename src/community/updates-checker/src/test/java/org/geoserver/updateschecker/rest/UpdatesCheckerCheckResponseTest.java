@@ -57,7 +57,7 @@ public class UpdatesCheckerCheckResponseTest {
 
     private UpdatesCheckerCheckResponse respond(String running) {
         return UpdatesCheckerCheckResponse.of(
-                service(running).check(UpdatesCheckerService.Trigger.MANUAL), Locale.ROOT);
+                service(running).check(UpdatesCheckerService.Trigger.MANUAL), Locale.ROOT, null);
     }
 
     @Test
@@ -167,7 +167,7 @@ public class UpdatesCheckerCheckResponseTest {
     @Test
     public void textFollowsTheRequestedLanguage() {
         UpdatesCheckerCheckResponse zz = UpdatesCheckerCheckResponse.of(
-                service("3.0.1").check(UpdatesCheckerService.Trigger.MANUAL), new Locale("zz"));
+                service("3.0.1").check(UpdatesCheckerService.Trigger.MANUAL), new Locale("zz"), null);
         // src/test/resources carries a one-key "zz" translation of the up-to-date text
         assertEquals("zz: GeoServer 3.0.1", zz.getMessage());
     }

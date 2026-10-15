@@ -77,11 +77,10 @@ public final class UpdatesCheckerSuppression {
      * Reads the body of a REST call.
      *
      * @param body the request body, or {@code null}
-     * @return the list that replaces the property for this call, or {@code null} if the body does not supply one: an
-     *     empty body, an object without {@link #REQUEST_MEMBER}, or one where it is JSON null. An empty array supplies
-     *     an empty list, which suppresses nothing.
+     * @return the list that replaces the property for this call, or {@code null} if the body supplies none; an empty
+     *     array supplies an empty list, which suppresses nothing
      * @throws IllegalArgumentException with a message for the caller if the body is not a JSON object, the member is
-     *     not an array of text, or it holds something that is not a CVE or GHSA id
+     *     not an array of CVE or GHSA ids
      */
     public static UpdatesCheckerSuppression fromRequest(String body) {
         if (body == null || body.isBlank()) {
@@ -121,11 +120,6 @@ public final class UpdatesCheckerSuppression {
 
     public boolean isEmpty() {
         return ids.isEmpty();
-    }
-
-    /** @return the ids, sorted. */
-    public List<String> ids() {
-        return new ArrayList<>(ids);
     }
 
     /** @return whether the advisory carries one of the ids, as its CVE id or its GHSA id. */

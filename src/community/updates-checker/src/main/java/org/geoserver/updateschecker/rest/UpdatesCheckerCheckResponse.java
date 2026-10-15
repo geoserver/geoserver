@@ -69,11 +69,6 @@ public class UpdatesCheckerCheckResponse {
 
     private final List<Notice> notifications;
 
-    /** @return the response for a check that suppressed nothing by request, with text in the given language. */
-    static UpdatesCheckerCheckResponse of(UpdatesCheckerStatus s, Locale locale) {
-        return of(s, locale, null);
-    }
-
     /**
      * @param suppressedBy where the suppressed advisories came from, {@code "request"} or {@code "environment"}, or
      *     {@code null} if none were named

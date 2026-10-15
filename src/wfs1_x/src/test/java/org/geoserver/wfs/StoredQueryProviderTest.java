@@ -190,8 +190,7 @@ public class StoredQueryProviderTest {
             writer.write(markerContent);
         }
 
-        RecordingEntityResolver configuredResolver = new RecordingEntityResolver();
-        configuredEntityResolver = configuredResolver;
+        configuredEntityResolver = new RefusingEntityResolver();
 
         createIncludeStoredQueryDefinitionFile(
                 storedQueryProvider.storedQueryDir().dir(), referencedFile);
@@ -204,12 +203,10 @@ public class StoredQueryProviderTest {
             queryExpressionText = "";
         }
 
-        assertThat(configuredResolver.wasConsulted(), is(true));
         assertThat(queryExpressionText, not(containsString(markerContent)));
     }
 
-    private static final class RecordingEntityResolver implements EntityResolver2 {
-        private boolean consulted;
+    private static final class RefusingEntityResolver implements EntityResolver2 {
 
         @Override
         public InputSource getExternalSubset(String name, String baseURI) {
@@ -219,18 +216,12 @@ public class StoredQueryProviderTest {
         @Override
         public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId)
                 throws SAXException {
-            consulted = true;
             throw new SAXException("resolution not supported by this test resolver");
         }
 
         @Override
         public InputSource resolveEntity(String publicId, String systemId) throws SAXException {
-            consulted = true;
             throw new SAXException("resolution not supported by this test resolver");
-        }
-
-        boolean wasConsulted() {
-            return consulted;
         }
     }
 

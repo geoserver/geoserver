@@ -31,6 +31,7 @@ For more information see [Configuration Considerations](../../production/config.
 | GEOSERVER_CSRF_WHITELIST<br>[/security/webadmin/csrf](../../security/webadmin/csrf.md) | x               | x             | x            |
 | GEOSERVER_REMEMBERME_KEY<br>Shared key that signs remember-me cookies across a cluster. See [/security/webadmin/auth](../../security/webadmin/auth.md#remember-me). | x               | x             | x            |
 | org.geoserver.web.csp.strict<br>[User interface non-responsive](../../production/troubleshooting.md#csp_strict), default true. | x               |               |              |
+| org.geotools.renderer.style.maxRasterizationSize<br>Size in pixels above which graphic fills and icons are painted as vectors (default 512). See [GraphicFill](../../styling/sld/reference/polygonsymbolizer.md#graphicfill). | x               |               |              |
 | org.geoserver.catalog.loadingThreads<br>Number of threads used to load catalogue (Default 4). | x               | x             | x            |
 | CAPABILITIES_CACHE_CONTROL_ENABLED<br>Use false to disable, defaults to true.    | x               | x             | x            |
 | GEOSERVER_FILEBROWSER_HIDEFS<br>When set to true only GEOSERVER_DATA_DIR available to browse. | x               | x             | x            |

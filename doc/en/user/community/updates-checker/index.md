@@ -80,16 +80,18 @@ The settings are saved in `updates-checker/updates-checker.xml` in the data dire
 
 ## Feed
 
-The feed is automatically built (every 15 minutes) from these free public sources:
+The feed is built every 15 minutes by the [Updates Checker feed](https://github.com/geoserver/geoserver/blob/main/.github/workflows/updates-checker.yml)
+workflow, from these public sources:
+
 * `geoserver/geoserver/security/advisories`
 * `geoserver/geoserver/releases`
 * `geoserver/geoserver.github.io/_posts`
-by the _current https://github.com/petersmythe/gs-updates-checker/tree/alpha workflow.  This will be moved into the GeoServer organisation after the merge of this PR, and preferably into the main `geoserver/geoserver` repo for maintainability._
 
-The feed is published at:
-* _https://raw.githubusercontent.com/petersmythe/gs-updates-checker/alpha/versions.json_ (temporarily, until the above feed goes live)
+The generator and its tests are in `.github/workflows/updates-checker/`. The result is committed to the
+`updates-checker-v1` branch and published at:
+
 * https://raw.githubusercontent.com/geoserver/geoserver/updates-checker-v1/versions.json
-* https://cdn.jsdelivr.net/gh/geoserver/geoserver@updates-checker-v1/versions.json
+* https://cdn.jsdelivr.net/gh/geoserver/geoserver@updates-checker-v1/versions.json (for networks that block `raw.githubusercontent.com`)
 
 ## Notifications
 

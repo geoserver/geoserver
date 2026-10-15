@@ -115,6 +115,12 @@ GeoServer Property Reference
      - x
      -
      - 
+   * - org.geotools.renderer.style.maxRasterizationSize
+       
+       Size in pixels above which graphic fills and icons are painted as vectors (default 512). See :ref:`sld_reference_graphicfill`.
+     - x
+     -
+     -
    * - org.geoserver.catalog.loadingThreads
        
        Number of threads used to load catalogue (Default 4).

@@ -1,0 +1,268 @@
+[
+  {
+    "tag_name": "2.27.6",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2026-08-14T23:51:17Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.27.6"
+  },
+  {
+    "tag_name": "2.28.5",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2026-08-14T23:41:43Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.28.5"
+  },
+  {
+    "tag_name": "3.0.1",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2026-08-14T22:44:22Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/3.0.1"
+  },
+  {
+    "tag_name": "3.0.0",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2026-06-11T16:51:02Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/3.0.0"
+  },
+  {
+    "tag_name": "2.28.4",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2026-05-27T10:43:49Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.28.4"
+  },
+  {
+    "tag_name": "3.0-RC",
+    "draft": false,
+    "prerelease": true,
+    "published_at": "2026-04-20T13:44:13Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/3.0-RC"
+  },
+  {
+    "tag_name": "2.28.2",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2026-03-04T08:27:58Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.28.2"
+  },
+  {
+    "tag_name": "2.27.5",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2026-02-18T15:45:02Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.27.5"
+  },
+  {
+    "tag_name": "2.27.4",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2025-12-19T13:49:05Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.27.4"
+  },
+  {
+    "tag_name": "2.28.1",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2025-11-25T13:52:02Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.28.1"
+  },
+  {
+    "tag_name": "2.27.3",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2025-10-21T15:41:19Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.27.3"
+  },
+  {
+    "tag_name": "2.28.0",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2025-10-14T22:56:19Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.28.0"
+  },
+  {
+    "tag_name": "2.26.4",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2025-09-02T16:33:52Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.26.4"
+  },
+  {
+    "tag_name": "2.27.2",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2025-07-18T11:58:10Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.27.2"
+  },
+  {
+    "tag_name": "2.25.7",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2025-05-14T04:37:01Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.25.7"
+  },
+  {
+    "tag_name": "2.26.3",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2025-05-14T04:34:12Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.26.3"
+  },
+  {
+    "tag_name": "2.25.4",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2025-05-14T04:31:58Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.25.4"
+  },
+  {
+    "tag_name": "2.27.1",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2025-05-14T03:57:04Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.27.1"
+  },
+  {
+    "tag_name": "2.27.0",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2025-04-07T09:22:13Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.27.0"
+  },
+  {
+    "tag_name": "2.22.6",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2025-03-13T17:11:43Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.22.6"
+  },
+  {
+    "tag_name": "2.25.6",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2025-02-18T15:23:22Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.25.6"
+  },
+  {
+    "tag_name": "2.26.2",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2025-01-27T08:16:55Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.26.2"
+  },
+  {
+    "tag_name": "2.25.5",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2024-12-19T09:26:12Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.25.5"
+  },
+  {
+    "tag_name": "2.26.1",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2024-11-19T14:11:15Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.26.1"
+  },
+  {
+    "tag_name": "2.26.0",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2024-09-23T06:24:20Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.26.0"
+  },
+  {
+    "tag_name": "2.24.5",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2024-08-26T09:36:50Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.24.5"
+  },
+  {
+    "tag_name": "2.25.3",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2024-07-22T09:25:21Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.25.3"
+  },
+  {
+    "tag_name": "2.23.6",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2024-06-25T17:18:56Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.23.6"
+  },
+  {
+    "tag_name": "2.24.4",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2024-06-17T17:49:19Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.24.4"
+  },
+  {
+    "tag_name": "2.25.2",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2024-06-15T16:20:21Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.25.2"
+  },
+  {
+    "tag_name": "2.25.1",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2024-05-23T03:00:20Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.25.1"
+  },
+  {
+    "tag_name": "2.25.0",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2024-03-19T19:06:58Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.25.0"
+  },
+  {
+    "tag_name": "2.25-RC",
+    "draft": false,
+    "prerelease": true,
+    "published_at": "2024-03-03T04:46:11Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.25-RC"
+  },
+  {
+    "tag_name": "2.23.5",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2024-02-21T11:49:15Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.23.5"
+  },
+  {
+    "tag_name": "2.24.2",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2024-01-24T01:38:07Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.24.2"
+  },
+  {
+    "tag_name": "2.23.4",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2023-12-20T15:20:53Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.23.4"
+  },
+  {
+    "tag_name": "2.24.1",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2023-12-14T15:18:42Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.24.1"
+  },
+  {
+    "tag_name": "2.23.3",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2023-10-30T16:13:47Z",
+    "html_url": "https://github.com/geoserver/geoserver/releases/tag/2.23.3"
+  }
+]

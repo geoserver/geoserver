@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <div wicket:id="root" class="gs-updates-checker-notifications">
+        <h3 class="gs-updates-checker-heading"><wicket:message key="UpdatesChecker.heading">Check for Updates</wicket:message></h3>
+        <ul class="feedbackPanel">
+          <li wicket:id="notification" class="gs-updates-checker-notification">
+            <strong wicket:id="label" class="gs-updates-checker-label">WARN</strong>
+            <span class="gs-updates-checker-dash">&#8212;</span>
+            <span wicket:id="message">Notification text</span>
+            <span wicket:id="details"><span class="gs-updates-checker-sep">&#160;&#183;&#160;</span><a wicket:id="link" class="gs-updates-checker-details"><wicket:message key="UpdatesChecker.details">Details</wicket:message></a></span>
+            <span wicket:id="actions" class="gs-updates-checker-actions">
+              <span wicket:id="action">
+                <span class="gs-updates-checker-sep">&#160;&#183;&#160;</span><a wicket:id="actionLink" href="#" class="gs-updates-checker-action"><span wicket:id="actionText">Remind me tomorrow</span></a>
+              </span>
+            </span>
+          </li>
+        </ul>
+        <p wicket:id="more" class="gs-updates-checker-more">
+          <a wicket:id="moreLink"><span wicket:id="moreCount" class="gs-updates-checker-more-count">1</span>&#160;<wicket:message key="UpdatesChecker.moreNotices">more notices</wicket:message></a>
+        </p>
+      </div>
+    </wicket:panel>
+  </body>
+</html>

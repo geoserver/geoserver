@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <div wicket:id="root" class="gs-updates-checker-status">
+        <fieldset>
+          <legend><span><wicket:message key="UpdatesChecker.status.title">Status</wicket:message></span></legend>
+          <div class="gs-form">
+            <p wicket:id="error" class="feedbackPanelERROR">Check failed</p>
+            <p wicket:id="header">You are currently running version 2.27.0</p>
+            <p class="gs-updates-checker-check-line">
+              <a wicket:id="checkNow" href="#" class="button outline-primary gs-updates-checker-check-now"><wicket:message key="UpdatesCheckerPage.checkNow">Check now</wicket:message></a>
+              <span wicket:id="feedLine" class="gs-updates-checker-feed-line">Feed checked</span>
+            </p>
+            <p wicket:id="suppressed" class="gs-updates-checker-suppressed">Suppressed by the server configuration: CVE-2026-0001.</p>
+        <p wicket:id="none" class="gs-updates-checker-status-none"><wicket:message key="UpdatesChecker.status.none">No notifications are active.</wicket:message></p>
+        <ul wicket:id="notificationList" class="feedbackPanel">
+          <li wicket:id="notification" class="gs-updates-checker-status-item">
+            <strong wicket:id="label" class="gs-updates-checker-label">WARN</strong>
+            <span class="gs-updates-checker-dash">&#8212;</span>
+            <span wicket:id="message">Notification text</span>
+            <span wicket:id="details"><span class="gs-updates-checker-sep">&#160;&#183;&#160;</span><a wicket:id="link" class="gs-updates-checker-details"><wicket:message key="UpdatesChecker.details">Details</wicket:message></a></span>
+            <span wicket:id="actions" class="gs-updates-checker-actions">
+              <span wicket:id="action">
+                <span class="gs-updates-checker-sep">&#160;&#183;&#160;</span><a wicket:id="actionLink" href="#" class="gs-updates-checker-action"><span wicket:id="actionText">Remind me tomorrow</span></a>
+              </span>
+            </span>
+          </li>
+        </ul>
+            <p class="gs-updates-checker-clear" wicket:id="clear" hidden="hidden"><a href="#" data-clear="true"></a></p>
+          </div>
+        </fieldset>
+      </div>
+    </wicket:panel>
+  </body>
+</html>

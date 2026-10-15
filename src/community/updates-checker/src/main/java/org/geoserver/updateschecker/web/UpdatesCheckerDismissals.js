@@ -139,11 +139,6 @@
                 others++;
             }
         }
-        // the heading names the plugin, so it goes when nothing of the plugin's is showing
-        var heading = root.querySelector('.gs-updates-checker-heading');
-        if (heading) {
-            heading.hidden = shown < 0;
-        }
         var more = root.querySelector('.gs-updates-checker-more');
         if (more) {
             var count = more.querySelector('.gs-updates-checker-more-count');

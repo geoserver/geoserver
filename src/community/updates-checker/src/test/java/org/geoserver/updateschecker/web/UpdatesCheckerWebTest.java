@@ -299,8 +299,8 @@ public class UpdatesCheckerWebTest extends GeoServerWicketTestSupport {
 
         tester.startPage(GeoServerHomePage.class);
         tester.assertContains("gs-updates-checker-notification");
-        tester.assertContains("gs-updates-checker-heading");
-        tester.assertContains("Check for Updates");
+        // the admin block already reads as a heading, so the banner adds none of its own
+        tester.assertContainsNot("gs-updates-checker-heading");
         tester.assertContains("feedbackPanelWARNING");
         tester.assertContains("data-type=\"PATCH_AVAILABLE\"");
     }

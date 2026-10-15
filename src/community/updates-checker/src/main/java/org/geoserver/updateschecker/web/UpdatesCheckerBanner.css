@@ -41,14 +41,6 @@
   margin: 0.25rem 0 0;
 }
 
-.gs-updates-checker-heading {
-  margin: 0 0 0.25rem;
-}
-
-.gs-updates-checker-heading[hidden] {
-  display: none;
-}
-
 .gs-updates-checker-more[hidden] {
   display: none;
 }

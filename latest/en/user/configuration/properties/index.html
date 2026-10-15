@@ -30621,6 +30621,12 @@
 <td>x</td>
 </tr>
 <tr>
+<td>GEOSERVER_TRUSTED_PROXIES<br>Comma separated list of reverse proxy IP addresses or CIDR blocks. GeoServer reads the client address from the <code>X-Forwarded-For</code> header only for requests arriving from one of these proxies, otherwise it uses the direct connection address. The default is loopback only (<code>127.0.0.0/8</code>, <code>::1</code>), so a reverse proxy on another host must be listed, otherwise every request appears to come from the proxy address.</td>
+<td>x</td>
+<td>x</td>
+<td>x</td>
+</tr>
+<tr>
 <td>org.geoserver.service.disabled<br><a href="../../data/webadmin/layers/#data_webadmin_layers_services">Layer service</a> default comma separated list of disabled services.</td>
 <td>x</td>
 <td>x</td>
@@ -30736,6 +30742,12 @@
 </tr>
 <tr>
 <td>GEOSERVER_ROOT_LOGIN_ENABLED<br><a href="../../security/root/">Root account</a></td>
+<td>x</td>
+<td>x</td>
+<td>x</td>
+</tr>
+<tr>
+<td>GEOSERVER_JDBC_EXTRA_PARAMETERS<br>Extra connection URL parameters accepted for JDBC user/group services, role services and authentication providers. GeoServer accepts only a known list of parameters for each driver. Format is <code>driverClass:param1,param2;driverClass2:param3</code>, for example <code>com.ibm.db2.jcc.DB2Driver:currentSchema</code>. Use it to allow a parameter, or a driver, that is not known. A legacy driver class name, such as <code>org.hsqldb.jdbcDriver</code>, shares the parameters of its current name. Each parameter added this way is passed to the driver unchecked, so add only parameters that cannot read or write files or load classes.</td>
 <td>x</td>
 <td>x</td>
 <td>x</td>

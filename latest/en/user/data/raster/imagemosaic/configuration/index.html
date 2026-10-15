@@ -30712,7 +30712,7 @@
 <p>An example of optional CoverageNameCollectorSPI could be:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="na">CoverageNameCollectorSPI</span><span class="o">=</span><span class="s">org.geotools.gce.imagemosaic.namecollector.FileNameRegexNameCollectorSPI:regex=^([a-zA-Z0-9]+)</span>
 </code></pre></div>
-<p>This defines a regex-based name collector which extracts the coverage name from the prefix of the file name, so that an ImageMosaic with temperature_2015.tif, temperature_2016.tif, pressure_2015.tif, pressure_2016.tif will put temperature<em> granules on a <code>temperature</code> coverage and pressure</em> granules on a <code>pressure</code> coverage.</p>
+<p>This defines a regex-based name collector which extracts the coverage name from the prefix of the file name, so that an ImageMosaic with temperature_2015.tif, temperature_2016.tif, pressure_2015.tif, pressure_2016.tif will put temperature* granules on a <code>temperature</code> coverage and pressure* granules on a <code>pressure</code> coverage.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The extraction works from the match of the full regular expression, if there are no capturing groups. If there are capturing groups instead, the match will be the concatenation of the text matched by all the capturing groups. This can be used to simplify the regular expression, for example, in order to match a string surrounded by underscores, <code>regex=.*_(\\w+)_.*</code> can be used instead of the more complex <code>regex=(?&lt;\=_)\\w+(?\=_)</code> (using non capturing groups instead).</p>

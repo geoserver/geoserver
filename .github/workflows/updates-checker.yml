@@ -1,0 +1,135 @@
+name: Updates Checker feed
+
+# Regenerates versions.json on the updates-checker-v1 branch: the feed read by the updates-checker community module.
+# The generator and its tests are in .github/workflows/updates-checker/. This workflow lives on the default branch
+# because schedule and repository_dispatch events only run from there.
+on:
+  # An external scheduler can send a repository_dispatch event, because the GitHub scheduler is unreliable under load.
+  repository_dispatch:
+    types: [update-versions]
+  # Fallback; the minutes avoid the :00/:15/:30/:45 herd.
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: updates-checker-feed
+  cancel-in-progress: false
+
+env:
+  FEED_BRANCH: updates-checker-v1
+  TOOLS: .github/workflows/updates-checker
+
+jobs:
+  generate:
+    # forks have their own copy of this file but no feed branch to publish
+    if: github.repository == 'geoserver/geoserver'
+    runs-on: ubuntu-latest
+    steps:
+      # the module reads updates-checker-v1 for good, so only main may write to it; a branch that changes the
+      # generator (a new schema, say) must publish somewhere else
+      - name: Refuse to publish the live feed from a branch other than main
+        if: github.ref != 'refs/heads/main' && env.FEED_BRANCH == 'updates-checker-v1'
+        run: |
+          echo "::error title=Wrong feed branch::This run is on '${GITHUB_REF_NAME}', not main, but FEED_BRANCH is still the live feed, updates-checker-v1. Set FEED_BRANCH in .github/workflows/updates-checker.yml to another branch (for example updates-checker-v2), create that branch, and run again."
+          exit 1
+
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: .github/workflows/updates-checker
+          fetch-depth: 1
+          persist-credentials: false
+
+      # the previous feed: the generator keeps its last good data when GitHub cannot be read
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.FEED_BRANCH }}
+          path: feed
+          sparse-checkout: versions.json
+          sparse-checkout-cone-mode: false
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Run tests
+        run: python3 -m unittest discover -s "$TOOLS/tests"
+
+      - name: Generate versions.json
+        run: python3 "$TOOLS/scripts/check_versions.py"
+        env:
+          VERSIONS_JSON: feed/versions.json
+
+      - name: Validate versions.json (independent validator)
+        run: python3 "$TOOLS/scripts/validate_feed.py" feed/versions.json
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: versions-json
+          path: feed/versions.json
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    needs: generate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: .github/workflows/updates-checker
+          fetch-depth: 1
+          persist-credentials: false
+
+      # keeps its credentials: this is the checkout that is pushed
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.FEED_BRANCH }}
+          path: feed
+          sparse-checkout: versions.json
+          sparse-checkout-cone-mode: false
+          fetch-depth: 1
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: versions-json
+          path: incoming
+
+      - name: Validate the artifact again before publishing
+        run: python3 "$TOOLS/scripts/validate_feed.py" incoming/versions.json
+
+      - name: Commit versions.json if changed
+        id: commit
+        working-directory: feed
+        run: |
+          cp ../incoming/versions.json versions.json
+          if git diff --quiet -- versions.json; then
+            echo "No change in versions.json, nothing to commit."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add versions.json
+          git commit -m "Update versions.json [automated]"
+          git push origin "HEAD:$FEED_BRANCH"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Purge jsDelivr cache
+        if: steps.commit.outputs.changed == 'true'
+        run: |
+          # jsDelivr does not notice a new commit by itself, so a client could keep receiving a stale feed for hours
+          url="https://purge.jsdelivr.net/gh/${GITHUB_REPOSITORY}@${FEED_BRANCH}/versions.json"
+          echo "Purging: $url"
+          for attempt in 1 2 3; do
+            status=$(curl -s -o /tmp/purge_response.json -w "%{http_code}" "$url")
+            echo "Attempt $attempt: HTTP $status"
+            if [ "$status" = "200" ]; then
+              exit 0
+            fi
+            sleep 5
+          done
+          # the commit already succeeded and the cache expires on its own
+          echo "::warning::jsDelivr purge did not return 200 after 3 attempts; relying on TTL expiry instead."

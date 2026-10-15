@@ -57,7 +57,7 @@ public class StylesAdminPage extends BaseServiceAdminPage<StylesServiceInfo> {
             IModel<ConformanceInfo<?>> conformance = IModel.of(() -> (StylesConformance) info.getObject()
                     .getMetadata()
                     .computeIfAbsent(StylesConformance.METADATA_KEY, k -> new StylesConformance()));
-            add(new ConformanceTable("stylesConformance", conformance, this));
+            add(new ConformanceTable("stylesConformance", info, conformance, this));
         }
     }
 }

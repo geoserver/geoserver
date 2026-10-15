@@ -54,8 +54,14 @@ public class UpdatesCheckerRestController {
             throw new RestException(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         UpdatesCheckerStatus status = service.check(UpdatesCheckerService.Trigger.MANUAL, override);
-        String suppressedBy = status.getSuppressed().isEmpty() ? null : override != null ? "request" : "environment";
-        return UpdatesCheckerCheckResponse.of(status, LocaleContextHolder.getLocale(), suppressedBy);
+        return UpdatesCheckerCheckResponse.of(status, LocaleContextHolder.getLocale(), suppressedBy(status, override));
+    }
+
+    private static String suppressedBy(UpdatesCheckerStatus status, UpdatesCheckerSuppression override) {
+        if (status.getSuppressed().isEmpty()) {
+            return null;
+        }
+        return override == null ? "environment" : "request";
     }
 
     private static String read(InputStream body) throws IOException {

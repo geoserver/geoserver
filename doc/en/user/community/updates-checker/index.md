@@ -137,7 +137,7 @@ If you have mitigated a security advisory without upgrading, for example with a 
 affected service, you can stop the module reporting it. Set the `UPDATES_CHECKER_SUPPRESSED_CVES` [application
 property](../../configuration/properties/index.md) to the ids, separated by commas, semicolons or spaces, as a Java system property
 (`-DUPDATES_CHECKER_SUPPRESSED_CVES="CVE-2026-76904,GHSA-aaaa-bbbb-cccc"`), a web application context parameter, or an
-environment variable. Both CVE and GHSA ids are accepted, in any case. Entries that are not ids are ignored, and at most 100 are used.
+environment variable. Both CVE and GHSA ids are accepted, in any case; entries that are not ids are ignored, and at most 100 are used.
 
 Because the property belongs to whoever starts the server, a GeoServer administrator cannot change it from the web interface.
 The **Suppressed advisories** box on the settings page only shows it.
@@ -150,8 +150,6 @@ The **Suppressed advisories** box on the settings page only shows it.
   suppressed, for example `(1 suppressed)`, without the ids.
 - Only advisories are affected. A newer release that was announced as a security release is still reported, because
   the feed does not say which advisories a release fixes.
-
-The [REST endpoint](#rest-endpoint) can replace the list for a single call.
 
 ## Status and Check Now
 

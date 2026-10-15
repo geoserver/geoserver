@@ -24840,6 +24840,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Configuration of OGC API - Styles module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#conformance-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conformance classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -30239,6 +30256,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Configuration of OGC API - Styles module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#conformance-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conformance classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -30312,7 +30346,19 @@
 </li>
 </ol>
 <h2 id="configuration-of-ogc-api-styles-module">Configuration of OGC API - Styles module<a class="headerlink" href="#configuration-of-ogc-api-styles-module" title="Permanent link">&para;</a></h2>
-<p>At the time of writing the module has no configuration, it's simply exposing all available GeoServer styles.</p>
+<p>The module exposes all available GeoServer styles. Its settings are on the <strong>Services &gt; Styles</strong> page in the admin UI, on the <strong>Styles</strong> tab.</p>
+<h3 id="conformance-classes">Conformance classes<a class="headerlink" href="#conformance-classes" title="Permanent link">&para;</a></h3>
+<p>Use the provided <a href="../../../configuration/ogc-api-services/#conformance">Conformance table</a> to manage the conformance classes.</p>
+<p>The service always supports reading styles, as Mapbox styles, SLD 1.0 and SLD 1.1. These classes are always enabled and are listed in the conformance declaration.</p>
+<p>The <strong>Manage styles</strong> conformance class allows clients to create, update and delete styles, and to update style metadata. It is disabled by default.</p>
+<p>Managing styles changes the GeoServer catalog, so decide who may do it before enabling the class. Service security rules control this, in <strong>Security &gt; Services</strong> or in <code>security/services.properties</code>. A good starting point allows only administrators:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>styles.addStyle=ROLE_ADMINISTRATOR
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>styles.updateStyle=ROLE_ADMINISTRATOR
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>styles.deleteStyle=ROLE_ADMINISTRATOR
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>styles.updateStyleMetadata=ROLE_ADMINISTRATOR
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>styles.patchStyleMetadata=ROLE_ADMINISTRATOR
+</code></pre></div>
+<p>Add other roles to these rules to allow more users to manage styles. Use a rule for each operation, as above: a <code>styles.*</code> rule also applies to the operations that read styles.</p>
 
 
 

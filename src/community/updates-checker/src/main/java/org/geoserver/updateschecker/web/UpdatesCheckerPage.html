@@ -2,6 +2,7 @@
 <head></head>
 <body>
 <wicket:extend>
+<div wicket:id="dialog"></div>
 <div wicket:id="status" class="gs-updates-checker-status-section"></div>
 <form wicket:id="form">
   <fieldset>
@@ -9,7 +10,14 @@
     <div class="gs-form">
       <div class="gs-form-group">
         <label for="feedUrl"><wicket:message key="UpdatesCheckerPage.feedUrl">Feed URL</wicket:message></label>
-        <input id="feedUrl" type="text" class="w-lg gs-updates-checker-feed-url" wicket:id="feedUrl" />
+        <input id="feedUrl" type="text" class="w-lg gs-updates-checker-readonly" wicket:id="feedUrl" />
+      </div>
+      <div class="gs-form-group">
+        <label for="suppressedCves"><wicket:message key="UpdatesCheckerPage.suppressedCves">Suppressed advisories</wicket:message></label>
+        <div class="gs-updates-checker-with-help">
+          <input id="suppressedCves" type="text" class="w-lg gs-updates-checker-readonly" wicket:id="suppressedCves" />
+          <a href="#" wicket:id="suppressedCvesHelp" class="help-link"></a>
+        </div>
       </div>
       <div class="choiceItem">
         <input id="enabled" type="checkbox" wicket:id="enabled" />

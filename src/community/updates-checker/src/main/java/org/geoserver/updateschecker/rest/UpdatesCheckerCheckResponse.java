@@ -63,10 +63,23 @@ public class UpdatesCheckerCheckResponse {
 
     private final String error;
 
+    private final List<String> suppressed;
+
+    private final String suppressedBy;
+
     private final List<Notice> notifications;
 
-    /** @return the response describing a status taken just after a check, with text in the given language. */
+    /** @return the response for a check that suppressed nothing by request, with text in the given language. */
     static UpdatesCheckerCheckResponse of(UpdatesCheckerStatus s, Locale locale) {
+        return of(s, locale, null);
+    }
+
+    /**
+     * @param suppressedBy where the suppressed advisories came from, {@code "request"} or {@code "environment"}, or
+     *     {@code null} if none were named
+     * @return the response describing a status taken just after a check, with text in the given language
+     */
+    static UpdatesCheckerCheckResponse of(UpdatesCheckerStatus s, Locale locale, String suppressedBy) {
         List<Notice> notices = new ArrayList<>();
         for (UpdatesCheckerNotification n : s.getNotifications()) {
             notices.add(new Notice(n, locale));
@@ -87,7 +100,14 @@ public class UpdatesCheckerCheckResponse {
                     locale, development ? "rest.devBuild" : "rest.upToDate", s.getRunningVersion());
         }
         return new UpdatesCheckerCheckResponse(
-                status.name(), message, s.getRunningVersion(), s.getNewerVersion(), error, notices);
+                status.name(),
+                message,
+                s.getRunningVersion(),
+                s.getNewerVersion(),
+                error,
+                s.getSuppressed(),
+                suppressedBy,
+                notices);
     }
 
     private UpdatesCheckerCheckResponse(
@@ -96,12 +116,16 @@ public class UpdatesCheckerCheckResponse {
             String installedVersion,
             String newerVersion,
             String error,
+            List<String> suppressed,
+            String suppressedBy,
             List<Notice> notifications) {
         this.status = status;
         this.message = message;
         this.installedVersion = installedVersion;
         this.newerVersion = newerVersion;
         this.error = error;
+        this.suppressed = suppressed;
+        this.suppressedBy = suppressedBy;
         this.notifications = notifications;
     }
 
@@ -126,6 +150,16 @@ public class UpdatesCheckerCheckResponse {
 
     public String getError() {
         return error;
+    }
+
+    /** @return the advisories that apply to this version but were left out because they are suppressed. */
+    public List<String> getSuppressed() {
+        return suppressed;
+    }
+
+    /** @return {@code "request"} or {@code "environment"} when advisories were suppressed, else {@code null}. */
+    public String getSuppressedBy() {
+        return suppressedBy;
     }
 
     /** @return every active notification, most important first. */

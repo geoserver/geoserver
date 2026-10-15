@@ -22,8 +22,10 @@ import org.geoserver.updateschecker.UpdatesCheckerConfig;
 import org.geoserver.updateschecker.UpdatesCheckerConfigPersister;
 import org.geoserver.updateschecker.UpdatesCheckerService;
 import org.geoserver.updateschecker.UpdatesCheckerStartupChecker;
+import org.geoserver.updateschecker.UpdatesCheckerSuppression;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.wicket.HelpLink;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -332,5 +334,82 @@ public class UpdatesCheckerWebTest extends GeoServerWicketTestSupport {
     private static UpdatesCheckerAsyncPanel findAsyncPanel() {
         return (UpdatesCheckerAsyncPanel) tester.getLastRenderedPage()
                 .visitChildren(UpdatesCheckerAsyncPanel.class, (component, visit) -> visit.stop(component));
+    }
+    // ---- suppressed advisories ----------------------------------------------------------------------------------
+
+    private void serveOneAdvisory() {
+        // the forced version is 2.28.3
+        feedServer.setBody("{\"schema_version\": 1, \"series\": ["
+                + "{\"series\": \"2.28.x\", \"phase\": \"stable\", \"latest_version\": \"2.28.3\"}],"
+                + "\"advisories\": [{\"ghsa_id\": \"GHSA-aaaa-bbbb-cccc\", \"cve_id\": \"CVE-2026-0001\","
+                + "\"severity\": \"critical\", \"summary\": \"Affects 2.28.3\","
+                + "\"vulnerable_versions\": [\"< 2.28.4\"], \"patched_versions\": {}}]}");
+    }
+
+    @Test
+    public void anAdvisoryThatIsNotSuppressedShowsInTheBannerAndTheStatusSection() {
+        serveOneAdvisory();
+        tester.startPage(UpdatesCheckerPage.class);
+        tester.clickLink("status:root:checkNow", true);
+        String html = tester.getLastResponseAsString();
+        assertTrue(html, html.contains("CVE-2026-0001 (critical): Affects 2.28.3"));
+        assertFalse(html, html.contains("Suppressed by the server configuration"));
+    }
+
+    @Test
+    public void aSuppressedAdvisoryIsLeftOutOfBothButTheStatusSectionSaysSo() {
+        serveOneAdvisory();
+        System.setProperty(UpdatesCheckerSuppression.PROPERTY, "CVE-2026-0001");
+        try {
+            tester.startPage(UpdatesCheckerPage.class);
+            tester.clickLink("status:root:checkNow", true);
+            String html = tester.getLastResponseAsString();
+            assertFalse(html, html.contains("Affects 2.28.3"));
+            assertTrue(html, html.contains("Suppressed by the server configuration: CVE-2026-0001."));
+            assertTrue(html, html.contains("No notifications are active."));
+
+            tester.startPage(GeoServerHomePage.class);
+            assertFalse(tester.getLastResponseAsString().contains("Affects 2.28.3"));
+        } finally {
+            System.clearProperty(UpdatesCheckerSuppression.PROPERTY);
+        }
+    }
+
+    @Test
+    public void theSettingsPageShowsTheSuppressedAdvisoriesButCannotChangeThem() {
+        System.setProperty(UpdatesCheckerSuppression.PROPERTY, "GHSA-aaaa-bbbb-cccc CVE-2026-0001");
+        try {
+            tester.startPage(UpdatesCheckerPage.class);
+            tester.assertModelValue("form:suppressedCves", "CVE-2026-0001, GHSA-aaaa-bbbb-cccc");
+            String html = tester.getLastResponseAsString();
+            assertTrue(html, html.contains("readonly=\"readonly\""));
+
+            FormTester form = tester.newFormTester("form");
+            form.setValue("suppressedCves", "CVE-2026-9999");
+            form.submit("submit");
+            assertEquals(
+                    "CVE-2026-0001, GHSA-aaaa-bbbb-cccc",
+                    GeoServerExtensions.bean(UpdatesCheckerService.class)
+                            .getSuppression()
+                            .toString());
+        } finally {
+            System.clearProperty(UpdatesCheckerSuppression.PROPERTY);
+        }
+    }
+
+    @Test
+    public void withNothingSuppressedTheBoxIsEmpty() {
+        tester.startPage(UpdatesCheckerPage.class);
+        tester.assertModelValue("form:suppressedCves", "");
+    }
+
+    @Test
+    public void aHelpLinkExplainsTheSuppressedAdvisories() {
+        tester.startPage(UpdatesCheckerPage.class);
+        tester.assertComponent("form:suppressedCvesHelp", HelpLink.class);
+        tester.clickLink("form:suppressedCvesHelp", true);
+        String html = tester.getLastResponseAsString();
+        assertTrue(html, html.contains("UPDATES_CHECKER_SUPPRESSED_CVES"));
+        assertTrue(html, html.contains("cannot be changed here"));
     }
 }

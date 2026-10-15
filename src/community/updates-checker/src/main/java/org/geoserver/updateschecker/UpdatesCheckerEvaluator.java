@@ -39,6 +39,15 @@ public final class UpdatesCheckerEvaluator {
      */
     public static List<UpdatesCheckerNotification> evaluate(
             UpdatesCheckerRunningVersion running, UpdatesCheckerFeed feed, boolean fetchAttempted) {
+        return evaluate(running, feed, fetchAttempted, UpdatesCheckerSuppression.none());
+    }
+
+    /** As above, without the advisories that {@code suppression} names. */
+    public static List<UpdatesCheckerNotification> evaluate(
+            UpdatesCheckerRunningVersion running,
+            UpdatesCheckerFeed feed,
+            boolean fetchAttempted,
+            UpdatesCheckerSuppression suppression) {
         List<UpdatesCheckerNotification> result = new ArrayList<>();
         if (running.getKind() == UpdatesCheckerRunningVersion.Kind.UNKNOWN) {
             UpdatesCheckerText text = UpdatesCheckerText.of("notification.versionUnknown");
@@ -69,7 +78,7 @@ public final class UpdatesCheckerEvaluator {
         UpdatesCheckerFeed.Series own = feed.findSeries(version.getSeries());
         addPatchNotification(result, running, version, own);
         addSeriesNotification(result, version, own, feed);
-        addAdvisoryNotifications(result, version, feed);
+        addAdvisoryNotifications(result, version, feed, suppression);
         result.sort(PRIORITY);
         return result;
     }
@@ -244,11 +253,36 @@ public final class UpdatesCheckerEvaluator {
         return UpdatesCheckerText.of("notification.upgradeTargets.maintenance", versions.toString());
     }
 
+    /**
+     * @return what the advisories that {@code suppression} names would have reported for this version: the CVE id, else
+     *     the GHSA id, of each that applies. Empty if nothing is suppressed or the feed is not read.
+     */
+    public static List<String> suppressedAdvisories(
+            UpdatesCheckerRunningVersion running, UpdatesCheckerFeed feed, UpdatesCheckerSuppression suppression) {
+        List<String> names = new ArrayList<>();
+        if (suppression.isEmpty()
+                || feed == null
+                || feed.isSchemaTooNew()
+                || running.getKind() != UpdatesCheckerRunningVersion.Kind.RELEASE) {
+            return names;
+        }
+        for (UpdatesCheckerFeed.Advisory advisory : feed.getAdvisories()) {
+            if (suppression.suppresses(advisory)
+                    && applicability(advisory, running.getRelease()) != Applicability.NOT_AFFECTED) {
+                names.add(advisory.getCveId() != null ? advisory.getCveId() : advisory.getGhsaId());
+            }
+        }
+        return names;
+    }
+
     private static void addAdvisoryNotifications(
-            List<UpdatesCheckerNotification> result, UpdatesCheckerVersion version, UpdatesCheckerFeed feed) {
+            List<UpdatesCheckerNotification> result,
+            UpdatesCheckerVersion version,
+            UpdatesCheckerFeed feed,
+            UpdatesCheckerSuppression suppression) {
         for (UpdatesCheckerFeed.Advisory advisory : feed.getAdvisories()) {
             Applicability applicability = applicability(advisory, version);
-            if (applicability == Applicability.NOT_AFFECTED) {
+            if (applicability == Applicability.NOT_AFFECTED || suppression.suppresses(advisory)) {
                 continue;
             }
             Object id = advisoryName(advisory);

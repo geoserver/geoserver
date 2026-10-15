@@ -76,6 +76,20 @@ public class ConformanceTest extends MapsTestSupport {
     }
 
     @Test
+    public void testCQL2ConformanceURIs() throws Exception {
+        List<String> classes = getAsJSONPath("ogc/maps/v1/conformance", 200).read("$.conformsTo");
+        assertThat(
+                classes,
+                hasItems(
+                        "http://www.opengis.net/spec/cql2/1.0/conf/basic-cql2",
+                        "http://www.opengis.net/spec/cql2/1.0/conf/advanced-comparison-operators",
+                        "http://www.opengis.net/spec/cql2/1.0/conf/basic-spatial-functions",
+                        "http://www.opengis.net/spec/cql2/1.0/conf/spatial-functions",
+                        "http://www.opengis.net/spec/cql2/1.0/conf/cql2-text"));
+        assertThat(classes, everyItem(not(containsString("/cql2/1.0/req/"))));
+    }
+
+    @Test
     public void testConformanceYaml() throws Exception {
         String yaml = getAsString("ogc/maps/v1/conformance/?f=application/yaml");
         checkConformance(convertYamlToJsonPath(yaml));

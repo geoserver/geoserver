@@ -34,7 +34,7 @@ public class ConformanceClass {
     public static final String ECQL_TEXT = "http://geoserver.org/spec/ecql/1.0/req/ecql-text";
 
     /** Search conformance class for "OGC API - Features - Part 5: Search (PROPOSAL DRAFT)" */
-    public static final String SEARCH = "http://www.opengis.net/spec/ogcapi-features-5/1.0/conf/search";
+    public static final String SEARCH = "http://www.opengis.net/spec/ogcapi-features-5/1.0/req/search";
 
     /** CQL2 encoding conformance classes */
     public static final String CQL2_TEXT = "http://www.opengis.net/spec/cql2/1.0/conf/cql2-text";
@@ -44,7 +44,8 @@ public class ConformanceClass {
     /** CQL2 capabilities conformance classes */
     public static final String CQL2_BASIC = "http://www.opengis.net/spec/cql2/1.0/conf/basic-cql2";
 
-    public static final String CQL2_ADVANCED = "http://www.opengis.net/spec/cql2/1.0/conf/advanced-comparison-operators";
+    public static final String CQL2_ADVANCED =
+            "http://www.opengis.net/spec/cql2/1.0/conf/advanced-comparison-operators";
     // right now includes also accent insensitive under this clause
     public static final String CQL2_CASE_INSENSITIVE =
             "http://www.opengis.net/spec/cql2/1.0/conf/case-insensitive-comparison";
@@ -57,6 +58,7 @@ public class ConformanceClass {
     public static final String CQL2_PROPERTY_PROPERTY = "http://www.opengis.net/spec/cql2/1.0/conf/property-property";
     public static final String CQL2_FUNCTIONS = "http://www.opengis.net/spec/cql2/1.0/conf/functions";
     public static final String CQL2_ARITHMETIC = "http://www.opengis.net/spec/cql2/1.0/conf/arithmetic";
+    public static final String CQL2_ARRAY = "http://www.opengis.net/spec/cql2/1.0/conf/array-functions";
 
     /** Property selection */
     public static final String PROPERTY_SELECTION =

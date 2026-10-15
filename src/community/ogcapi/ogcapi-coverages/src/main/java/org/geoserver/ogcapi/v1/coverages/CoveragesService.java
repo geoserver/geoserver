@@ -72,7 +72,7 @@ public class CoveragesService {
             "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/geodata-coverage";
     public static final String CONF_CLASS_GEOTIFF = "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/geotiff";
     public static final String CONF_CLASS_SUBSET =
-            "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/req/coverage-subset";
+            "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/subsetting-general";
 
     public static final String GEOTIFF_MIME = "image/tiff;application=geotiff";
 

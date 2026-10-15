@@ -36,6 +36,8 @@ The `<Fill>` element specifies the styling for the **interior** of a polygon. It
 
 The `<GraphicFill>` element contains a `<Graphic>` element, which specifies a graphic image or symbol to use for a repeated fill pattern. The syntax is described in the `<PointSymbolizer>` [Graphic](pointsymbolizer.md#graphic) section.
 
+Fill symbols up to 512 pixels are pre-rendered into an image and then repeated, which is fast. Larger symbols are painted one by one as vectors, using less memory but more time. The size is checked after any scaling, in particular after the rescaling caused by the `dpi` format option, so a 200 pixel symbol becomes 661 pixels at 300 DPI and switches to vector painting. The threshold can be changed with the `org.geotools.renderer.style.maxRasterizationSize` Java system property, for example `-Dorg.geotools.renderer.style.maxRasterizationSize=1024`. It is to be noted that **the memory used by a pre-rendered symbol grows with the square of its size**: a 1024 pixel symbol takes about 4MB, a 2048 pixel one about 16MB.
+
 ### CssParameter
 
 The `<CssParameter>` elements describe the styling of a solid polygon fill. Any number of `<CssParameter>` elements can be specified.

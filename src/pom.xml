@@ -111,6 +111,7 @@
     <!-- ================================ -->
     <ant.version>1.10.18</ant.version>
     <apacheds.version>2.0.0.AM27</apacheds.version>
+    <asm.version>9.7</asm.version>
     <compress-lzf.version>1.0.3</compress-lzf.version>
     <eclipse.emf.version>2.15.0</eclipse.emf.version>
     <errorProne.version>2.31.0</errorProne.version>
@@ -665,6 +666,27 @@
         <groupId>org.apache.httpcomponents.client5</groupId>
         <artifactId>httpclient5-cache</artifactId>
         <version>${httpclient.version}</version>
+      </dependency>
+      <!-- single asm version, shared by parboiled (css) and clickhouse-jdbc (dggs) -->
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-tree</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-analysis</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-util</artifactId>
+        <version>${asm.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-validator</groupId>

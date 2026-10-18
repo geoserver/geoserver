@@ -134,6 +134,15 @@ if [ "$major_version" -ge 3 ]; then
   git fetch origin $branch:$branch
   git checkout $branch
   git merge --no-ff $tag.x -m "Release $tag completed"
+
+  # stable branch advances to next patch SNAPSHOT
+  if [[ "$branch" =~ ^[0-9]+\.[0-9]+\.x$ && "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    old_ver=`get_pom_version src/pom.xml`
+    new_ver="${tag%.*}.$(( ${tag##*.} + 1 ))-SNAPSHOT"
+    echo "updating version numbers from $old_ver to $new_ver"
+    git grep -l "$old_ver" -- '*pom.xml' | xargs sed -i "s/$old_ver/$new_ver/g"
+    git commit -am "Advance $branch to $new_ver"
+  fi
   git push origin $branch
 fi
 

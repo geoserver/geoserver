@@ -5,6 +5,7 @@
 
     ant -f rename.xml -Dcurrent=3.0.0 -Drelease=3.1.0
     ant -f rename.xml -Dcurrent=3.0.0 -Drelease=3.1.0 -Dgt.current=35 -Dgt.release=36 -Dgwc.current=2.0 -Dgwc.release=2.1
+    ant -f rename.xml advance -Dcurrent=3.1.0 -Drelease=3.1.1
   -->
   <tstamp/>
   <property name="current"       value="3.0.0"/>
@@ -42,6 +43,14 @@
       <include name="src/pom.xml"/>
       <replacefilter token="${gt.current}-SNAPSHOT" value="${gt.release}-SNAPSHOT"/>
       <replacefilter token="${gwc.current}-SNAPSHOT" value="${gwc.release}-SNAPSHOT"/>
+    </replace>
+  </target>
+
+  <target name="advance"
+          description="Update pom.xml versions for the next patch release of a stable branch">
+    <replace dir="..">
+      <include name="**/pom.xml"/>
+      <replacefilter token="${current}-SNAPSHOT" value="${release}-SNAPSHOT"/>
     </replace>
   </target>
 

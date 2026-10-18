@@ -242,15 +242,11 @@ class AuthorizationRequestBuilder {
 
         String sourceAddress = null;
         try {
-            final String forwardedFor = http.getHeader("X-Forwarded-For");
             final String remoteAddr = http.getRemoteAddr();
-            if (forwardedFor != null) {
-                String[] ips = forwardedFor.split(", ");
-                sourceAddress = InetAddress.getByName(ips[0]).getHostAddress();
-            } else if (remoteAddr != null) {
-                // Returns an IP address, removes surrounding brackets present in case of IPV6
-                // addresses
-                sourceAddress = remoteAddr.replaceAll("[\\[\\]]", "");
+            if (remoteAddr != null) {
+                // normalize and drop surrounding brackets present on IPv6 addresses
+                sourceAddress = InetAddress.getByName(remoteAddr.replaceAll("[\\[\\]]", ""))
+                        .getHostAddress();
             }
         } catch (Exception e) {
             AccessRequestBuilder.LOGGER.log(Level.INFO, "Failed to get remote address", e);

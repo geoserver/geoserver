@@ -64,6 +64,8 @@ public class ConformanceTest extends MapsTestSupport {
                         CQL2Conformance.CQL2_SPATIAL.getId()));
         // features-filter is bound to the items resource, Maps must not claim it
         assertThat(classes, not(hasItem(ConformanceClass.FEATURES_FILTER)));
+        // CQL2 functions requires a /functions endpoint, Maps does not provide one
+        assertThat(classes, not(hasItem(CQL2Conformance.CQL2_FUNCTIONS.getId())));
         // the pre-1.0.0 draft URIs must be gone
         assertThat(
                 classes,
@@ -71,6 +73,20 @@ public class ConformanceTest extends MapsTestSupport {
                         "http://www.opengis.net/spec/ogcapi-maps-1/1.0/conf/geodata",
                         "http://www.opengis.net/spec/ogcapi-maps-2/1.0/conf/bbox",
                         "http://www.opengis.net/spec/ogcapi-maps-2/1.0/conf/crs")))));
+    }
+
+    @Test
+    public void testCQL2ConformanceURIs() throws Exception {
+        List<String> classes = getAsJSONPath("ogc/maps/v1/conformance", 200).read("$.conformsTo");
+        assertThat(
+                classes,
+                hasItems(
+                        "http://www.opengis.net/spec/cql2/1.0/conf/basic-cql2",
+                        "http://www.opengis.net/spec/cql2/1.0/conf/advanced-comparison-operators",
+                        "http://www.opengis.net/spec/cql2/1.0/conf/basic-spatial-functions",
+                        "http://www.opengis.net/spec/cql2/1.0/conf/spatial-functions",
+                        "http://www.opengis.net/spec/cql2/1.0/conf/cql2-text"));
+        assertThat(classes, everyItem(not(containsString("/cql2/1.0/req/"))));
     }
 
     @Test

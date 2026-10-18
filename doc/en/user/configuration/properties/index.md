@@ -31,6 +31,7 @@ For more information see [Configuration Considerations](../../production/config.
 | GEOSERVER_CSRF_WHITELIST<br>[/security/webadmin/csrf](../../security/webadmin/csrf.md) | x               | x             | x            |
 | GEOSERVER_REMEMBERME_KEY<br>Shared key that signs remember-me cookies across a cluster. See [/security/webadmin/auth](../../security/webadmin/auth.md#remember-me). | x               | x             | x            |
 | org.geoserver.web.csp.strict<br>[User interface non-responsive](../../production/troubleshooting.md#csp_strict), default true. | x               |               |              |
+| org.geotools.renderer.style.maxRasterizationSize<br>Size in pixels above which graphic fills and icons are painted as vectors (default 512). See [GraphicFill](../../styling/sld/reference/polygonsymbolizer.md#graphicfill). | x               |               |              |
 | org.geoserver.catalog.loadingThreads<br>Number of threads used to load catalogue (Default 4). | x               | x             | x            |
 | CAPABILITIES_CACHE_CONTROL_ENABLED<br>Use false to disable, defaults to true.    | x               | x             | x            |
 | GEOSERVER_FILEBROWSER_HIDEFS<br>When set to true only GEOSERVER_DATA_DIR available to browse. | x               | x             | x            |
@@ -69,6 +70,7 @@ For more information see [Configuration Considerations](../../production/config.
 | GEOSERVER_GLOBAL_LAYER_GROUP_INHERIT<br>Should workspaces include layer groups from the global workspace, default true. | x               | x             | x            |
 | PROXY_BASE_URL<br>Supply PROXY_BASE_URL, overriding settings.                    | x               | x             | x            |
 | PROXY_BASE_URL_HEADER<br>Enables PROXY_BASE_URL to use headers variables if set to true, overriding GeoServer datadir settings. Default false. | x               | x             | x            |
+| GEOSERVER_TRUSTED_PROXIES<br>Comma separated list of reverse proxy IP addresses or CIDR blocks. GeoServer reads the client address from the `X-Forwarded-For` header only for requests arriving from one of these proxies, otherwise it uses the direct connection address. The default is loopback only (`127.0.0.0/8`, `::1`), so a reverse proxy on another host must be listed, otherwise every request appears to come from the proxy address. | x               | x             | x            |
 | org.geoserver.service.disabled<br>[Layer service](../../data/webadmin/layers.md#data_webadmin_layers_services) default comma separated list of disabled services. | x               | x             | x            |
 | GEOSERVER_DEFAULT_CACHE_PROVIDER<br>Request custom cache implementation for catalog. | x               | x             | x            |
 | org.geoserver.wfs.xml.WFSURIHandler.disabled<br>Flag to disable internal handling of references to GeoServer. Force reflective references such as DescribeFeatureType to be handled as separate request. | x               |               |              |
@@ -89,12 +91,15 @@ For more information see [Configuration Considerations](../../production/config.
 | wicket.configuration<br>Wicket RuntimeConfigurationType (DEPLOYMENT or DEVELOPMENT) | x               | x             | x            |
 | GEOSERVER_FILESYSTEM_SANDBOX<br>[/security/sandbox](../../security/sandbox.md)        | x               | x             | x            |
 | GEOSERVER_ROOT_LOGIN_ENABLED<br>[Root account](../../security/root.md)           | x               | x             | x            |
+| GEOSERVER_JDBC_EXTRA_PARAMETERS<br>Extra connection URL parameters accepted for JDBC user/group services, role services and authentication providers. GeoServer accepts only a known list of parameters for each driver. Format is `driverClass:param1,param2;driverClass2:param3`, for example `com.ibm.db2.jcc.DB2Driver:currentSchema`. Use it to allow a parameter, or a driver, that is not known. A legacy driver class name, such as `org.hsqldb.jdbcDriver`, shares the parameters of its current name. Each parameter added this way is passed to the driver unchecked, so add only parameters that cannot read or write files or load classes. | x               | x             | x            |
 | ALLOW_ENV_PARAMETRIZATION<br>[/datadirectory/configtemplate](../../datadirectory/configtemplate.md) | x               |               |              |
 | ENV_PROPERTIES<br>[/datadirectory/configtemplate](../../datadirectory/configtemplate.md) | x               | x             | x            |
 | WORKSPACE_ADMIN_SERVICE_ACCESS<br><!-- BROKEN LINK: Workspaces -->               | x               | x             | x            |
 | GEOSERVER_DATA_DIR_LOADER_ENABLED<br>[/datadirectory/setting](../../datadirectory/setting.md) | x               |               | x            |
 | GEOSERVER_DATA_DIR_LOADER_THREADS<br>[/datadirectory/setting](../../datadirectory/setting.md) | x               |               | x            |
 | TRACK_USER<br>Flag to enable user tracking in GeoServer. Allows to store the username of user that performed creation/modification of layer, layergroup, store, style, workspace. Has precedence over "Display the user who performed last modification" option in global settings. | x               |               |              |
+| UPDATES_CHECKER_FEED_URL<br>[Check for Updates](../../community/updates-checker/index.md) community module, `https` URL of the version feed to use instead of the default. | x               | x             | x            |
+| UPDATES_CHECKER_SUPPRESSED_CVES<br>[Check for Updates](../../community/updates-checker/index.md) community module, CVE or GHSA ids, separated by commas, semicolons or spaces, of security advisories that have been mitigated and should not be reported. | x               | x             | x            |
 
 ## Setting Application property {: #application_properties_setting }
 

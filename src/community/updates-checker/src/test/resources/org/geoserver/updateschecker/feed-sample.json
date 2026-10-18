@@ -1,0 +1,661 @@
+{
+  "source_note": "The version feed is a static file on GitHub, delivered directly (raw.githubusercontent.com) or through the public jsDelivr content delivery network (cdn.jsdelivr.net). The GeoServer team does not run these hosts and receives no request logs at all. We cannot see which GeoServer versions are running. This module sends nothing about your server. However, the feed hosts can see the public IP address of your server making the request.",
+  "schema_version": 1,
+  "generated": "2026-10-10T17:06:54Z",
+  "series": [
+    {
+      "series": "3.0.x",
+      "phase": "stable",
+      "latest_version": "3.0.1",
+      "published_at": "2026-08-14T22:44:22Z",
+      "release_url": "https://github.com/geoserver/geoserver/releases/tag/3.0.1",
+      "blog_url": "https://geoserver.org/announcements/vulnerability/2026/08/14/geoserver-3-0-1-released.html",
+      "security_flagged": true,
+      "synchronized_release": true,
+      "recent_releases": [
+        {
+          "version": "3.0.1",
+          "published_at": "2026-08-14T22:44:22Z",
+          "blog_url": "https://geoserver.org/announcements/vulnerability/2026/08/14/geoserver-3-0-1-released.html",
+          "security_flagged": true,
+          "synchronized_release": true
+        },
+        {
+          "version": "3.0.0",
+          "published_at": "2026-06-11T16:51:02Z",
+          "blog_url": "https://geoserver.org/announcements/vulnerability/2026/06/11/geoserver-3-0-0-released.html",
+          "security_flagged": true,
+          "synchronized_release": false
+        }
+      ]
+    },
+    {
+      "series": "2.28.x",
+      "phase": "maintenance",
+      "latest_version": "2.28.5",
+      "published_at": "2026-08-14T23:41:43Z",
+      "release_url": "https://github.com/geoserver/geoserver/releases/tag/2.28.5",
+      "blog_url": "https://geoserver.org/announcements/vulnerability/2026/08/14/geoserver-2-28-5-released.html",
+      "security_flagged": true,
+      "synchronized_release": true,
+      "recent_releases": [
+        {
+          "version": "2.28.5",
+          "published_at": "2026-08-14T23:41:43Z",
+          "blog_url": "https://geoserver.org/announcements/vulnerability/2026/08/14/geoserver-2-28-5-released.html",
+          "security_flagged": true,
+          "synchronized_release": true
+        },
+        {
+          "version": "2.28.4",
+          "published_at": "2026-05-27T10:43:49Z",
+          "blog_url": "https://geoserver.org/announcements/vulnerability/2026/05/25/geoserver-2-28-4-released.html",
+          "security_flagged": true,
+          "synchronized_release": false
+        }
+      ]
+    },
+    {
+      "series": "2.27.x",
+      "phase": "maintenance",
+      "latest_version": "2.27.6",
+      "published_at": "2026-08-14T23:51:17Z",
+      "release_url": "https://github.com/geoserver/geoserver/releases/tag/2.27.6",
+      "blog_url": "https://geoserver.org/announcements/vulnerability/2026/08/14/geoserver-2-27-6-released.html",
+      "security_flagged": true,
+      "synchronized_release": true,
+      "recent_releases": [
+        {
+          "version": "2.27.6",
+          "published_at": "2026-08-14T23:51:17Z",
+          "blog_url": "https://geoserver.org/announcements/vulnerability/2026/08/14/geoserver-2-27-6-released.html",
+          "security_flagged": true,
+          "synchronized_release": true
+        }
+      ]
+    },
+    {
+      "series": "2.26.x",
+      "phase": "archive",
+      "latest_version": "2.26.4",
+      "published_at": "2025-09-02T16:33:52Z",
+      "release_url": "https://github.com/geoserver/geoserver/releases/tag/2.26.4",
+      "blog_url": null,
+      "security_flagged": false,
+      "synchronized_release": false,
+      "recent_releases": []
+    },
+    {
+      "series": "2.25.x",
+      "phase": "archive",
+      "latest_version": "2.25.7",
+      "published_at": "2025-05-14T04:37:01Z",
+      "release_url": "https://github.com/geoserver/geoserver/releases/tag/2.25.7",
+      "blog_url": null,
+      "security_flagged": false,
+      "synchronized_release": true,
+      "recent_releases": []
+    },
+    {
+      "series": "2.24.x",
+      "phase": "archive",
+      "latest_version": "2.24.5",
+      "published_at": "2024-08-26T09:36:50Z",
+      "release_url": "https://github.com/geoserver/geoserver/releases/tag/2.24.5",
+      "blog_url": null,
+      "security_flagged": false,
+      "synchronized_release": false,
+      "recent_releases": []
+    },
+    {
+      "series": "2.23.x",
+      "phase": "archive",
+      "latest_version": "2.23.6",
+      "published_at": "2024-06-25T17:18:56Z",
+      "release_url": "https://github.com/geoserver/geoserver/releases/tag/2.23.6",
+      "blog_url": null,
+      "security_flagged": false,
+      "synchronized_release": false,
+      "recent_releases": []
+    },
+    {
+      "series": "2.22.x",
+      "phase": "archive",
+      "latest_version": "2.22.6",
+      "published_at": "2025-03-13T17:11:43Z",
+      "release_url": "https://github.com/geoserver/geoserver/releases/tag/2.22.6",
+      "blog_url": null,
+      "security_flagged": false,
+      "synchronized_release": false,
+      "recent_releases": []
+    },
+    {
+      "series": "2.21.x",
+      "phase": "archive",
+      "latest_version": "2.21.5",
+      "published_at": "2023-05-08T08:53:55Z",
+      "release_url": "https://github.com/geoserver/geoserver/releases/tag/2.21.5",
+      "blog_url": null,
+      "security_flagged": false,
+      "synchronized_release": false,
+      "recent_releases": []
+    },
+    {
+      "series": "2.20.x",
+      "phase": "archive",
+      "latest_version": "2.20.7",
+      "published_at": "2023-02-21T16:08:54Z",
+      "release_url": "https://github.com/geoserver/geoserver/releases/tag/2.20.7",
+      "blog_url": null,
+      "security_flagged": false,
+      "synchronized_release": true,
+      "recent_releases": []
+    },
+    {
+      "series": "2.19.x",
+      "phase": "archive",
+      "latest_version": "2.19.7",
+      "published_at": "2023-02-21T16:11:10Z",
+      "release_url": "https://github.com/geoserver/geoserver/releases/tag/2.19.7",
+      "blog_url": null,
+      "security_flagged": false,
+      "synchronized_release": true,
+      "recent_releases": []
+    },
+    {
+      "series": "2.18.x",
+      "phase": "archive",
+      "latest_version": "2.18.7",
+      "published_at": "2023-02-21T16:12:26Z",
+      "release_url": "https://github.com/geoserver/geoserver/releases/tag/2.18.7",
+      "blog_url": null,
+      "security_flagged": false,
+      "synchronized_release": true,
+      "recent_releases": []
+    }
+  ],
+  "advisories": [
+    {
+      "ghsa_id": "GHSA-jvpx-6qxg-whgc",
+      "cve_id": "CVE-2026-76904",
+      "summary": "Unauthenticated PostGIS SQL injection in the jsonArrayContains filter function",
+      "severity": "critical",
+      "published_at": "2026-08-24T15:50:11Z",
+      "vulnerable_versions": [
+        "3.0.0",
+        "\u003e=2.28.0",
+        "\u003e2.23.5, \u003c2.27.6"
+      ],
+      "patched_versions": {
+        "3.0.x": "3.0.1",
+        "2.28.x": "2.28.5",
+        "2.27.x": "2.27.6"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-wf6j-gr27-g7ch",
+      "cve_id": "CVE-2024-45747",
+      "summary": "Server-Side Template Injection (SSTI) vulnerability in processing FreeMarker templates",
+      "severity": "high",
+      "published_at": "2026-06-11T17:55:55Z",
+      "vulnerable_versions": [
+        "\u003c2.27.0"
+      ],
+      "patched_versions": {
+        "2.27.x": "2.27.0"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-7qmg-grcp-qf25",
+      "cve_id": "CVE-2025-52465",
+      "summary": "Arbitrary file write vulnerability in Master Password Dump Page",
+      "severity": "high",
+      "published_at": "2026-06-11T17:55:27Z",
+      "vulnerable_versions": [
+        "\u003e= 2.27.0, \u003c= 2.27.2",
+        "\u003c= 2.26.3"
+      ],
+      "patched_versions": {
+        "2.27.x": "2.27.3",
+        "2.26.x": "2.26.4"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-x4r9-gmw3-hxww",
+      "cve_id": "CVE-2025-58175",
+      "summary": "Server-Side Request Forgery (SSRF) Vulnerability in XML entity resolution",
+      "severity": "medium",
+      "published_at": "2026-06-11T17:54:58Z",
+      "vulnerable_versions": [
+        "\u003c=2.26.3",
+        "\u003e= 2.27.0, \u003c= 2.27.2"
+      ],
+      "patched_versions": {
+        "2.27.x": "2.27.3",
+        "2.26.x": "2.26.4"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-g628-r368-6vh7",
+      "cve_id": "CVE-2025-27511",
+      "summary": "JNDI Vulnerability in DB2 Store Connection",
+      "severity": "high",
+      "published_at": "2026-06-11T17:45:57Z",
+      "vulnerable_versions": [
+        "\u003c 2.27.0"
+      ],
+      "patched_versions": {
+        "2.27.x": "2.27.0"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-fjf5-xgmq-5525",
+      "cve_id": "CVE-2025-58360",
+      "summary": "Unauthenticated XML External Entities (XXE) via WMS GetMap operation",
+      "severity": "high",
+      "published_at": "2025-11-25T14:03:49Z",
+      "vulnerable_versions": [
+        "\u003e= 2.26.0, \u003c= 2.26.1",
+        "\u003c=2.25.5"
+      ],
+      "patched_versions": {
+        "2.26.x": "2.26.2",
+        "2.25.x": "2.25.6"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-w66h-j855-qr72",
+      "cve_id": "CVE-2025-21621",
+      "summary": "Reflected Cross-Site Scripting (XSS) vulnerability in WMS GetFeatureInfo HTML format",
+      "severity": "medium",
+      "published_at": "2025-11-25T14:02:08Z",
+      "vulnerable_versions": [
+        "\u003c2.25.0"
+      ],
+      "patched_versions": {
+        "2.25.x": "2.25.0"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-68cf-j696-wvv9",
+      "cve_id": "CVE-2021-40822",
+      "summary": "SSRF in TestWfsPost for specific targets, e.g. PHP + Nginx",
+      "severity": "high",
+      "published_at": "2025-06-10T08:42:23Z",
+      "vulnerable_versions": [
+        "\u003e= 1.0.0"
+      ],
+      "patched_versions": {
+        "2.25.x": "2.25.2",
+        "2.24.x": "2.24.4"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-5gw5-jccf-6hxw",
+      "cve_id": "CVE-2024-29198",
+      "summary": "Unauthenticated SSRF via TestWfsPost",
+      "severity": "high",
+      "published_at": "2025-06-10T08:33:01Z",
+      "vulnerable_versions": [
+        "\u003e=2.0.0,\u003c2.24.4",
+        "\u003e2.25.0,\u003c2.25.2"
+      ],
+      "patched_versions": {
+        "2.25.x": "2.25.2",
+        "2.24.x": "2.24.4"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-mc43-4fqr-c965",
+      "cve_id": "CVE-2024-34711",
+      "summary": "Improper ENTITY_RESOLUTION_ALLOWLIST URI validation in XML Processing (SSRF)",
+      "severity": "medium",
+      "published_at": "2025-06-10T08:32:31Z",
+      "vulnerable_versions": [
+        "\u003c2.25.0"
+      ],
+      "patched_versions": {
+        "2.25.x": "2.25.0"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-jm79-7xhw-6f6f",
+      "cve_id": "CVE-2024-38524",
+      "summary": "GWC Home Page exposes sensitive server information",
+      "severity": "medium",
+      "published_at": "2025-06-10T08:30:01Z",
+      "vulnerable_versions": [
+        "\u003e=2.26.0, \u003c2.26.2",
+        "\u003c2.25.6"
+      ],
+      "patched_versions": {
+        "2.26.x": "2.26.2",
+        "2.25.x": "2.25.6"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-r4hf-r8gj-jgw2",
+      "cve_id": "CVE-2024-40625",
+      "summary": "Coverage REST API Server Side Request Forgery",
+      "severity": "medium",
+      "published_at": "2025-06-10T08:29:27Z",
+      "vulnerable_versions": [
+        "\u003c 2.26.0"
+      ],
+      "patched_versions": {
+        "2.26.x": "2.26.0"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-h86g-x8mm-78m5",
+      "cve_id": "CVE-2025-27505",
+      "summary": "Missing Authorization on REST API Index",
+      "severity": "medium",
+      "published_at": "2025-06-10T08:28:33Z",
+      "vulnerable_versions": [
+        "\u003e=2.26.0, \u003c2.26.3",
+        "\u003c2.25.6"
+      ],
+      "patched_versions": {
+        "2.26.x": "2.26.3",
+        "2.25.x": "2.25.6"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-gr67-pwcv-76gf",
+      "cve_id": "CVE-2025-30145",
+      "summary": "Denial-of-service (DoS) Vulnerability in Jiffle process",
+      "severity": "high",
+      "published_at": "2025-06-10T08:28:15Z",
+      "vulnerable_versions": [
+        "\u003c2.27.0",
+        "\u003e=2.26.0, \u003c=2.26.2",
+        "\u003c=2.25.6"
+      ],
+      "patched_versions": {
+        "2.27.x": "2.27.0",
+        "2.26.x": "2.26.3",
+        "2.25.x": "2.25.7"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-jj54-8f66-c5pc",
+      "cve_id": "CVE-2025-30220",
+      "summary": "XML External Entity (XXE) Processing Vulnerability in GeoServer WFS Service",
+      "severity": "high",
+      "published_at": "2025-06-10T06:30:38Z",
+      "vulnerable_versions": [
+        "2.27.0",
+        "\u003e= 2.26.0, \u003c= 2.26.2",
+        "\u003c= 2.25.6"
+      ],
+      "patched_versions": {
+        "2.27.x": "2.27.1",
+        "2.26.x": "2.26.3",
+        "2.25.x": "2.25.7"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-6pfc-w86r-54q6",
+      "cve_id": "CVE-2024-35230",
+      "summary": "Welcome and About GeoServer pages communicate version and revision information",
+      "severity": "medium",
+      "published_at": "2024-12-16T21:48:50Z",
+      "vulnerable_versions": [
+        "\u003e2.0.0"
+      ],
+      "patched_versions": {
+        "2.25.x": "2.25.1"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-j59v-vgcr-hxvf",
+      "cve_id": "CVE-2024-34696",
+      "summary": "GeoServer's Server Status shows sensitive environmental variables and Java properties",
+      "severity": "medium",
+      "published_at": "2024-07-01T00:40:09Z",
+      "vulnerable_versions": [
+        "\u003e2.10.0,\u003c2.24.4",
+        "\u003e2.10.0,\u003c2.25.1"
+      ],
+      "patched_versions": {
+        "2.25.x": "2.25.1",
+        "2.24.x": "2.24.4"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-jhqx-5v5g-mpf3",
+      "cve_id": "CVE-2024-24749",
+      "summary": "Classpath resource disclosure in GWC Web Resource API on Windows / Tomcat",
+      "severity": "medium",
+      "published_at": "2024-07-01T00:35:25Z",
+      "vulnerable_versions": [
+        "\u003c 2.23.5",
+        "\u003e= 2.24.0, \u003c 2.24.3"
+      ],
+      "patched_versions": {
+        "2.24.x": "2.24.3",
+        "2.23.x": "2.23.5"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-6jj6-gm7p-fcvv",
+      "cve_id": "CVE-2024-36401",
+      "summary": "Remote Code Execution (RCE) vulnerability in evaluating property name expressions",
+      "severity": "critical",
+      "published_at": "2024-07-01T00:31:30Z",
+      "vulnerable_versions": [
+        "\u003e= 2.24.0, \u003c 2.24.4",
+        "\u003e= 2.25.0, \u003c 2.25.2",
+        "\u003e=2.25.0, \u003c2.25.2",
+        "\u003e=2.23.0, \u003c 2.23.6",
+        "\u003c2.22.6"
+      ],
+      "patched_versions": {
+        "2.25.x": "2.25.2",
+        "2.24.x": "2.24.4",
+        "2.23.x": "2.23.6",
+        "2.22.x": "2.22.6"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-9v5q-2gwq-q9hq",
+      "cve_id": "CVE-2023-51444",
+      "summary": "Arbitrary file upload vulnerability in REST Coverage Store API",
+      "severity": "high",
+      "published_at": "2024-03-19T19:14:24Z",
+      "vulnerable_versions": [
+        "\u003c2.23.4, \u003c2.24.1"
+      ],
+      "patched_versions": {
+        "2.24.x": "2.24.1",
+        "2.23.x": "2.23.4"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-8g7v-vjrc-x4g5",
+      "cve_id": "CVE-2023-41877",
+      "summary": "GeoServer log file path traversal vulnerability",
+      "severity": "high",
+      "published_at": "2024-03-19T19:14:12Z",
+      "vulnerable_versions": [
+        "\u003c 3.0.0"
+      ],
+      "patched_versions": {
+        "3.0.x": "3.0.0"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-75m5-hh4r-q9gx",
+      "cve_id": "CVE-2024-23634",
+      "summary": "Arbitrary file renaming vulnerability in REST Coverage/Data Store API",
+      "severity": "medium",
+      "published_at": "2024-03-19T19:14:03Z",
+      "vulnerable_versions": [
+        "\u003c2.23.5, \u003c2.24.2"
+      ],
+      "patched_versions": {
+        "2.24.x": "2.24.2",
+        "2.23.x": "2.23.5"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-56r3-f536-5gf7",
+      "cve_id": "CVE-2024-23643",
+      "summary": "Stored Cross-Site Scripting (XSS) vulnerability in GWC Seed Form",
+      "severity": "medium",
+      "published_at": "2024-03-19T19:13:55Z",
+      "vulnerable_versions": [
+        "\u003c2.23.2, \u003c2.24.1"
+      ],
+      "patched_versions": {
+        "2.24.x": "2.24.1",
+        "2.23.x": "2.23.2"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-88wc-fcj9-q3r9",
+      "cve_id": "CVE-2024-23821",
+      "summary": "Stored Cross-Site Scripting (XSS) vulnerability in GWC Demos Page",
+      "severity": "medium",
+      "published_at": "2024-03-19T19:13:48Z",
+      "vulnerable_versions": [
+        "\u003c2.23.4, \u003c2.24.1"
+      ],
+      "patched_versions": {
+        "2.24.x": "2.24.1",
+        "2.23.x": "2.23.4"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-7x76-57fr-m5r5",
+      "cve_id": "CVE-2024-23819",
+      "summary": "Stored Cross-Site Scripting (XSS) vulnerability in MapML HTML Page",
+      "severity": "medium",
+      "published_at": "2024-03-19T19:13:40Z",
+      "vulnerable_versions": [
+        "\u003c2.23.4, \u003c2.24.1"
+      ],
+      "patched_versions": {
+        "2.24.x": "2.24.1",
+        "2.23.x": "2.23.4"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-fcpm-hchj-mh72",
+      "cve_id": "CVE-2024-23818",
+      "summary": "Stored Cross-Site Scripting (XSS) vulnerability in WMS OpenLayers Format",
+      "severity": "medium",
+      "published_at": "2024-03-19T19:13:32Z",
+      "vulnerable_versions": [
+        "\u003c2.23.3, \u003c2.24.1"
+      ],
+      "patched_versions": {
+        "2.24.x": "2.24.1",
+        "2.23.x": "2.23.3"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-fg9v-56hw-g525",
+      "cve_id": "CVE-2024-23642",
+      "summary": "Stored Cross-Site Scripting (XSS) vulnerability in Simple SVG Renderer",
+      "severity": "medium",
+      "published_at": "2024-03-19T19:13:25Z",
+      "vulnerable_versions": [
+        "\u003c2.23.4, \u003c2.24.1"
+      ],
+      "patched_versions": {
+        "2.24.x": "2.24.1",
+        "2.23.x": "2.23.4"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-9rfr-pf2x-g4xf",
+      "cve_id": "CVE-2024-23640",
+      "summary": "Stored Cross-Site Scripting (XSS) vulnerability in Style Publisher",
+      "severity": "medium",
+      "published_at": "2024-03-19T19:13:15Z",
+      "vulnerable_versions": [
+        "\u003c2.23.3"
+      ],
+      "patched_versions": {
+        "2.24.x": "2.24.0",
+        "2.23.x": "2.23.3"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-fh7p-5f6g-vj2w",
+      "cve_id": "CVE-2023-51445",
+      "summary": "Stored Cross-Site Scripting (XSS) vulnerability in REST Resources API",
+      "severity": "medium",
+      "published_at": "2024-03-19T19:13:06Z",
+      "vulnerable_versions": [
+        "\u003c2.23.3"
+      ],
+      "patched_versions": {
+        "2.24.x": "2.24.0",
+        "2.23.x": "2.23.3"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-cqpc-x2c6-2gmf",
+      "cve_id": "CVE-2023-41339",
+      "summary": "Unsecured WMS dynamic styling sld=url parameter affords blind unauthenticated SSRF",
+      "severity": "high",
+      "published_at": "2023-10-24T04:21:52Z",
+      "vulnerable_versions": [
+        "\u003c2.22.5, \u003c2.23.2"
+      ],
+      "patched_versions": {
+        "2.23.x": "2.23.2",
+        "2.22.x": "2.22.5"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-5pr3-m5hm-9956",
+      "cve_id": "CVE-2023-43795",
+      "summary": "WPS Server Side Request Forgery",
+      "severity": "high",
+      "published_at": "2023-10-24T04:12:40Z",
+      "vulnerable_versions": [
+        "\u003c2.22.5, \u003c 2.23.2"
+      ],
+      "patched_versions": {
+        "2.23.x": "2.23.2",
+        "2.22.x": "2.22.5"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-7g5f-wrx8-5ccf",
+      "cve_id": "CVE-2023-25157",
+      "summary": "OGC Filter SQL Injection Vulnerabilities",
+      "severity": "critical",
+      "published_at": "2023-02-21T19:53:34Z",
+      "vulnerable_versions": [
+        "\u003c 2.21.4, \u003c 2.22.2"
+      ],
+      "patched_versions": {
+        "2.22.x": "2.22.2",
+        "2.21.x": "2.21.4",
+        "2.20.x": "2.20.7",
+        "2.19.x": "2.19.7",
+        "2.18.x": "2.18.7"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-4pm3-f52j-8ggh",
+      "cve_id": "CVE-2022-24847",
+      "summary": "Improper Input Validation and Uncontrolled Resource Consumption and Deserialization of Untrusted Data in GeoServer",
+      "severity": "high",
+      "published_at": "2022-04-13T05:07:29Z",
+      "vulnerable_versions": [
+        "\u003c 2.20.4, \u003c2.19.6"
+      ],
+      "patched_versions": {
+        "2.21.x": "2.21.0",
+        "2.20.x": "2.20.4",
+        "2.19.x": "2.19.6"
+      }
+    }
+  ]
+}

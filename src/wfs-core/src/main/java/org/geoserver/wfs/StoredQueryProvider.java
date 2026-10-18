@@ -31,6 +31,7 @@ import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
 import org.geotools.xsd.Encoder;
 import org.geotools.xsd.Parser;
+import org.xml.sax.EntityResolver;
 
 /**
  * Extension point for WFS stored queries.
@@ -46,6 +47,19 @@ public class StoredQueryProvider {
     public static String LANGUAGE_20_PRE = "urn:ogc:def:queryLanguage:OGC-WFS::WFS_QueryExpression";
 
     public static String LANGUAGE_20 = "urn:ogc:def:queryLanguage:OGC-WFS::WFSQueryExpression";
+
+    /**
+     * Upper bound on a stored query id once non-word characters are stripped, so it always maps to a valid file name.
+     * The 255 byte name limit must hold ".xml" and the ".<uuid>.tmp" suffix of the temporary file
+     * {@code FileSystemResourceStore} writes first, then renames.
+     */
+    public static final int MAX_ID_LENGTH =
+            255 - ".xml".length() - ".00000000-0000-0000-0000-000000000000.tmp".length();
+
+    /** Returns true if the id is too long to map to a valid stored query file name. */
+    public static boolean isIdTooLong(String id) {
+        return toFilename(id).length() > MAX_ID_LENGTH + ".xml".length();
+    }
 
     /** logger */
     static Logger LOGGER = Logging.getLogger(StoredQueryProvider.class);
@@ -148,18 +162,30 @@ public class StoredQueryProvider {
      * @param query The stored query
      */
     public void removeStoredQuery(StoredQuery query) {
-        final String filename = toFilename(query.getName());
+        removeStoredQueryByName(query.getName());
+    }
+
+    /**
+     * Removes a stored query definition by name, without requiring it to be parsed first.
+     *
+     * @param name Identifying name of the stored query.
+     * @return {@code true} if a definition existed and was removed, {@code false} otherwise.
+     * @throws GeoServerRuntimException if called from a virtual service and the query is a global one
+     */
+    boolean removeStoredQueryByName(String name) {
+        final String filename = toFilename(name);
         Resource resource = storedQueryDirByContext().get(filename);
         // resource exists? Delete it
         if (resource.getType() == Type.RESOURCE) {
             resource.delete();
-        } else {
-            // resource doesn't exists
-            // are we inside a virtual service and global query exists ?
-            if (localWorkspaceDir() != null && storedQueryDir().get(filename).getType() == Type.RESOURCE) {
-                throw new GeoServerRuntimException("Global query can not be deleted from a virtual service.");
-            }
+            return true;
         }
+        // resource doesn't exists
+        // are we inside a virtual service and global query exists ?
+        if (localWorkspaceDir() != null && storedQueryDir().get(filename).getType() == Type.RESOURCE) {
+            throw new GeoServerRuntimException("Global query can not be deleted from a virtual service.");
+        }
+        return false;
     }
 
     /** Removes all stored queries. */
@@ -180,6 +206,11 @@ public class StoredQueryProvider {
             return StoredQuery.DEFAULT;
         }
 
+        // an id too long to form a valid file name cannot match a stored query
+        if (name == null || isIdTooLong(name)) {
+            return null;
+        }
+
         try {
             Resource res = getResourceByContext(toFilename(name));
 
@@ -189,7 +220,8 @@ public class StoredQueryProvider {
 
             return parseStoredQuery(res);
         } catch (Exception e) {
-            throw new RuntimeException("Error accessing stored query: " + name, e);
+            LOGGER.log(Level.WARNING, e, () -> "Error accessing stored query: " + name);
+            throw new RuntimeException("Error accessing stored query: " + name);
         }
     }
 
@@ -232,7 +264,7 @@ public class StoredQueryProvider {
         }
     }
 
-    String toFilename(String name) {
+    static String toFilename(String name) {
         // remove any special characters... like ':'
         return name.replaceAll("\\W", "") + ".xml";
     }
@@ -247,10 +279,18 @@ public class StoredQueryProvider {
 
     StoredQuery parseStoredQuery(Resource file, Parser p) throws Exception {
         p.setRootElementType(WFS.StoredQueryDescriptionType);
+        EntityResolver entityResolver = getEntityResolver();
+        if (entityResolver != null) {
+            p.setEntityResolver(entityResolver);
+        }
         try (InputStream fin = file.in()) {
             StoredQueryDescriptionType q = (StoredQueryDescriptionType) p.parse(new BufferedInputStream(fin));
             return createStoredQuery(q, false);
         }
+    }
+
+    private EntityResolver getEntityResolver() {
+        return catalog.getResourcePool().getEntityResolver();
     }
 
     public boolean supportsLanguage(String language) {

@@ -1,16 +1,16 @@
 
 var source = new ol.source.ImageWMS({
 <#if styleWorkspace??>
-  url: "${baseUrl}/${styleWorkspace}/wms",
+  url: "${baseUrl?js_string}/${styleWorkspace?js_string}/wms",
 <#else>
-  url: "${baseUrl}/wms",
+  url: "${baseUrl?js_string}/wms",
 </#if>
   params: {
 <#if previewStyleGroup>
-    'SLD': '${styleUrl}',
+    'SLD': '${styleUrl?js_string}',
 <#else>
-    'LAYERS': '${layer}',
-    'STYLES': '${style}',
+    'LAYERS': '${layer?js_string}',
+    'STYLES': '${style?js_string}',
 </#if>
     'FORMAT': 'image/png',
     'FORMAT_OPTIONS': "layout:style-editor-legend;fontAntiAliasing:true",
@@ -28,7 +28,7 @@ scaleControl.className = 'ol-scale ol-control ol-unselectable'
 
 var map = new ol.Map({
   layers: [new ol.layer.Image({source: source})],
-  target: '${id}',
+  target: '${id?js_string}',
   controls: ol.control.defaults({attribution: false}).extend([
     new ol.control.Control({element: scaleControl})
   ]),

@@ -17,6 +17,7 @@ public class StylesXStreamPersisterInitializer implements XStreamPersisterInitia
         xs.alias("StyleMetadata", StyleMetadataInfo.class);
         xs.aliasField("abstract", StyleMetadataInfo.class, "abstrct");
         persister.registerBriefMapComplexType("styleMetadata", StyleMetadataInfo.class);
-        xs.allowTypes(new Class[] {StyleMetadataInfo.class});
+        persister.registerBriefMapComplexType(StylesConformance.METADATA_KEY, StylesConformance.class);
+        xs.allowTypes(new Class[] {StyleMetadataInfo.class, StylesConformance.class});
     }
 }

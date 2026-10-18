@@ -46,6 +46,9 @@ public class ConformanceTable extends GeoServerTablePanel<APIConformance> {
 
     private final IModel<ConformanceInfo<?>> conformanceModel;
 
+    /** Conformance classes not listed, as they have no effect for this service. */
+    private final List<APIConformance> hidden;
+
     /** Recomputes every conformance table of the page from the checkbox states the user has not saved yet. */
     private final AbstractDefaultAjaxBehavior recompute = new AbstractDefaultAjaxBehavior() {
         @Override
@@ -69,9 +72,26 @@ public class ConformanceTable extends GeoServerTablePanel<APIConformance> {
      */
     public ConformanceTable(
             String id, IModel<?> serviceModel, IModel<ConformanceInfo<?>> conformanceModel, Component parent) {
-        super(id, new ConformanceDataProvider(conformanceModel, parent));
+        this(id, serviceModel, conformanceModel, parent, List.of());
+    }
+
+    /**
+     * Table to manage conformance settings for service, leaving out conformance classes that have no effect.
+     *
+     * @param serviceModel the {@code ServiceInfo} being edited, shows conformance classes in effect
+     * @param conformanceModel {@code ConformanceInfo} from service
+     * @param hidden conformance classes not listed, as the service does not use them
+     */
+    public ConformanceTable(
+            String id,
+            IModel<?> serviceModel,
+            IModel<ConformanceInfo<?>> conformanceModel,
+            Component parent,
+            List<APIConformance> hidden) {
+        super(id, new ConformanceDataProvider(conformanceModel, parent, hidden));
         this.serviceModel = serviceModel;
         this.conformanceModel = conformanceModel;
+        this.hidden = hidden;
 
         // set up for editing
         setPageable(false);
@@ -147,7 +167,7 @@ public class ConformanceTable extends GeoServerTablePanel<APIConformance> {
     private Map<APIConformance, Boolean> apply(Map<String, Boolean> states) {
         ConformanceInfo<?> info = conformanceModel.getObject();
         Map<APIConformance, Boolean> stored = new HashMap<>();
-        for (APIConformance conformance : info.configurableConformances()) {
+        for (APIConformance conformance : listed(info, hidden)) {
             String key = key(conformance);
             if (states.containsKey(key)) {
                 stored.put(conformance, info.isEnabled(conformance));
@@ -164,7 +184,7 @@ public class ConformanceTable extends GeoServerTablePanel<APIConformance> {
 
     /** Appends the outcome of each checkbox state of this table's rows, as {@code "key":{...},} entries. */
     private void describe(StringBuilder rows) {
-        for (APIConformance conformance : conformanceModel.getObject().configurableConformances()) {
+        for (APIConformance conformance : listed(conformanceModel.getObject(), hidden)) {
             rows.append('"')
                     .append(key(conformance).replace("\\", "\\\\").replace("\"", "\\\""))
                     .append("\":{\"unset\":")
@@ -175,6 +195,13 @@ public class ConformanceTable extends GeoServerTablePanel<APIConformance> {
                     .append(isInEffect(conformance, Boolean.FALSE))
                     .append("},");
         }
+    }
+
+    /** Conformance classes listed in the table, in the order provided by the configuration. */
+    private static List<APIConformance> listed(ConformanceInfo<?> info, List<APIConformance> hidden) {
+        return info.configurableConformances().stream()
+                .filter(c -> !hidden.contains(c))
+                .toList();
     }
 
     /** Identifies a row across the tables of the page. */
@@ -230,14 +257,16 @@ public class ConformanceTable extends GeoServerTablePanel<APIConformance> {
 
         static final Property<APIConformance> ID = new BeanProperty<>("id");
         static final Property<APIConformance> LEVEL = new BeanProperty<>("level");
-        static final Property<APIConformance> TYPE = new BeanProperty<>("type");
 
         private final IModel<ConformanceInfo<?>> conformanceModel;
         private final Component parent;
+        private final List<APIConformance> hidden;
 
-        public ConformanceDataProvider(IModel<ConformanceInfo<?>> conformanceModel, Component parent) {
+        public ConformanceDataProvider(
+                IModel<ConformanceInfo<?>> conformanceModel, Component parent, List<APIConformance> hidden) {
             this.conformanceModel = conformanceModel;
             this.parent = parent;
+            this.hidden = hidden;
         }
 
         @Override
@@ -272,12 +301,12 @@ public class ConformanceTable extends GeoServerTablePanel<APIConformance> {
                     return super.getModel(itemModel);
                 }
             };
-            return List.of(enabled, name, ID, LEVEL, TYPE);
+            return List.of(enabled, name, ID, LEVEL);
         }
 
         @Override
         protected List<APIConformance> getItems() {
-            return conformanceModel.getObject().configurableConformances();
+            return listed(conformanceModel.getObject(), hidden);
         }
     }
 }

@@ -1,0 +1,90 @@
+/* the banner and the Status section appear on pages that do not load UpdatesCheckerPage.css, so their rules live here */
+.gs-updates-checker-notifications ul.feedbackPanel,
+.gs-updates-checker-status ul.feedbackPanel {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* the same padding the 3.x theme gives a feedback message; 2.x gives none, so the rows would touch the text */
+.gs-updates-checker-notifications ul.feedbackPanel > li,
+.gs-updates-checker-status ul.feedbackPanel > li {
+  padding: 0.5rem;
+}
+
+/* the theme makes links inside feedback panels the same colour as the text and removes the underline, so they would
+   not look clickable; use the ordinary link colour and underline here */
+.gs-updates-checker-notifications .gs-updates-checker-notification a,
+.gs-updates-checker-notifications .gs-updates-checker-more a,
+.gs-updates-checker-status .gs-updates-checker-status-item a,
+.gs-updates-checker-status .gs-updates-checker-clear a {
+  color: rgb(var(--gs-link-color-rgb));
+  text-decoration: underline;
+}
+
+.gs-updates-checker-notifications .gs-updates-checker-notification a:hover,
+.gs-updates-checker-notifications .gs-updates-checker-more a:hover,
+.gs-updates-checker-status .gs-updates-checker-status-item a:hover,
+.gs-updates-checker-status .gs-updates-checker-clear a:hover {
+  color: rgb(var(--gs-link-hover-color-rgb));
+}
+
+.gs-updates-checker-notification[hidden] {
+  display: none;
+}
+
+.gs-updates-checker-label {
+  letter-spacing: 0.03em;
+}
+
+.gs-updates-checker-more {
+  margin: 0.25rem 0 0;
+}
+
+.gs-updates-checker-heading {
+  margin: 0 0 0.25rem;
+}
+
+.gs-updates-checker-heading[hidden] {
+  display: none;
+}
+
+.gs-updates-checker-more[hidden] {
+  display: none;
+}
+
+.gs-updates-checker-status-item[hidden],
+.gs-updates-checker-status-none[hidden] {
+  display: none;
+}
+
+.gs-updates-checker-check-line {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.gs-updates-checker-check-now.gs-updates-checker-busy {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* the feed time is out of date while a check runs */
+.gs-updates-checker-check-now.gs-updates-checker-busy ~ .gs-updates-checker-feed-line {
+  display: none;
+}
+
+.gs-updates-checker-clear[hidden] {
+  display: none;
+}
+
+/* GeoServer 2.x has none of the theme classes of 3.x (button, outline-primary), so this fall-back gives the same
+   layout there. :where() adds no specificity, so wherever the theme sets a property, it wins */
+:where(.gs-updates-checker-check-now) {
+  display: inline-block;
+  padding: 0.2em 0.8em;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  text-decoration: none;
+}
+

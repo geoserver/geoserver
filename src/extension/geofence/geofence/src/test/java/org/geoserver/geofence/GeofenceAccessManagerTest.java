@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.geofence.core.services.dto.AccessInfo;
 import org.geofence.core.services.dto.GrantTypeDTO;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -22,6 +23,7 @@ import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.data.test.MockData;
+import org.geoserver.filters.RemoteIpFilter;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.security.CoverageAccessLimits;
@@ -36,7 +38,10 @@ import org.junit.Assume;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
+import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;
 
 public class GeofenceAccessManagerTest extends GeofenceRestBaseTest {
@@ -358,11 +363,17 @@ public class GeofenceAccessManagerTest extends GeofenceRestBaseTest {
     }
 
     @Test
-    public void testIPv6AddressXFF() {
+    @SuppressWarnings("PMD.AvoidXForwardedForHeader")
+    public void testIPv6AddressXFF() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("x-forwarded-for", "[0:0:0:0:0:0:0:1]:1234");
-        String sourceAddress = accessManager.getSourceAddress(request);
-        assertEquals("0:0:0:0:0:0:0:1", sourceAddress); // NOPMD
+        request.setRemoteAddr("127.0.0.1"); // NOPMD
+        request.addHeader("X-Forwarded-For", "[2001:db8::1]:1234");
+        RemoteIpFilter filter = new RemoteIpFilter();
+        filter.init(new MockFilterConfig());
+        MockFilterChain chain = new MockFilterChain();
+        filter.doFilter(request, new MockHttpServletResponse(), chain);
+        String sourceAddress = accessManager.getSourceAddress((HttpServletRequest) chain.getRequest());
+        assertEquals("2001:db8:0:0:0:0:0:1", sourceAddress); // NOPMD
     }
 
     @Test

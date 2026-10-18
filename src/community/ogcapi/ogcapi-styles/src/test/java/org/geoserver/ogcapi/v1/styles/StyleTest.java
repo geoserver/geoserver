@@ -35,6 +35,7 @@ public class StyleTest extends StylesTestSupport {
 
     @Before
     public void addPondsStyle() throws IOException {
+        setManageStyles(true);
         getTestData().addStyle(SystemTestData.PONDS.getLocalPart(), getCatalog());
         cleanupStyle(MY_NEW_STYLE);
         cleanupStyle(SIMPLE_POINT);

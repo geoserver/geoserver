@@ -169,6 +169,7 @@
         <module>wps-openai</module>
         <module>png-wind</module>
         <module>fips</module>
+        <module>updates-checker</module>
       </modules>
     </profile>
     <profile>
@@ -550,6 +551,12 @@
       <id>png-wind</id>
       <modules>
         <module>png-wind</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>updates-checker</id>
+      <modules>
+        <module>updates-checker</module>
       </modules>
     </profile>
     <profile>

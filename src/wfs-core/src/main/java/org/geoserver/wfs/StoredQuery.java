@@ -124,7 +124,7 @@ public class StoredQuery {
         // parse into a dom and check the typeNames.. since we don't have parameter values we can't
         // parse into a QueryType object
         // TODO: use sax
-        EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
+        EntityResolver entityResolver = getEntityResolver();
         Hints hints = GeoTools.addDefaultHints(new Hints(Hints.ENTITY_RESOLVER, entityResolver));
 
         DocumentBuilderFactory dbf = XMLUtils.newDocumentBuilderFactory(hints);
@@ -261,6 +261,10 @@ public class StoredQuery {
 
             // parse
             Parser p = new Parser(new WFSConfiguration());
+            EntityResolver entityResolver = getEntityResolver();
+            if (entityResolver != null) {
+                p.setEntityResolver(entityResolver);
+            }
             // "inject" namespace mappings
             if (catalog != null) {
                 p.getNamespaces().add(new CatalogNamespaceSupport(catalog));
@@ -274,5 +278,14 @@ public class StoredQuery {
             }
         }
         return list;
+    }
+
+    /**
+     * Returns the entity resolver to use when parsing a stored query, or {@code null} when none is configured. A
+     * catalog-backed query uses the resolver from the catalog {@link org.geoserver.catalog.ResourcePool}; the built-in
+     * {@link #DEFAULT} query has no catalog, so none is applied.
+     */
+    private EntityResolver getEntityResolver() {
+        return catalog != null ? catalog.getResourcePool().getEntityResolver() : null;
     }
 }

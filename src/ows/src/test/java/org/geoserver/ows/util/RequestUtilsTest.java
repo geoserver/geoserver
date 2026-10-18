@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-@SuppressWarnings("PMD.AvoidUsingHardCodedIP")
+@SuppressWarnings({"PMD.AvoidUsingHardCodedIP", "PMD.AvoidXForwardedForHeader"})
 public class RequestUtilsTest {
 
     @Test
@@ -20,15 +20,9 @@ public class RequestUtilsTest {
     }
 
     @Test
-    public void testGetRemoteAddrSingleForwardedIP() {
-        HttpServletRequest req = request("192.168.1.2", "192.168.1.1");
-        assertEquals("192.168.1.1", RequestUtils.getRemoteAddr(req));
-    }
-
-    @Test
-    public void testGetRemoteAddrMultipleForwardedIP() {
-        HttpServletRequest req = request("192.168.1.4", "192.168.1.1, 192.168.1.2, 192.168.1.3");
-        assertEquals("192.168.1.1", RequestUtils.getRemoteAddr(req));
+    public void testGetRemoteAddrIgnoresForwardedHeader() {
+        HttpServletRequest req = request("192.168.1.2", "192.168.1.1, 192.168.1.3");
+        assertEquals("192.168.1.2", RequestUtils.getRemoteAddr(req));
     }
 
     private static HttpServletRequest request(String remoteAddr, String forwardedFor) {

@@ -10,12 +10,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import org.custommonkey.xmlunit.XMLAssert;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.StoredQueryProvider;
 import org.geoserver.wfs.WFSException;
@@ -121,6 +125,48 @@ public class StoredQueryTest extends WFS20TestSupport {
         dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
 
         checkOws11Exception(dom, "2.0.0", WFSException.DUPLICATE_STORED_QUERY_ID_VALUE, "myStoredQuery");
+    }
+
+    @Test
+    public void testGetFeatureOverLongStoredQueryId() throws Exception {
+        String id = "a".repeat(StoredQueryProvider.MAX_ID_LENGTH + 1);
+        MockHttpServletResponse response =
+                getAsServletResponse("wfs?service=WFS&version=2.0.0&request=GetFeature&storedQuery_id=" + id);
+        assertEquals(400, response.getStatus());
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+        String text = checkOws11Exception(dom, "2.0.0", ServiceException.INVALID_PARAMETER_VALUE, "STOREDQUERY_ID");
+        assertEquals("No such stored query: " + id, text);
+    }
+
+    @Test
+    public void testCreateStoredQueryOverLongId() throws Exception {
+        String id = "a".repeat(StoredQueryProvider.MAX_ID_LENGTH + 1);
+        MockHttpServletResponse response = postAsServletResponse("wfs", getCreatePrimitiveWithinQuery(false, id));
+        assertEquals(400, response.getStatus());
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+        String text = checkOws11Exception(dom, "2.0.0", ServiceException.INVALID_PARAMETER_VALUE, "STOREDQUERY_ID");
+        assertEquals("Stored query id too long", text);
+    }
+
+    @Test
+    public void testCreateStoredQueryIdLengthIgnoresStrippedCharacters() throws Exception {
+        // the colon is stripped from the file name, so the id fits although it is one character over the limit
+        String id = "a:" + "a".repeat(StoredQueryProvider.MAX_ID_LENGTH - 1);
+        Document dom = postAsDOM("wfs", getCreatePrimitiveWithinQuery(false, id));
+        assertEquals("wfs:CreateStoredQueryResponse", dom.getDocumentElement().getNodeName());
+        assertEquals("OK", dom.getDocumentElement().getAttribute("status"));
+
+        dom = getAsDOM("wfs?request=ListStoredQueries");
+        XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:StoredQuery)", dom);
+        XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = '" + id + "']", dom);
+    }
+
+    @Test
+    public void testDropOverLongStoredQueryId() throws Exception {
+        String id = "a".repeat(StoredQueryProvider.MAX_ID_LENGTH + 1);
+        Document dom = getAsDOM("wfs?request=DropStoredQuery&storedQuery_Id=" + id, 400);
+        String text = checkOws11Exception(dom, "2.0.0", ServiceException.INVALID_PARAMETER_VALUE, "id");
+        assertEquals("Stored query " + id + " does not exist.", text);
     }
 
     public String getCreatePrimitiveWithinQuery(boolean emptyReturnFeatureTypes) {
@@ -678,7 +724,7 @@ public class StoredQueryTest extends WFS20TestSupport {
             wfsInfo.setAllowGlobalQueries(true);
             geoServer.save(wfsInfo);
             geoServerInfo = geoServer.getGlobal();
-            geoServerInfo.setAllowStoredQueriesPerWorkspace(false);
+            geoServerInfo.setAllowStoredQueriesPerWorkspace(true);
             geoServer.save(geoServerInfo);
         }
     }
@@ -710,6 +756,47 @@ public class StoredQueryTest extends WFS20TestSupport {
             wfsInfo.setDisableStoredQueriesManagement(false);
             geoServer.save(wfsInfo);
         }
+    }
+
+    @Test
+    public void testDropGlobalStoredQueryFromVirtualService() throws Exception {
+        // create a global stored query
+        Document dom = postAsDOM("wfs", getCreatePrimitiveWithinQuery(false));
+        assertEquals("OK", dom.getDocumentElement().getAttribute("status"));
+
+        // cannot be dropped from a virtual service, and the error says why
+        String xml = "<wfs:DropStoredQuery xmlns:wfs='" + WFS.NAMESPACE + "' service='WFS' id='myStoredQuery'/>";
+        dom = postAsDOM("sf/wfs", xml);
+        assertThat(
+                XMLUnit.newXpathEngine().evaluate("//ows:ExceptionText", dom),
+                containsString("Global query can not be deleted from a virtual service"));
+        XMLAssert.assertXpathExists(
+                "//wfs:StoredQuery[@id = 'myStoredQuery']", getAsDOM("wfs?request=ListStoredQueries"));
+
+        // but can be dropped globally
+        dom = postAsDOM("wfs", xml);
+        assertEquals("OK", dom.getDocumentElement().getAttribute("status"));
+    }
+
+    @Test
+    public void testDropUnparseableStoredQuery() throws Exception {
+        Resource broken = getResourceLoader().get("wfs/query/brokenQuery.xml");
+        try (OutputStream out = broken.out()) {
+            out.write("not a stored query".getBytes(StandardCharsets.UTF_8));
+        }
+        String xml = "<wfs:DropStoredQuery xmlns:wfs='" + WFS.NAMESPACE + "' service='WFS' id='brokenQuery'/>";
+
+        // global and unparseable, still cannot be dropped from a virtual service
+        Document dom = postAsDOM("sf/wfs", xml);
+        assertThat(
+                XMLUnit.newXpathEngine().evaluate("//ows:ExceptionText", dom),
+                containsString("Global query can not be deleted from a virtual service"));
+        assertEquals(Resource.Type.RESOURCE, broken.getType());
+
+        // dropped globally, even if it cannot be parsed
+        dom = postAsDOM("wfs", xml);
+        assertEquals("OK", dom.getDocumentElement().getAttribute("status"));
+        assertEquals(Resource.Type.UNDEFINED, broken.getType());
     }
 
     private void removeAllLocalStoredQueries() {

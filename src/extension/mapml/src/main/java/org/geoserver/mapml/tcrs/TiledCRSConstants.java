@@ -4,19 +4,14 @@
  */
 package org.geoserver.mapml.tcrs;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -25,26 +20,20 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.GWC;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.api.geometry.MismatchedDimensionException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
-import org.geotools.xml.XMLUtils;
-import org.geowebcache.config.DefaultGridsets;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.Grid;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.GridSetFactory;
 import org.geowebcache.grid.SRS;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /** @author prushforth */
 public class TiledCRSConstants {
@@ -157,7 +146,7 @@ public class TiledCRSConstants {
 
     static {
         createBuiltInDefinitions();
-        loadDefinitions();
+        reloadBuiltInDefinitions();
     }
 
     private static void createBuiltInDefinitions() {
@@ -415,31 +404,6 @@ public class TiledCRSConstants {
         }
     }
 
-    private static void loadDefinitions() {
-        // We need to do an initial manual loading
-        // to avoid circular dependencies during context loading
-        reloadBuiltInDefinitions();
-        List<String> gridSetList = readMetadataGridSets();
-        DefaultGridsets gridsets = new DefaultGridsets(true, true);
-        Map<String, TiledCRSParams> additionalTiledCRS = new HashMap<>();
-        for (String gridsetName : gridSetList) {
-            Optional<GridSet> gridSet = gridsets.getGridSet(gridsetName);
-            gridSet.ifPresentOrElse(
-                    presentGridSet -> {
-                        addGridSet(additionalTiledCRS, presentGridSet);
-                    },
-                    () -> LOGGER.warning("Requested gridset doesn't exist. Skipping it: " + gridsetName));
-        }
-        List<GridSet> gwcGridsets = readGWCGridSets();
-        for (GridSet gs : gwcGridsets) {
-            if (canBeSupportedAsTiledCRS(gs)) {
-                addGridSet(additionalTiledCRS, gs);
-            }
-        }
-
-        loadGridSets(additionalTiledCRS);
-    }
-
     /**
      * Determines whether the specified {@link GridSet} can be supported as a TiledCRS.
      *
@@ -535,78 +499,6 @@ public class TiledCRSConstants {
         levelType.prefix = prefix;
         levelType.prefixed = true;
         return levelType;
-    }
-
-    private static void addGridSet(Map<String, TiledCRSParams> additionalTiledCRS, GridSet gridSet) {
-        TiledCRS tiledCRS = convertToTiledCRS(gridSet);
-        additionalTiledCRS.putIfAbsent(tiledCRS.getName(), tiledCRS.getParams());
-    }
-
-    private static List<String> readMetadataGridSets() {
-        List<String> mapMLTCRSList = new ArrayList<>();
-        try {
-            // Path to global.xml in the GeoServer data directory
-            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-            File globalConfig = loader.get("global.xml").file();
-
-            // Set up XML parser
-            DocumentBuilder dBuilder = XMLUtils.newDocumentBuilder();
-            Document doc = dBuilder.parse(globalConfig);
-
-            doc.getDocumentElement().normalize();
-
-            // Locate the settings element and metadata map
-            NodeList entryNodes = doc.getElementsByTagName("entry");
-            for (int i = 0; i < entryNodes.getLength(); i++) {
-                Node entryNode = entryNodes.item(i);
-
-                if (entryNode.getNodeType() == Node.ELEMENT_NODE) {
-                    Element entryElement = (Element) entryNode;
-                    Node keyNode = entryElement.getElementsByTagName("string").item(0);
-
-                    if (keyNode != null && "MapMLTCRSList.Key".equals(keyNode.getTextContent())) {
-                        // Found the entry with MapMLTCRSList.Key, now get the list of strings
-                        NodeList listNodes = entryElement.getElementsByTagName("string");
-                        for (int j = 1; j < listNodes.getLength(); j++) { // Start from index 1 to skip the key itself
-                            mapMLTCRSList.add(listNodes.item(j).getTextContent());
-                        }
-                        break;
-                    }
-                }
-            }
-        } catch (ParserConfigurationException | IOException | SAXException e) {
-            throw new RuntimeException(e);
-        }
-        return mapMLTCRSList;
-    }
-
-    private static List<GridSet> readGWCGridSets() {
-        List<GridSet> gridSets = new ArrayList<>();
-        try {
-            // Path to global.xml in the GeoServer data directory
-            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-            File globalConfig = loader.get("gwc/geowebcache.xml").file();
-
-            // Set up XML parser
-            DocumentBuilder dBuilder = XMLUtils.newDocumentBuilder();
-            Document doc = dBuilder.parse(globalConfig);
-
-            doc.getDocumentElement().normalize();
-
-            // Find all <gridSet> nodes
-            NodeList gridSetNodes = doc.getElementsByTagName("gridSet");
-
-            // Iterate over each <gridSet> node
-            for (int i = 0; i < gridSetNodes.getLength(); i++) {
-                Element gridSetElement = (Element) gridSetNodes.item(i);
-                String name = XPATH.evaluate("name", gridSetElement);
-                if (BUILT_IN_TILED_CRS.containsKey(name)) continue;
-                gridSets.add(parseGridSetElement(gridSetElement));
-            }
-        } catch (ParserConfigurationException | IOException | SAXException | XPathExpressionException e) {
-            throw new RuntimeException(e);
-        }
-        return gridSets;
     }
 
     /**

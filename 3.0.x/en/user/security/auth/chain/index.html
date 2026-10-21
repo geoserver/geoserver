@@ -30336,11 +30336,11 @@
 <td>ANT pattern and querystring regex to match one parameter</td>
 </tr>
 <tr>
-<td>/wms|(?=.*request=getmap)(?=.<em>format=image/png).</em></td>
+<td>/wms|(?=.<em>request=getmap)(?=.</em>format=image/png).*</td>
 <td>ANT pattern and querystring regex to match two parameters in any order</td>
 </tr>
 <tr>
-<td>/wms|(?=.*request=getmap)(?!.<em>format=image/png).</em></td>
+<td>/wms|(?=.<em>request=getmap)(?!.</em>format=image/png).*</td>
 <td>ANT pattern and querystring regex to match one parameters and be sure another one is not matched</td>
 </tr>
 </tbody>

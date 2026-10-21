@@ -30284,9 +30284,43 @@
 <p>The DGGS datastore can read data from a ClickHouse database. In case you want to use JNDI along with Tomcat, here is a sample data source declaration for the <code>etc/context.xml</code> file:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">&lt;Resource</span><span class="w"> </span><span class="na">name=</span><span class="s">"jdbc/clickhouse"</span><span class="w"> </span><span class="na">auth=</span><span class="s">"Container"</span><span class="w"> </span><span class="na">type=</span><span class="s">"javax.sql.DataSource"</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">            </span><span class="na">maxTotal=</span><span class="s">"100"</span><span class="w"> </span><span class="na">maxIdle=</span><span class="s">"30"</span><span class="w"> </span><span class="na">maxWaitMillis=</span><span class="s">"10000"</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">            </span><span class="na">username=</span><span class="s">"myUser"</span><span class="w"> </span><span class="na">password=</span><span class="s">"myPassword"</span><span class="w"> </span><span class="na">driverClassName=</span><span class="s">"ru.yandex.clickhouse.ClickHouseDriver"</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">            </span><span class="na">url=</span><span class="s">"jdbc:clickhouse://localhost:8123/theDatabase?http_connection_provider=HTTP_CLIENT"</span><span class="nt">/&gt;</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">            </span><span class="na">username=</span><span class="s">"myUser"</span><span class="w"> </span><span class="na">password=</span><span class="s">"myPassword"</span><span class="w"> </span><span class="na">driverClassName=</span><span class="s">"com.clickhouse.jdbc.ClickHouseDriver"</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">            </span><span class="na">url=</span><span class="s">"jdbc:clickhouse://localhost:8123/theDatabase"</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">            </span><span class="na">connectionProperties=</span><span class="s">"clickhouse_setting_max_query_size=1000000;socket_timeout=300000;jdbc_ignore_unsupported_values=true;typeMappings=DateTime=java.time.ZonedDateTime,DateTime64=java.time.ZonedDateTime"</span><span class="nt">/&gt;</span>
 </code></pre></div>
+<p>When connecting directly, the DGGS datastore sets these connection properties on its own. A JNDI data source is used as configured, so <strong>it must declare them itself</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+<th>Without it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>typeMappings</code></td>
+<td><code>DateTime=java.time.ZonedDateTime,DateTime64=java.time.ZonedDateTime</code></td>
+<td><code>DateTime</code> and <code>DateTime64</code> values are shifted by the offset between the GeoServer and the ClickHouse server time zones</td>
+</tr>
+<tr>
+<td><code>jdbc_ignore_unsupported_values</code></td>
+<td><code>true</code></td>
+<td>Reads made within a transaction fail, as the ClickHouse JDBC driver does not support transactions</td>
+</tr>
+<tr>
+<td><code>clickhouse_setting_max_query_size</code></td>
+<td><code>1000000</code></td>
+<td>Queries with many zone ids can exceed the ClickHouse default maximum query size and fail</td>
+</tr>
+<tr>
+<td><code>socket_timeout</code></td>
+<td><code>300000</code> (milliseconds)</td>
+<td>Long-running aggregation queries can time out</td>
+</tr>
+</tbody>
+</table>
+<p>It is to be noted that the ClickHouse JDBC driver rejects unknown connection properties: <strong>the connection fails if any of them is misspelled</strong>. ClickHouse server settings, such as <code>max_query_size</code>, must be prefixed with <code>clickhouse_setting_</code>. The <code>http_connection_provider</code> URL parameter used in older setups is no longer needed and is ignored.</p>
 
 
 

@@ -39,6 +39,18 @@ The DGGS datastore can read data from a ClickHouse database. In case you want to
 ```xml
 <Resource name="jdbc/clickhouse" auth="Container" type="javax.sql.DataSource"
             maxTotal="100" maxIdle="30" maxWaitMillis="10000"
-            username="myUser" password="myPassword" driverClassName="ru.yandex.clickhouse.ClickHouseDriver"
-            url="jdbc:clickhouse://localhost:8123/theDatabase?http_connection_provider=HTTP_CLIENT"/>
+            username="myUser" password="myPassword" driverClassName="com.clickhouse.jdbc.ClickHouseDriver"
+            url="jdbc:clickhouse://localhost:8123/theDatabase"
+            connectionProperties="clickhouse_setting_max_query_size=1000000;socket_timeout=300000;jdbc_ignore_unsupported_values=true;typeMappings=DateTime=java.time.ZonedDateTime,DateTime64=java.time.ZonedDateTime"/>
 ```
+
+When connecting directly, the DGGS datastore sets these connection properties on its own. A JNDI data source is used as configured, so **it must declare them itself**:
+
+| Property | Value | Without it |
+|---|---|---|
+| `typeMappings` | `DateTime=java.time.ZonedDateTime,DateTime64=java.time.ZonedDateTime` | `DateTime` and `DateTime64` values are shifted by the offset between the GeoServer and the ClickHouse server time zones |
+| `jdbc_ignore_unsupported_values` | `true` | Reads made within a transaction fail, as the ClickHouse JDBC driver does not support transactions |
+| `clickhouse_setting_max_query_size` | `1000000` | Queries with many zone ids can exceed the ClickHouse default maximum query size and fail |
+| `socket_timeout` | `300000` (milliseconds) | Long-running aggregation queries can time out |
+
+It is to be noted that the ClickHouse JDBC driver rejects unknown connection properties: **the connection fails if any of them is misspelled**. ClickHouse server settings, such as `max_query_size`, must be prefixed with `clickhouse_setting_`. The `http_connection_provider` URL parameter used in older setups is no longer needed and is ignored.

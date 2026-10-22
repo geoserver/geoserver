@@ -4,6 +4,7 @@
   Examples:
 
     ant -f release.xml -Dcurrent=2.27 -Drelease=2.28
+    ant -f rename.xml advance -Dcurrent=3.1.0 -Drelease=3.1.1
   -->
   <tstamp/>
   <property name="current" value="2.28"/>
@@ -34,6 +35,14 @@
       <include name="src/pom.xml"/>
       <replacefilter token="34-SNAPSHOT" value="35-SNAPSHOT"/>
       <replacefilter token="1.28-SNAPSHOT" value="2.0-SNAPSHOT"/>
+    </replace>
+  </target>
+
+  <target name="advance"
+          description="Update pom.xml versions for the next patch release of a stable branch">
+    <replace dir="..">
+      <include name="**/pom.xml"/>
+      <replacefilter token="${current}-SNAPSHOT" value="${release}-SNAPSHOT"/>
     </replace>
   </target>
 

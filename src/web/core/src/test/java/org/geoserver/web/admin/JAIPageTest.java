@@ -6,12 +6,15 @@
 package org.geoserver.web.admin;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
+import org.eclipse.imagen.ImageN;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ImageProcessingInfo;
+import org.geoserver.jai.GeoServerTileCache;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Before;
@@ -39,6 +42,9 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
         tester.startPage(JAIPage.class);
         tester.assertComponent("form:tileThreads", TextField.class);
         tester.assertModelValue("form:tileThreads", info.getTileThreads());
+        assertSame(
+                getGeoServerApplication().getBeanOfType(GeoServerTileCache.class),
+                ImageN.getDefaultInstance().getTileCache());
     }
 
     @Test
@@ -53,6 +59,7 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(GeoServerHomePage.class);
         ImageProcessingInfo imagen = geoServer.getGlobal().getImageProcessing();
         assertEquals(3, imagen.getTileThreads());
+        assertEquals(3, ImageN.getDefaultInstance().getTileScheduler().getParallelism());
     }
 
     @Test
@@ -67,5 +74,6 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(JAIPage.class);
         ImageProcessingInfo imagen = geoServer.getGlobal().getImageProcessing();
         assertEquals(3, imagen.getTileThreads());
+        assertEquals(3, ImageN.getDefaultInstance().getTileScheduler().getParallelism());
     }
 }

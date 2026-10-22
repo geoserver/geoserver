@@ -7,6 +7,7 @@ package org.geoserver.wfs.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Set;
 import org.geoserver.config.GeoServer;
 import org.geoserver.excel.ExcelWriter;
 import org.geoserver.platform.Operation;
@@ -26,8 +27,14 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
     protected String mimeType;
     protected String fileExtension;
 
+    /** @deprecated use {@link #ExcelOutputFormat(GeoServer, Set)} */
+    @Deprecated
     public ExcelOutputFormat(GeoServer gs, String formatName) {
-        super(gs, formatName);
+        this(gs, Set.of(formatName));
+    }
+
+    public ExcelOutputFormat(GeoServer gs, Set<String> formatNames) {
+        super(gs, formatNames);
         this.excelWriter = new ExcelWriter();
     }
 

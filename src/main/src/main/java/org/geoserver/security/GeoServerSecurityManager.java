@@ -1437,7 +1437,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /** Saves/persists a role service configuration. */
-    public void saveRoleService(SecurityRoleServiceConfig config) throws IOException, SecurityConfigException {
+    public synchronized void saveRoleService(SecurityRoleServiceConfig config)
+            throws IOException, SecurityConfigException {
         SecurityConfigValidator validator =
                 SecurityConfigValidator.getConfigurationValiator(GeoServerRoleService.class, config.getClassName());
 
@@ -1481,7 +1482,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      *
      * @param config The role service configuration.
      */
-    public void removeRoleService(SecurityRoleServiceConfig config) throws IOException, SecurityConfigException {
+    public synchronized void removeRoleService(SecurityRoleServiceConfig config)
+            throws IOException, SecurityConfigException {
 
         SecurityConfigValidator validator =
                 SecurityConfigValidator.getConfigurationValiator(GeoServerRoleService.class, config.getClassName());

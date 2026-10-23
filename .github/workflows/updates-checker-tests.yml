@@ -1,0 +1,22 @@
+name: Updates Checker tests
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/updates-checker**'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: .github/workflows/updates-checker
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Run tests
+        run: python3 -m unittest discover -s .github/workflows/updates-checker/tests

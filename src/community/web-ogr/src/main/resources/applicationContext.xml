@@ -26,5 +26,6 @@
     <property name="icon" value="gs-icon-database-vector"/>
     <property name="componentClass" value="org.geoserver.ogr.OGRDataStorePanel"/>
   </bean>
+  <bean id="ogrDataStoreModule" class="org.geoserver.ogr.OGRDataStoreModuleStatus"/>
 
 </beans>

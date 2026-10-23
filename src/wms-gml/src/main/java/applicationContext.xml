@@ -27,5 +27,9 @@
         <constructor-arg ref="entityResolverProvider"/>
         <property name="service"><value>WMS</value></property>
     </bean>
-
+    <bean id="wmsGmlModule" class="org.geoserver.platform.ModuleStatusImpl">
+        <constructor-arg index="0" value="gs-wms-gml"/>
+        <constructor-arg index="1" value="GeoServer WMS GML Feature Info"/>
+        <property name="category" value="CORE"/>
+    </bean>
 </beans>

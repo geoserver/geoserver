@@ -27,5 +27,9 @@
   </bean>
 
   <context:component-scan base-package="org.geowebcache.rest, org.geowebcache.diskquota.rest.controller" />
-
+  <bean id="gwcRestModule" class="org.geoserver.platform.ModuleStatusImpl">
+    <constructor-arg index="0" value="gs-gwc-rest"/>
+    <constructor-arg index="1" value="GeoWebCache REST"/>
+    <property name="category" value="CORE"/>
+  </bean>
 </beans>

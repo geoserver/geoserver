@@ -1,6 +1,7 @@
 package org.geoserver.oracle;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Optional;
 import org.geoserver.platform.GeoServerExtensions;
@@ -26,6 +27,10 @@ public class ModuleStatusTest {
                     .filter(s -> s.getModule().equalsIgnoreCase("gs-oracle"))
                     .findFirst();
             assertEquals(expect, status.isPresent());
+            if (status.isPresent()) {
+                String message = status.get().getMessage().orElseThrow();
+                assertTrue(message, message.startsWith("Oracle JDBC driver version: "));
+            }
         }
     }
 }

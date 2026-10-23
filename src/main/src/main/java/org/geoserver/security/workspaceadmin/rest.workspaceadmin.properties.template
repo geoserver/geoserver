@@ -1,0 +1,107 @@
+# (c) 2024 Open Source Geospatial Foundation - all rights reserved
+# This code is licensed under the GPL 2.0 license, available at the root
+# application directory.
+#
+# Workspace Admin REST API Access Rules
+# --------------------------------------
+# These rules control which REST API endpoints workspace administrators can access,
+# and with which HTTP methods. They do NOT control which workspaces a user can
+# administer -- that is determined by the ResourceAccessManager / security subsystem.
+#
+# This file is copied to security/rest.workspaceadmin.properties in the GeoServer
+# data directory when that file does not exist. Edit the copy in the data directory
+# to customize.
+#
+# IMPORTANT: Rule order matters. Rules are evaluated in order during the Spring Security
+# filter chain, and the first matching rule determines the access decision. Place more
+# specific patterns before more general ones (e.g. /rest/workspaces/{workspace} before
+# /rest/workspaces/{workspace}/**).
+#
+# REST endpoints that don't match any pattern in this file fall back to the global
+# REST security configuration (rest.properties), which typically restricts access
+# to full administrators only. Only add patterns for end-points that workspace
+# administrators should be allowed to access.
+#
+# Format:
+#   /url/pattern=METHOD1,METHOD2,...
+#
+# Shorthand method values:
+#   r  = Read operations (GET, HEAD, OPTIONS, TRACE)
+#   w  = Write operations (POST, PUT, PATCH, DELETE)
+#   rw = All operations (r + w)
+# Or use explicit HTTP methods: GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS, TRACE
+#
+
+# Workspace and catalog endpoints
+# -------------------------------
+# SecureCatalog filters the actual workspace/layer contents based on the user's
+# manageable workspaces. These rules only open the REST end-points.
+
+# Read-only access to the workspaces collection listing
+/rest/workspaces.{ext}=r
+/rest/workspaces=r
+
+# Read + PUT on individual workspaces (allows updating properties, but not renaming)
+/rest/workspaces/{workspace}.{ext}=r,PUT
+/rest/workspaces/{workspace}=r,PUT
+
+# Full access to sub-resources (datastores, coveragestores, styles, layergroups, etc.)
+/rest/workspaces/{workspace}/**=rw
+
+# Namespaces mirror the workspace rules
+/rest/namespaces.{ext}=r
+/rest/namespaces=r
+
+/rest/namespaces/{namespace}.{ext}=r,PUT
+/rest/namespaces/{namespace}=r,PUT
+
+/rest/namespaces/{namespace}/**=rw
+
+# Layers -- SecureCatalog restricts visibility to manageable workspaces
+/rest/layers/**=rw
+
+# No rule for global layer groups -- workspace-specific layer groups are covered
+# by /rest/workspaces/{workspace}/** above
+
+# Read-only access to global styles (workspace styles are under /rest/workspaces/{workspace}/**)
+/rest/styles.{ext}=r
+/rest/styles/**=r
+
+# Read-only access to global templates (workspace templates are under /rest/workspaces/{workspace}/**)
+/rest/templates.{ext}=r
+/rest/templates/**=r
+
+# Resource access
+# ---------------
+# SecureResourceStore filters contents to manageable workspaces
+/rest/resource/workspaces=r
+/rest/resource/workspaces/{workspace}/**=rw
+# can read global styles
+/rest/resource/styles=r
+/rest/resource/styles/**=r
+/rest/resource/**=r
+
+# User account management
+# -----------------------
+/rest/security/self/**=rw
+
+# OWS service settings (WMS, WFS, WCS, etc.)
+# -------------------------------------------
+# Per-workspace service configuration only -- global service settings (/rest/services/*/settings)
+# fall through to rest.properties (admin-only)
+/rest/services/*/workspaces/{workspace}/**=rw
+
+# General service endpoints
+# -------------------------
+# API root, index, fonts, and CRS lookups -- read-only for discoverability
+/rest/fonts.{ext}=r
+/rest/fonts/**=r
+
+/rest/crs=r
+/rest/crs/**=r
+
+/rest=r
+/rest/=r
+/rest.{ext}=r
+/rest/index=r
+/rest/index.{ext}=r

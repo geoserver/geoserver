@@ -28,7 +28,7 @@
     <bean id="ImageIOExtCachesCleaner" class="org.geoserver.jai.ImageIOExtCachesCleaner" />
     <bean id="cogSettingsInitializer" class="org.geoserver.cog.CogSettingsInitializer" />
     <bean id="cogSettingsXStreamInitializer" class="org.geoserver.cog.CogSettingsXStreamInitializer" />
-    <bean id="cogEncryptedFieldsProvider" class=" org.geoserver.cog.CogEncryptedFieldsProvider" />
+    <bean id="cogEncryptedFieldsProvider" class="org.geoserver.cog.CogEncryptedFieldsProvider" />
 
     <bean id="cogCoreExtension" class="org.geoserver.platform.ModuleStatusImpl">
         <constructor-arg index="0" value="gs-cog-core"/>

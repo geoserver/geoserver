@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (C) 2026 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="postgisModule" class="org.geoserver.platform.LibraryModuleStatus">
+        <constructor-arg index="0" value="gt-jdbc-postgis"/>
+        <constructor-arg index="1" value="PostGIS DataStore"/>
+        <constructor-arg index="2" value="PostgreSQL JDBC driver"/>
+        <constructor-arg index="3" value="org.postgresql.Driver"/>
+        <property name="documentation" value="data/database/postgis.html"/>
+        <property name="category" value="CORE"/>
+    </bean>
+</beans>

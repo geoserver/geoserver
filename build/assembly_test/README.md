@@ -10,6 +10,8 @@ It verifies:
 
 For each case, the test unpacks a fresh copy of the binary distribution, installs the plugin under test together with any manually declared plugin dependencies, starts GeoServer on dedicated preallocated ports, and checks that WMS `GetCapabilities` responds successfully.
 
+Each plugin must also report a module status with a version (`/rest/about/status/<module>`) for one of its `gs-*` jars. Plugins excluded from this check, until they report one, are listed in `PluginRegistry.java`. The `bin.zip` check requires a module status for every `gs-*` jar, a version for every module status, and the PostGIS module status.
+
 Before startup, the copied test data directory is adjusted to keep the WMS service SRS list small so capabilities documents stay compact during smoke testing.
 
 These tests are meant to catch packaging and startup regressions that unit and module tests do not see:
@@ -18,6 +20,7 @@ These tests are meant to catch packaging and startup regressions that unit and m
 - broken distribution layout
 - startup regressions caused by packaging changes
 - missing plugin dependencies in assembled artifacts
+- plugins missing from Server Status > Modules
 
 This is a smoke test for assembled deliverables, not a full functional test suite for each module.
 

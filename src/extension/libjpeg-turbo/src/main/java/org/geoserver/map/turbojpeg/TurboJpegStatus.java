@@ -16,7 +16,7 @@ public class TurboJpegStatus implements ModuleStatus {
 
     @Override
     public String getModule() {
-        return "libjpeg-turbo";
+        return "gs-libjpeg-turbo";
     }
 
     @Override

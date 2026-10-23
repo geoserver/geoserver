@@ -26,6 +26,7 @@
     <bean class="org.geoserver.platform.RenderingEngineStatus"/>
     <bean class="org.geoserver.platform.SystemPropertyStatus"/>
     <bean class="org.geoserver.platform.SystemEnvironmentStatus"/>
+    <bean class="org.geoserver.jai.ImageNStatus"/>
     
     <!--  lock providers -->
     <bean id="nullLockProvider" class="org.geoserver.platform.resource.NullLockProvider"/>

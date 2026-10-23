@@ -7,6 +7,19 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
+      <directory>target</directory>
+      <outputDirectory/>
+      <includes>
+        <include>*.jar</include>
+      </includes>
+      <excludes>
+        <exclude>*-sources.jar</exclude>
+        <exclude>*-javadoc.jar</exclude>
+        <exclude>*-tests.jar</exclude>
+        <exclude>*-test-sources.jar</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
       <directory>target/dependency</directory>
       <outputDirectory/>
       <includes>

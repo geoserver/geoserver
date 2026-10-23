@@ -4,13 +4,16 @@
  */
 package org.geoserver.printing;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Optional;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ModuleStatus;
+import org.geotools.util.factory.GeoTools;
 import org.junit.Test;
+import org.mapfish.print.MapPrinter;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ModuleStatusTest {
@@ -23,6 +26,15 @@ public class ModuleStatusTest {
                     .filter(s -> s.getModule().equalsIgnoreCase("gs-printing"))
                     .findFirst();
             assertTrue(status.isPresent());
+            assertEquals(ModuleStatus.Category.EXTENSION, status.get().getCategory());
+            assertEquals(
+                    "mapfish-print-v2 version: " + GeoTools.getVersion(MapPrinter.class),
+                    status.get().getMessage().orElseThrow());
         }
+    }
+
+    @Test
+    public void testMapfishVersion() {
+        assertNotNull(GeoTools.getVersion(MapPrinter.class));
     }
 }

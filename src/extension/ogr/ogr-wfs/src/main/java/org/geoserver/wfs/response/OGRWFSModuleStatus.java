@@ -4,17 +4,18 @@
  */
 package org.geoserver.wfs.response;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.Collections;
-import java.util.Properties;
+import java.util.Map;
+import java.util.Optional;
 import org.geoserver.ogr.core.OGRModuleStatus;
 import org.geoserver.platform.ModuleStatus;
 
 public class OGRWFSModuleStatus extends OGRModuleStatus implements ModuleStatus {
-    private static Boolean IS_OGR_AVAILABLE = null;
-    private static String OGR2OGR;
-    private static String GDAL_DATA;
+
+    private final Ogr2OgrOutputFormat format;
+
+    public OGRWFSModuleStatus(Ogr2OgrOutputFormat format) {
+        this.format = format;
+    }
 
     @Override
     public String getModule() {
@@ -28,24 +29,15 @@ public class OGRWFSModuleStatus extends OGRModuleStatus implements ModuleStatus 
 
     @Override
     public boolean isAvailable() {
-        if (IS_OGR_AVAILABLE == null) {
-            try {
-                File props = new File("./src/test/resources/ogr2ogr.properties");
-                Properties p = new Properties();
-                p.load(new FileInputStream(props));
+        return new OGRWrapper(format.getExecutable(), format.getEnvironment()).isAvailable();
+    }
 
-                OGR2OGR = p.getProperty("ogr2ogr");
-                // assume it's in the path if the property file hasn't been configured
-                if (OGR2OGR == null) OGR2OGR = "ogr2ogr";
-                GDAL_DATA = p.getProperty("gdalData");
-
-                OGRWrapper ogr = new OGRWrapper(OGR2OGR, Collections.singletonMap("GDAL_DATA", GDAL_DATA));
-                IS_OGR_AVAILABLE = ogr.isAvailable();
-            } catch (Exception e) {
-                IS_OGR_AVAILABLE = false;
-            }
-        }
-
-        return IS_OGR_AVAILABLE;
+    @Override
+    public Optional<String> getMessage() {
+        Map<String, String> environment = format.getEnvironment();
+        String gdalData = environment != null && environment.get("GDAL_DATA") != null
+                ? environment.get("GDAL_DATA")
+                : System.getenv("GDAL_DATA");
+        return Optional.of("ogr2ogr executable: " + format.getExecutable() + "\nGDAL_DATA: " + gdalData);
     }
 }

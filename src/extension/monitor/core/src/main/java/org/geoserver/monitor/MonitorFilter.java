@@ -28,7 +28,6 @@ import java.util.logging.Logger;
 import org.geoserver.filters.GeoServerFilter;
 import org.geoserver.monitor.RequestData.Status;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.security.SecurityUtils;
 import org.geoserver.wms.map.RenderTimeStatistics;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
@@ -131,7 +130,7 @@ public class MonitorFilter implements GeoServerFilter {
 
         if (SecurityContextHolder.getContext() != null
                 && SecurityContextHolder.getContext().getAuthentication() != null) {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Authentication auth = auth.getName();
             String username = SecurityUtils.getUsername(auth.getPrincipal());
             if (username != null) {
                 data.setRemoteUser(username);

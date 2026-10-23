@@ -5,6 +5,7 @@
 package org.geoserver.db2;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Optional;
 import org.geoserver.platform.GeoServerExtensions;
@@ -36,6 +37,10 @@ public class ModuleStatusTest extends GeoServerSystemTestSupport {
                     .filter(s -> s.getModule().equalsIgnoreCase("gs-db2"))
                     .findFirst();
             assertEquals(expect, status.isPresent());
+            if (status.isPresent()) {
+                String message = status.get().getMessage().orElseThrow();
+                assertTrue(message, message.startsWith("IBM Db2 JDBC driver version: "));
+            }
         }
     }
 }

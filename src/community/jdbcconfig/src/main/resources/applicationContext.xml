@@ -58,6 +58,9 @@
     <property name="geoServerFacade" ref="JDBCGeoServerFacade" />
   </bean>
   
+  <!-- opens the request cache that JDBCGeoServerLoader puts in front of the facades -->
+  <bean id="requestCachingFilter" class="org.geoserver.filters.RequestCachingFilter" />
+
   <bean id="JDBCConfigStatusProvider" class="org.geoserver.jdbcconfig.web.JDBCConfigStatusProvider">
     <constructor-arg ref="jdbcConfigProperties" />
   </bean>

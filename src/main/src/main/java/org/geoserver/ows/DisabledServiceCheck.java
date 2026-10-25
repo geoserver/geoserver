@@ -166,7 +166,9 @@ public class DisabledServiceCheck implements DispatcherCallback, ServiceVersionF
         WorkspaceInfo workspace = LocalWorkspace.get();
         if (workspace == null) {
             Request owsRequest = Dispatcher.REQUEST.get();
-            if (owsRequest != null && owsRequest.getContext() != null) {
+            if (owsRequest != null
+                    && owsRequest.getContext() != null
+                    && !LocalWorkspaceCallback.isGlobalGwc(owsRequest.getContext())) {
                 String ctx = owsRequest.getContext();
                 String wsName = ctx.contains("/") ? ctx.substring(0, ctx.indexOf('/')) : ctx;
                 workspace = geoServer.getCatalog().getWorkspaceByName(wsName);

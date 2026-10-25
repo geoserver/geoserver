@@ -38,13 +38,13 @@ public class GwcServiceProxy {
     private final GeoWebCacheDispatcher gwcDispatcher;
 
     public GwcServiceProxy() {
+        // no id: this info is not stored, and an id makes DisabledServiceCheck query the catalog for it on every tile
         serviceInfo = new ServiceInfoImpl() {
             @Override
             public String getType() {
                 return "WMTS";
             }
         };
-        serviceInfo.setId("gwc");
         serviceInfo.setName("gwc");
         serviceInfo.setEnabled(true);
         serviceInfo.setVersions(ImmutableList.of(new Version("1.0.0")));

@@ -43,7 +43,7 @@ public class JDBCGeoServerImplTest extends GeoServerImplTest {
 
     private JDBCGeoServerFacade facade;
 
-    private JDBCConfigTestSupport testSupport;
+    protected JDBCConfigTestSupport testSupport;
 
     public JDBCGeoServerImplTest(JDBCConfigTestSupport.DBConfig dbConfig) {
         testSupport = new JDBCConfigTestSupport(dbConfig);

@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -240,6 +241,31 @@ public class MonitorFilterTest {
     }
 
     @Test
+    public void testTokenPrincipalRemoteUser() throws Exception {
+        // mimics a bearer token authentication (e.g. JwtAuthenticationToken), whose principal is the token object
+        // and whose name is resolved from a claim
+        Object token = new Object();
+        Authentication authentication = new AbstractAuthenticationToken(Collections.emptyList()) {
+            @Override
+            public Object getCredentials() {
+                return token;
+            }
+
+            @Override
+            public Object getPrincipal() {
+                return token;
+            }
+
+            @Override
+            public String getName() {
+                return "username";
+            }
+        };
+
+        testRemoteUser(authentication);
+    }
+
+    @Test
     public void testGetStatistics() throws IOException, ServletException {
 
         MockHttpServletRequest req = request("POST", "/bar/foo", "78.56.34.12", null, null);
@@ -295,8 +321,11 @@ public class MonitorFilterTest {
     }
 
     private RequestData testRemoteUser(Object principal) throws Exception {
+        return testRemoteUser(new TestingAuthenticationToken(principal, null));
+    }
+
+    private RequestData testRemoteUser(Authentication authentication) throws Exception {
         try {
-            Authentication authentication = new TestingAuthenticationToken(principal, null);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             final CompletableFuture<Authentication> authFuture = new CompletableFuture<>();
             filter.setExecutionAudit((data, auth) -> {

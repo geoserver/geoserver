@@ -83,10 +83,10 @@ fi
 # deploy the release to maven repo
 pushd src > /dev/null
 if [ -z $SKIP_DEPLOY ]; then
-   mvn clean install -P allExtensions,pending -DskipTests $MAVEN_FLAGS 
-   mvn deploy -P allExtensions,pending -DskipTests $MAVEN_FLAGS 
+   mvn clean install -P release,pending -DskipTests $MAVEN_FLAGS 
+   mvn deploy -P release,pending -DskipTests $MAVEN_FLAGS 
 else
-   echo "Skipping mvn deploy -P allExtensions,pending -DskipTests $MAVEN_FLAGS"
+   echo "Skipping mvn deploy -P release,pending -DskipTests $MAVEN_FLAGS"
 fi
 
 if [ -z $SKIP_COMMUNITY ]; then

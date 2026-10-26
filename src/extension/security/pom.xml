@@ -82,17 +82,6 @@
     </profile>
 
     <profile>
-      <id>allExtensions</id>
-      <modules>
-        <module>cas</module>
-        <module>cas-assembly</module>
-        <module>oidc-core</module>
-        <module>oidc-web</module>
-        <module>oidc-assembly</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>release</id>
       <modules>
         <module>cas</module>

@@ -28,13 +28,6 @@
     </profile>
 
     <profile>
-      <id>allExtensions</id>
-      <modules>
-        <module>web-cas</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>release</id>
       <modules>
         <module>web-cas</module>

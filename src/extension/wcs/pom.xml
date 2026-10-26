@@ -17,16 +17,6 @@
   <name>GeoServer WCS Extensions</name>
 
   <profiles>
-    <!-- allExtensions profile, includes all modules -->
-    <profile>
-      <id>allExtensions</id>
-      <modules>
-        <module>wcs1_0</module>
-        <module>wcs1_1</module>
-        <module>wcs-integration</module>
-      </modules>
-    </profile>
-
     <!-- release profile, includes all modules -->
     <profile>
       <id>release</id>

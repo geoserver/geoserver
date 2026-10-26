@@ -286,7 +286,7 @@ The following properties must hold true in order to promote a community module:
     *Extensions*
 
     1.  Move the `fun` profile from `community/pom.xml` to `extension/pom.xml`.
-    2.  Remove `fun` from the `communityRelease` profile in `community/pom.xml`, and add it to the `allExtensions` and `release` profiles in `extension/pom.xml`.
+    2.  Remove `fun` from the `communityRelease` profile in `community/pom.xml`, and add it to the `release` profile in `extension/pom.xml`.
     3.  Change the parent of `fun/pom.xml` to `extension`, and the `groupId` of the module (and any sub-modules) to `org.geoserver.extension`:
 
         ``` xml

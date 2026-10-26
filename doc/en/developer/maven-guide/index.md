@@ -57,9 +57,12 @@ Multiple extensions can be enabled simultaneously:
 
     mvn clean install -P restconfig,oracle
 
-A special profile named `allExtensions` enables all extensions:
+The `release` profile enables all extensions, to build just the extensions run it from the `extension` folder:
 
-    mvn clean install -P allExtensions
+    cd src/extension
+    mvn clean install -P release
+
+Running `-P release` from `src` also builds the release module, and packages the web application with the release data directory.
 
 ## Recover Build {: #profiles }
 

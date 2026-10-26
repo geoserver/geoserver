@@ -19,7 +19,6 @@
   </modules>
 
   <profiles>
-
     <profile>
       <id>geofence-server</id>
       <activation>
@@ -43,14 +42,6 @@
         </property>
       </activation>
       <modules>
-        <module>geofence-wps</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>allExtensions</id>
-      <modules>
-        <module>geofence-server</module>
         <module>geofence-wps</module>
       </modules>
     </profile>

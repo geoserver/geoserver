@@ -49,8 +49,6 @@ The GeoParquet DataStore supports the following key parameters:
 
 - **threads**: DuckDB maximum number of execution threads for the store. Must be greater than zero when provided (optional)
 
-- **simplification**: Enable geometry simplification for rendering optimization (default: true)
-
 - **namespace**: Custom namespace URI for features (optional)
 
 ## Example REST requests

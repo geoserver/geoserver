@@ -35,15 +35,15 @@ The following outlines the steps to be taken in order to add a new community mod
 
 3.  **Add a new module**
 
-    Once commit access is obtained the module can be added. All community modules live under the directory `community`, directly under the root of the source tree. The community modules on trunk can be found [here](https://github.com/geoserver/geoserver/tree/main/src/community).
+    Once commit access is obtained the module can be added. All community modules live under the directory `community`, directly under the root of the source tree. The community modules on the main branch can be found [here](https://github.com/geoserver/geoserver/tree/main/src/community).
 
     For example, from the root of the GeoServer source tree:
 
     ```shell
     [geoserver]% cd src/community
-    [geoserver/src/community]% mkdir myCommunityModule
-    [geoserver/src/community]% git add myCommunityModule
-    [geoserver/src/community]% git commit -m "adding my community module"
+    [geoserver/src/community]% mkdir fun
+    [geoserver/src/community]% git add fun
+    [geoserver/src/community]% git commit -m "adding fun community module"
     ```
 
 4.  **Add a Maven POM**
@@ -56,15 +56,14 @@ The following outlines the steps to be taken in order to add a new community mod
     
     <parent>
       <groupId>org.geoserver</groupId>
-      <artifactId>geoserver</artifactId>
-      <version>2.8-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
+      <artifactId>community</artifactId>
+      <version>${revision}</version>
     </parent>
     
-    <groupId>org.geoserver</groupId>
-    <artifactId>myCommunityModule</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>gs-fun</artifactId>
     <packaging>jar</packaging>
-    <name>My Community Module</name>
+    <name>Fun Community Module</name>
     
     <dependencies>
       <!-- add any dependencies your module has here -->
@@ -80,10 +79,10 @@ The following outlines the steps to be taken in order to add a new community mod
         <artifactId>spring-security-core</artifactId>
       </dependency>
     </dependencies>
-       </project>
+    </project>
     ```
 
-    Add the file to the root of the new community module, `myCommunityModule/pom.xml`
+    Add the file to the root of the new community module, `fun/pom.xml`
 
     !!! note
         When adding Spring Framework or Spring Security dependencies, **never specify the version**. GeoServer uses Bill of Materials (BOM) to manage these versions centrally. See the [Maven Guide](../maven-guide/index.md) for more details on dependency management.
@@ -98,9 +97,9 @@ The following outlines the steps to be taken in order to add a new community mod
         <profiles>
           ...
           <profile>
-            <id>myCommunityModule</id>
+            <id>fun</id>
             <modules>
-              <module>myCommunityModule</module>
+              <module>fun</module>
             </modules>
           </profile>
         </profiles>
@@ -112,12 +111,12 @@ The following outlines the steps to be taken in order to add a new community mod
         <profiles>
           ...
           <profile>
-            <id>myCommunityModule</id>
+            <id>fun</id>
             <dependencies>
               <dependency>
-                 <groupId>org.geoserver</groupId>
-                 <artifactId>myCommunityModule</artifactId>
-                 <version>1.0-SNAPSHOT</version>
+                 <groupId>org.geoserver.community</groupId>
+                 <artifactId>gs-fun</artifactId>
+                 <version>${project.version}</version>
                </dependency>
             </dependencies>
           </profile>
@@ -248,10 +247,10 @@ The following properties must hold true in order to promote a community module:
     Core modules live under the root of the source tree:
 
     ```shell
-    [geoserver]% mv src/community/myCommunityModule src/
-    [geoserver]% git add src/myCommunityModule
-    [geoserver]% git add --all src/community/myCommunityModule
-    [geoserver]% git commit -m "promoting my community module to a core module"
+    [geoserver]% mv src/community/fun src/
+    [geoserver]% git add src/fun
+    [geoserver]% git add --all src/community/fun
+    [geoserver]% git commit -m "promoting fun community module to a core module"
     ```
 
     *Extensions*
@@ -259,10 +258,10 @@ The following properties must hold true in order to promote a community module:
     Extension modules live under the extension directory, under the root of the source tree:
 
     ```shell
-    [geoserver]% mv src/community/myCommunityModule src/extension
-    [geoserver]% git add src/extension/myCommunityModule
-    [geoserver]% git add --all src/community/myCommunityModule
-    [geoserver]% git commit -m "promoting my community module to an extension"
+    [geoserver]% mv src/community/fun src/extension
+    [geoserver]% git add src/extension/fun
+    [geoserver]% git add --all src/community/fun
+    [geoserver]% git commit -m "promoting fun community module to an extension"
     ```
 
 3.  **Update the build**
@@ -278,7 +277,7 @@ The following properties must hold true in order to promote a community module:
         ```xml
         <modules>
         ...
-        <module>myCommunityModule</module>
+        <module>fun</module>
         </modules>
         ```
 
@@ -286,205 +285,163 @@ The following properties must hold true in order to promote a community module:
 
     *Extensions*
 
-    1.  Copy the profile for the community module from `community/pom.xml` to `extension/pom.xml`
-    2.  Remove the profile from `community/pom.xml`
-    3.  Remove the release descriptor from `community/pom.xml` contained in the maven-assembly-plugin configuration section
-    4.  Remove the dependency from `community/release/pom.xml`
+    1.  Move the `fun` profile from `community/pom.xml` to `extension/pom.xml`.
+    2.  Remove `fun` from the `communityRelease` profile in `community/pom.xml`, and add it to the `allExtensions` and `release` profiles in `extension/pom.xml`.
+    3.  Change the parent of `fun/pom.xml` to `extension`, and the `groupId` of the module (and any sub-modules) to `org.geoserver.extension`:
+
+        ``` xml
+        <parent>
+          <groupId>org.geoserver</groupId>
+          <artifactId>extension</artifactId>
+          <version>${revision}</version>
+        </parent>
+
+        <groupId>org.geoserver.extension</groupId>
+        <artifactId>gs-fun</artifactId>
+        ```
+
+    4.  Update the `fun` profile in `web/app/pom.xml` to use the `org.geoserver.extension` group id.
 
 4.  **Update the release process**
 
-    The next step is to include the new module in the release process.
+    Each extension builds its own download zip, `geoserver-<version>-fun-plugin.zip`, using the `assembly` profile:
 
-    *Extensions*
+    ```shell
+    mvn install -f src/extension/pom.xml -Prelease,assembly -DskipTests
+    ```
 
-    1.  Create a new directory under `release/src/extensions` which matches the name of the extension
+    The assembly files live in the `src/assembly` folder of the module (or of a `fun-assembly` sub-module when the extension has several modules, as for [dxf](https://github.com/geoserver/geoserver/tree/main/src/extension/dxf/dxf-assembly)):
 
-    2.  Add the following to the new directory:
+    1.  **`fun-LICENSE.md`**: the license notice for the extension, linking to the full `licenses/` documents.
 
-        1.  A license called **`<module>-LICENSE.md`** which contains the license notice for the extension (linking to full `licenses/` documents included below).
+        Follow the [dxf-LICENSE.md](https://github.com/geoserver/geoserver/blob/main/src/extension/dxf/dxf-assembly/src/assembly/dxf-LICENSE.md) example:
 
-            Follow the [dxf-LICENSE.md](https://github.com/geoserver/geoserver/blob/main/src/release/extensions/dxf/dxf-LICENSE.md) example:
+        ```markdown
+        Extension License Notice
+        ========================
 
-            ```markdown
-            Extension License Notice
-            ========================
+        DXFOutputFormat WFS Output and WPS PPIO for GeoServer
+        Mauro Bartolomeoli, GeoSolutions Sas
 
-            DXFOutputFormat WFS Output and WPS PPIO for GeoServer
-            Mauro Bartolomeoli, GeoSolutions Sas
-
-                This program is free software; you can redistribute it and/or modify
-                it under the terms of the GNU General Public License as published by
-                the Free Software Foundation; either version 2 of the License, or
-                (at your option) any later version.
-
-                This program is distributed in the hope that it will be useful,
-                but WITHOUT ANY WARRANTY; without even the implied warranty of
-                MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-                GNU General Public License for more details.
-
-                You should have received a copy of the GNU General Public License
-                along with this program; if not, write to the Free Software
-                Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-            This GeoServer plugin is licensed under the GNU General Public License (GPL).
-            For more information see license notice and the full GPL.
-
-            This software is an extension for GeoServer. You can find full information
-            on it at https://www.geoserver.org
-            ```
-
-        2.  A readme called **`<module>-README.md`** which contains instructions on how to install the extension.
-
-            Follow the [dxf-README.md](https://github.com/geoserver/geoserver/blob/main/src/release/extensions/dxf/dxf-README.md) example:
-
-            ```markdown
-            DXFOutputFormat WFS Output and WPS PPIO for GeoServer
-            =====================================================
-
-            For more information http://docs.geoserver.org/latest/en/user/extensions/dxf/index.html
-
-            INSTALLATION
-            ---------------------------
-            If you only need the WFS Output, copy `gs-dxf-core-*.jar` to `geoserver WEB-INF/lib`.
-            If you need both the WFS Output and the WPS PPIO, copy `gs-dxf-*.jar` to
-            `geoserver WEB-INF/lib`.
-
-            Please note that the WPS PPIO needs the WPS extension to be installed, so please
-            first download and install that.
-
+            This program is free software; you can redistribute it and/or modify
+            it under the terms of the GNU General Public License as published by
+            the Free Software Foundation; either version 2 of the License, or
+            (at your option) any later version.
             ...
-            ```
 
-            !!! warning
-                Don't skip this step.
+        This GeoServer plugin is licensed under the GNU General Public License (GPL).
+        For more information see license notice and the full GPL.
 
-        3.  Any "static" files that are required by the extension.
+        This software is an extension for GeoServer. You can find full information
+        on it at https://www.geoserver.org
+        ```
 
-            An example would be data files or a proprietary driver not available for download via maven.
+    2.  **`fun-README.md`**: instructions on how to install the extension.
 
-    3.  Create a release assembly called **`ext-<module>.xml`** under the release `src/assembly` directory.
+        Follow the [dxf-README.md](https://github.com/geoserver/geoserver/blob/main/src/extension/dxf/dxf-assembly/src/assembly/dxf-README.md) example:
 
-        Follow the example of [ext-dxf-xml](https://github.com/geoserver/geoserver/blob/main/src/release/ext-dxf.xml):
+        ```markdown
+        DXFOutputFormat WFS Output and WPS PPIO for GeoServer
+        =====================================================
+
+        For more information http://docs.geoserver.org/latest/en/user/extensions/dxf/index.html
+
+        INSTALLATION
+        ---------------------------
+        If you only need the WFS Output, copy `gs-dxf-core-*.jar` to `geoserver WEB-INF/lib`.
+        If you need both the WFS Output and the WPS PPIO, copy `gs-dxf-*.jar` to
+        `geoserver WEB-INF/lib`.
+        ...
+        ```
+
+        !!! warning
+            Don't skip this step.
+
+        The `assembly-docs` profile renders both markdown files to HTML for inclusion in the zip.
+
+    3.  **`assembly.xml`**: the assembly descriptor listing the jars, licenses and documents to include.
+
+        Follow the [dxf assembly.xml](https://github.com/geoserver/geoserver/blob/main/src/extension/dxf/dxf-assembly/src/assembly/assembly.xml) example:
 
         ```xml
         <assembly>
-          <id>dxf-plugin</id>
+          <id>fun-plugin</id>
           <formats>
             <format>zip</format>
           </formats>
           <includeBaseDirectory>false</includeBaseDirectory>
           <fileSets>
             <fileSet>
-              <directory>release/target/dependency</directory>
-              <outputDirectory></outputDirectory>
+              <directory>target/dependency</directory>
+              <outputDirectory/>
               <includes>
-                <include>gs-dxf*.jar</include>
+                <include>gs-fun*.jar</include>
               </includes>
             </fileSet>
             <fileSet>
-              <directory>release/target/html/licenses</directory>
+              <directory>${geoserverBaseDir}/release/target/html/licenses</directory>
               <outputDirectory>licenses</outputDirectory>
               <includes>
-                 <include>GPL.html</include>
-                 <include>NOTICE.html</include>
+                <include>GPL.html</include>
+                <include>NOTICE.html</include>
               </includes>
             </fileSet>
           </fileSets>
           <files>
-             <file>
-               <source>release/extensions/dxf/dxf-README.md</source>
-               <outputDirectory></outputDirectory>
-               <destName>README.txt</destName>
-             </file>
-             <file>
-               <source>release/target/html/extensions/dxf/dxf-LICENSE.html</source>
-               <outputDirectory></outputDirectory>
-               <destName>LICENSE.html</destName>
-             </file>
-             <file>
-               <source>release/target/html/extensions/dxf/dxf-README.html</source>
-               <outputDirectory></outputDirectory>
-               <destName>README.html</destName>
-             </file>
+            <file>
+              <source>src/assembly/fun-README.md</source>
+              <outputDirectory/>
+              <destName>README.txt</destName>
+            </file>
+            <file>
+              <source>target/html/fun-LICENSE.html</source>
+              <outputDirectory/>
+              <destName>LICENSE.html</destName>
+            </file>
+            <file>
+              <source>target/html/fun-README.html</source>
+              <outputDirectory/>
+              <destName>README.html</destName>
+            </file>
           </files>
         </assembly>
         ```
 
-        - Add additional `include` elements in the root folder (outputDirectory empty) for the jar dependencies of the module
-        - Add additional `include` elements in the licenses folder (outputDirectory `licenses`) for licenses required
-        - Add an additional fileSet if there are any static file dependencies of the module required by the module
+        - Add `include` elements in the root folder (`outputDirectory` empty) for the jar dependencies of the module, copied to `target/dependency` by the `assembly` profile
+        - Add `include` elements in the `licenses` folder for any additional licenses required
+        - Add a `fileSet` for any static files required by the module, such as data files or a proprietary driver not available from maven
         - Use `file` with `destName` for any individual files that require renaming
 
-    4.  Add a dependency from `release/pom.xml` to the extension module:
+    A community module in the `communityRelease` profile already has these files; review them when promoting the module.
 
-        ``` xml
-        <dependencies>
-           ...
-           <dependency>
-             <groupId>org.geoserver.extension</groupId>
-             <artifactId>%module%</artifactId>
-             <version>%version%</version>
-           </dependency>
-           ...
-         </dependencies>
-        ```
+5.  **Update the user manual**
 
-    5.  Add an entry for the release descriptor to the root `pom.xml` of the source tree (i.e. one step up from the release directory):
+    Move the module documentation from `doc/en/user/community/fun` to `doc/en/user/extensions/fun`, and update the navigation in `mkdocs.yml` from the community modules section to the extensions section:
 
-        ``` xml
-        <!-- artifact assembly -->
-        <plugin>
-          <artifactId>maven-assembly-plugin</artifactId>
-          <version>2.1</version>
-          <configuration>
-            <descriptors>
-             <descriptor>release/war.xml</descriptor>
-             <descriptor>release/javadoc.xml</descriptor>
-             <descriptor>release/bin.xml</descriptor>
-             <descriptor>release/doc.xml</descriptor>
-             ...
-             <descriptor>release/ext-%module%.xml</descriptor>
-            </descriptors>
-          </configuration>
-        </plugin>
-        ```
-
-1.  Update the `/doc/en/user/source/community` documentation:
-
-    - Add a section to the user manual for the new module:
-
-      Create a folder:
-
-      - `community/%module%`
-      - `community/%module%/files` - example files
-      - `community/%module%/img` - screen snaps
-      - `community/%module%/index.rst`
-      - `community/%module%/installing.rst`
-      - `community/%module%/usage.rst`
-
-    - Include module in `community/index.rst` toctree:
-
-    ``` rst
-    .. toctree::
-       :maxdepth: 1
-
-       backuprestore/index
-       cog/index
-       ...
-       %module%/index.rst
+    ```yaml
+    - en/user/extensions/fun/index.md
+    - en/user/extensions/fun/installing.md
     ```
 
-    - When writing `installing.rst` use the sphinx external link `download_community` to generate a download link for the current release.
+    When writing `installing.md` enable macros, and use the `download_extension` variable to link to the download for the current release:
 
-          ``` rst
-          To install the JDBCConfig module:
-    
-          #. Visit the :website:`website download <download>` page and download :download_community:`jdbcconfig`.
-          ```
+    {% raw %}
+    ```markdown
+    ---
+    render_macros: true
+    ---
+
+    # Installing the Fun extension
+
+    - {{ release }} example: [fun]({{ download_extension }}fun-plugin.zip)
+    ```
+    {% endraw %}
 
     For more information see [documentation guide](https://docs.geoserver.org/latest/en/docguide/).
 
-2.  Download and a contributor license agreement as pdf for txt file:
+6.  **Contributor license agreement**
+
+    Download a contributor license agreement as pdf or txt file:
 
     - [Individual Contributor License Agreement](https://www.osgeo.org/resources/individual-contributor-license/)
 
@@ -492,7 +449,7 @@ The following properties must hold true in order to promote a community module:
 
       This option can also be used as a "software grant" to donate a specific named contribution in its entirety, as was done for GeoFence, and indeed GeoServer itself.
 
-3.  Follow the instructions on the form to submit it.
+    Follow the instructions on the form to submit it.
 
 ## Demoting a community module
 

@@ -150,6 +150,18 @@ This can also be used when running the local jetty application server:
 
 You may also use an absolute path, if you have a custom data directory you would like to use.
 
+## Project version
+
+The GeoServer version is defined once, as the `revision` property in the root `src/pom.xml`. Modules refer to it as `${revision}` in their `<parent>` section, and the [flatten-maven-plugin](https://www.mojohaus.org/flatten-maven-plugin/) writes the actual version into installed and deployed `pom.xml` files (see [Maven CI Friendly Versions](https://maven.apache.org/guides/mini/guide-maven-ci-friendly.html)).
+
+``` xml
+<parent>
+  <groupId>org.geoserver</groupId>
+  <artifactId>community</artifactId>
+  <version>${revision}</version>
+</parent>
+```
+
 ## Dependency Management
 
 GeoServer uses Maven's Bill of Materials (BOM) pattern to centrally manage dependency versions for GeoTools, Spring Framework, and Spring Security. This ensures consistent versions across all modules and simplifies dependency declarations.

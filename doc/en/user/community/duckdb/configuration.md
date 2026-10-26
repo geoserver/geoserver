@@ -25,7 +25,6 @@ The following parameters are relevant for DuckDB:
 | `read_only` | Enables read-only mode for the store. Default is `true`. Set to `false` to allow write operations. |
 | `memory_limit` | DuckDB memory limit for the store, for example `1GB` or `512MB`. Leave empty to use DuckDB's default. |
 | `threads` | DuckDB maximum number of execution threads for the store. Must be greater than zero when provided. Leave empty to use DuckDB's default. |
-| `simplification` | Enables SQL-side geometry simplification when rendering or query hints request it. Default is `true`. |
 | `screenmap` | Enables screenmap rendering optimization to skip features that fall in already painted screen pixels. Default is `true`. |
 | `namespace` | Namespace URI used for published feature types. |
 | `fetch size` | JDBC fetch size hint for result streaming. |

@@ -86,6 +86,16 @@ def _guess_release(branch, version, default='3.1.0'):
     return default
 
 
+def _pom_version():
+    pom = os.path.join(os.path.dirname(__file__), '..', 'src', 'pom.xml')
+    try:
+        with open(pom, encoding='utf-8') as f:
+            m = re.search(r'<artifactId>geoserver</artifactId>\s*<version>([^<]+)</version>', f.read())
+            return m.group(1) if m else None
+    except OSError:
+        return None
+
+
 def define_env(env):
     """
     Define macros and variables for mkdocs-macros-plugin.
@@ -118,8 +128,7 @@ def define_env(env):
     else:
         release = _guess_release(branch, version, default='3.1.0')
 
-    # nightly artifacts carry the full Maven version (3.1.0-SNAPSHOT), not the 3.1 series
-    snapshot = f"{_guess_release(branch, version)}-SNAPSHOT"
+    snapshot = _pom_version() or f"{_guess_release(branch, version)}-SNAPSHOT"
 
     env.variables['branch'] = branch
     env.variables['is_snapshot'] = is_snapshot
@@ -149,19 +158,11 @@ def define_env(env):
         + env.variables['release'] + '/extensions/geoserver-' + env.variables['release'] + '-'
     )
 
-    # Usage: [geoserver-{{ snapshot }}-war.zip]({{ nightly_release }}war)
-    env.variables['nightly_release'] = (
-        'https://build.geoserver.org/geoserver/'
-        + build_branch + '/geoserver-' + env.variables['snapshot'] + '-'
-    )
-    env.variables['nightly_extension'] = (
-        'https://build.geoserver.org/geoserver/'
-        + build_branch + '/extensions/geoserver-' + env.variables['snapshot'] + '-'
-    )
-    env.variables['nightly_community'] = (
-        'https://build.geoserver.org/geoserver/'
-        + build_branch + '/community-latest/geoserver-' + env.variables['snapshot'] + '-'
-    )
+    # Usage: [geoserver-{{ snapshot }}-war.zip]({{ nightly_release }}war.zip)
+    nightly = 'https://build.geoserver.org/geoserver/' + build_branch + '/'
+    env.variables['nightly_release'] = nightly + 'geoserver-' + build_branch + '-latest-'
+    env.variables['nightly_extension'] = nightly + 'ext-latest/geoserver-' + snapshot + '-'
+    env.variables['nightly_community'] = nightly + 'community-latest/geoserver-' + snapshot + '-'
 
     # Additional useful variables
     env.variables['geoserver_repo'] = 'https://github.com/geoserver/geoserver'

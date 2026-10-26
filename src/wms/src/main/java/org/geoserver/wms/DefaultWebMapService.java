@@ -96,6 +96,9 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
     /** This variable is used to bypass direct raster rendering. */
     private static boolean BYPASS_DIRECT = Boolean.getBoolean("org.geoserver.render.raster.direct.disable");
 
+    /** Default max number of rule filters to be used against the data source */
+    private static final int DEFAULT_MAX_FILTER_RULES = 20;
+
     /** Max number of rule filters to be used against the data source */
     private static Integer MAX_FILTER_RULES = null;
 
@@ -171,7 +174,7 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
         if (MAX_FILTER_RULES == null) {
             String rules = GeoServerExtensions.getProperty("MAX_FILTER_RULES", context);
             // default to true, but allow switching off
-            if (rules == null) MAX_FILTER_RULES = 20;
+            if (rules == null) MAX_FILTER_RULES = DEFAULT_MAX_FILTER_RULES;
             else MAX_FILTER_RULES = Integer.valueOf(rules);
         }
 
@@ -197,7 +200,8 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
      * the bbox and eventual definition filter)
      */
     public static int getMaxFilterRules() {
-        return MAX_FILTER_RULES;
+        // not set before the application context starts, as in unit tests
+        return MAX_FILTER_RULES == null ? DEFAULT_MAX_FILTER_RULES : MAX_FILTER_RULES;
     }
 
     /** If true (default) the direct raster rendering path is enabled */

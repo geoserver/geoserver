@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import no.ecc.vectortile.VectorTileDecoder;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
@@ -81,6 +82,7 @@ public class VectorTileMetatilingTest extends GeoServerSystemTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
+        testData.addStyle("noPolygons", "noPolygons.sld", getClass(), getCatalog());
     }
 
     /** Configures the GWC layer for MVT and sets metatiling parameters. */
@@ -210,6 +212,24 @@ public class VectorTileMetatilingTest extends GeoServerSystemTestSupport {
 
         configureGwcLayer(2, 2, GEOJSON_FORMAT);
         assertEquals(singleTiles, describeGeoJsonTiles());
+    }
+
+    /** A style with more rule filters than the query carries drops the same features from single and meta tiles. */
+    @Test
+    public void testGeoJsonMetatilingRuleFilters() throws Exception {
+        LayerInfo layer = getCatalog().getLayerByName(LAYER_NAME);
+        StyleInfo defaultStyle = layer.getDefaultStyle();
+        layer.setDefaultStyle(getCatalog().getStyleByName("noPolygons"));
+        getCatalog().save(layer);
+        try {
+            configureGwcLayer(1, 1, GEOJSON_FORMAT);
+            assertEquals(List.of(), describeGeoJsonTiles());
+            configureGwcLayer(2, 2, GEOJSON_FORMAT);
+            assertEquals(List.of(), describeGeoJsonTiles());
+        } finally {
+            layer.setDefaultStyle(defaultStyle);
+            getCatalog().save(layer);
+        }
     }
 
     /**

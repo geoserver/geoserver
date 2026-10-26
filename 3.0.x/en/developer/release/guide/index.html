@@ -29345,10 +29345,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#if-you-are-cutting-the-first-rc-of-a-series-create-the-stable-branch" class="md-nav__link">
+  <a href="#when-publishing-the-first-release-of-a-series-create-the-stable-branch" class="md-nav__link">
     <span class="md-ellipsis">
       
-        If you are cutting the first RC of a series, create the stable branch
+        When publishing the first release of a series, create the stable branch
       
     </span>
   </a>
@@ -30556,10 +30556,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#if-you-are-cutting-the-first-rc-of-a-series-create-the-stable-branch" class="md-nav__link">
+  <a href="#when-publishing-the-first-release-of-a-series-create-the-stable-branch" class="md-nav__link">
     <span class="md-ellipsis">
       
-        If you are cutting the first RC of a series, create the stable branch
+        When publishing the first release of a series, create the stable branch
       
     </span>
   </a>
@@ -30917,8 +30917,8 @@ Thanks to Andrea (GeoSolutions) for this important improvement at the bequest of
 <p>For the initial release expect input from developers to highlight changes and work performed.</p>
 </li>
 </ol>
-<h2 id="if-you-are-cutting-the-first-rc-of-a-series-create-the-stable-branch">If you are cutting the first RC of a series, create the stable branch<a class="headerlink" href="#if-you-are-cutting-the-first-rc-of-a-series-create-the-stable-branch" title="Permanent link">&para;</a></h2>
-<p>When creating the first release candidate of a series, there are some extra steps to create the new stable branch and update the version on the main development branch.</p>
+<h2 id="when-publishing-the-first-release-of-a-series-create-the-stable-branch">When publishing the first release of a series, create the stable branch<a class="headerlink" href="#when-publishing-the-first-release-of-a-series-create-the-stable-branch" title="Permanent link">&para;</a></h2>
+<p>After publishing the first release of a series from the main development branch (e.g. <code>3.1.0</code>), there are some extra steps to create the new stable branch and update the version on the main development branch. Release candidates and milestones do not create a stable branch.</p>
 <ol>
 <li>
 <p>Checkout the main development branch and make sure it is up to date and that there are no changes in your local workspace:</p>
@@ -30928,9 +30928,11 @@ git status
 </code></pre></div>
 </li>
 <li>
-<p>Create the new stable branch and push it to GitHub; for example, if the main development branch is <code>2.28-SNAPSHOT</code> and the remote for the official GeoServer is called <code>geoserver</code>:</p>
-<div class="highlight"><pre><span></span><code>git checkout -b 2.28.x
-git push geoserver 2.28.x
+<p>Create the new stable branch, advance it to the next patch version, and push it to GitHub; for example, if <code>3.0.0</code> was published from the main development branch and the remote for the official GeoServer is called <code>geoserver</code>:</p>
+<div class="highlight"><pre><span></span><code>git checkout -b 3.0.x
+ant -f build/rename.xml advance -Dcurrent=3.0.0 -Drelease=3.0.1
+git commit -am "Advance 3.0.x to 3.0.1-SNAPSHOT"
+git push geoserver 3.0.x
 </code></pre></div>
 </li>
 <li>
@@ -31057,7 +31059,7 @@ LINK=maintain
 </ul>
 <p>The job takes the following parameters:</p>
 <h3 id="branch">BRANCH<a class="headerlink" href="#branch" title="Permanent link">&para;</a></h3>
-<p>The branch to release from, "2.29.x", "2.28.x", etc... This must be a stable branch. Releases are not performed from the main development branch.</p>
+<p>The branch to release from, "3.0.x", "2.28.x", etc... Release candidates, milestones and the first release of a series (e.g. <code>3.1.0</code>) are released from <code>main</code>.</p>
 <h3 id="rev">REV<a class="headerlink" href="#rev" title="Permanent link">&para;</a></h3>
 <p>The Git revision number to release from, e.g. "24ae10fe662c....". If left blank, the latest revision (i.e. HEAD) on the <code>BRANCH</code> being released is used.</p>
 <h3 id="version">VERSION<a class="headerlink" href="#version" title="Permanent link">&para;</a></h3>
@@ -31090,8 +31092,9 @@ LINK=maintain
 <div class="highlight"><pre><span></span><code>https://build.geoserver.org/geoserver/release/&lt;RELEASE&gt;
 </code></pre></div>
 <p>to the SourceForge FRS server. Navigate to <a href="https://sourceforge.net/projects/geoserver/files/GeoServer/">SourceForge</a> and verify that the artifacts have been uploaded properly. If this is the latest stable release, set the necessary flags (you will need to be logged in as a SourceForge admin user) on the <code>.exe</code> and <code>.bin</code> artifacts so that they show up as the appropriate default for users downloading on the Windows and Linux platforms. This does not apply to maintenance or support releases.</p>
+<p>For GeoServer 3.x the publish also reverts the release commit on the <code>&lt;RELEASE&gt;.x</code> branch and merges it back into <code>BRANCH</code>. When <code>BRANCH</code> is a stable branch (e.g. <code>3.0.x</code>) it is then advanced to the next patch version (e.g. releasing <code>3.0.2</code> advances <code>3.0.x</code> to <code>3.0.3-SNAPSHOT</code>). The <code>main</code> branch is not advanced by the job, see <a href="#when-publishing-the-first-release-of-a-series-create-the-stable-branch">create the stable branch</a> after publishing the first release of a series.</p>
 <h2 id="cite-certification">Cite Certification<a class="headerlink" href="#cite-certification" title="Permanent link">&para;</a></h2>
-<p>For a major (2.xx.0) release, follow the <a href="https://docs.geoserver.org/main/en/developer/cite-test-guide/index#cite-certification">instructions</a> to obtain certification, and include it in the release notes below.</p>
+<p>For a major (3.x.0) release, follow the <a href="https://docs.geoserver.org/main/en/developer/cite-test-guide/index#cite-certification">instructions</a> to obtain certification, and include it in the release notes below.</p>
 <h2 id="release-notes">Release notes<a class="headerlink" href="#release-notes" title="Permanent link">&para;</a></h2>
 <p>This job will tag the release located in:</p>
 <div class="highlight"><pre><span></span><code>https://github.com/geoserver/geoserver/tags/&lt;RELEASE&gt;

@@ -30271,6 +30271,7 @@
 <h2 id="max_filter_rules">MAX_FILTER_RULES<a class="headerlink" href="#max_filter_rules" title="Permanent link">&para;</a></h2>
 <p>A integer number (defaults to 20).</p>
 <p>When drawing a style containing multiple active rules, the renderer combines the filters of the rules in OR and adds them to the standard bounding box filter. This behaviour is active until the maximum number of filter rules is reached; beyond that, the rule filters are no longer added to avoid huge queries. By default up to 20 rules are combined; past 20 rules only the bounding box filter is used.</p>
+<p>Vector tiles use the same limit. Past it, GeoServer checks the rule filters on each feature it reads, so a vector tile still holds only the features the style draws.</p>
 <p>Turning it off (setting it to <code>0</code>) can be useful if the styles are mostly classifications, and detrimental if the rule filters are actually filtering a good amount of data out.</p>
 <h2 id="optimize_line_width">OPTIMIZE_LINE_WIDTH<a class="headerlink" href="#optimize_line_width" title="Permanent link">&para;</a></h2>
 <p>Can be <code>true</code> or <code>false</code> (defaults to <code>false</code>).</p>

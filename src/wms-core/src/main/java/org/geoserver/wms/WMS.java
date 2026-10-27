@@ -369,7 +369,9 @@ public class WMS implements ApplicationContextAware {
             // max is default, which is unlimited
             return;
         }
-        TreeSet<Object> treeSet = new TreeSet<>();
+        // only counts distinct values: a coverage domain can hold DateRange and NumberRange objects,
+        // which are not Comparable
+        Set<Object> values = new HashSet<>();
         int maxDimensionsToTest = getServiceInfo().getMaxRequestedDimensionValues();
         if (times != null && !times.isEmpty() && times.get(0) != null) {
             // list is null for default value
@@ -379,16 +381,15 @@ public class WMS implements ApplicationContextAware {
                 if (time instanceof DateRange) {
                     DateRange range = (DateRange) times.get(timesIterator.previousIndex());
                     if (isCoverage) {
-                        treeSet.addAll(queryCoverageTimes(mapLayerInfo.getCoverage(), range, maxDimensionsToTest + 1));
+                        values.addAll(queryCoverageTimes(mapLayerInfo.getCoverage(), range, maxDimensionsToTest + 1));
                     } else {
-                        treeSet.addAll(
-                                queryFeatureTypeTimes(mapLayerInfo.getFeature(), range, maxDimensionsToTest + 1));
+                        values.addAll(queryFeatureTypeTimes(mapLayerInfo.getFeature(), range, maxDimensionsToTest + 1));
                     }
                 } else {
-                    treeSet.add(time);
+                    values.add(time);
                 }
-                // check dimensions after each time parameter is added to treeset
-                checkDimensions(treeSet, maxDimensionsToTest, ResourceInfo.TIME);
+                // check dimensions after each time parameter is added to the set
+                checkDimensions(values, maxDimensionsToTest, ResourceInfo.TIME);
             }
         }
 
@@ -400,27 +401,27 @@ public class WMS implements ApplicationContextAware {
                 if (elevation instanceof NumberRange) {
                     NumberRange range = (NumberRange) elevations.get(elevationsIterator.previousIndex());
                     if (isCoverage) {
-                        treeSet.addAll(
+                        values.addAll(
                                 queryCoverageElevations(mapLayerInfo.getCoverage(), range, maxDimensionsToTest + 1));
                     } else {
-                        treeSet.addAll(
+                        values.addAll(
                                 queryFeatureTypeElevations(mapLayerInfo.getFeature(), range, maxDimensionsToTest + 1));
                     }
                 } else if (elevation instanceof Double elevationSingle) {
-                    // The queryElevations calls that check ranges are populating the treeset with
+                    // The queryElevations calls that check ranges are populating the set with
                     // integers, so we need to convert the double to an integer for this check
-                    treeSet.add(elevationSingle.intValue());
+                    values.add(elevationSingle.intValue());
                 } else {
-                    treeSet.add(elevation);
+                    values.add(elevation);
                 }
-                // check dimensions after each elevation parameter is added to treeset
-                checkDimensions(treeSet, maxDimensionsToTest, ResourceInfo.ELEVATION);
+                // check dimensions after each elevation parameter is added to the set
+                checkDimensions(values, maxDimensionsToTest, ResourceInfo.ELEVATION);
             }
         }
     }
 
-    private static void checkDimensions(TreeSet<Object> treeSet, int maxDimensionsToTest, String dimensionName) {
-        if (treeSet.size() > maxDimensionsToTest) {
+    private static void checkDimensions(Set<Object> values, int maxDimensionsToTest, String dimensionName) {
+        if (values.size() > maxDimensionsToTest) {
             throw new ServiceException(
                     "This request would process more "
                             + dimensionName

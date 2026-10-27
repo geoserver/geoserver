@@ -307,7 +307,7 @@ public class ReaderDimensionsAccessor {
 
         // if we got here, the optimization did not work, do the normal path
         if (result == null) {
-            result = new TreeSet<>();
+            result = new TreeSet<>(ELEVATION_COMPARATOR);
             TreeSet<Object> fullDomain = getElevationDomain();
 
             for (Object o : fullDomain) {

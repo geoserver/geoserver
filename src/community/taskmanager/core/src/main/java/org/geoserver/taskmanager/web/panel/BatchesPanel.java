@@ -303,10 +303,9 @@ public class BatchesPanel extends Panel {
 
                                 } else if (property == BatchesModel.ENABLED) {
                                     CatalogIconFactory icons = CatalogIconFactory.get();
-                                    String icon =
-                                            itemModel.getObject().isEnabled()
-                                                    ? icons.getEnabledIcon()
-                                                    : icons.getDisabledIcon();
+                                    String icon = itemModel.getObject().isEnabled()
+                                            ? icons.getEnabledIcon()
+                                            : icons.getDisabledIcon();
                                     Fragment f = new Fragment(id, "iconFragment", BatchesPanel.this);
                                     f.add(icons.getIcon("enabledIcon", icon));
                                     return f;

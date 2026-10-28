@@ -358,20 +358,20 @@ public class ClassifierTest extends SLDServiceBaseTest {
         String resultXml = baos.toString().replace("\r", "").replace("\n", "");
         Rule[] rules = checkRules(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 15);
         checkRule(rules[0], "#FF0000", org.geotools.api.filter.And.class);
-        checkRule(rules[1], "#D42A00", org.geotools.api.filter.And.class);
-        checkRule(rules[2], "#AA5500", org.geotools.api.filter.And.class);
-        checkRule(rules[3], "#7F7F00", org.geotools.api.filter.And.class);
-        checkRule(rules[4], "#55AA00", org.geotools.api.filter.And.class);
-        checkRule(rules[5], "#2AD400", org.geotools.api.filter.And.class);
-        checkRule(rules[6], "#00FF00", org.geotools.api.filter.And.class);
-        checkRule(rules[7], "#00E21C", org.geotools.api.filter.And.class);
-        checkRule(rules[8], "#00C538", org.geotools.api.filter.And.class);
-        checkRule(rules[9], "#00A954", org.geotools.api.filter.And.class);
-        checkRule(rules[10], "#008D71", org.geotools.api.filter.And.class);
-        checkRule(rules[11], "#00718D", org.geotools.api.filter.And.class);
-        checkRule(rules[12], "#0054A9", org.geotools.api.filter.And.class);
-        checkRule(rules[13], "#0038C6", org.geotools.api.filter.And.class);
-        checkRule(rules[14], "#001CE2", org.geotools.api.filter.And.class);
+        checkRule(rules[1], "#DB2400", org.geotools.api.filter.And.class);
+        checkRule(rules[2], "#B64900", org.geotools.api.filter.And.class);
+        checkRule(rules[3], "#926D00", org.geotools.api.filter.And.class);
+        checkRule(rules[4], "#6D9200", org.geotools.api.filter.And.class);
+        checkRule(rules[5], "#49B600", org.geotools.api.filter.And.class);
+        checkRule(rules[6], "#24DB00", org.geotools.api.filter.And.class);
+        checkRule(rules[7], "#00FF00", org.geotools.api.filter.And.class);
+        checkRule(rules[8], "#00DB24", org.geotools.api.filter.And.class);
+        checkRule(rules[9], "#00B649", org.geotools.api.filter.And.class);
+        checkRule(rules[10], "#00926D", org.geotools.api.filter.And.class);
+        checkRule(rules[11], "#006D92", org.geotools.api.filter.And.class);
+        checkRule(rules[12], "#0049B6", org.geotools.api.filter.And.class);
+        checkRule(rules[13], "#0024DB", org.geotools.api.filter.And.class);
+        checkRule(rules[14], "#0000FF", org.geotools.api.filter.And.class);
     }
 
     @Test

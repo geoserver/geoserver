@@ -25,6 +25,8 @@ import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.api.feature.type.GeometryDescriptor;
 import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
 
@@ -79,15 +81,33 @@ public class FeatureDataConverter {
         SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
         typeBuilder.setName(convertTypeName(requestedTypeName(task, featureType)));
 
+        boolean sameDatabase = sameDatabase(data, task);
         AttributeTypeBuilder attBuilder = new AttributeTypeBuilder();
         for (AttributeDescriptor att : featureType.getAttributeDescriptors()) {
             String attributeName = convertAttributeName(att.getLocalName());
 
             attBuilder.init(att);
-            typeBuilder.add(attBuilder.buildDescriptor(attributeName));
+            AttributeDescriptor descriptor = attBuilder.buildDescriptor(attributeName);
+            // another kind of database may lack the native types and SRIDs, or use the names for something else:
+            // e.g., the GeoPackage POLYGON is a plain PostgreSQL type, not a PostGIS geometry
+            if (!sameDatabase) {
+                descriptor.getUserData().remove(JDBCDataStore.JDBC_NATIVE_TYPENAME);
+                descriptor.getUserData().remove(JDBCDataStore.JDBC_NATIVE_TYPE);
+                descriptor.getUserData().remove(JDBCDataStore.JDBC_NATIVE_SRID);
+            }
+            typeBuilder.add(descriptor);
         }
 
         return typeBuilder.buildFeatureType();
+    }
+
+    /** Tells if the data is a table of the same kind of database as the target store. */
+    private static boolean sameDatabase(ImportData data, ImportTask task) {
+        if (!(data instanceof Table table)) return false;
+        String key = JDBCDataStoreFactory.DBTYPE.key;
+        Object source = table.getDatabase().getParameters().get(key);
+        Object target = task.getStore().getConnectionParameters().get(key);
+        return source != null && source.equals(target);
     }
 
     /**

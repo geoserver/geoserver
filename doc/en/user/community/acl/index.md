@@ -55,6 +55,10 @@ export GEOSERVER_ACL_CLIENT_PASSWORD=ch4ng3m3
 
 And so on.
 
+### Behind a reverse proxy
+
+ACL rules can limit access by source IP address range. Behind a reverse proxy on another host or container, list the proxy in `GEOSERVER_TRUSTED_PROXIES`, otherwise the rules match the proxy address instead of the client. See [Client address behind a reverse proxy](../../production/misc.md#client-address-behind-a-reverse-proxy) for more examples, including Docker and Kubernetes.
+
 ### Setting the plugin's authorization cache expiration time
 
 The GeoServer ACL API plugin implements a local cache for authorization requests/responses, that has a default `30` seconds expiration time.

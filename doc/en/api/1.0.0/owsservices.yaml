@@ -943,7 +943,7 @@ paths:
                 <maxInputMemory>0</maxInputMemory>
                 <maxOutputMemory>0</maxOutputMemory>
                 <subsamplingEnabled>true</subsamplingEnabled>
-                <overviewPolicy>IGNORE</overviewPolicy>
+                <overviewPolicy>QUALITY</overviewPolicy>
               </wcs>
             application/json: |
               {
@@ -992,7 +992,7 @@ paths:
                   "maxInputMemory": 0,
                   "maxOutputMemory": 0,
                   "subsamplingEnabled": true,
-                  "overviewPolicy": "IGNORE"
+                  "overviewPolicy": "QUALITY"
                 }
               }
 

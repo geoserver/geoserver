@@ -9,9 +9,11 @@ The overview policy has four possible values:
 | **Option** | **Description** | **Version** |
 |----|----|----|
 | **Lower resolution overview** | Looks up the two overviews with a resolution closest to the one requested and chooses the one at the lower resolution. | 2.0.3 |
-| **Don't use overviews** | Overviews will be ignored, the data at its native resolution will be used instead. This is the default value. | 2.0.3 |
-| **Higher resolution overview** | Looks up the two overviews with a resolution closest to the one requested and chooses the one at the higher resolution. | 2.0.3 |
+| **Don't use overviews** | Overviews will be ignored, the data at its native resolution will be used instead. | 2.0.3 |
+| **Higher resolution overview** | Looks up the two overviews with a resolution closest to the one requested and chooses the one at the higher resolution. This is the default value. | 2.0.3 |
 | **Closest overview** | Looks up the overview closest to the one requested | 2.0.3 |
+
+**Don't use overviews** reads the native resolution for every request, even when the client asks for a much smaller image, so a scaled request decodes many more pixels than it returns. For example, on a cloud optimized GeoTIFF, a scaled request takes 5 to 7 times the CPU of the default, and under load the server stops answering at a third of the request rate it sustains with the overviews. Use it only when the output must keep the original pixel values instead of the averages that overviews usually hold. WCS 2.0 clients can also pick a policy for a single request with the `overviewPolicy` parameter.
 
 While reading coverage data at a resolution lower than the one available on persistent storage its common to use subsampling, that is, read one every N pixels as a way to reduce the resolution of the data read in memory. **Use subsampling** controls whether subsampling is enabled or not.
 

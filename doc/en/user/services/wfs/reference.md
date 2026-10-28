@@ -80,10 +80,13 @@ The parameters for GetCapabilities are:
 | `service` | Yes | Service name---Value is `WFS` |
 | `version` | Yes | Service version---Value is the current version number. The full version number must be supplied ("1.1.0", "1.0.0"), not the abbreviated form ("1" or "1.1"). |
 | `request` | Yes | Operation name---Value is `GetCapabilities` |
+| `sections` | No | Comma-separated list of the document components to return; see [Requesting selected sections](#wfs_getcap_sections). WFS 1.1.0 and 2.0.0 only. Default `All`. |
 
-Although all of the above parameters are technically required as per the specification, GeoServer will provide default values if any parameters are omitted from a request.
+Although the `service`, `version` and `request` parameters are technically required as per the specification, GeoServer will provide default values if any of them are omitted from a request.
 
-The GetCapabilities response is a lengthy XML document, the format of which is different for each of the supported versions. There are five main components in a GetCapabilities document:
+#### Requesting selected sections {: #wfs_getcap_sections }
+
+The GetCapabilities response is a lengthy XML document, the format of which is different for each of the supported versions. There are five main sections in a GetCapabilities document:
 
 | Component | Description |
 |----|----|
@@ -92,6 +95,27 @@ The GetCapabilities response is a lengthy XML document, the format of which is d
 | `OperationsMetadata` | Describes the operations that the WFS server supports and the parameters for each operation. A WFS server may be configured not to respond to the operations listed above. |
 | `FeatureTypeList` | Lists the feature types published by a WFS server. Feature types are listed in the form `namespace:featuretype`. The default projection of the feature type is also listed, along with the bounding box for the data in the stated projection. |
 | `Filter_Capabilities` | Lists the filters, or expressions, that are available to form query predicates, for example, `SpatialOperators` (such as `Equals`, `Touches`) and `ComparisonOperators` (such as `LessThan`, `GreaterThan`). The filters themselves are not included in the GetCapabilities document. |
+
+The rules for the `sections` value are:
+
+* Valid values are section Component names above (also advertised in the `Sections` parameter of the GetCapabilities operation in `OperationsMetadata`): `ServiceIdentification`, `ServiceProvider`, `OperationsMetadata`, `FeatureTypeList`, `Filter_Capabilities` and `All`. Values are case-sensitive.
+* Several sections can be requested as a comma-separated list, for example `sections=ServiceIdentification,FeatureTypeList`.
+* `All`, or omitting the parameter, returns the complete document.
+* An unknown value returns an `InvalidParameterValue` exception with locator `sections`.
+* The root `WFS_Capabilities` element, including its namespace declarations and `updateSequence` attribute, is always returned.
+
+For WFS 1.1.0 and 2.0.0, the optional `sections` parameter limits the response to the components listed above, for example:
+
+```
+http://example.com/geoserver/wfs?
+  service=wfs&
+  version=2.0.0&
+  request=GetCapabilities&
+  sections=FeatureTypeList
+```
+
+!!! note
+    WFS 1.0.0 capabilities do not use the OWS Common sections model, so the `sections` parameter is ignored for version 1.0.0 and the complete document is always returned.
 
 ### DescribeFeatureType {: #wfs_dft }
 

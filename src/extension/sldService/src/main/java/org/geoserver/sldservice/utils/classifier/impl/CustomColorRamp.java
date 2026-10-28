@@ -83,20 +83,7 @@ public class CustomColorRamp implements ColorRamp {
             if (classes == inputColors.size()) {
                 colors = inputColors;
             } else if (classes > inputColors.size()) {
-                int slices = inputColors.size() - 1;
-                int sliceSize = classes / slices;
-                colors = new ArrayList<>();
-                int total = 0;
-                for (int i = 0; i < slices - 1; i++) {
-                    total += sliceSize - 1;
-                    interpolate(colors, inputColors.get(i), inputColors.get(i + 1), sliceSize, i > 0);
-                }
-                interpolate(
-                        colors,
-                        inputColors.get(inputColors.size() - 2),
-                        inputColors.get(inputColors.size() - 1),
-                        classes - total,
-                        true);
+                colors = spread(inputColors, classes);
             } else {
                 colors = inputColors.subList(0, classes);
             }
@@ -125,6 +112,27 @@ public class CustomColorRamp implements ColorRamp {
                 }
             }
         }
+    }
+
+    /** Picks evenly spaced colors along the ramp through the given colors, the first and the last included. */
+    private static List<Color> spread(List<Color> ramp, int classes) {
+        int segments = ramp.size() - 1;
+        if (segments == 0) return new ArrayList<>(Collections.nCopies(classes, ramp.get(0)));
+        List<Color> result = new ArrayList<>();
+        for (int i = 0; i < classes; i++) {
+            // position along the ramp, counted in segments between two given colors
+            double position = (double) segments * i / (classes - 1);
+            int segment = Math.min((int) position, segments - 1);
+            result.add(blend(ramp.get(segment), ramp.get(segment + 1), position - segment));
+        }
+        return result;
+    }
+
+    private static Color blend(Color start, Color end, double fraction) {
+        int red = (int) Math.round(start.getRed() + (end.getRed() - start.getRed()) * fraction);
+        int green = (int) Math.round(start.getGreen() + (end.getGreen() - start.getGreen()) * fraction);
+        int blue = (int) Math.round(start.getBlue() + (end.getBlue() - start.getBlue()) * fraction);
+        return new Color(red, green, blue);
     }
 
     private void interpolate(List<Color> result, Color start, Color end, int samples, boolean offset) {

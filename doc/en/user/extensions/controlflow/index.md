@@ -95,7 +95,7 @@ ip=<count>
 
 Where `<count>` is the maximum number of requests a single ip address can execute in parallel.
 
-Behind a reverse proxy on another host or container, list the proxy in `GEOSERVER_TRUSTED_PROXIES` (see [Application properties](../../configuration/properties/index.md)). Otherwise every request comes from the proxy address, and this rule becomes a single limit for the whole server.
+Behind a reverse proxy on another host or container, list the proxy in `GEOSERVER_TRUSTED_PROXIES` (see [Client address behind a reverse proxy](../../production/misc.md#client-address-behind-a-reverse-proxy)). Otherwise every request comes from the proxy address, and this rule becomes a single limit for the whole server.
 
 It is also possible to make this a bit more specific and throttle a single ip address instead by using the following:
 

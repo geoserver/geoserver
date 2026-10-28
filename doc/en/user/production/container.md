@@ -103,7 +103,7 @@ While the UI method above is recommended, administrators using Tomcat may still 
 1.  Uncomment the following `<filter>` in **`webapps/geoserver/WEB-INF/web.xml`**:
 
     ```xml
-    --8<-- "src/web/app/src/main/webapp/WEB-INF/web.xml:141:159"
+    --8<-- "src/web/app/src/main/webapp/WEB-INF/web.xml:146:164"
     ```
 
     Note that in some cases you may have to replace the asterisk (*) param-value for cors.allowed.methods with an explicit list: Content-Type,X-Requested-With,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Authorization
@@ -111,7 +111,7 @@ While the UI method above is recommended, administrators using Tomcat may still 
 2.  Uncomment the following `<filter-mapping>`:
 
     ```xml
-    --8<-- "src/web/app/src/main/webapp/WEB-INF/web.xml:171:177"
+    --8<-- "src/web/app/src/main/webapp/WEB-INF/web.xml:183:189"
     ```
 
 3.  Restart

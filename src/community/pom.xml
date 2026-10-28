@@ -173,6 +173,15 @@
       </modules>
     </profile>
     <profile>
+      <!-- gs-mlt compiles against a Java 21 library, so it is not part of communityRelease, which
+           still builds on Java 17. Asking for -Pmlt always adds it, the caller is responsible for
+           running the build on Java 21 or later. -->
+      <id>mlt</id>
+      <modules>
+        <module>mlt</module>
+      </modules>
+    </profile>
+    <profile>
       <id>pending</id>
       <modules>
         <module>oseo</module>

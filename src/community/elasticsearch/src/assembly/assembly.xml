@@ -22,7 +22,7 @@
         <include>grumpy-core*</include>
         <include>gs-web-elasticsearch*</include>
         <include>gt-elasticsearch*</include>
-        <include>httpcore-nio*</include>
+        <include>httpclient-4*</include>
         <include>httpasyncclient*</include>
         <include>httpcore-nio*</include>
         <include>jackson-databind*</include>

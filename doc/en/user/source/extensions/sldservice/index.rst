@@ -170,7 +170,7 @@ The parameters usable to customize the SLD are:
      - 
      -
    * - colors
-     - list of comma delimited colors for the custom ramp (use this instead of startColor, endColor and midColor to specify colors in more detail)
+     - list of comma delimited colors for the custom ramp (use this instead of startColor, endColor and midColor to specify colors in more detail). With more classes than colors, the classes get evenly spaced colors from the first color to the last, blending between the given ones. With fewer classes, the first colors are used
      - 
      -
    * - strokeColor

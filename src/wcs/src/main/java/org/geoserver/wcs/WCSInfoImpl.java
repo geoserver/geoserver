@@ -89,7 +89,7 @@ public class WCSInfoImpl extends ServiceInfoImpl implements WCSInfo {
 
     @Override
     public OverviewPolicy getOverviewPolicy() {
-        return overviewPolicy == null ? OverviewPolicy.IGNORE : overviewPolicy;
+        return overviewPolicy == null ? OverviewPolicy.QUALITY : overviewPolicy;
     }
 
     @Override

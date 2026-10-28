@@ -13,6 +13,7 @@ import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.jdbc.JDBCDataStore;
 
 /**
  * Attribute that maps an attribute from one type to another.
@@ -72,7 +73,11 @@ public class AttributeRemapTransform extends AbstractTransform implements Inline
         AttributeTypeBuilder attBuilder = new AttributeTypeBuilder();
         attBuilder.init(existing);
         attBuilder.setBinding(type);
-        builder.add(index, attBuilder.buildDescriptor(field));
+        AttributeDescriptor remapped = attBuilder.buildDescriptor(field);
+        // the native type of the source column does not match the new binding
+        remapped.getUserData().remove(JDBCDataStore.JDBC_NATIVE_TYPENAME);
+        remapped.getUserData().remove(JDBCDataStore.JDBC_NATIVE_TYPE);
+        builder.add(index, remapped);
 
         return builder.buildFeatureType();
     }

@@ -132,7 +132,7 @@ public class ReaderDimensionsAccessor {
      */
     public TreeSet<Object> getTimeDomain() throws IOException {
         if (!hasTime()) {
-            Collections.emptySet();
+            return new TreeSet<>(TEMPORAL_COMPARATOR);
         }
         final SimpleDateFormat df = getTimeFormat();
         String domain = reader.getMetadataValue(TIME_DOMAIN);
@@ -155,7 +155,7 @@ public class ReaderDimensionsAccessor {
      */
     public TreeSet<Object> getTimeDomain(DateRange range, int maxEntries) throws IOException {
         if (!hasTime()) {
-            Collections.emptySet();
+            return new TreeSet<>(TEMPORAL_COMPARATOR);
         }
 
         TreeSet<Object> result = null;
@@ -296,7 +296,7 @@ public class ReaderDimensionsAccessor {
     @SuppressWarnings("unchecked")
     public TreeSet<Object> getElevationDomain(NumberRange range, int maxEntries) throws IOException {
         if (!hasElevation()) {
-            Collections.emptySet();
+            return new TreeSet<>(ELEVATION_COMPARATOR);
         }
 
         // special optimization for structured coverage readers

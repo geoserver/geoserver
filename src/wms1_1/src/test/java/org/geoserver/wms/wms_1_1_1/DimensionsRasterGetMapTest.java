@@ -406,6 +406,26 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         }
     }
 
+    @Test
+    public void testTimeAndElevationRangeMaxDimensions() throws Exception {
+        String baseUrl = setupTimeRangesMaxDimensions(1);
+        try {
+            // one time range and one elevation range: each dimension is within the limit on its own
+            BufferedImage image = getAsImage(
+                    baseUrl + "&TIME=2008-11-05T00:00:00.000Z/2008-11-06T12:00:00.000Z&ELEVATION=20/99", "image/png");
+            assertPixel(image, 36, 31, Color.BLUE);
+            assertPixel(image, 68, 72, new Color(249, 249, 255));
+
+            // still refused when one of them goes over the limit
+            Document dom =
+                    getAsDOM(baseUrl + "&TIME=2008-11-05T00:00:00.000Z/2008-11-06T12:00:00.000Z&ELEVATION=0/200");
+            String message = checkLegacyException(dom, INVALID_PARAMETER_VALUE, "elevation");
+            assertThat(message, containsString("maximum allowed: 1"));
+        } finally {
+            resetMaxDimensions();
+        }
+    }
+
     /**
      * Sets up the dimensions of the time ranges mosaic and a limit on the requested dimension values (any value but the
      * default enables the check), returns the GetMap base URL

@@ -22808,6 +22808,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#behind-a-reverse-proxy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Behind a reverse proxy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#setting-the-plugins-authorization-cache-expiration-time" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30272,6 +30283,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#behind-a-reverse-proxy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Behind a reverse proxy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#setting-the-plugins-authorization-cache-expiration-time" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30343,6 +30365,8 @@
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GEOSERVER_ACL_CLIENT_PASSWORD</span><span class="o">=</span>ch4ng3m3
 </code></pre></div>
 <p>And so on.</p>
+<h3 id="behind-a-reverse-proxy">Behind a reverse proxy<a class="headerlink" href="#behind-a-reverse-proxy" title="Permanent link">&para;</a></h3>
+<p>ACL rules can limit access by source IP address range. Behind a reverse proxy on another host or container, list the proxy in <code>GEOSERVER_TRUSTED_PROXIES</code>, otherwise the rules match the proxy address instead of the client. See <a href="../../production/misc/#client-address-behind-a-reverse-proxy">Client address behind a reverse proxy</a> for more examples, including Docker and Kubernetes.</p>
 <h3 id="setting-the-plugins-authorization-cache-expiration-time">Setting the plugin's authorization cache expiration time<a class="headerlink" href="#setting-the-plugins-authorization-cache-expiration-time" title="Permanent link">&para;</a></h3>
 <p>The GeoServer ACL API plugin implements a local cache for authorization requests/responses, that has a default <code>30</code> seconds expiration time.</p>
 <p>The cache "expiration time", or "time to live", can be changed through the <code>Dgeoserver.acl.client.cache.ttl</code> configuration property, which accepts a <code>java.time.Duration</code> string. For example:</p>

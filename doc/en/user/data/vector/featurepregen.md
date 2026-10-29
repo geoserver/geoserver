@@ -13,7 +13,7 @@ render_macros: true
 1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download:
 
     - {{ release }} [geoserver-{{ release }}-feature-pregeneralized-plugin.zip](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-feature-pregeneralized-plugin.zip)
-    - {{ snapshot }} [geoserver-{{ snapshot }}-feature-pregeneralized-plugin.zip](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-feature-pregeneralized-plugin.zip)
+    - {{ snapshot }} [geoserver-{{ snapshot }}-feature-pregeneralized-plugin.zip]({{ nightly_extension }}feature-pregeneralized-plugin.zip)
 
     !!! warning
         Ensure to match plugin (example {{ release }} above) version to the version of the GeoServer instance.

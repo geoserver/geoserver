@@ -23,7 +23,7 @@ GeoServer implementation is based on an earlier specification draft (the specifi
 
     Follow the **Community Modules** link and download `ogcapi-tiles` zip archive.
 
-    - {{ snapshot }} example: [ogcapi-tiles](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-ogcapi-tiles-plugin.zip)
+    - {{ snapshot }} example: [ogcapi-tiles]({{ nightly_community }}ogcapi-tiles-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 

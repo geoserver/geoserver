@@ -6,12 +6,10 @@ Other Considerations
 Host your application separately
 --------------------------------
 
-GeoServer includes a few sample applications in the demo section of the :ref:`web_admin`.  For production instances, we recommend against this bundling of your application.  To make upgrades and troubleshooting easier, please use a separate container for your application.  It is perfectly fine, though, to use one container manager (such as Tomcat or Jetty) to host both GeoServer and your application.
+GeoServer includes a few examples in the demo section of the :ref:`web_admin`
+and provides a ``www`` folder.
 
-Proxy your server
------------------
-
-GeoServer can have the capabilities documents properly report a proxy.  You can configure this in the Server configuration section of the :ref:`web_admin` and entering the URL of the external proxy in the field labeled ``Proxy base URL``.
+For production instances, we recommend against this bundling of your application.  To make upgrades and troubleshooting easier, please use a separate container for your application.  It is perfectly fine, though, to use one container manager (such as Tomcat or Jetty) to host both GeoServer and your application.
 
 Publish your server's capabilities documents
 --------------------------------------------
@@ -23,6 +21,113 @@ In order to make it easier to find your data, your service must be available.
 * If your GeoServer is operating as part of a "Spatial Data Infrastructure" it may be registered with a catalogue service.
   
   Catalogue services such as `GeoNetwork-opensource <http://geonetwork-opensource.org/>`__ or `PyCSW <https://pycsw.org>`__ can harvest GeoServer listing the web serivces and layers published allowing content to be more easily browsed and searched.
+
+Proxy your server
+-----------------
+
+GeoServer can have the capabilities documents properly report a proxy.  You can configure this in the Server configuration section of the :ref:`web_admin` and entering the URL of the external proxy in the field labeled ``Proxy base URL``.
+
+.. _production_misc_client_address:
+
+Client address behind a reverse proxy
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+GeoServer resolves the client address like the Tomcat remote IP valve, with a smaller default. Tomcat trusts proxies on private addresses through its ``internalProxies`` parameter. GeoServer only trusts loopback (``127.0.0.0/8``, ``::1``).
+
+The ``GEOSERVER_TRUSTED_PROXIES`` :ref:`application property <application_properties>` is a comma separated list of reverse proxy IP addresses or CIDR blocks. GeoServer reads the client address from the ``X-Forwarded-For`` header only for requests arriving from one of these proxies, otherwise it uses the direct connection address. A reverse proxy on another host must be listed, otherwise every request appears to come from the proxy address.
+
+For example, with a reverse proxy at ``10.0.0.5``:
+
+.. code-block:: shell
+
+   CATALINA_OPTS="${CATALINA_OPTS} -DGEOSERVER_TRUSTED_PROXIES=10.0.0.5"
+
+As an application property, it can also be set as an environment variable or a ``web.xml`` context parameter.
+
+Setting the property replaces the loopback default, so list ``127.0.0.1`` too if a proxy on the same host is still used.
+
+With ``GEOSERVER_TRUSTED_PROXIES=10.0.0.5``, GeoServer sees these client addresses:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Connection from
+     - ``X-Forwarded-For``
+     - Client address
+     - Why
+   * - ``203.0.113.7``
+     - none
+     - ``203.0.113.7``
+     - Direct connection
+   * - ``10.0.0.5``
+     - ``198.51.100.20``
+     - ``198.51.100.20``
+     - Trusted proxy
+   * - ``203.0.113.7``
+     - ``10.1.2.3``
+     - ``203.0.113.7``
+     - Not a trusted proxy, header ignored and a warning logged
+   * - ``10.0.0.5``
+     - ``10.1.2.3, 198.51.100.20``
+     - ``198.51.100.20``
+     - The proxy appended the real client; the hop on the left came from the client and is not used
+
+With several proxies in a chain, list each of them. The right-most address in the header that is not a trusted proxy is used as the client address.
+
+When the proxy is not listed, logs, monitoring, control flow and IP-based security rules see the proxy address for every request. GeoServer logs a warning the first time a request carries ``X-Forwarded-For`` from a host that is not listed.
+
+.. important::
+
+   The proxy must overwrite ``X-Forwarded-For`` or append the client address to it. A proxy that passes the header on unchanged lets the client choose its own address, for example to skip the brute force delay with a whitelisted IP. Nginx does this unless ``proxy_set_header X-Forwarded-For`` is configured. For example, to append the client address:
+
+   .. code-block:: none
+
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+Docker and Kubernetes
+^^^^^^^^^^^^^^^^^^^^^
+
+In Docker, GeoServer sees the proxy address on the container network, not ``127.0.0.1``. A proxy on the Docker host appears as the bridge gateway, such as ``172.17.0.1``. A proxy in another container appears as that container's address. Docker Compose creates a separate network per project, use ``docker network inspect`` to find its subnet and list it:
+
+.. code-block:: shell
+
+   docker run -e GEOSERVER_TRUSTED_PROXIES=172.18.0.0/16 ...
+
+.. code-block:: yaml
+
+   services:
+     geoserver:
+       environment:
+         GEOSERVER_TRUSTED_PROXIES: 172.18.0.0/16
+
+Until the proxy is listed, an ``ip=`` control flow limit acts as one limit for the whole server, and a blacklist entry for that address blocks everyone.
+
+On Kubernetes, list the address range of the ingress controller pods. To see the real client address, the Service in front of the ingress controller needs ``externalTrafficPolicy: Local``.
+
+.. _production_misc_web_xml:
+
+Customized web.xml
+^^^^^^^^^^^^^^^^^^
+
+The client address is resolved by the ``Remote IP Resolution`` filter in GeoServer's :file:`WEB-INF/web.xml`, so this is the same for Tomcat, Jetty and other servlet containers. When upgrading with a customized ``web.xml``, add the filter:
+
+.. code-block:: xml
+
+   <filter>
+       <filter-name>Remote IP Resolution</filter-name>
+       <filter-class>org.geoserver.filters.RemoteIpFilter</filter-class>
+   </filter>
+
+And map it right after the ``Set Character Encoding`` filter mapping, so the client address is resolved before any other filter reads it:
+
+.. code-block:: xml
+
+   <filter-mapping>
+       <filter-name>Remote IP Resolution</filter-name>
+       <url-pattern>/*</url-pattern>
+   </filter-mapping>
+
+Without this filter GeoServer ignores ``X-Forwarded-For``, and sees the proxy address for every request.
 
 Clustering
 ----------

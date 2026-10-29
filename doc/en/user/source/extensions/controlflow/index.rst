@@ -96,7 +96,7 @@ The following avoids a single ip address from making too many requests in parall
 
 Where ``<count>`` is the maximum number of requests a single ip address can execute in parallel.
 
-Behind a reverse proxy on another host or container, list the proxy in ``GEOSERVER_TRUSTED_PROXIES`` (see :ref:`application_properties`). Otherwise every request comes from the proxy address, and this rule becomes a single limit for the whole server.
+Behind a reverse proxy on another host or container, list the proxy in ``GEOSERVER_TRUSTED_PROXIES`` (see :ref:`Client address behind a reverse proxy <production_misc_client_address>`). Otherwise every request comes from the proxy address, and this rule becomes a single limit for the whole server.
 
 It is also possible to make this a bit more specific and throttle a single ip address instead by using the following::
 

@@ -33,7 +33,7 @@ Missing functionality at the time of writing, and known issues:
 
     Follow the **Community Modules** link and download `ogcapi-coverages` zip archive.
 
-    - {{ snapshot }} example: [ogcapi-coverages](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-ogcapi-coverages-plugin.zip)
+    - {{ snapshot }} example: [ogcapi-coverages]({{ nightly_community }}ogcapi-coverages-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 

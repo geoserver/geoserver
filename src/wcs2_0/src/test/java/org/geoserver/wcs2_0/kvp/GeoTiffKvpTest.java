@@ -5,6 +5,10 @@
 package org.geoserver.wcs2_0.kvp;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -18,6 +22,7 @@ import jakarta.mail.BodyPart;
 import jakarta.mail.Multipart;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -25,11 +30,14 @@ import java.util.Map;
 import javax.imageio.IIOException;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.FileImageInputStream;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.MemoryCacheImageInputStream;
 import net.opengis.wcs20.GetCoverageType;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.wcs.WCSInfo;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.coverage.util.CoverageUtilities;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geometry.GeneralBounds;
@@ -585,6 +593,51 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
             } catch (Exception e) {
                 // TODO: handle exception
             }
+        }
+    }
+
+    /** A scaled request with no overview policy reads the overviews as QUALITY does, not the native resolution. */
+    @Test
+    public void testOverviewPolicyDefault() throws Exception {
+        int[] noPolicy = getScaledBlueMarble("");
+
+        assertArrayEquals(getScaledBlueMarble("&overviewPolicy=QUALITY"), noPolicy);
+        assertThat(getScaledBlueMarble("&overviewPolicy=IGNORE"), not(equalTo(noPolicy)));
+    }
+
+    /** An overview policy set in the WCS settings applies to requests that do not name one. */
+    @Test
+    public void testOverviewPolicySettings() throws Exception {
+        WCSInfo wcs = getWCS();
+        wcs.setOverviewPolicy(OverviewPolicy.IGNORE);
+        getGeoServer().save(wcs);
+        try {
+            assertArrayEquals(getScaledBlueMarble("&overviewPolicy=IGNORE"), getScaledBlueMarble(""));
+        } finally {
+            wcs.setOverviewPolicy(null);
+            getGeoServer().save(wcs);
+        }
+    }
+
+    /**
+     * Returns the samples of BlueMarble scaled to 120x120 as GeoTIFF. The file is 360x360 and its finest overview is
+     * 180x180, so QUALITY reads that overview and IGNORE reads the native resolution.
+     */
+    private int[] getScaledBlueMarble(String extraParams) throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=wcs__BlueMarble"
+                        + "&scalesize=http://www.opengis.net/def/axis/OGC/1/i(120),http://www.opengis.net/def/axis/OGC/1/j(120)"
+                        + extraParams);
+        assertEquals("image/tiff", response.getContentType());
+        TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        try (ImageInputStream stream = new MemoryCacheImageInputStream(new ByteArrayInputStream(getBinary(response)))) {
+            reader.setInput(stream);
+            Raster raster = reader.read(0).getData();
+            assertEquals(120, raster.getWidth());
+            assertEquals(120, raster.getHeight());
+            return raster.getPixels(0, 0, 120, 120, (int[]) null);
+        } finally {
+            reader.dispose();
         }
     }
 

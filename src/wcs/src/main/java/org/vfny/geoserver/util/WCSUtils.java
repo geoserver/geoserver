@@ -610,11 +610,7 @@ public class WCSUtils {
     public static Hints getReaderHints(WCSInfo wcs) {
         Hints hints = new Hints();
         hints.add(new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE));
-        if (wcs.getOverviewPolicy() == null) {
-            hints.add(new Hints(Hints.OVERVIEW_POLICY, OverviewPolicy.IGNORE));
-        } else {
-            hints.add(new Hints(Hints.OVERVIEW_POLICY, wcs.getOverviewPolicy()));
-        }
+        hints.add(new Hints(Hints.OVERVIEW_POLICY, wcs.getOverviewPolicy()));
         hints.put(
                 Hints.DECIMATION_POLICY,
                 wcs.isSubsamplingEnabled() ? DecimationPolicy.ALLOW : DecimationPolicy.DISALLOW);

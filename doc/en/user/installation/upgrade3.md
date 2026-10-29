@@ -14,6 +14,14 @@ On Kubernetes, list the address range of the ingress controller pods. To see the
 
 A customized `web.xml` needs the new `Remote IP Resolution` filter, mapped right after the character encoding filter, as in the `web.xml` shipped with GeoServer.
 
+### WCS reads overviews by default
+
+When the WCS settings do not set an overview policy, WCS now uses **Higher resolution overview**: a GetCoverage request for a lower resolution than the data reads the overview just finer than the request, instead of the native resolution. Scaled requests take much less CPU and memory, and their output changes: the pixel values come from the overview, which usually holds averages, instead of being picked from the native pixels.
+
+A policy set in the WCS settings stays as it is. Saving the WCS settings page writes the policy it shows, so a data directory whose WCS settings were saved before 3.1 usually holds **Don't use overviews** and keeps it: check the setting after the upgrade. To get the previous behavior back, set **Overview policy** to **Don't use overviews** on the WCS settings page.
+
+The names of two choices in that list were swapped. **Higher resolution overview** now names the policy that reads the overview finer than the request (`QUALITY` in `wcs.xml` and the REST API), and **Lower resolution overview** the one that reads the overview coarser than the request (`SPEED`). Saved settings do not change, only the names shown.
+
 ## Upgrading GeoServer 3.0.0 Guidance
 
 GeoServer 3.0.x is scheduled for release in April/May 2026.

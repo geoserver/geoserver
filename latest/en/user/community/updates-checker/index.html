@@ -30512,11 +30512,11 @@ builds</a> - search for <code>updates-checker-plugin.zip</code>.</p>
 </div>
 <h3 id="installing-with-docker">Installing with Docker<a class="headerlink" href="#installing-with-docker" title="Permanent link">&para;</a></h3>
 <p>To run the GeoServer Docker image with the module installed, pass it as a community extension:</p>
-<p>3.1.0 example:</p>
+<p>3.0.2 example:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>docker run -it -p 8080:8080 \
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  --env INSTALL_EXTENSIONS=true \
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  --env COMMUNITY_EXTENSIONS="updates-checker" \
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  docker.osgeo.org/geoserver:3.1.0
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  docker.osgeo.org/geoserver:3.0.2
 </code></pre></div>
 <h2 id="when-the-feed-is-checked">When the feed is checked<a class="headerlink" href="#when-the-feed-is-checked" title="Permanent link">&para;</a></h2>
 <p>The feed is fetched at most once per administrator session, plus once at server startup and whenever <strong>Check Now</strong> or the REST endpoint is used. There is no timer.</p>

@@ -12,7 +12,7 @@ To install web-resource extension:
 1.  From the [GeoServer Download](https://geoserver.org/download) page locate the release used and download:
 
     - {{ release }} [geoserver-{{ release }}-web-resource-plugin.zip](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-web-resource-plugin.zip)
-    - {{ snapshot }} [geoserver-{{ snapshot }}-web-resource-plugin.zip](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-web-resource-plugin.zip)
+    - {{ snapshot }} [geoserver-{{ snapshot }}-web-resource-plugin.zip]({{ nightly_extension }}web-resource-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

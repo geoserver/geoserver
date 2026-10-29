@@ -13,7 +13,7 @@ To install the Vector Mosaic datastore:
 
     Follow the **Community Modules** link and download `vector-mosaic` zip archive.
 
-    - {{ snapshot }} example: [vector-mosaic](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-vector-mosaic-plugin.zip)
+    - {{ snapshot }} example: [vector-mosaic]({{ nightly_community }}vector-mosaic-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 

@@ -23,7 +23,7 @@ This service describes, retrieves and updates the styles present on the server. 
 
     Follow the **Community Modules** link and download `ogcapi-styles` zip archive.
 
-    - {{ snapshot }} example: [ogcapi-styles](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-ogcapi-styles-plugin.zip)
+    - {{ snapshot }} example: [ogcapi-styles]({{ nightly_community }}ogcapi-styles-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 

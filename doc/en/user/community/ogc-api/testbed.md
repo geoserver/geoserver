@@ -21,7 +21,7 @@ To install these modules:
 
     Follow the **Community Modules** link and download `ogcapi-dggs` zip archive.
 
-    - {{ snapshot }} example: [ogcapi-dggs](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-ogcapi-dggs-plugin.zip)
+    - {{ snapshot }} example: [ogcapi-dggs]({{ nightly_community }}ogcapi-dggs-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 

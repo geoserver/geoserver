@@ -30523,7 +30523,7 @@ ows.wfs.getfeature.application/msexcel=2
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="na">ip</span><span class="o">=</span><span class="s">&lt;count&gt;</span>
 </code></pre></div>
 <p>Where <code>&lt;count&gt;</code> is the maximum number of requests a single ip address can execute in parallel.</p>
-<p>Behind a reverse proxy on another host or container, list the proxy in <code>GEOSERVER_TRUSTED_PROXIES</code> (see <a href="../../configuration/properties/">Application properties</a>). Otherwise every request comes from the proxy address, and this rule becomes a single limit for the whole server.</p>
+<p>Behind a reverse proxy on another host or container, list the proxy in <code>GEOSERVER_TRUSTED_PROXIES</code> (see <a href="../../production/misc/#client-address-behind-a-reverse-proxy">Client address behind a reverse proxy</a>). Otherwise every request comes from the proxy address, and this rule becomes a single limit for the whole server.</p>
 <p>It is also possible to make this a bit more specific and throttle a single ip address instead by using the following:</p>
 <div class="highlight"><pre><span></span><code>ip.&lt;ip_addr&gt;=&lt;count&gt;
 </code></pre></div>

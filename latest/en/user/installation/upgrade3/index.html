@@ -1036,15 +1036,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#upgrading-geoserver-310-guidance" class="md-nav__link">
+  <a href="#upgrading-geoserver-302-guidance" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Upgrading GeoServer 3.1.0 Guidance
+        Upgrading GeoServer 3.0.2 Guidance
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Upgrading GeoServer 3.1.0 Guidance">
+    <nav class="md-nav" aria-label="Upgrading GeoServer 3.0.2 Guidance">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -30374,15 +30374,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#upgrading-geoserver-310-guidance" class="md-nav__link">
+  <a href="#upgrading-geoserver-302-guidance" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Upgrading GeoServer 3.1.0 Guidance
+        Upgrading GeoServer 3.0.2 Guidance
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Upgrading GeoServer 3.1.0 Guidance">
+    <nav class="md-nav" aria-label="Upgrading GeoServer 3.0.2 Guidance">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -30599,15 +30599,12 @@
 
 
 <h1 id="upgrading-geoserver-3">Upgrading GeoServer 3<a class="headerlink" href="#upgrading-geoserver-3" title="Permanent link">&para;</a></h1>
-<h2 id="upgrading-geoserver-310-guidance">Upgrading GeoServer 3.1.0 Guidance<a class="headerlink" href="#upgrading-geoserver-310-guidance" title="Permanent link">&para;</a></h2>
+<p>GeoServer 3 was released June 2026 as the first major upgrade from the GeoServer 2 series.</p>
+<h2 id="upgrading-geoserver-302-guidance">Upgrading GeoServer 3.0.2 Guidance<a class="headerlink" href="#upgrading-geoserver-302-guidance" title="Permanent link">&para;</a></h2>
 <h3 id="client-address-behind-a-reverse-proxy">Client address behind a reverse proxy<a class="headerlink" href="#client-address-behind-a-reverse-proxy" title="Permanent link">&para;</a></h3>
-<p>GeoServer now resolves the client address in one place, in the same way as the Tomcat remote IP valve, and only trusts a reverse proxy on the local host by default. If the proxy runs on another host, set the <code>GEOSERVER_TRUSTED_PROXIES</code> <a href="../../configuration/properties/">application property</a> to its address or address range. Otherwise logs, monitoring, control flow and IP-based security rules see the proxy address for every request. GeoServer logs a warning the first time a request carries <code>X-Forwarded-For</code> from a host that is not listed.</p>
-<p>Docker and Kubernetes often run the proxy in another container, so GeoServer sees a bridge or pod address such as <code>172.17.0.1</code>, which must be listed too. Until it is, an <code>ip=</code> control flow limit acts as one limit for the whole server, and a blacklist entry for that address blocks everyone.</p>
-<p>The proxy must overwrite <code>X-Forwarded-For</code> or append the client address to it. A proxy that passes the header on unchanged lets the client choose its own address, for example to skip the brute force delay with a whitelisted IP. Nginx does this unless <code>proxy_set_header X-Forwarded-For</code> is configured.</p>
-<p>On Kubernetes, list the address range of the ingress controller pods. To see the real client address, the Service in front of the ingress controller needs <code>externalTrafficPolicy: Local</code>.</p>
-<p>A customized <code>web.xml</code> needs the new <code>Remote IP Resolution</code> filter, mapped right after the character encoding filter, as in the <code>web.xml</code> shipped with GeoServer.</p>
+<p>GeoServer now only trusts <code>X-Forwarded-For</code> from a reverse proxy on the local host. If your proxy runs on another host or container, set the <code>GEOSERVER_TRUSTED_PROXIES</code> <a href="../../configuration/properties/">application property</a> to its address or address range. See <a href="../../production/misc/#client-address-behind-a-reverse-proxy">Client address behind a reverse proxy</a> for details.</p>
+<p>A customized <code>web.xml</code> needs the new <code>Remote IP Resolution</code> filter, see <a href="../../production/misc/#customized-webxml">Customized web.xml</a>.</p>
 <h2 id="upgrading-geoserver-300-guidance">Upgrading GeoServer 3.0.0 Guidance<a class="headerlink" href="#upgrading-geoserver-300-guidance" title="Permanent link">&para;</a></h2>
-<p>GeoServer 3.0.x is scheduled for release in April/May 2026.</p>
 <p>The upgrade to GeoServer 3.0 is seamless maintaining the same data directory and Java 17 environment as used previously for GeoServer 2.28.</p>
 <h3 id="jdk-17-required">JDK 17 Required<a class="headerlink" href="#jdk-17-required" title="Permanent link">&para;</a></h3>
 <p>Just like in GeoServer 2.28 series, GeoServer 3.0 requires Java 17 to run. Be sure to install Java 17 before upgrading to GeoServer 3.0.</p>

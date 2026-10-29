@@ -12133,6 +12133,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#publish-your-servers-capabilities-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Publish your server's capabilities documents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#proxy-your-server" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12141,16 +12152,50 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#publish-your-servers-capabilities-documents" class="md-nav__link">
+    <nav class="md-nav" aria-label="Proxy your server">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#client-address-behind-a-reverse-proxy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Publish your server's capabilities documents
+        Client address behind a reverse proxy
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Client address behind a reverse proxy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker-and-kubernetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker and Kubernetes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customized-webxml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customized web.xml
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -30229,6 +30274,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#publish-your-servers-capabilities-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Publish your server's capabilities documents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#proxy-your-server" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30237,16 +30293,50 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#publish-your-servers-capabilities-documents" class="md-nav__link">
+    <nav class="md-nav" aria-label="Proxy your server">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#client-address-behind-a-reverse-proxy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Publish your server's capabilities documents
+        Client address behind a reverse proxy
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Client address behind a reverse proxy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker-and-kubernetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker and Kubernetes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customized-webxml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customized web.xml
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -30288,9 +30378,9 @@
 
 <h1 id="other-considerations">Other Considerations<a class="headerlink" href="#other-considerations" title="Permanent link">&para;</a></h1>
 <h2 id="host-your-application-separately">Host your application separately<a class="headerlink" href="#host-your-application-separately" title="Permanent link">&para;</a></h2>
-<p>GeoServer includes a few sample applications in the demo section of the <a href="../../webadmin/">Web administration interface</a>. For production instances, we recommend against this bundling of your application. To make upgrades and troubleshooting easier, please use a separate container for your application. It is perfectly fine, though, to use one container manager (such as Tomcat or Jetty) to host both GeoServer and your application.</p>
-<h2 id="proxy-your-server">Proxy your server<a class="headerlink" href="#proxy-your-server" title="Permanent link">&para;</a></h2>
-<p>GeoServer can have the capabilities documents properly report a proxy. You can configure this in the Server configuration section of the <a href="../../webadmin/">Web administration interface</a> and entering the URL of the external proxy in the field labeled <code>Proxy base URL</code>.</p>
+<p>GeoServer includes a few examples in the demo section of the <a href="../../webadmin/">Web administration interface</a>
+and provides a <code>www</code> folder.</p>
+<p>For production instances, we recommend against this bundling of your application. To make upgrades and troubleshooting easier, please use a separate container for your application. It is perfectly fine, though, to use one container manager (such as Tomcat or Jetty) to host both GeoServer and your application.</p>
 <h2 id="publish-your-servers-capabilities-documents">Publish your server's capabilities documents<a class="headerlink" href="#publish-your-servers-capabilities-documents" title="Permanent link">&para;</a></h2>
 <p>In order to make it easier to find your data, your service must be available.</p>
 <ul>
@@ -30302,6 +30392,83 @@
 </li>
 </ul>
 <p>Catalogue services such as <a href="http://geonetwork-opensource.org/">GeoNetwork-opensource</a> or <a href="https://pycsw.org">PyCSW</a> can harvest GeoServer listing the web services and layers published allowing content to be more easily browsed and searched.</p>
+<h2 id="proxy-your-server">Proxy your server<a class="headerlink" href="#proxy-your-server" title="Permanent link">&para;</a></h2>
+<p>GeoServer can have the capabilities documents properly report a proxy. You can configure this in the Server configuration section of the <a href="../../webadmin/">Web administration interface</a> and entering the URL of the external proxy in the field labeled <code>Proxy base URL</code>.</p>
+<h3 id="client-address-behind-a-reverse-proxy">Client address behind a reverse proxy<a class="headerlink" href="#client-address-behind-a-reverse-proxy" title="Permanent link">&para;</a></h3>
+<p>GeoServer resolves the client address like the Tomcat remote IP valve, with a smaller default. Tomcat trusts proxies on private addresses through its <code>internalProxies</code> parameter. GeoServer only trusts loopback (<code>127.0.0.0/8</code>, <code>::1</code>).</p>
+<p>The <code>GEOSERVER_TRUSTED_PROXIES</code> <a href="../../configuration/properties/">application property</a> is a comma separated list of reverse proxy IP addresses or CIDR blocks. GeoServer reads the client address from the <code>X-Forwarded-For</code> header only for requests arriving from one of these proxies, otherwise it uses the direct connection address. A reverse proxy on another host must be listed, otherwise every request appears to come from the proxy address.</p>
+<p>For example, with a reverse proxy at <code>10.0.0.5</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="si">${</span><span class="nv">CATALINA_OPTS</span><span class="si">}</span><span class="s2"> -DGEOSERVER_TRUSTED_PROXIES=10.0.0.5"</span>
+</code></pre></div>
+<p>As an application property, it can also be set as an environment variable or a <code>web.xml</code> context parameter.</p>
+<p>Setting the property replaces the loopback default, so list <code>127.0.0.1</code> too if a proxy on the same host is still used.</p>
+<p>With <code>GEOSERVER_TRUSTED_PROXIES=10.0.0.5</code>, GeoServer sees these client addresses:</p>
+<table>
+<thead>
+<tr>
+<th>Connection from</th>
+<th><code>X-Forwarded-For</code></th>
+<th>Client address</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>203.0.113.7</code></td>
+<td>none</td>
+<td><code>203.0.113.7</code></td>
+<td>Direct connection</td>
+</tr>
+<tr>
+<td><code>10.0.0.5</code></td>
+<td><code>198.51.100.20</code></td>
+<td><code>198.51.100.20</code></td>
+<td>Trusted proxy</td>
+</tr>
+<tr>
+<td><code>203.0.113.7</code></td>
+<td><code>10.1.2.3</code></td>
+<td><code>203.0.113.7</code></td>
+<td>Not a trusted proxy, header ignored and a warning logged</td>
+</tr>
+<tr>
+<td><code>10.0.0.5</code></td>
+<td><code>10.1.2.3, 198.51.100.20</code></td>
+<td><code>198.51.100.20</code></td>
+<td>The proxy appended the real client; the hop on the left came from the client and is not used</td>
+</tr>
+</tbody>
+</table>
+<p>With several proxies in a chain, list each of them. The right-most address in the header that is not a trusted proxy is used as the client address.</p>
+<p>When the proxy is not listed, logs, monitoring, control flow and IP-based security rules see the proxy address for every request. GeoServer logs a warning the first time a request carries <code>X-Forwarded-For</code> from a host that is not listed.</p>
+<p><strong>Important:</strong> The proxy must overwrite <code>X-Forwarded-For</code> or append the client address to it. A proxy that passes the header on unchanged lets the client choose its own address, for example to skip the brute force delay with a whitelisted IP. Nginx does this unless <code>proxy_set_header X-Forwarded-For</code> is configured. For example, to append the client address:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+</code></pre></div>
+<h4 id="docker-and-kubernetes">Docker and Kubernetes<a class="headerlink" href="#docker-and-kubernetes" title="Permanent link">&para;</a></h4>
+<p>In Docker, GeoServer sees the proxy address on the container network, not <code>127.0.0.1</code>. A proxy on the Docker host appears as the bridge gateway, such as <code>172.17.0.1</code>. A proxy in another container appears as that container's address. Docker Compose creates a separate network per project, use <code>docker network inspect</code> to find its subnet and list it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>docker<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span><span class="nv">GEOSERVER_TRUSTED_PROXIES</span><span class="o">=</span><span class="m">172</span>.18.0.0/16<span class="w"> </span>...
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">services</span><span class="p">:</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">geoserver</span><span class="p">:</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">      </span><span class="nt">GEOSERVER_TRUSTED_PROXIES</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.18.0.0/16</span>
+</code></pre></div>
+<p>Until the proxy is listed, an <code>ip=</code> control flow limit acts as one limit for the whole server, and a blacklist entry for that address blocks everyone.</p>
+<p>On Kubernetes, list the address range of the ingress controller pods. To see the real client address, the Service in front of the ingress controller needs <code>externalTrafficPolicy: Local</code>.</p>
+<h4 id="customized-webxml">Customized web.xml<a class="headerlink" href="#customized-webxml" title="Permanent link">&para;</a></h4>
+<p>The client address is resolved by the <code>Remote IP Resolution</code> filter in GeoServer's <code>WEB-INF/web.xml</code>, so this is the same for Tomcat, Jetty and other servlet containers. When upgrading with a customized <code>web.xml</code>, add the filter:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">&lt;filter&gt;</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="nt">&lt;filter-name&gt;</span>Remote<span class="w"> </span>IP<span class="w"> </span>Resolution<span class="nt">&lt;/filter-name&gt;</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="nt">&lt;filter-class&gt;</span>org.geoserver.filters.RemoteIpFilter<span class="nt">&lt;/filter-class&gt;</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nt">&lt;/filter&gt;</span>
+</code></pre></div>
+<p>And map it right after the <code>Set Character Encoding</code> filter mapping, so the client address is resolved before any other filter reads it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">&lt;filter-mapping&gt;</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="nt">&lt;filter-name&gt;</span>Remote<span class="w"> </span>IP<span class="w"> </span>Resolution<span class="nt">&lt;/filter-name&gt;</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="nt">&lt;url-pattern&gt;</span>/*<span class="nt">&lt;/url-pattern&gt;</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="nt">&lt;/filter-mapping&gt;</span>
+</code></pre></div>
+<p>Without this filter GeoServer ignores <code>X-Forwarded-For</code>, and sees the proxy address for every request.</p>
 <h2 id="clustering">Clustering<a class="headerlink" href="#clustering" title="Permanent link">&para;</a></h2>
 <p>Setting up a <a href="http://en.wikipedia.org/wiki/Cluster_(computing)">Cluster</a> is one of the best ways to improve the reliability and performance of your GeoServer installation.</p>
 <p>There are a variety of techniques to configure a cluster, including at the container level, the virtual machine level, and the physical server level.</p>

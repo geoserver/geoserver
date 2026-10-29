@@ -70,6 +70,11 @@ For example:
 
 And so on.
 
+Behind a reverse proxy
+~~~~~~~~~~~~~~~~~~~~~~
+
+ACL rules can limit access by source IP address range. Behind a reverse proxy on another host or container, list the proxy in ``GEOSERVER_TRUSTED_PROXIES``, otherwise the rules match the proxy address instead of the client. See :ref:`Client address behind a reverse proxy <production_misc_client_address>` for more examples, including Docker and Kubernetes.
+
 Setting the plugin's authorization cache expiration time
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

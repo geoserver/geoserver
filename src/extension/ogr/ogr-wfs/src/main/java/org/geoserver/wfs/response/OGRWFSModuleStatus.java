@@ -13,6 +13,10 @@ public class OGRWFSModuleStatus extends OGRModuleStatus implements ModuleStatus 
 
     private final Ogr2OgrOutputFormat format;
 
+    private String checkedConfiguration;
+
+    private boolean available;
+
     public OGRWFSModuleStatus(Ogr2OgrOutputFormat format) {
         this.format = format;
     }
@@ -28,8 +32,13 @@ public class OGRWFSModuleStatus extends OGRModuleStatus implements ModuleStatus 
     }
 
     @Override
-    public boolean isAvailable() {
-        return new OGRWrapper(format.getExecutable(), format.getEnvironment()).isAvailable();
+    public synchronized boolean isAvailable() {
+        String configuration = format.getExecutable() + format.getEnvironment();
+        if (!configuration.equals(checkedConfiguration)) {
+            available = new OGRWrapper(format.getExecutable(), format.getEnvironment()).isAvailable();
+            checkedConfiguration = configuration;
+        }
+        return available;
     }
 
     @Override

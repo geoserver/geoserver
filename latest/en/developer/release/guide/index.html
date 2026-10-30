@@ -29494,6 +29494,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#docker-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker images
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -30705,6 +30716,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#docker-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker images
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -30998,7 +31020,7 @@ LINK=maintain
 </ol>
 </li>
 <li>
-<p>Update the MAIN variable in Docker <a href="https://github.com/geoserver/docker/blob/master/build/release.sh#L6">release.sh</a> to the new main branch version.</p>
+<p>Update the MAIN variable in Docker <a href="https://github.com/geoserver/docker/blob/master/build/release.sh#L6">release.sh</a> to the new main branch version, and the <code>MAIN_VERSION</code>, <code>STABLE_VERSION</code> and <code>MAINTENANCE_VERSION</code> variables in Docker <a href="https://github.com/geoserver/docker/blob/master/.github/workflows/publish.yml">publish.yml</a>.</p>
 </li>
 <li>
 <p>Announce on the developer group that the new stable branch has been created.</p>
@@ -31051,6 +31073,16 @@ LINK=maintain
 <div class="highlight"><pre><span></span><code>https://build.geoserver.org/geoserver/release/&lt;RELEASE&gt;
 </code></pre></div>
 <p>to the SourceForge FRS server. Navigate to <a href="https://sourceforge.net/projects/geoserver/files/GeoServer/">SourceForge</a> and verify that the artifacts have been uploaded properly. If this is the latest stable release, set the necessary flags (you will need to be logged in as a SourceForge admin user) on the <code>.exe</code> and <code>.bin</code> artifacts so that they show up as the appropriate default for users downloading on the Windows and Linux platforms. This does not apply to maintenance or support releases.</p>
+<h3 id="docker-images">Docker images<a class="headerlink" href="#docker-images" title="Permanent link">&para;</a></h3>
+<p>Once the release is available on SourceForge, run the Docker <a href="https://github.com/geoserver/docker/actions/workflows/publish.yml">publish.yml</a> workflow to build multi-arch (<code>linux/amd64</code>, <code>linux/arm64</code>) images, with and without GDAL:</p>
+<div class="highlight"><pre><span></span><code>gh workflow run publish.yml -R geoserver/docker --ref master -f version=3.0.2
+</code></pre></div>
+<p>The workflow pushes <code>&lt;version&gt;</code> and <code>&lt;version&gt;-gdal</code> to <code>docker.osgeo.org/geoserver</code>, along with the series tags <code>&lt;major&gt;.&lt;minor&gt;-latest</code> and <code>stable-latest</code> or <code>maintenance-latest</code>. Check that both architectures are listed:</p>
+<div class="highlight"><pre><span></span><code>docker buildx imagetools inspect docker.osgeo.org/geoserver:3.0.2
+</code></pre></div>
+<p>If a build job fails while downloading from SourceForge, re-run only the failed jobs:</p>
+<div class="highlight"><pre><span></span><code>gh run rerun &lt;run-id&gt; --failed -R geoserver/docker
+</code></pre></div>
 <p>For GeoServer 3.x the publish also reverts the release commit on the <code>&lt;RELEASE&gt;.x</code> branch and merges it back into <code>BRANCH</code>. When <code>BRANCH</code> is a stable branch (e.g. <code>3.0.x</code>) it is then advanced to the next patch version (e.g. releasing <code>3.0.2</code> advances <code>3.0.x</code> to <code>3.0.3-SNAPSHOT</code>). The <code>main</code> branch is not advanced by the job, see <a href="#when-publishing-the-first-release-of-a-series-create-the-stable-branch">create the stable branch</a> after publishing the first release of a series.</p>
 <h2 id="cite-certification">Cite Certification<a class="headerlink" href="#cite-certification" title="Permanent link">&para;</a></h2>
 <p>For a major (3.x.0) release, follow the <a href="https://docs.geoserver.org/main/en/developer/cite-test-guide/index#cite-certification">instructions</a> to obtain certification, and include it in the release notes below.</p>

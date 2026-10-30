@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+  <bean id="updatesCheckerModuleStatus" class="org.geoserver.platform.ModuleStatusImpl">
+    <constructor-arg index="0" value="gs-updates-checker"/>
+    <constructor-arg index="1" value="Check for Updates"/>
+    <property name="documentation" value="community/updates-checker/index.html"/>
+    <!-- 3.x only: backport-checks.sh removes these two lines on 2.x -->
+    <property name="category" value="COMMUNITY"/>
+    <property name="contact" value="gs-updates-checker@geoguru.africa"/>
+  </bean>
+
+  <bean id="updatesCheckerConfigPersister" class="org.geoserver.updateschecker.ConfigPersister">
+    <constructor-arg ref="dataDirectory"/>
+  </bean>
+
+  <bean id="updatesCheckerFeedClient" class="org.geoserver.updateschecker.FeedClient"/>
+
+  <bean id="updatesCheckerService" class="org.geoserver.updateschecker.UpdatesCheckerService">
+    <constructor-arg ref="updatesCheckerConfigPersister"/>
+    <constructor-arg ref="updatesCheckerFeedClient"/>
+  </bean>
+
+  <bean id="updatesCheckerStartupChecker" class="org.geoserver.updateschecker.StartupChecker">
+    <constructor-arg ref="updatesCheckerService"/>
+  </bean>
+
+  <bean id="updatesCheckerRestController" class="org.geoserver.updateschecker.rest.CheckController">
+    <constructor-arg ref="updatesCheckerService"/>
+  </bean>
+
+  <bean id="updatesCheckerHomePageContentProvider"
+        class="org.geoserver.updateschecker.web.HomePageContentProvider"/>
+
+  <bean id="updatesCheckerPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="updatesCheckerPage"/>
+    <property name="titleKey" value="UpdatesCheckerPage.page.title"/>
+    <property name="descriptionKey" value="UpdatesCheckerPage.page.description"/>
+    <property name="componentClass" value="org.geoserver.updateschecker.web.UpdatesCheckerPage"/>
+    <!-- the first menu: geoserverCategory ("GeoServer") from 3.0, aboutStatusCategory ("About & Status") before that;
+         3.x keeps the old name as an alias of its Server menu, so it cannot be used there -->
+    <property name="category"
+              value="#{beanFactory.containsBean('geoserverCategory') ? beanFactory.getBean('geoserverCategory') : beanFactory.getBean('aboutStatusCategory')}"/>
+    <!-- a file next to the page class: 3.x also accepts gs-icon-* names, but 2.x only reads file names -->
+    <property name="icon" value="updates-checker.png"/>
+    <property name="order" value="1000"/>
+  </bean>
+
+</beans>

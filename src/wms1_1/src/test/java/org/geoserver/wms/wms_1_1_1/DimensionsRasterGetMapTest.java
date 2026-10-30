@@ -10,6 +10,7 @@ import static org.geoserver.catalog.DimensionPresentation.LIST;
 import static org.geoserver.catalog.ResourceInfo.ELEVATION;
 import static org.geoserver.catalog.ResourceInfo.TIME;
 import static org.geoserver.platform.ServiceException.INVALID_DIMENSION_VALUE;
+import static org.geoserver.platform.ServiceException.INVALID_PARAMETER_VALUE;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -25,10 +26,12 @@ import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.util.NearestMatchFinder;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSDimensionsTestSupport;
+import org.geoserver.wms.WMSInfo;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -359,6 +362,95 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         image = getAsImage(baseUrl + "&TIME=2008-10-31T12:00:00.000Z/2008-10-31T16:00:00.000Z", "image/png");
         assertPixel(image, 36, 31, Color.BLUE);
         assertPixel(image, 68, 72, new Color(255, 172, 172));
+    }
+
+    @Test
+    public void testTimeRangeMaxDimensions() throws Exception {
+        String baseUrl = setupTimeRangesMaxDimensions(1);
+        try {
+            // the request touches one of the mosaic time ranges
+            BufferedImage image =
+                    getAsImage(baseUrl + "&TIME=2008-11-05T00:00:00.000Z/2008-11-06T12:00:00.000Z", "image/png");
+            assertPixel(image, 36, 31, Color.BLUE);
+            assertPixel(image, 68, 72, new Color(249, 249, 255));
+
+            // a single time at second precision is parsed as a range too
+            image = getAsImage(baseUrl + "&TIME=2008-11-05T12:00:00Z", "image/png");
+            assertPixel(image, 36, 31, Color.BLUE);
+            assertPixel(image, 68, 72, new Color(249, 249, 255));
+
+            // the two time ranges of the mosaic (the overlapping granule ranges are merged) are more than allowed
+            Document dom = getAsDOM(baseUrl + "&TIME=2008-10-31T00:00:00.000Z/2008-11-07T00:00:00.000Z");
+            String message = checkLegacyException(dom, INVALID_PARAMETER_VALUE, "time");
+            assertThat(message, containsString("maximum allowed: 1"));
+        } finally {
+            resetMaxDimensions();
+        }
+    }
+
+    @Test
+    public void testElevationRangeMaxDimensions() throws Exception {
+        String baseUrl = setupTimeRangesMaxDimensions(1);
+        try {
+            // the request touches one of the mosaic elevation ranges
+            BufferedImage image = getAsImage(baseUrl + "&ELEVATION=20/99", "image/png");
+            assertPixel(image, 36, 31, Color.BLUE);
+            assertPixel(image, 68, 72, new Color(249, 249, 255));
+
+            // the two elevation ranges are more than allowed
+            Document dom = getAsDOM(baseUrl + "&ELEVATION=0/200");
+            String message = checkLegacyException(dom, INVALID_PARAMETER_VALUE, "elevation");
+            assertThat(message, containsString("maximum allowed: 1"));
+        } finally {
+            resetMaxDimensions();
+        }
+    }
+
+    @Test
+    public void testTimeAndElevationRangeMaxDimensions() throws Exception {
+        String baseUrl = setupTimeRangesMaxDimensions(1);
+        try {
+            // one time range and one elevation range: each dimension is within the limit on its own
+            BufferedImage image = getAsImage(
+                    baseUrl + "&TIME=2008-11-05T00:00:00.000Z/2008-11-06T12:00:00.000Z&ELEVATION=20/99", "image/png");
+            assertPixel(image, 36, 31, Color.BLUE);
+            assertPixel(image, 68, 72, new Color(249, 249, 255));
+
+            // still refused when one of them goes over the limit
+            Document dom =
+                    getAsDOM(baseUrl + "&TIME=2008-11-05T00:00:00.000Z/2008-11-06T12:00:00.000Z&ELEVATION=0/200");
+            String message = checkLegacyException(dom, INVALID_PARAMETER_VALUE, "elevation");
+            assertThat(message, containsString("maximum allowed: 1"));
+        } finally {
+            resetMaxDimensions();
+        }
+    }
+
+    /**
+     * Sets up the dimensions of the time ranges mosaic and a limit on the requested dimension values (any value but the
+     * default enables the check), returns the GetMap base URL
+     */
+    private String setupTimeRangesMaxDimensions(int maxValues) throws Exception {
+        setupRasterDimension(TIMERANGES, TIME, LIST, null, null, null);
+        setupRasterDimension(TIMERANGES, ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(TIMERANGES, "wavelength", LIST, null, null, null);
+        setupRasterDimension(TIMERANGES, "date", LIST, null, null, null);
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        wms.setMaxRequestedDimensionValues(maxValues);
+        gs.save(wms);
+
+        return "wms?LAYERS="
+                + getLayerId(TIMERANGES)
+                + "&STYLES=temperature&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326"
+                + "&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941&WIDTH=200&HEIGHT=80&bgcolor=0x0000FF";
+    }
+
+    private void resetMaxDimensions() {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        wms.setMaxRequestedDimensionValues(DimensionInfo.DEFAULT_MAX_REQUESTED_DIMENSION_VALUES);
+        gs.save(wms);
     }
 
     @Test

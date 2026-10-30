@@ -17,5 +17,7 @@
         </constructor-arg>
         <constructor-arg ref="ogrWrapperFactory" />
     </bean>
-
+    <bean id="ogrWfsModule" class="org.geoserver.wfs.response.OGRWFSModuleStatus">
+        <constructor-arg ref="ogr2ogrOutputFormat"/>
+    </bean>
 </beans>

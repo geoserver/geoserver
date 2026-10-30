@@ -74,6 +74,12 @@ A confirmation will appear on the page as message with names of cleared Tile lay
 
 You have two options for layer configuration. The first option is to load the layer using the default (global) settings. To do this, select the layer you wish to start caching, and click the **Configure selected layers with caching defaults** link. The second option is to configure the caching parameters manually, via the [layer configuration](../../data/webadmin/layers.md) pages. To do this, just click the layer name itself.
 
+### Use the in-memory tile cache for this layer
+
+When checked, the layer tiles go through the in-memory tile cache configured in the [caching defaults](defaults.md#in-memory-tile-cache). It has no effect while the in-memory tile cache is disabled there. Unchecked by default.
+
+Set **Expire server cache after n seconds** to the refresh interval of the layer data: each tile in memory expires after that time, or after the maximum time to live of the in-memory tile cache when shorter.
+
 ### Parameter Filters
 
 Parameter filters allow GeoWebCache to cache a layer with varying parameters such as `STYLES`, `TIME`. One is needed for each parameter to be cached and it needs to know how to recognize valid values to be cached and which values are the same as other values so they only get cached once. There are several different kinds of filter as a result.

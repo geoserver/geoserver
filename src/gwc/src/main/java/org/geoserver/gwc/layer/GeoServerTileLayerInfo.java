@@ -62,6 +62,12 @@ public interface GeoServerTileLayerInfo extends Serializable, Cloneable {
      */
     void setBlobStoreId(@Nullable String blobStoreId);
 
+    /** Whether the layer tiles go through the GeoWebCache in-memory tile cache, when enabled; false by default. */
+    boolean isMemoryCached();
+
+    /** Sets whether the layer tiles go through the GeoWebCache in-memory tile cache. */
+    void setMemoryCached(boolean memoryCached);
+
     /** @return the X metatiling factor */
     int getMetaTilingX();
 

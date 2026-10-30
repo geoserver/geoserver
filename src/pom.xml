@@ -96,11 +96,11 @@
     <!-- ================================ -->
     <gt.version>36-SNAPSHOT</gt.version>
     <gwc.version>2.1-SNAPSHOT</gwc.version>
-    <spring.version>7.0.9</spring.version>
-    <spring.security.version>7.1.1</spring.security.version>
+    <spring.version>7.0.10</spring.version>
+    <spring.security.version>7.1.2</spring.security.version>
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
-    <spring.ldap.version>4.1.1</spring.ldap.version>
-    <spring-integration.version>7.1.1</spring-integration.version>
+    <spring.ldap.version>4.1.2</spring.ldap.version>
+    <spring-integration.version>7.1.2</spring-integration.version>
     <wicket.version>10.11.0</wicket.version>
     <!-- WicketStuff provides additional components and extensions for the Wicket framework,
     such as select2 integration, which is used in GeoServer's admin interface.
@@ -111,6 +111,7 @@
     <!-- ================================ -->
     <ant.version>1.10.18</ant.version>
     <apacheds.version>2.0.0.AM27</apacheds.version>
+    <asm.version>9.11.1</asm.version>
     <compress-lzf.version>1.0.3</compress-lzf.version>
     <eclipse.emf.version>2.15.0</eclipse.emf.version>
     <errorProne.version>2.31.0</errorProne.version>
@@ -128,9 +129,9 @@
          profile, because the community fips modules need them in every build. -->
     <bc.fips.prov.version>2.1.2</bc.fips.prov.version>
     <bc.fips.pkix.version>2.1.10</bc.fips.pkix.version>
-    <hibernate-version>7.4.13.Final</hibernate-version>
+    <hibernate-version>7.4.14.Final</hibernate-version>
     <httpcore.version>4.4.16</httpcore.version>
-    <httpclient.version>5.4.4</httpclient.version>
+    <httpclient.version>5.6.5</httpclient.version>
     <jacoco.version>0.8.14</jacoco.version>
     <jasypt.version>1.9.3</jasypt.version>
     <javac.version>9+181-r4173-1</javac.version>
@@ -567,7 +568,7 @@
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.14.0</version>
+        <version>2.15.0</version>
       </dependency>
       <dependency>
         <groupId>net.sf.opencsv</groupId>
@@ -665,6 +666,27 @@
         <groupId>org.apache.httpcomponents.client5</groupId>
         <artifactId>httpclient5-cache</artifactId>
         <version>${httpclient.version}</version>
+      </dependency>
+      <!-- single asm version, shared by parboiled (css) and clickhouse-jdbc (dggs) -->
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-tree</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-analysis</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-util</artifactId>
+        <version>${asm.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-validator</groupId>
@@ -887,7 +909,7 @@
       <dependency>
         <groupId>org.restlet</groupId>
         <artifactId>org.restlet.ext.spring</artifactId>
-        <version>2.6.0</version>
+        <version>2.7.0</version>
       </dependency>
       <dependency>
         <groupId>org.restlet</groupId>
@@ -1688,7 +1710,7 @@
             <link>https://locationtech.github.io/jts/javadoc/</link>
             <link>https://docs.geotools.org/latest/javadocs/</link>
             <link>https://xmlgraphics.apache.org/batik/javadoc/</link>
-            <link>https://freemarker.sourceforge.io/docs/api/</link>
+            <link>https://freemarker.apache.org/docs/api/</link>
             <link>https://nightlies.apache.org/wicket/apidocs/9.x/</link>
           </links>
           <additionalJOptions>
@@ -1853,7 +1875,7 @@
             <link>https://locationtech.github.io/jts/javadoc/</link>
             <link>http://xmlgraphics.apache.org/batik/javadoc/</link>
             <link>https://docs.geotools.org/latest/javadocs/</link>
-            <link>https://freemarker.sourceforge.io/docs/api/</link>
+            <link>https://freemarker.apache.org/docs/api/</link>
             <link>https://nightlies.apache.org/wicket/apidocs/9.x/</link>
           </links>
 
@@ -2084,7 +2106,7 @@
           -link https://locationtech.github.io/jts/javadoc/
           -link http://xmlgraphics.apache.org/batik/javadoc/
           -link https://docs.geotools.org/latest/javadocs/
-          -link https://freemarker.sourceforge.io/docs/api/
+          -link https://freemarker.apache.org/docs/api/
           -link https://nightlies.apache.org/wicket/apidocs/9.x/
           -tag generated:tfmc:
           -tag todo:tfmc:TODO:

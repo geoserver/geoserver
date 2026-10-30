@@ -11,7 +11,7 @@ render_macros: true
 
     Follow the **Community Modules** link and download `features-templating` zip archive.
 
-    - {{ snapshot }} example: [features-templating](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-features-templating-plugin.zip)
+    - {{ snapshot }} example: [features-templating]({{ nightly_community }}features-templating-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 

@@ -37,7 +37,7 @@ Missing functionality at the time of writing:
 
     Follow the **Community Modules** link and download `ogcapi-maps` zip archive.
 
-    - {{ snapshot }} example: [ogcapi-maps](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-ogcapi-maps-plugin.zip)
+    - {{ snapshot }} example: [ogcapi-maps]({{ nightly_community }}ogcapi-maps-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 

@@ -60,6 +60,9 @@ import org.geotools.util.logging.Logging;
 public final class StyleQueryUtil {
     public static final Logger LOGGER = Logging.getLogger(StyleQueryUtil.class);
 
+    /** Most rule filters {@link #getStyleQuery(Layer, WMSMapContent)} sends to the store. */
+    private static final int DEFAULT_MAX_FILTERS = 5;
+
     /** Prevent instantiation */
     private StyleQueryUtil() {
         // prevent instantiation
@@ -89,10 +92,20 @@ public final class StyleQueryUtil {
      * Creates a query selecting those features relevant to the style and extent of the given map, for the given layer.
      */
     public static Query getStyleQuery(Layer layer, WMSMapContent mapContent) throws IOException {
+        return getStyleQuery(layer, mapContent, getLiteFeatureStyles(layer, mapContent), DEFAULT_MAX_FILTERS);
+    }
+
+    /**
+     * Creates a query selecting those features relevant to the given styles and the extent of the given map, for the
+     * given layer. The query carries the filters of the active rules only when there are at most {@code maxFilters} of
+     * them.
+     */
+    public static Query getStyleQuery(
+            Layer layer, WMSMapContent mapContent, List<LiteFeatureTypeStyle> styleList, int maxFilters)
+            throws IOException {
 
         final ReferencedEnvelope renderingArea = mapContent.getRenderingArea();
         final Rectangle screenSize = new Rectangle(mapContent.getMapWidth(), mapContent.getMapHeight());
-        final double mapScale = getMapScale(mapContent, renderingArea);
 
         final int requestBufferScreen = mapContent.getBuffer();
 
@@ -100,7 +113,6 @@ public final class StyleQueryUtil {
 
         FeatureSource<?, ?> featureSource = layer.getFeatureSource();
         FeatureType schema = featureSource.getSchema();
-        List<LiteFeatureTypeStyle> styleList = getFeatureStyles(layer, mapScale, schema);
 
         // if there aren't any styles to render, we don't need to get any data....
         if (styleList.isEmpty()) {
@@ -118,7 +130,7 @@ public final class StyleQueryUtil {
 
         Query styleQuery;
         try {
-            styleQuery = getStyleQuery(featureSource, styleList, queryArea, geometryDescriptor);
+            styleQuery = getStyleQuery(featureSource, styleList, queryArea, geometryDescriptor, maxFilters);
         } catch (IllegalFilterException | FactoryException e) {
             throw new RuntimeException(e);
         }
@@ -220,7 +232,8 @@ public final class StyleQueryUtil {
             FeatureSource<?, ?> source,
             List<LiteFeatureTypeStyle> styleList,
             ReferencedEnvelope queryArea,
-            GeometryDescriptor geometryAttribute)
+            GeometryDescriptor geometryAttribute,
+            int maxFilters)
             throws IllegalFilterException, FactoryException {
 
         final FeatureType schema = source.getSchema();
@@ -233,10 +246,8 @@ public final class StyleQueryUtil {
 
         query.setFilter(filter);
 
-        LiteFeatureTypeStyle[] styles = styleList.toArray(new LiteFeatureTypeStyle[styleList.size()]);
-
         try {
-            processRuleForQuery(styles, query);
+            processRuleForQuery(styleList, query, maxFilters);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -384,7 +395,7 @@ public final class StyleQueryUtil {
      * case sending the filters to the Datastore actually costs you. But, databases are *much* faster at processing the
      * Filters than JAVA is and can use statistical analysis to do it.
      */
-    private static void processRuleForQuery(LiteFeatureTypeStyle[] styles, Query query) {
+    private static void processRuleForQuery(List<LiteFeatureTypeStyle> styles, Query query, int maxFilters) {
         try {
 
             // first we check to see if there are >
@@ -401,21 +412,9 @@ public final class StyleQueryUtil {
             // ie. SELECT * FROM ... WHERE (the_geom && BBOX) AND (filter1 OR
             // filter2 OR filter3);
 
-            final int maxFilters = 5;
-            final List<Filter> filtersToDS = new ArrayList<>();
-            // look at each featuretypestyle
-            for (LiteFeatureTypeStyle style : styles) {
-                if (style.elseRules.length > 0) // uh-oh has elseRule
-                return;
-                // look at each rule in the featuretypestyle
-                for (Rule r : style.ruleList) {
-                    if (r.getFilter() == null) return; // uh-oh has no filter (want all rows)
-                    filtersToDS.add(r.getFilter());
-                }
-            }
-
-            // if too many bail out
-            if (filtersToDS.size() > maxFilters) return;
+            final List<Filter> filtersToDS = getRuleFilters(styles);
+            // if all features are needed, or there are too many filters, bail out
+            if (filtersToDS == null || filtersToDS.size() > maxFilters) return;
 
             // or together all the filters
             org.geotools.api.filter.Filter ruleFiltersCombined;
@@ -433,6 +432,22 @@ public final class StyleQueryUtil {
                 LOGGER.log(Level.SEVERE, "Could not send rules to datastore due to: " + e.getMessage(), e);
             }
         }
+    }
+
+    /**
+     * Returns the filters of the active rules. Returns {@code null} when an else rule or a rule without filter makes
+     * the styles draw every feature, or when a rendering transformation makes the rules apply to its output.
+     */
+    public static List<Filter> getRuleFilters(List<LiteFeatureTypeStyle> styles) {
+        List<Filter> filters = new ArrayList<>();
+        for (LiteFeatureTypeStyle style : styles) {
+            if (style.elseRules.length > 0 || style.transformation != null) return null;
+            for (Rule r : style.ruleList) {
+                if (r.getFilter() == null) return null;
+                filters.add(r.getFilter());
+            }
+        }
+        return filters;
     }
 
     /**

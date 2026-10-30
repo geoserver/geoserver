@@ -23,7 +23,7 @@ render_macros: true
     From the list of **Security** extensions download **GeoFence Server**:
 
     - {{ release }}: [geoserver-{{ release }}-geofence-server-plugin.zip](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-geofence-server-plugin.zip)
-    - {{ snapshot }}: [geoserver-{{ snapshot }}-geofence-server-plugin.zip](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-geofence-server-plugin.zip)
+    - {{ snapshot }}: [geoserver-{{ snapshot }}-geofence-server-plugin.zip]({{ nightly_extension }}geofence-server-plugin.zip)
 
     Make sure to match the plugin version (e.g. {{ release }} above) to the version of the GeoServer instance.
 

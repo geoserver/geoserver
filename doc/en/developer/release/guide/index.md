@@ -129,9 +129,9 @@ The [GeoServer website](https://geoserver.org/) is managed as a [GitHub Pages re
 
     For the initial release expect input from developers to highlight changes and work performed.
 
-## If you are cutting the first RC of a series, create the stable branch
+## When publishing the first release of a series, create the stable branch
 
-When creating the first release candidate of a series, there are some extra steps to create the new stable branch and update the version on the main development branch.
+After publishing the first release of a series from the main development branch (e.g. `3.1.0`), there are some extra steps to create the new stable branch and update the version on the main development branch. Release candidates and milestones do not create a stable branch.
 
 1.  Checkout the main development branch and make sure it is up to date and that there are no changes in your local workspace:
 
@@ -139,9 +139,11 @@ When creating the first release candidate of a series, there are some extra step
         git pull
         git status
 
-2.  Create the new stable branch and push it to GitHub; for example, if the main development branch is `3.0.0-SNAPSHOT` and the remote for the official GeoServer is called `geoserver`:
+2.  Create the new stable branch, advance it to the next patch version, and push it to GitHub; for example, if `3.0.0` was published from the main development branch and the remote for the official GeoServer is called `geoserver`:
 
         git checkout -b 3.0.x
+        ant -f build/rename.xml advance -Dcurrent=3.0.0 -Drelease=3.0.1
+        git commit -am "Advance 3.0.x to 3.0.1-SNAPSHOT"
         git push geoserver 3.0.x
 
 3.  Enable [GitHub branch protection](https://github.com/geoserver/geoserver/settings/branches) for the new stable branch: tick "Protect this branch" (only) and press "Save changes".
@@ -219,7 +221,7 @@ The job takes the following parameters:
 
 ### BRANCH
 
-The branch to release from, "2.29.x", "2.28.x", etc... This must be a stable branch. Releases are not performed from the main development branch.
+The branch to release from, "3.0.x", "2.28.x", etc... Release candidates, milestones and the first release of a series (e.g. `3.1.0`) are released from `main`.
 
 ### REV
 
@@ -292,9 +294,11 @@ If a build job fails while downloading from SourceForge, re-run only the failed 
 
     gh run rerun <run-id> --failed -R geoserver/docker
 
+For GeoServer 3.x the publish also reverts the release commit on the `<RELEASE>.x` branch and merges it back into `BRANCH`. When `BRANCH` is a stable branch (e.g. `3.0.x`) it is then advanced to the next patch version (e.g. releasing `3.0.2` advances `3.0.x` to `3.0.3-SNAPSHOT`). The `main` branch is not advanced by the job, see [create the stable branch](#when-publishing-the-first-release-of-a-series-create-the-stable-branch) after publishing the first release of a series.
+
 ## Cite Certification
 
-For a major (2.xx.0) release, follow the [instructions](https://docs.geoserver.org/main/en/developer/cite-test-guide/index#cite-certification) to obtain certification, and include it in the release notes below.
+For a major (3.x.0) release, follow the [instructions](https://docs.geoserver.org/main/en/developer/cite-test-guide/index#cite-certification) to obtain certification, and include it in the release notes below.
 
 ## Release notes
 

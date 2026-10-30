@@ -27,7 +27,7 @@ The module, once installed, replaces the standard JPEG encoder for GeoServer and
     From the list of **Output Formats** extensions download **JPEG Turbo**.
 
     - {{ release }} example: [libjpeg-turbo](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-libjpeg-turbo-plugin.zip)
-    - {{ snapshot }} example: [libjpeg-turbo](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-libjpeg-turbo-plugin.zip)
+    - {{ snapshot }} example: [libjpeg-turbo]({{ nightly_extension }}libjpeg-turbo-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

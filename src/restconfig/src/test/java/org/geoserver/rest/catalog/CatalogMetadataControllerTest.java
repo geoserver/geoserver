@@ -5,6 +5,7 @@ package org.geoserver.rest.catalog;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -22,6 +23,7 @@ import org.geoserver.security.decorators.SecuredFeatureTypeInfo;
 import org.geoserver.security.decorators.SecuredLayerInfo;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.junit.After;
@@ -44,7 +46,7 @@ public class CatalogMetadataControllerTest {
         SimpleFeatureType fullSchema =
                 DataUtilities.createType("Bridges", "id:Integer,public_name:String,private_note:String");
 
-        assertTrue(fullSchema.getDescriptor("private_note") != null);
+        assertNotNull(fullSchema.getDescriptor("private_note"));
 
         FeatureTypeInfo rawFeatureType = mock(FeatureTypeInfo.class);
         NamespaceInfo namespace = mock(NamespaceInfo.class);
@@ -58,7 +60,7 @@ public class CatalogMetadataControllerTest {
         when(rawLayer.getName()).thenReturn("Bridges");
 
         // Only id and public_name are readable.
-        var filterFactory = CommonFactoryFinder.getFilterFactory();
+        FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory();
 
         VectorAccessLimits limits = new VectorAccessLimits(
                 CatalogMode.HIDE,
@@ -79,7 +81,7 @@ public class CatalogMetadataControllerTest {
 
         when(catalog.getLayers()).thenReturn(List.of(rawLayer));
         // Authenticate as an authorized metadata reader.
-        var authentication = new UsernamePasswordAuthenticationToken(
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 "metadatareader", "ignored", List.of(new SimpleGrantedAuthority("ROLE_METADATA_READER")));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);

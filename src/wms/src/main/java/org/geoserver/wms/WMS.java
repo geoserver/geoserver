@@ -370,58 +370,61 @@ public class WMS implements ApplicationContextAware {
             // max is default, which is unlimited
             return;
         }
-        TreeSet<Object> treeSet = new TreeSet<>();
         int maxDimensionsToTest = getServiceInfo().getMaxRequestedDimensionValues();
+        // each dimension is checked on its own, as the KVP parsers do
         if (times != null && !times.isEmpty() && times.get(0) != null) {
             // list is null for default value
+            // the comparator orders Date, Timestamp and DateRange values, which a coverage domain can hold
+            Set<Object> timeValues = new TreeSet<>(ReaderDimensionsAccessor.TEMPORAL_COMPARATOR);
             ListIterator<Object> timesIterator = times.listIterator();
             while (timesIterator.hasNext()) {
                 Object time = timesIterator.next();
                 if (time instanceof DateRange) {
                     DateRange range = (DateRange) times.get(timesIterator.previousIndex());
                     if (isCoverage) {
-                        treeSet.addAll(queryCoverageTimes(mapLayerInfo.getCoverage(), range, maxDimensionsToTest + 1));
+                        timeValues.addAll(
+                                queryCoverageTimes(mapLayerInfo.getCoverage(), range, maxDimensionsToTest + 1));
                     } else {
-                        treeSet.addAll(
+                        timeValues.addAll(
                                 queryFeatureTypeTimes(mapLayerInfo.getFeature(), range, maxDimensionsToTest + 1));
                     }
                 } else {
-                    treeSet.add(time);
+                    timeValues.add(time);
                 }
-                // check dimensions after each time parameter is added to treeset
-                checkDimensions(treeSet, maxDimensionsToTest, ResourceInfo.TIME);
+                // check dimensions after each time parameter is added to the set
+                checkDimensions(timeValues, maxDimensionsToTest, ResourceInfo.TIME);
             }
         }
 
         if (elevations != null && !elevations.isEmpty() && elevations.get(0) != null) {
             // list is null for default value, so we skip it
+            // the comparator orders Double and NumberRange values, so every number is added as a Double
+            Set<Object> elevationValues = new TreeSet<>(ReaderDimensionsAccessor.ELEVATION_COMPARATOR);
             ListIterator<Object> elevationsIterator = elevations.listIterator();
             while (elevationsIterator.hasNext()) {
                 Object elevation = elevationsIterator.next();
                 if (elevation instanceof NumberRange) {
                     NumberRange range = (NumberRange) elevations.get(elevationsIterator.previousIndex());
-                    if (isCoverage) {
-                        treeSet.addAll(
-                                queryCoverageElevations(mapLayerInfo.getCoverage(), range, maxDimensionsToTest + 1));
-                    } else {
-                        treeSet.addAll(
-                                queryFeatureTypeElevations(mapLayerInfo.getFeature(), range, maxDimensionsToTest + 1));
-                    }
-                } else if (elevation instanceof Double elevationSingle) {
-                    // The queryElevations calls that check ranges are populating the treeset with
-                    // integers, so we need to convert the double to an integer for this check
-                    treeSet.add(elevationSingle.intValue());
+                    Collection<Object> found = isCoverage
+                            ? queryCoverageElevations(mapLayerInfo.getCoverage(), range, maxDimensionsToTest + 1)
+                            : queryFeatureTypeElevations(mapLayerInfo.getFeature(), range, maxDimensionsToTest + 1);
+                    found.forEach(e -> elevationValues.add(toElevationValue(e)));
                 } else {
-                    treeSet.add(elevation);
+                    elevationValues.add(toElevationValue(elevation));
                 }
-                // check dimensions after each elevation parameter is added to treeset
-                checkDimensions(treeSet, maxDimensionsToTest, ResourceInfo.ELEVATION);
+                // check dimensions after each elevation parameter is added to the set
+                checkDimensions(elevationValues, maxDimensionsToTest, ResourceInfo.ELEVATION);
             }
         }
     }
 
-    private static void checkDimensions(TreeSet<Object> treeSet, int maxDimensionsToTest, String dimensionName) {
-        if (treeSet.size() > maxDimensionsToTest) {
+    /** Returns a number as a Double, as {@link ReaderDimensionsAccessor#ELEVATION_COMPARATOR} expects */
+    private static Object toElevationValue(Object elevation) {
+        return elevation instanceof Number number ? number.doubleValue() : elevation;
+    }
+
+    private static void checkDimensions(Set<Object> values, int maxDimensionsToTest, String dimensionName) {
+        if (values.size() > maxDimensionsToTest) {
             throw new ServiceException(
                     "This request would process more "
                             + dimensionName

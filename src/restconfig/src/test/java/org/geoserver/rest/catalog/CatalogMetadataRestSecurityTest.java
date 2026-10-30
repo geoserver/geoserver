@@ -5,10 +5,10 @@ package org.geoserver.rest.catalog;
 
 import static org.junit.Assert.assertEquals;
 
+import jakarta.servlet.Filter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.Filter;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.security.AccessMode;

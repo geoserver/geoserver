@@ -589,8 +589,9 @@
       <id>pyramid</id>
       <dependencies>
         <dependency>
-          <groupId>org.geotools</groupId>
-          <artifactId>gt-imagepyramid</artifactId>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-pyramid</artifactId>
+          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -1882,8 +1883,9 @@
       <id>stac-store</id>
       <dependencies>
         <dependency>
-          <groupId>org.geotools</groupId>
-          <artifactId>gt-stac-store</artifactId>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-stac-datastore</artifactId>
+          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -1906,8 +1908,9 @@
       <id>iau</id>
       <dependencies>
         <dependency>
-          <groupId>org.geotools</groupId>
-          <artifactId>gt-iau-wkt</artifactId>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-iau</artifactId>
+          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>

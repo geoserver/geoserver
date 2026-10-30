@@ -13,7 +13,7 @@ To install the OIDC module:
 
     Follow the **Extensions** link and download the `sec-oidc` plugin archive.
 
-    - {{ snapshot }} example: [sec-oidc](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-sec-oidc-plugin.zip)
+    - {{ snapshot }} example: [sec-oidc]({{ nightly_extension }}sec-oidc-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 

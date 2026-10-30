@@ -35,7 +35,7 @@ A HTTP request (REST or OGC) will instead get an immediate 401 with a message li
 
 HTTP/1.1 401 User foo, 5896 concurrent login attempt(s) denied during the quiet period
 
-A blessed set of IPs that can dodge the mechanism allows legit administrators to take control of the server even during an attack. The system checks the client IP, which is read from the "X-Forwarded-For" header only for requests coming from a trusted reverse proxy (see `GEOSERVER_TRUSTED_PROXIES` in [Application properties](../../configuration/properties/index.md)).
+A blessed set of IPs that can dodge the mechanism allows legit administrators to take control of the server even during an attack. The system checks the client IP, which is read from the "X-Forwarded-For" header only for requests coming from a trusted reverse proxy (see `GEOSERVER_TRUSTED_PROXIES` in [Client address behind a reverse proxy](../../production/misc.md#client-address-behind-a-reverse-proxy)).
 
 The maximum number of threads blocked configuration allows to setup the system so that an attacker can misuse the system to simply block all service threads, by issuing requests with random usernames (the system cannot determine if a username is valid or not, none of the authentication mechanisms provides this information for security reasons).
 

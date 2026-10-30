@@ -99,7 +99,7 @@
     <spring.version>7.0.10</spring.version>
     <spring.security.version>7.1.2</spring.security.version>
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
-    <spring.ldap.version>4.1.1</spring.ldap.version>
+    <spring.ldap.version>4.1.2</spring.ldap.version>
     <spring-integration.version>7.1.2</spring-integration.version>
     <wicket.version>10.11.0</wicket.version>
     <!-- WicketStuff provides additional components and extensions for the Wicket framework,
@@ -129,9 +129,9 @@
          profile, because the community fips modules need them in every build. -->
     <bc.fips.prov.version>2.1.2</bc.fips.prov.version>
     <bc.fips.pkix.version>2.1.10</bc.fips.pkix.version>
-    <hibernate-version>7.4.13.Final</hibernate-version>
+    <hibernate-version>7.4.14.Final</hibernate-version>
     <httpcore.version>4.4.16</httpcore.version>
-    <httpclient.version>5.6.4</httpclient.version>
+    <httpclient.version>5.6.5</httpclient.version>
     <jacoco.version>0.8.14</jacoco.version>
     <jasypt.version>1.9.3</jasypt.version>
     <javac.version>9+181-r4173-1</javac.version>

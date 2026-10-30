@@ -11,7 +11,7 @@ render_macros: true
 
     Follow the **Community Modules** link and download `web-service-auth` zip archive.
 
-    - {{ snapshot }} example: [web-service-auth](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-web-service-auth-plugin.zip)
+    - {{ snapshot }} example: [web-service-auth]({{ nightly_community }}web-service-auth-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 

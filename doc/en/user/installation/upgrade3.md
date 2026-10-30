@@ -1,22 +1,16 @@
 # Upgrading GeoServer 3
 
-## Upgrading GeoServer 3.1.0 Guidance
+GeoServer 3 was released June 2026 as the first major upgrade from the GeoServer 2 series.
+
+## Upgrading GeoServer 3.0.2 Guidance
 
 ### Client address behind a reverse proxy
 
-GeoServer now resolves the client address in one place, in the same way as the Tomcat remote IP valve, and only trusts a reverse proxy on the local host by default. If the proxy runs on another host, set the `GEOSERVER_TRUSTED_PROXIES` [application property](../configuration/properties/index.md) to its address or address range. Otherwise logs, monitoring, control flow and IP-based security rules see the proxy address for every request. GeoServer logs a warning the first time a request carries `X-Forwarded-For` from a host that is not listed.
+GeoServer now only trusts `X-Forwarded-For` from a reverse proxy on the local host. If your proxy runs on another host or container, set the `GEOSERVER_TRUSTED_PROXIES` [application property](../configuration/properties/index.md) to its address or address range. See [Client address behind a reverse proxy](../production/misc.md#client-address-behind-a-reverse-proxy) for details.
 
-Docker and Kubernetes often run the proxy in another container, so GeoServer sees a bridge or pod address such as `172.17.0.1`, which must be listed too. Until it is, an `ip=` control flow limit acts as one limit for the whole server, and a blacklist entry for that address blocks everyone.
-
-The proxy must overwrite `X-Forwarded-For` or append the client address to it. A proxy that passes the header on unchanged lets the client choose its own address, for example to skip the brute force delay with a whitelisted IP. Nginx does this unless `proxy_set_header X-Forwarded-For` is configured.
-
-On Kubernetes, list the address range of the ingress controller pods. To see the real client address, the Service in front of the ingress controller needs `externalTrafficPolicy: Local`.
-
-A customized `web.xml` needs the new `Remote IP Resolution` filter, mapped right after the character encoding filter, as in the `web.xml` shipped with GeoServer.
+A customized `web.xml` needs the new `Remote IP Resolution` filter, see [Customized web.xml](../production/misc.md#customized-webxml).
 
 ## Upgrading GeoServer 3.0.0 Guidance
-
-GeoServer 3.0.x is scheduled for release in April/May 2026.
 
 The upgrade to GeoServer 3.0 is seamless maintaining the same data directory and Java 17 environment as used previously for GeoServer 2.28.
 

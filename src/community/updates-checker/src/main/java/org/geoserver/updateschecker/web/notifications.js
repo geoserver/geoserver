@@ -6,13 +6,12 @@
 /*
  * Dismissals and snoozes, kept in this browser only. Each notification carries the storage key of its dismissal in
  * data-key, and optionally a second key a dismissal also sets in data-also; the value is "dismissed" or
- * "until:<epoch ms>". If storage is blocked, nothing is hidden and a click hides the notification for this view only.
+ * "until:<epoch ms>". A snooze action says how long it hides the notification in data-snooze (milliseconds). If storage
+ * is blocked, nothing is hidden and a click hides the notification for this view only.
  */
 (function (global) {
     'use strict';
 
-    var DAY_MS = 24 * 60 * 60 * 1000;
-    var SNOOZE_MS = {'remind-24h': DAY_MS, 'remind-30d': 30 * DAY_MS};
 
     function storage(item) {
         try {
@@ -42,10 +41,20 @@
         }
     }
 
+    // the longest snooze the notification offers; a snooze that outlasts it was written before the clock was corrected
+    function longestSnooze(item) {
+        var longest = 0;
+        item.querySelectorAll('a[data-snooze]').forEach(function (link) {
+            longest = Math.max(longest, Number(link.getAttribute('data-snooze')));
+        });
+        return longest;
+    }
+
     function isDismissed(item) {
         var value = read(item, item.getAttribute('data-key')) || '';
         var until = /^until:(\d+)$/.exec(value);
-        return value === 'dismissed' || (until !== null && Number(until[1]) > Date.now());
+        var left = until === null ? 0 : Number(until[1]) - Date.now();
+        return value === 'dismissed' || (left > 0 && left <= longestSnooze(item));
     }
 
     // the banner shows its first active notification and counts the others; the Status section shows them all
@@ -78,8 +87,8 @@
         }
     }
 
-    function act(item, action) {
-        var snooze = SNOOZE_MS[action];
+    function act(item, link) {
+        var snooze = Number(link.getAttribute('data-snooze'));
         write(item, item.getAttribute('data-key'), snooze ? 'until:' + (Date.now() + snooze) : 'dismissed');
         if (!snooze) {
             write(item, item.getAttribute('data-also'), 'dismissed');
@@ -112,7 +121,7 @@
             if (link.hasAttribute('data-clear')) {
                 clearAll(root);
             } else {
-                act(link.closest('.gs-updates-checker-item'), link.getAttribute('data-action'));
+                act(link.closest('.gs-updates-checker-item'), link);
             }
             refresh(root);
         });

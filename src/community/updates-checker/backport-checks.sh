@@ -13,6 +13,7 @@
 #
 # The edits, which are all a branch needs while the module follows CLAUDE.md:
 #   all  the parent version in pom.xml
+#   3.x  the user guide page and its screenshots, copied from this checkout
 #   2.x  the test dependency on wicket-tester (Wicket 9 has the tester in wicket-core; 2.27.x needs junit-jupiter),
 #        javax instead of jakarta for the servlet Filter in one test, no module category or contact in
 #        applicationContext.xml, no PMD suppression on getOrder(), and the user guide page copied from
@@ -46,6 +47,10 @@ else
     git -C "$repo" worktree add --quiet --detach "$target" FETCH_HEAD
 fi
 module=$target/$module_path
+if [ "$module" -ef "$module_src" ]; then
+    echo "The target is the checkout this script is in; it would delete the module before copying it" >&2
+    exit 1
+fi
 
 echo "Copying $module_path to $branch in $target"
 rm -rf "$module/src" "$module/old-v2-docs"
@@ -57,6 +62,12 @@ done)
 version=$(sed -n '1,20p' "$target/src/community/pom.xml" | grep -m1 -o '<version>[^<]*</version>')
 # the first version in the file is the parent's
 perl -0pi -e "s{<version>[^<]*</version>}{$version}" "$module/pom.xml"
+
+if [[ $branch == 3.* ]]; then
+    docs_md=$target/doc/en/user/community/updates-checker
+    mkdir -p "$docs_md"
+    cp "$repo"/doc/en/user/community/updates-checker/* "$docs_md/"
+fi
 
 if [[ $branch == 2.* ]]; then
     if [ "$branch" = 2.27.x ]; then

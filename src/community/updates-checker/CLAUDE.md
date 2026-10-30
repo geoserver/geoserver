@@ -30,7 +30,9 @@ backport.
 - Only GeoServer API that exists from 2.23. Where 3.x adds something worth using, use it so the same source still
   compiles on 2.x: `HomePageContentProvider.getOrder()` has no `@Override` (with `@SuppressWarnings` for Error Prone and
   PMD), and the menu category is picked in `applicationContext.xml` by bean name.
-- No reflection to bridge versions. Use XML, an annotation-free override, or a `backport-checks.sh` edit instead.
+- No reflection to bridge versions. Use XML, an annotation-free override, or a `backport-checks.sh` edit instead. So each
+  branch builds its own jar: the 3.x jar declares the module category and needs GeoServer 3.0, and the jar of a 2.x build
+  runs on every GeoServer from 2.23. The user guide says so; keep it true when a branch edit changes it.
 - No servlet API in main code: `javax` on 2.x, `jakarta` on 3.x. `CheckController` reads the body as an `InputStream`
   for this reason, and because GeoServer's message converters read any JSON body as an XStream type.
 - Only Wicket API common to Wicket 9 (2.x) and 10 (3.x). Lambda models (`() -> ...`) work on both.

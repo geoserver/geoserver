@@ -10,6 +10,8 @@
 The two differ only where 2.x differs:
 
 - The menu is **About & Status** only, with the `menu-gs2.png` screenshot.
+- The Java 11 note under Installation says the JAR runs on GeoServer 2.23 and later, because the JAR of a 2.x build has no
+  module category; the Markdown page says the JAR of a 3.x build needs GeoServer 3.0.
 - The nightly build link uses `|version|.x` instead of `main`.
 - The Docker example uses `|release|` and `|version|.x` under `.. only::`, instead of `{{ release }}`.
 - Links to other pages use `:ref:` targets (`application_properties`), and the page defines its own

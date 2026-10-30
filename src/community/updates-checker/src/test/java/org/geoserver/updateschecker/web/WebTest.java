@@ -138,7 +138,7 @@ public class WebTest extends GeoServerWicketTestSupport {
         tester.assertContains("gs-updates-checker-none");
         tester.assertContains("data-clear");
         tester.assertContains("data-template=\"Clear previous \\{0\\} dismissals\"");
-        tester.assertContains("data-action=\"remind-24h\"");
+        tester.assertContains("data-action=\"remind-24h\" data-snooze=\"86400000\"");
         tester.assertContains("data-action=\"dismiss\"");
     }
 

@@ -83,6 +83,8 @@ class NotificationLine extends Panel {
                 Notification.Action action = item.getModelObject();
                 WebMarkupContainer link = new WebMarkupContainer("actionLink");
                 link.add(AttributeModifier.replace("data-action", action.getId()));
+                link.add(AttributeModifier.replace(
+                        "data-snooze", action.getSnoozeMillis() > 0 ? String.valueOf(action.getSnoozeMillis()) : null));
                 item.add(link);
                 String text = getString(action.getMessageKey());
                 if (n.getTargetVersion() != null) {

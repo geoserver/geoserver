@@ -5,6 +5,7 @@
 package org.geoserver.updateschecker;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 
@@ -45,24 +46,31 @@ public final class Notification implements Serializable {
         }
     }
 
-    /** What the user can do about a notification: the id the browser script reads, and the label key. */
+    /** What the user can do about a notification: the id the browser script reads, how long it hides it, the label. */
     public enum Action {
-        REMIND_TOMORROW("remind-24h", "UpdatesChecker.action.remindTomorrow"),
-        REMIND_IN_30_DAYS("remind-30d", "UpdatesChecker.action.remind30Days"),
-        DISMISS_VERSION("dismiss", "UpdatesChecker.action.dismissVersion"),
-        DISMISS_SERIES("dismiss", "UpdatesChecker.action.dismissSeries"),
-        DISMISS("dismiss", "UpdatesChecker.action.dismiss");
+        REMIND_TOMORROW("remind-24h", Duration.ofDays(1), "UpdatesChecker.action.remindTomorrow"),
+        REMIND_IN_30_DAYS("remind-30d", Duration.ofDays(30), "UpdatesChecker.action.remind30Days"),
+        DISMISS_VERSION("dismiss", Duration.ZERO, "UpdatesChecker.action.dismissVersion"),
+        DISMISS_SERIES("dismiss", Duration.ZERO, "UpdatesChecker.action.dismissSeries"),
+        DISMISS("dismiss", Duration.ZERO, "UpdatesChecker.action.dismiss");
 
         private final String id;
+        private final Duration snooze;
         private final String messageKey;
 
-        Action(String id, String messageKey) {
+        Action(String id, Duration snooze, String messageKey) {
             this.id = id;
+            this.snooze = snooze;
             this.messageKey = messageKey;
         }
 
         public String getId() {
             return id;
+        }
+
+        /** @return how long the action hides the notification, in milliseconds, or 0 if it dismisses it for good */
+        public long getSnoozeMillis() {
+            return snooze.toMillis();
         }
 
         public String getMessageKey() {

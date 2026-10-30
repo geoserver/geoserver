@@ -179,6 +179,7 @@
         <module>geoparquet</module>
         <module>wps-download-netcdf</module>
         <module>singlestore</module>
+        <module>updates-checker</module>
       </modules>
     </profile>
     <profile>
@@ -563,6 +564,12 @@
       <id>singlestore</id>
       <modules>
         <module>singlestore</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>updates-checker</id>
+      <modules>
+        <module>updates-checker</module>
       </modules>
     </profile>
     <profile>

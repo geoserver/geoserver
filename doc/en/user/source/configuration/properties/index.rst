@@ -493,6 +493,18 @@ GeoServer Property Reference
      -
      - x
 
+   * - UPDATES_CHECKER_FEED_URL
+
+       :doc:`Check for Updates </community/updates-checker/index>` community module, ``https`` URL of the version feed to use instead of the default.
+     - x
+     - x
+     - x
+   * - UPDATES_CHECKER_SUPPRESSED_CVES
+
+       :doc:`Check for Updates </community/updates-checker/index>` community module, CVE or GHSA ids, separated by commas, semicolons or spaces, of security advisories that have been mitigated and should not be reported.
+     - x
+     - x
+     - x
    * - TRACK_USER
 
        Flag to enable user tracking in GeoServer.

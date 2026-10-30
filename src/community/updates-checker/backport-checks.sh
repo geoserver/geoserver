@@ -15,7 +15,8 @@
 #   all  the parent version in pom.xml
 #   2.x  the test dependency on wicket-tester (Wicket 9 has the tester in wicket-core; 2.27.x needs junit-jupiter),
 #        javax instead of jakarta for the servlet Filter in one test, no module category or contact in
-#        applicationContext.xml, no PMD suppression on getOrder(), and the user guide page copied from doc/index.rst
+#        applicationContext.xml, no PMD suppression on getOrder(), and the user guide page copied from
+#        old-v2-docs/index.rst
 set -euo pipefail
 
 usage() {
@@ -47,7 +48,7 @@ fi
 module=$target/$module_path
 
 echo "Copying $module_path to $branch in $target"
-rm -rf "$module/src" "$module/doc"
+rm -rf "$module/src" "$module/old-v2-docs"
 mkdir -p "$module"
 (cd "$module_src" && git ls-files --cached --others --exclude-standard . | while read -r file; do
     [ -e "$file" ] && mkdir -p "$module/$(dirname "$file")" && cp "$file" "$module/$file"
@@ -75,7 +76,7 @@ if [[ $branch == 2.* ]]; then
 
     docs_rst=$target/doc/en/user/source/community/updates-checker
     mkdir -p "$docs_rst"
-    cp "$module_src/doc/index.rst" "$docs_rst/index.rst"
+    cp "$module_src/old-v2-docs/index.rst" "$docs_rst/index.rst"
     cp "$repo"/doc/en/user/community/updates-checker/*.png "$docs_rst/"
     grep -q 'updates-checker/index' "$target/doc/en/user/source/community/index.rst" ||
         echo "WARNING: doc/en/user/source/community/index.rst has no toctree entry for updates-checker/index" >&2

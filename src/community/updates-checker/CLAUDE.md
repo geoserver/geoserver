@@ -15,7 +15,7 @@ The module source is the same on all four branches. Only the edits that `backpor
 | `javax.servlet.Filter` instead of `jakarta.servlet.Filter` in `CheckControllerTest` | 2.x | GeoServer 3 moved to Jakarta; `getFilters()` returns that type |
 | No `category` and `contact` properties on the module status bean | 2.x | `ModuleStatusImpl` has them from 3.0 only |
 | `"PMD.MissingOverride"` dropped from the suppression on `HomePageContentProvider.getOrder()` | 2.x | The method overrides nothing there, and the 2.28.x PMD reports an unneeded suppression |
-| User guide page copied from `doc/index.rst` | 2.x | 2.x documentation is reStructuredText |
+| User guide page copied from `old-v2-docs/index.rst` | 2.x | 2.x documentation is reStructuredText |
 
 Run `./backport-checks.sh 2.27.x` (add `QA=1` for the QA checks) before opening a pull request on `main`: it builds and
 tests this source on 2.27.x, the strictest branch (Java 11, Error Prone). If a change needs a new edit, the edit goes
@@ -46,8 +46,8 @@ backport.
 
 ## Documentation
 
-Change `doc/en/user/community/updates-checker/index.md` (Markdown, `main` and `3.0.x`) and `doc/index.rst` (the 2.x copy)
-in the same commit. See `doc/README.md`.
+Change `doc/en/user/community/updates-checker/index.md` (Markdown, `main` and `3.0.x`) and `old-v2-docs/index.rst` (the 2.x copy)
+in the same commit. See `old-v2-docs/README.md`.
 
 ## The feed is untrusted
 

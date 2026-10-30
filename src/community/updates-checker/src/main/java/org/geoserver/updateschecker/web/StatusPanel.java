@@ -39,8 +39,6 @@ public class StatusPanel extends Panel {
 
     private final WebMarkupContainer root = new WebMarkupContainer("root");
 
-    private boolean checked;
-
     public StatusPanel(String id, Status initial) {
         super(id);
         setOutputMarkupId(true);
@@ -60,10 +58,7 @@ public class StatusPanel extends Panel {
         });
         // the values in the header are escaped by Status; only its emphasis is markup
         root.add(new Label("header", () -> status.getObject().getHeaderHtml(getLocale())).setEscapeModelStrings(false));
-        Label feedLine = new Label("feedLine", () -> status.getObject().getFeedLine(getLocale()));
-        // after a check, the time fades in over two seconds, so even a quick check is seen to happen
-        feedLine.add(AttributeModifier.append("class", () -> checked ? "gs-updates-checker-fresh" : null));
-        root.add(feedLine);
+        root.add(new Label("feedLine", () -> status.getObject().getFeedLine(getLocale())));
         root.add(checkNow());
         root.add(new Label("suppressed", () -> status.getObject().getSuppressedMessage(getLocale())) {
             private static final long serialVersionUID = 1L;
@@ -136,7 +131,6 @@ public class StatusPanel extends Panel {
 
     private void show(AjaxRequestTarget target, Status newStatus) {
         status.setObject(newStatus);
-        checked = true;
         target.add(this);
     }
 

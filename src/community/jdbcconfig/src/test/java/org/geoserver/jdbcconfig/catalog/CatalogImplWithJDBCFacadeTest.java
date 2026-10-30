@@ -53,7 +53,7 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
 
     private JDBCCatalogFacade facade;
 
-    private JDBCConfigTestSupport testSupport;
+    protected JDBCConfigTestSupport testSupport;
 
     public CatalogImplWithJDBCFacadeTest(JDBCConfigTestSupport.DBConfig dbConfig) {
         testSupport = new JDBCConfigTestSupport(dbConfig);
@@ -299,10 +299,14 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
     public void testUpgradeLock() {
         GeoServerConfigurationLock configurationLock = GeoServerExtensions.bean(GeoServerConfigurationLock.class);
         configurationLock.lock(LockType.READ);
-        catalog.getNamespaces();
-        assertEquals(LockType.READ, configurationLock.getCurrentLock());
-        addNamespace();
-        assertEquals(LockType.WRITE, configurationLock.getCurrentLock());
+        try {
+            catalog.getNamespaces();
+            assertEquals(LockType.READ, configurationLock.getCurrentLock());
+            addNamespace();
+            assertEquals(LockType.WRITE, configurationLock.getCurrentLock());
+        } finally {
+            configurationLock.unlock();
+        }
     }
 
     @Test

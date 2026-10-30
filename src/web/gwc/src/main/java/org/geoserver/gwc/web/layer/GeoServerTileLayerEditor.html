@@ -22,6 +22,10 @@
 	            <label for="blobStoreId"><wicket:message key="blobStoreId"></wicket:message></label>
 	            <select wicket:id="blobStoreId" id="blobStoreId"></select>
 	          </li>   
+              <li class="choiceItem">
+                <input id="memoryCached" wicket:id="memoryCached" type="checkbox"/>
+                <label for="memoryCached"><wicket:message key="memoryCached">Use the in-memory tile cache for this layer</wicket:message></label>
+              </li>
               <li>
                 <label><wicket:message key="metaTiling">Meta tiling factors</wicket:message></label>
                 <select class="select" id="metaTilingX" wicket:id="metaTilingX"></select>

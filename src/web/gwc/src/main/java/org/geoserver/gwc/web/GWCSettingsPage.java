@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.Serial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -22,16 +23,22 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.gwc.web.tilecache.TileCachePanel;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.GeoserverAjaxSubmitLink;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geotools.image.io.ImageIOExt;
 import org.geotools.util.logging.Logging;
+import org.geowebcache.config.XMLConfiguration;
+import org.geowebcache.storage.tilecache.TileCacheInfo;
 
 // TODO WICKET8 - Verify this page works OK
 public class GWCSettingsPage extends GeoServerSecuredPage {
 
     private static final Logger LOGGER = Logging.getLogger(GWCSettingsPage.class);
+
+    private final IModel<TileCacheInfo> tileCacheModel;
 
     public GWCSettingsPage() {
         setHeaderPanel(headerPanel());
@@ -51,6 +58,11 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
 
         form.add(gwcServicesPanel);
         form.add(defaultCachingOptionsPanel);
+        // a detached copy too, the live settings are replaced on save, never changed in place
+        // absent until the settings are saved once, as in data directories from before the cache existed
+        TileCacheInfo tileCache = xmlConfig().getTileCache();
+        tileCacheModel = new Model<>(tileCache == null ? new TileCacheInfo() : SerializationUtils.clone(tileCache));
+        form.add(new TileCachePanel("tileCachePanel", tileCacheModel));
 
         form.add(new Button("submit") {
             @Serial
@@ -81,6 +93,8 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
         GWCConfig gwcConfig = gwcConfigModel.getObject();
         try {
             gwc.saveConfig(gwcConfig);
+            // a new instance per save, the cache is rebuilt when the instance changes
+            xmlConfig().setTileCache(SerializationUtils.clone(tileCacheModel.getObject()));
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Error saving GWC config", e);
             form.error("Error saving GWC config: " + e.getMessage());
@@ -119,6 +133,10 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
             String warningMsg = new ResourceModel("GWC.ImageIOFileCachingThresholdUnsetWarning").getObject();
             super.warn(warningMsg);
         }
+    }
+
+    private static XMLConfiguration xmlConfig() {
+        return GeoServerExtensions.bean(XMLConfiguration.class);
     }
 
     protected Component headerPanel() {

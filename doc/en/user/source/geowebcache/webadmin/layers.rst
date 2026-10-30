@@ -79,10 +79,19 @@ A confirmation will appear on the page as message with names of cleared Tile lay
 
 .. figure:: img/gwc_clean.png
    
+.. _gwc_webadmin_layers_configure:
+
 Configuring a cached layer
 --------------------------
 
 You have two options for layer configuration. The first option is to load the layer using the default (global) settings. To do this, select the layer you wish to start caching, and click the :guilabel:`Configure selected layers with caching defaults` link. The second option is to configure the caching parameters manually, via the :ref:`layer configuration <data_webadmin_layers>` pages. To do this, just click the layer name itself.
+
+Use the in-memory tile cache for this layer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When checked, the layer tiles go through the in-memory tile cache configured in the :ref:`caching defaults <gwc_webadmin_defaults_memorycache>`. It has no effect while the in-memory tile cache is disabled there. Unchecked by default.
+
+Set :guilabel:`Expire server cache after n seconds` to the refresh interval of the layer data: each tile in memory expires after that time, or after the maximum time to live of the in-memory tile cache when shorter.
 
 
 Parameter Filters

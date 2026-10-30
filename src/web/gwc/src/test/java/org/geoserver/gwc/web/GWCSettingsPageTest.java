@@ -10,6 +10,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -23,11 +24,15 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.gwc.ConfigurableLockProvider;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.DimensionWarning.WarningType;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geowebcache.config.XMLConfiguration;
 import org.geowebcache.locks.MemoryLockProvider;
 import org.geowebcache.locks.NIOLockProvider;
+import org.geowebcache.storage.tilecache.HeapTileCacheBackendInfo;
+import org.geowebcache.storage.tilecache.TileCacheInfo;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +50,90 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         GWCConfig config = gwc.getConfig();
         config.getDefaultVectorCacheFormats().remove("foo/bar");
         gwc.saveConfig(config);
+    }
+
+    @Before
+    public void resetTileCache() throws IOException {
+        xmlConfig().setTileCache(new TileCacheInfo());
+    }
+
+    private static XMLConfiguration xmlConfig() {
+        return GeoServerExtensions.bean(XMLConfiguration.class);
+    }
+
+    /** Saves enabled tile cache settings, with the given passthrough and time to live. */
+    private static void enableTileCache(boolean passthrough, long timeToLive) throws IOException {
+        TileCacheInfo info = new TileCacheInfo();
+        info.setEnabled(true);
+        info.setPassthrough(passthrough);
+        info.setTimeToLive(timeToLive);
+        xmlConfig().setTileCache(info);
+    }
+
+    @Test
+    public void testEditTileCache() throws IOException {
+        enableTileCache(true, 300);
+        TileCacheInfo before = xmlConfig().getTileCache();
+        tester.startPage(GWCSettingsPage.class);
+
+        FormTester form = tester.newFormTester("form");
+        form.setValue("tileCachePanel:settings:passthrough", false);
+        form.setValue("tileCachePanel:settings:timeToLive", "3600");
+        form.setValue("tileCachePanel:settings:statsInterval", "0");
+        form.setValue("tileCachePanel:settings:backendContainer:backendPanel:maxSizeMB", "128");
+        form.submit("submit");
+
+        tester.assertNoErrorMessage();
+        // a new instance, so the running cache gets rebuilt
+        TileCacheInfo saved = xmlConfig().getTileCache();
+        assertNotSame(before, saved);
+        assertTrue(saved.isEnabled());
+        assertFalse(saved.isPassthrough());
+        assertEquals(3600, saved.getTimeToLive());
+        assertEquals(0, saved.getStatsInterval());
+        assertEquals(128, ((HeapTileCacheBackendInfo) saved.getBackend()).getMaxSizeMB());
+    }
+
+    @Test
+    public void testEditMissingTileCache() throws IOException {
+        xmlConfig().setTileCache(null);
+        tester.startPage(GWCSettingsPage.class);
+        tester.assertRenderedPage(GWCSettingsPage.class);
+
+        FormTester form = tester.newFormTester("form");
+        form.setValue("tileCachePanel:enabled", true);
+        form.submit("submit");
+
+        tester.assertNoErrorMessage();
+        assertTrue(xmlConfig().getTileCache().isEnabled());
+    }
+
+    @Test
+    public void testTileCacheSettingsShownWhenEnabled() {
+        tester.startPage(GWCSettingsPage.class);
+        tester.assertInvisible("form:tileCachePanel:settings");
+
+        FormTester form = tester.newFormTester("form");
+        form.setValue("tileCachePanel:enabled", true);
+        tester.executeAjaxEvent("form:tileCachePanel:enabled", "click");
+
+        tester.assertVisible("form:tileCachePanel:settings");
+    }
+
+    @Test
+    public void testDisableKeepsTileCacheSettings() throws IOException {
+        enableTileCache(false, 3600);
+        tester.startPage(GWCSettingsPage.class);
+
+        FormTester form = tester.newFormTester("form");
+        form.setValue("tileCachePanel:enabled", false);
+        form.submit("submit");
+
+        tester.assertNoErrorMessage();
+        TileCacheInfo saved = xmlConfig().getTileCache();
+        assertFalse(saved.isEnabled());
+        assertFalse(saved.isPassthrough());
+        assertEquals(3600, saved.getTimeToLive());
     }
 
     @Test

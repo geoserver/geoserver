@@ -1785,6 +1785,11 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
     }
 
     @Override
+    public boolean isMemoryCached() {
+        return info.isMemoryCached();
+    }
+
+    @Override
     public Map<String, org.geowebcache.config.legends.LegendInfo> getLayerLegendsInfo() {
         final PublishedInfo publishedInfo = getPublishedInfo();
         if (!(publishedInfo instanceof LayerInfo)) {

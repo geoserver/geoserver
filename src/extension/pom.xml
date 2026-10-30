@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -83,7 +83,6 @@
   </build>
 
   <profiles>
-
     <!-- profiles for individual modules -->
 
     <profile>
@@ -456,65 +455,6 @@
         <module>ogcapi/ogcapi-features</module>
         <module>ogcapi/web-ogcapi</module>
         <module>ogcapi/web-features</module>
-      </modules>
-    </profile>
-
-    <!-- allExtensions profile, includes all modules -->
-    <profile>
-      <id>allExtensions</id>
-      <modules>
-        <module>app-schema</module>
-        <module>sqlserver</module>
-        <module>oracle</module>
-        <module>mysql</module>
-        <module>db2</module>
-        <module>gdal</module>
-        <module>iau</module>
-        <module>jp2k</module>
-        <module>ogr</module>
-        <module>pyramid</module>
-        <module>excel-core</module>
-        <module>excel-wfs</module>
-        <module>excel-wps</module>
-        <module>charts</module>
-        <module>feature-pregeneralized</module>
-        <module>control-flow</module>
-        <module>wps</module>
-        <module>querylayer</module>
-        <module>monitor</module>
-        <module>security</module>
-        <module>inspire</module>
-        <module>css</module>
-        <module>csw</module>
-        <module>dxf</module>
-        <module>printing</module>
-        <module>wcs2_0-eo</module>
-        <module>libjpeg-turbo</module>
-        <module>importer</module>
-        <module>grib</module>
-        <module>netcdf</module>
-        <module>netcdf-out</module>
-        <module>vectortiles</module>
-        <module>ysld</module>
-        <module>mbstyle</module>
-        <module>mongodb</module>
-        <module>sldService</module>
-        <module>geofence</module>
-        <module>authkey</module>
-        <module>web-resource</module>
-        <module>params-extractor</module>
-        <module>gwc-s3</module>
-        <module>wmts-multi-dimensional</module>
-        <module>wps-download</module>
-        <module>wps-jdbc</module>
-        <module>mapml</module>
-        <module>geopkg-output</module>
-        <module>metadata</module>
-        <module>rat</module>
-        <module>ogcapi</module>
-        <module>kml</module>
-        <module>arcgrid</module>
-        <module>image</module>
       </modules>
     </profile>
 

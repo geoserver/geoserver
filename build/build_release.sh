@@ -216,7 +216,7 @@ fi
 
 # update geotools version
 if [ ! -z $gt_tag ]; then
-  sed -i "s/\(<gt.version>\).*\(<\/gt.version>\)/\1$gt_tag\2/g" src/pom.xml
+  sed_i "s/\(<gt.version>\).*\(<\/gt.version>\)/\1$gt_tag\2/g" src/pom.xml
 else
   # look up from pom instead
   gt_tag=`cat src/pom.xml | grep "<gt.version>" | sed 's/ *<gt.version>\(.*\)<\/gt.version>/\1/g'`
@@ -269,7 +269,7 @@ fi
 
 # update geowebcache version
 if [ ! -z $gwc_tag ]; then
-  sed -i "s/\(<gwc.version>\).*\(<\/gwc.version>\)/\1$gwc_tag\2/g" src/pom.xml
+  sed_i "s/\(<gwc.version>\).*\(<\/gwc.version>\)/\1$gwc_tag\2/g" src/pom.xml
 else
   gwc_tag=`cat src/pom.xml | grep "<gwc.version>" | sed 's/ *<gwc.version>\(.*\)<\/gwc.version>/\1/g'`
 fi
@@ -278,9 +278,7 @@ fi
 old_ver=`get_pom_version src/pom.xml`
 
 echo "updating version numbers from $old_ver to $tag"
-find src -name pom.xml -exec sed -i "s/$old_ver/$tag/g" {} \;
-find doc -name conf.py -exec sed -i "s/$old_ver/$tag/g" {} \;
-find doc -name pom.xml -exec sed -i "s/$old_ver/$tag/g" {} \;
+update_version $old_ver $tag 'src/*pom.xml' 'doc/*pom.xml' 'doc/*conf.py'
 
 pushd src/release > /dev/null
 shopt -s extglob

@@ -83,10 +83,10 @@ fi
 # deploy the release to maven repo
 pushd src > /dev/null
 if [ -z $SKIP_DEPLOY ]; then
-   mvn clean install -P allExtensions,pending -DskipTests $MAVEN_FLAGS 
-   mvn deploy -P allExtensions,pending -DskipTests $MAVEN_FLAGS 
+   mvn clean install -P release,pending -DskipTests $MAVEN_FLAGS 
+   mvn deploy -P release,pending -DskipTests $MAVEN_FLAGS 
 else
-   echo "Skipping mvn deploy -P allExtensions,pending -DskipTests $MAVEN_FLAGS"
+   echo "Skipping mvn deploy -P release,pending -DskipTests $MAVEN_FLAGS"
 fi
 
 if [ -z $SKIP_COMMUNITY ]; then
@@ -140,7 +140,7 @@ if [ "$major_version" -ge 3 ]; then
     old_ver=`get_pom_version src/pom.xml`
     new_ver="${tag%.*}.$(( ${tag##*.} + 1 ))-SNAPSHOT"
     echo "updating version numbers from $old_ver to $new_ver"
-    git grep -l "$old_ver" -- '*pom.xml' | xargs sed -i "s/$old_ver/$new_ver/g"
+    update_version $old_ver $new_ver '*pom.xml'
     git commit -am "Advance $branch to $new_ver"
   fi
   git push origin $branch

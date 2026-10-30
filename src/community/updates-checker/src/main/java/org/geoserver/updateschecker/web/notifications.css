@@ -65,14 +65,20 @@
   display: none;
 }
 
-/* the time of a check that has just run fades in over two seconds */
-.gs-updates-checker-fresh {
-  animation: gs-updates-checker-fresh 2s ease-out;
+/* the time of a check that has just run is highlighted for 0.6 s, then the highlight fades out over 1.4 s; the delay
+   with "backwards" holds the first state, and a transition cannot do this because the element is new */
+.gs-updates-checker-feed-line {
+  padding: 0 0.4em;
+  border-radius: 3px;
 }
 
-@keyframes gs-updates-checker-fresh {
+.gs-updates-checker-fresh {
+  animation: gs-updates-checker-highlight 1.4s ease-out 0.6s backwards;
+}
+
+@keyframes gs-updates-checker-highlight {
   from {
-    opacity: 0.1;
+    background-color: color-mix(in srgb, currentcolor 22%, transparent);
   }
 }
 

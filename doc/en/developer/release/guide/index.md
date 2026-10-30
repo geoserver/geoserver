@@ -202,7 +202,7 @@ After publishing the first release of a series from the main development branch 
         - Name: `GEOSERVER_MAIN_DOCKER_NAME`
         - Value: `3.1.0-SNAPSHOT`
 
-9.  Update the MAIN variable in Docker [release.sh](https://github.com/geoserver/docker/blob/master/build/release.sh#L6) to the new main branch version.
+9.  Update the MAIN variable in Docker [release.sh](https://github.com/geoserver/docker/blob/master/build/release.sh#L6) to the new main branch version, and the `MAIN_VERSION`, `STABLE_VERSION` and `MAINTENANCE_VERSION` variables in Docker [publish.yml](https://github.com/geoserver/docker/blob/master/.github/workflows/publish.yml).
 
 10. Announce on the developer group that the new stable branch has been created.
 
@@ -279,6 +279,20 @@ This job will rsync all the artifacts located at:
     https://build.geoserver.org/geoserver/release/<RELEASE>
 
 to the SourceForge FRS server. Navigate to [SourceForge](https://sourceforge.net/projects/geoserver/files/GeoServer/) and verify that the artifacts have been uploaded properly. If this is the latest stable release, set the necessary flags (you will need to be logged in as a SourceForge admin user) on the `.exe` and `.bin` artifacts so that they show up as the appropriate default for users downloading on the Windows and Linux platforms. This does not apply to maintenance or support releases.
+
+### Docker images
+
+Once the release is available on SourceForge, run the Docker [publish.yml](https://github.com/geoserver/docker/actions/workflows/publish.yml) workflow to build multi-arch (`linux/amd64`, `linux/arm64`) images, with and without GDAL:
+
+    gh workflow run publish.yml -R geoserver/docker --ref master -f version=3.0.2
+
+The workflow pushes `<version>` and `<version>-gdal` to `docker.osgeo.org/geoserver`, along with the series tags `<major>.<minor>-latest` and `stable-latest` or `maintenance-latest`. Check that both architectures are listed:
+
+    docker buildx imagetools inspect docker.osgeo.org/geoserver:3.0.2
+
+If a build job fails while downloading from SourceForge, re-run only the failed jobs:
+
+    gh run rerun <run-id> --failed -R geoserver/docker
 
 For GeoServer 3.x the publish also reverts the release commit on the `<RELEASE>.x` branch and merges it back into `BRANCH`. When `BRANCH` is a stable branch (e.g. `3.0.x`) it is then advanced to the next patch version (e.g. releasing `3.0.2` advances `3.0.x` to `3.0.3-SNAPSHOT`). The `main` branch is not advanced by the job, see [create the stable branch](#when-publishing-the-first-release-of-a-series-create-the-stable-branch) after publishing the first release of a series.
 

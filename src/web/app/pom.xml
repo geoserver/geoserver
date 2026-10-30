@@ -378,6 +378,16 @@
       </dependencies>
     </profile>
     <profile>
+      <id>updates-checker</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-updates-checker</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>kml</id>
       <dependencies>
         <dependency>

@@ -50,36 +50,8 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wms-core</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
       <artifactId>gs-wms-gml</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-wfs-core</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-wfs1_x</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-wfs2_x</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -94,20 +66,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-app-schema</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.extension</groupId>
-      <artifactId>gs-app-schema-test</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-features-templating-core</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -159,6 +117,48 @@
         <dependency>
           <groupId>org.geoserver</groupId>
           <artifactId>gs-main</artifactId>
+          <version>${project.version}</version>
+          <classifier>tests</classifier>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver</groupId>
+          <artifactId>gs-wms-core</artifactId>
+          <version>${project.version}</version>
+          <classifier>tests</classifier>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver</groupId>
+          <artifactId>gs-wfs-core</artifactId>
+          <version>${project.version}</version>
+          <classifier>tests</classifier>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver</groupId>
+          <artifactId>gs-wfs1_x</artifactId>
+          <version>${project.version}</version>
+          <classifier>tests</classifier>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver</groupId>
+          <artifactId>gs-wfs2_x</artifactId>
+          <version>${project.version}</version>
+          <classifier>tests</classifier>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-app-schema-test</artifactId>
+          <version>${project.version}</version>
+          <classifier>tests</classifier>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-features-templating-core</artifactId>
           <version>${project.version}</version>
           <classifier>tests</classifier>
           <scope>test</scope>

@@ -10,6 +10,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
+import java.util.List;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -19,6 +20,8 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.AdminRequest;
+import org.geoserver.security.impl.DataAccessRule;
+import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.junit.After;
@@ -277,5 +280,232 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
         dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/sf/styles.xml");
         assertEquals(1, dom.getElementsByTagName("style").getLength());
         assertXpathEvaluatesTo("sf_style", "//style/name", dom);
+    }
+
+    @Test
+    public void testReadOnlyUserRestCatalogVisibility() throws Exception {
+
+        // Create a user with READ permission but no ADMIN permission.
+        addUser("readonly", "readonly", null, Collections.singletonList("ROLE_CITE_READER"));
+
+        // Explicitly grant the user READ access to the cite workspace.
+        addLayerAccessRule("cite", "*", AccessMode.READ, "ROLE_CITE_READER");
+
+        // Authenticate as our read-only user.
+        login("readonly", "readonly", "ROLE_CITE_READER");
+
+        // The REST request is accepted.
+        assertEquals(
+                200,
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces.xml")
+                        .getStatus());
+
+        // Current behavior: no workspaces are returned.
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces.xml");
+
+        assertEquals(0, dom.getElementsByTagName("workspace").getLength());
+
+        // Current behavior: an individual workspace is also hidden.
+        assertEquals(
+                404,
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/cite.xml")
+                        .getStatus());
+    }
+
+    @Test
+    public void testReadOnlyMetadataWorkspaceDiscovery() throws Exception {
+
+        addUser("metadatareader", "metadatareader", null, List.of("ROLE_CITE_READER", "ROLE_METADATA_READER"));
+
+        addLayerAccessRule("cite", "*", AccessMode.READ, "ROLE_CITE_READER");
+
+        // Restrict sf to a role our metadata reader does not have.
+        DataAccessRuleDAO dao = DataAccessRuleDAO.get();
+        DataAccessRule sfRule = new DataAccessRule("sf", "*", AccessMode.READ, "ROLE_SF_READER");
+
+        org.junit.Assert.assertTrue(dao.addRule(sfRule));
+        dao.storeRules();
+
+        try {
+            login("metadatareader", "metadatareader", "ROLE_CITE_READER", "ROLE_METADATA_READER");
+
+            MockHttpServletResponse response =
+                    getAsServletResponse(RestBaseController.ROOT_PATH + "/metadata/workspaces.json");
+
+            assertEquals(200, response.getStatus());
+
+            String json = response.getContentAsString();
+
+            // Authorized workspace must be visible.
+            org.junit.Assert.assertTrue("Expected cite workspace: " + json, json.contains("\"cite\""));
+
+            // Unauthorized workspace must not be visible.
+            org.junit.Assert.assertFalse("Unauthorized sf workspace exposed: " + json, json.contains("\"sf\""));
+
+        } finally {
+            // Restore the original security rules after this test.
+            dao.removeRule(sfRule);
+            dao.storeRules();
+        }
+    }
+
+    @Test
+    public void testMetadataEndpointHasNoHardcodedRoleRequirement() throws Exception {
+
+        // Create a user who does not have metadata API privileges.
+        addUser("nometa", "nometa", null, Collections.singletonList("ROLE_NO_METADATA"));
+
+        // Authenticate as the unprivileged user.
+        login("nometa", "nometa", "ROLE_NO_METADATA");
+
+        // Attempt to access our new metadata endpoint.
+        MockHttpServletResponse response =
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/metadata/workspaces.json");
+
+        // An unprivileged user must not be allowed to access this endpoint.
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    public void testAnonymousMetadataAccessDenied() throws Exception {
+
+        // Ensure no authentication is present.
+        logout();
+        setRequestAuth(null, null);
+
+        MockHttpServletResponse response =
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/metadata/workspaces.json");
+
+        assertEquals(401, response.getStatus());
+
+        response = getAsServletResponse(RestBaseController.ROOT_PATH + "/metadata/layers.json");
+
+        assertEquals(401, response.getStatus());
+    }
+
+    @Test
+    public void testReadOnlyMetadataLayerDiscovery() throws Exception {
+
+        addUser("layerreader", "layerreader", null, List.of("ROLE_CITE_READER", "ROLE_METADATA_READER"));
+
+        // Allow reading layers in cite.
+        addLayerAccessRule("cite", "*", AccessMode.READ, "ROLE_CITE_READER");
+
+        DataAccessRuleDAO dao = DataAccessRuleDAO.get();
+
+        // Deny access to the sf workspace.
+        DataAccessRule sfRule = new DataAccessRule("sf", "*", AccessMode.READ, "ROLE_SF_READER");
+
+        // Deny access to one specific layer in cite.
+        DataAccessRule forestRule = new DataAccessRule("cite", "Forests", AccessMode.READ, "ROLE_FOREST_READER");
+
+        org.junit.Assert.assertTrue(dao.addRule(sfRule));
+        org.junit.Assert.assertTrue(dao.addRule(forestRule));
+
+        dao.storeRules();
+
+        try {
+
+            login("layerreader", "layerreader", "ROLE_CITE_READER", "ROLE_METADATA_READER");
+
+            MockHttpServletResponse response =
+                    getAsServletResponse(RestBaseController.ROOT_PATH + "/metadata/layers.json");
+
+            assertEquals(200, response.getStatus());
+
+            String json = response.getContentAsString();
+
+            // An authorized layer must appear.
+            org.junit.Assert.assertTrue("Expected cite:Bridges: " + json, json.contains("\"cite:Bridges\""));
+
+            // An unauthorized workspace must not appear.
+            org.junit.Assert.assertFalse(
+                    "Unauthorized sf layer exposed: " + json, json.contains("\"sf:PrimitiveGeoFeature\""));
+
+            // A specifically restricted layer must not appear.
+            org.junit.Assert.assertFalse(
+                    "Unauthorized cite:Forests exposed: " + json, json.contains("\"cite:Forests\""));
+
+        } finally {
+
+            // Restore the original security configuration.
+            dao.removeRule(sfRule);
+            dao.removeRule(forestRule);
+            dao.storeRules();
+        }
+    }
+
+    @Test
+    public void testReadOnlyMetadataFeatureType() throws Exception {
+
+        addUser("schemareader", "schemareader", null, List.of("ROLE_CITE_READER", "ROLE_METADATA_READER"));
+
+        addLayerAccessRule("cite", "*", AccessMode.READ, "ROLE_CITE_READER");
+
+        DataAccessRuleDAO dao = DataAccessRuleDAO.get();
+
+        // Restrict the entire sf workspace.
+        DataAccessRule sfRule = new DataAccessRule("sf", "*", AccessMode.READ, "ROLE_SF_READER");
+
+        // Restrict one particular layer within cite.
+        DataAccessRule forestRule = new DataAccessRule("cite", "Forests", AccessMode.READ, "ROLE_FOREST_READER");
+
+        org.junit.Assert.assertTrue(dao.addRule(sfRule));
+        org.junit.Assert.assertTrue(dao.addRule(forestRule));
+        dao.storeRules();
+
+        try {
+            login("schemareader", "schemareader", "ROLE_CITE_READER", "ROLE_METADATA_READER");
+
+            // Authorized feature type.
+            MockHttpServletResponse response = getAsServletResponse(
+                    RestBaseController.ROOT_PATH + "/metadata/workspaces/cite/featuretypes/Bridges.json");
+
+            assertEquals(200, response.getStatus());
+
+            String json = response.getContentAsString();
+
+            org.junit.Assert.assertTrue("Expected workspace name: " + json, json.contains("\"workspace\":\"cite\""));
+
+            org.junit.Assert.assertTrue("Expected feature type name: " + json, json.contains("\"name\":\"Bridges\""));
+
+            org.junit.Assert.assertTrue("Expected attributes: " + json, json.contains("\"attributes\""));
+
+            // Datastore configuration must not be serialized.
+            org.junit.Assert.assertFalse(
+                    "Datastore configuration exposed: " + json, json.contains("connectionParameters"));
+
+            // Layer-specific READ restriction.
+            response = getAsServletResponse(
+                    RestBaseController.ROOT_PATH + "/metadata/workspaces/cite/featuretypes/Forests.json");
+
+            assertEquals(404, response.getStatus());
+
+            // Workspace-level READ restriction.
+            response = getAsServletResponse(RestBaseController.ROOT_PATH
+                    + "/metadata/workspaces/sf/featuretypes/"
+                    + "PrimitiveGeoFeature.json");
+
+            assertEquals(404, response.getStatus());
+
+        } finally {
+            dao.removeRule(sfRule);
+            dao.removeRule(forestRule);
+            dao.storeRules();
+        }
+    }
+
+    @Test
+    public void testMetadataEndpointAllowsAdministrator() throws Exception {
+
+        // Simulate normal administrator authentication.
+        // This includes both the local administrator role
+        // and GeoServer's system administrator authority.
+        loginAsAdmin();
+
+        MockHttpServletResponse response =
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/metadata/workspaces.json");
+
+        assertEquals(200, response.getStatus());
     }
 }

@@ -71,8 +71,50 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  publish:
+  # Decides whether there is anything to publish, so that the publish job below is skipped (and shown as skipped)
+  # on the many runs where the feed is unchanged.
+  changes:
     needs: generate
+    runs-on: ubuntu-26.04
+    outputs:
+      changed: ${{ steps.compare.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.FEED_BRANCH }}
+          path: feed
+          sparse-checkout: versions.json
+          sparse-checkout-cone-mode: false
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: versions-json
+          path: incoming
+
+      - name: Compare with the published feed
+        id: compare
+        run: |
+          if cmp -s feed/versions.json incoming/versions.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "### No change: publish skipped" >> "$GITHUB_STEP_SUMMARY"
+            echo "The generated versions.json is identical to the one on \`$FEED_BRANCH\`." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            summary() { jq -r '.series[] | "\(.series) \(.phase) \(.latest_version)"' "$1"; }
+            {
+              echo "### versions.json changed: publishing"
+              echo '```diff'
+              diff <(summary feed/versions.json) <(summary incoming/versions.json) || true
+              echo '```'
+              echo "Other changes (advisories, flags) are in the commit pushed to \`$FEED_BRANCH\`."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  publish:
+    needs: [generate, changes]
+    if: needs.changes.outputs.changed == 'true'
     runs-on: ubuntu-26.04
     permissions:
       contents: write

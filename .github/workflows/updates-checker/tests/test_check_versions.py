@@ -361,5 +361,81 @@ class FrontmatterTest(unittest.TestCase):
         self.assertEqual(["CVE-2026-76904"], cv.CVE_RE.findall(body))
 
 
+SHA_A, SHA_B = "a" * 40, "b" * 40
+
+
+class TaggedVersionsTest(unittest.TestCase):
+    """A version is released once it is tagged, even before GitHub has a release record for it."""
+
+    def merge(self, releases, tags, dates=None, previous=None):
+        calls, logged = [], []
+
+        def lookup(sha):
+            calls.append(sha)
+            return (dates or {}).get(sha)
+
+        merged = cv.add_tagged_versions(releases_from(releases), tags, previous, lookup, logged.append)
+        return {r.version: r for r in merged}, calls, logged
+
+    def test_a_tag_without_a_release_is_added_with_its_commit_date(self):
+        merged, _, logged = self.merge(
+            [raw_release("2.28.5", "2026-08-14T23:41:43Z"), raw_release("3.0.1", "2026-08-14T22:44:22Z")],
+            [("2.28.6", SHA_A), ("3.0.2", SHA_B)],
+            {SHA_A: "2026-10-16T18:45:01Z"},
+        )
+        added = merged["2.28.6"]
+        self.assertEqual("2026-10-16T18:45:01Z", added.published_at)
+        self.assertEqual("https://github.com/geoserver/geoserver/releases/tag/2.28.6", added.url)
+        self.assertNotIn("3.0.2", merged)  # its commit date could not be read
+        self.assertEqual(1, len(logged))
+
+    def test_the_feed_remembers_a_tagged_version_so_it_is_looked_up_once(self):
+        previous = [{"latest_version": "2.28.6", "published_at": "2026-10-16T18:45:01Z"}]
+        merged, calls, _ = self.merge([raw_release("2.28.5", "2026-08-14T23:41:43Z")], [("2.28.6", SHA_A)], previous=previous)
+        self.assertEqual("2026-10-16T18:45:01Z", merged["2.28.6"].published_at)
+        self.assertEqual([], calls)
+
+    def test_versions_with_a_release_and_old_tags_cost_nothing(self):
+        # 2.26.4 has a release record, 2.26.1 is not the newest tag, 1.7.7 never had a release record
+        merged, calls, _ = self.merge(
+            [raw_release("2.26.4", "2025-09-02T16:33:52Z")], [("2.26.4", SHA_A), ("2.26.1", SHA_B), ("1.7.7", SHA_B)]
+        )
+        self.assertEqual(["2.26.4"], list(merged))
+        self.assertEqual([], calls)
+
+    def test_a_tagged_version_is_the_latest_of_its_series_and_part_of_its_release_cycle(self):
+        releases = real_releases() + releases_from([raw_release("3.0.2", "2026-10-17T01:50:37Z")])
+        merged = cv.add_tagged_versions(releases, [("2.28.6", SHA_A)], None, {SHA_A: "2026-10-16T18:45:01Z"}.get)
+        feed = cv.build_feed(merged, [], no_blog, None, datetime(2026, 10, 20, tzinfo=UTC))
+        self.assertEqual("2.28.6", {e["series"]: e for e in feed["series"]}["2.28.x"]["latest_version"])
+        self.assertTrue(cv.synchronized_versions(merged) >= {"3.0.2", "2.28.6"})
+
+
+class TagNetworkTest(unittest.TestCase):
+    def test_fetch_tags_pages_and_keeps_only_readable_release_tags(self):
+        from unittest import mock
+
+        junk = [{"name": f"branch-{i}", "commit": {"sha": SHA_A}} for i in range(99)]
+        page1 = json.dumps(junk + [{"name": "3.0.2", "commit": {"sha": SHA_A}}])
+        page2 = json.dumps([{"name": "2.28.6", "commit": {"sha": SHA_B}}, {"name": "2.28.5", "commit": {"sha": "no"}}])
+        with mock.patch.object(cv, "http_get", side_effect=[page1, page2]) as get:
+            self.assertEqual([("3.0.2", SHA_A), ("2.28.6", SHA_B)], cv.fetch_tags(lambda m: None))
+        self.assertEqual(2, get.call_count)
+        with mock.patch.object(cv, "http_get", return_value="not json"):
+            self.assertEqual([], cv.fetch_tags(lambda m: None))
+
+    def test_commit_date_is_none_when_it_cannot_be_read(self):
+        from unittest import mock
+        import urllib.error
+
+        body = json.dumps({"commit": {"committer": {"date": "2026-10-16T18:45:01Z"}}})
+        with mock.patch.object(cv, "http_get", return_value=body) as get:
+            self.assertEqual("2026-10-16T18:45:01Z", cv.commit_date(SHA_B))
+        self.assertEqual(cv.GITHUB_COMMIT + SHA_B, get.call_args.args[0])
+        for failure in ({"return_value": "garbage"}, {"side_effect": urllib.error.URLError("down")}):
+            with mock.patch.object(cv, "http_get", **failure):
+                self.assertIsNone(cv.commit_date(SHA_B, lambda m: None))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -21,6 +21,9 @@ All requests are unauthenticated and use a generic User-Agent. The script runs
 on GitHub-hosted runners and has no dependency beyond the Python standard
 library.
 
+A version counts as released once it is tagged, even before GitHub has a
+release record for it. See add_tagged_versions.
+
 Phase inference (no configuration file):
   1. Group proper releases into events: releases within 24 hours of the
      earliest release in the group.
@@ -48,6 +51,8 @@ from pathlib import Path
 from typing import NamedTuple
 
 GITHUB_RELEASES = "https://api.github.com/repos/geoserver/geoserver/releases?per_page=100"
+GITHUB_TAGS = "https://api.github.com/repos/geoserver/geoserver/tags?per_page=100"
+GITHUB_COMMIT = "https://api.github.com/repos/geoserver/geoserver/commits/"
 GITHUB_ADVISORIES = "https://api.github.com/repos/geoserver/geoserver/security-advisories?per_page=100"
 BLOG_POSTS_API = "https://api.github.com/repos/geoserver/geoserver.github.io/contents/_posts"
 RAW_POST_BASE = "https://raw.githubusercontent.com/geoserver/geoserver.github.io/main/_posts/"
@@ -69,6 +74,7 @@ MAX_NOTE = 500
 COORDINATION_WINDOW = timedelta(hours=24)
 RECENT_DAYS = 365
 MAX_ADVISORY_PAGES = 3
+MAX_TAG_PAGES = 2
 
 MAX_SERIES = 100
 MAX_RECENT_PER_SERIES = 50
@@ -353,6 +359,52 @@ def parse_release(raw):
         published_at=published_at,
         url=RELEASE_URL_BASE + tag,
     )
+
+
+def previous_release_dates(previous_entries):
+    """version -> published_at for the recent releases and each series' latest
+    release in the previous feed."""
+    dates = {}
+    for entry in previous_entries if isinstance(previous_entries, list) else []:
+        if not isinstance(entry, dict):
+            continue
+        recent = entry.get("recent_releases")
+        pairs = [(entry.get("latest_version"), entry.get("published_at"))]
+        pairs += [(i.get("version"), i.get("published_at")) for i in recent if isinstance(i, dict)] if isinstance(recent, list) else []
+        for version, stamp in pairs:
+            if isinstance(version, str) and isinstance(stamp, str) and TIMESTAMP_RE.fullmatch(stamp):
+                dates[version] = stamp
+    return dates
+
+
+def add_tagged_versions(releases, tags, previous_entries, commit_date, log=print):
+    """Add the newest tagged version of each series when GitHub has no release
+    record for it yet, dated by its commit. The feed remembers that date, so the
+    request is made once. A tag older than its series' newest, or in a series
+    that never had a release record, is ignored and costs nothing.
+    `tags` is [(name, sha)]; `commit_date(sha)` returns a timestamp or None."""
+    seen = previous_release_dates(previous_entries)
+    have = {r.version for r in releases}
+    known = {r.series for r in releases}
+    newest = {}
+    for name, sha in tags:
+        key = tuple(int(g) for g in RELEASE_TAG_RE.fullmatch(name).groups())
+        if (key[:2] in known or key[:2] > max(known, default=(0, 0))) and key > newest.get(key[:2], ((), "", ""))[0]:
+            newest[key[:2]] = (key, name, sha)
+
+    result = list(releases)
+    for key, name, sha in newest.values():
+        version = ".".join(map(str, key))
+        if version in have:
+            continue
+        stamp = seen.get(version) or commit_date(sha)
+        try:
+            checked_timestamp(stamp, f"tag {version}")
+        except FeedError as error:
+            warning(log, f"tag {version} skipped: {error}")
+            continue
+        result.append(Release(version, key[0], key[1], key[2], parse_timestamp(stamp), stamp, RELEASE_URL_BASE + name))
+    return result
 
 
 def cluster_releases(releases):
@@ -827,6 +879,32 @@ def fetch_releases(log=print):
     return None if raw is None else parse_releases(raw, log)
 
 
+def fetch_tags(log=print):
+    """(name, commit sha) of each proper-release tag; empty if the list cannot be read."""
+    raw = fetch_json_list(lambda page: f"{GITHUB_TAGS}&page={page}", MAX_TAG_PAGES, log, "tag")
+    tags = []
+    for item in raw or []:
+        name = item.get("name") if isinstance(item, dict) else None
+        commit = item.get("commit") if isinstance(item, dict) else None
+        sha = commit.get("sha") if isinstance(commit, dict) else None
+        if isinstance(name, str) and RELEASE_TAG_RE.fullmatch(name) and isinstance(sha, str) and HASH_RE.fullmatch(sha):
+            tags.append((name, sha))
+    return tags
+
+
+def commit_date(sha, log=print):
+    """The commit time of a tagged commit, or None; a failed lookup leaves that
+    version for the next run. A rate limit still fails the run."""
+    try:
+        data = parse_api_json(http_get(GITHUB_COMMIT + sha, "application/vnd.github+json"))
+    except (FeedError, OSError, urllib.error.URLError, ValueError) as error:
+        warning(log, f"commit {sha[:7]} lookup failed ({type(error).__name__})")
+        return None
+    commit = data.get("commit") if isinstance(data, dict) else None
+    committer = commit.get("committer") if isinstance(commit, dict) else None
+    return committer.get("date") if isinstance(committer, dict) else None
+
+
 def fetch_raw_advisories(log=print):
     return fetch_json_list(lambda page: f"{GITHUB_ADVISORIES}&page={page}", MAX_ADVISORY_PAGES, log, "advisory")
 
@@ -946,9 +1024,13 @@ def emit(message):
 def main():
     now = datetime.now(timezone.utc)
     try:
-        feed = build_feed(
-            fetch_releases(emit), fetch_raw_advisories(emit), BlogLookup(now, emit), load_previous(), now, emit
-        )
+        previous = load_previous()
+        releases = fetch_releases(emit)
+        if releases is not None:
+            releases = add_tagged_versions(
+                releases, fetch_tags(emit), (previous or {}).get("series"), lambda sha: commit_date(sha, emit), emit
+            )
+        feed = build_feed(releases, fetch_raw_advisories(emit), BlogLookup(now, emit), previous, now, emit)
         text = serialize(feed, emit)
     except FeedError as error:
         print(f"ERROR: version check failed: {error}", file=sys.stderr)

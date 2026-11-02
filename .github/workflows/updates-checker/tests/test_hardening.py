@@ -593,7 +593,7 @@ class DegradeNotBlockTest(HostileCase):
         self.assertNotIn("<", lines[0])
         self.assertEqual("excluded GHSA-aaaa-aaaa-aaaa", lines[1])
 
-    def run_main(self, releases, advisories, existing=None, tags=(), dates=None):
+    def run_main(self, releases, advisories, existing=None, tags=(), dates=None, pom=None):
         import contextlib
         import io
         import tempfile
@@ -603,8 +603,12 @@ class DegradeNotBlockTest(HostileCase):
             output = Path(directory) / "versions.json"
             if existing is not None:
                 output.write_text(existing, encoding="utf-8")
+            pom_path = Path(directory) / "pom.xml"
+            if pom is not None:
+                pom_path.write_text(pom, encoding="utf-8")
             buffer, errors = io.StringIO(), io.StringIO()
             with mock.patch.object(cv, "OUTPUT_PATH", output), \
+                    mock.patch.object(cv, "POM_PATH", pom_path), \
                     mock.patch.object(cv, "fetch_releases", side_effect=releases), \
                     mock.patch.object(cv, "fetch_tags", return_value=list(tags)), \
                     mock.patch.object(cv, "commit_date", side_effect=lambda sha, log=print: (dates or {}).get(sha)), \
@@ -631,9 +635,11 @@ class DegradeNotBlockTest(HostileCase):
         self.assertIn("GHSA-abcd-efgh-ijkl", ids)
 
     def test_main_keeps_publishing_when_github_content_is_unreadable(self):
-        first = cv.build_feed(real_releases(), [raw_advisory()], no_blog, None, NOW)
+        pom = "<project><artifactId>geoserver</artifactId><version>3.1.0-SNAPSHOT</version></project>"
+        main = {"series": "3.1.x", "version": "3.1.0-SNAPSHOT"}
+        first = cv.build_feed(real_releases(), [raw_advisory()], no_blog, None, NOW, main=main)
         existing = cv.serialize(first)
-        code, written, out, _ = self.run_main([None], [None], existing)
+        code, written, out, _ = self.run_main([None], [None], existing, pom=pom)
         self.assertIsNone(code)
         self.assertEqual(existing, written)
         self.assertEqual(2, out.count("::warning::"))
@@ -648,6 +654,22 @@ class DegradeNotBlockTest(HostileCase):
         self.assertEqual([], validate_feed.validate_text(written.encode("utf-8")))
         entry = {e["series"]: e for e in json.loads(written)["series"]}["2.28.x"]
         self.assertEqual(("2.28.6", "2026-10-16T18:45:01Z"), (entry["latest_version"], entry["published_at"]))
+
+    def test_main_publishes_the_development_version_from_the_pom(self):
+        pom = "<project><artifactId>geoserver</artifactId><version>3.1.0-SNAPSHOT</version></project>"
+        code, written, _, err = self.run_main([real_releases()], [[]], pom=pom)
+        self.assertIsNone(code)
+        self.assertEqual("", err)
+        self.assertEqual([], validate_feed.validate_text(written.encode("utf-8")))
+        self.assertEqual({"series": "3.1.x", "version": "3.1.0-SNAPSHOT"}, json.loads(written)["main"])
+
+    def test_main_keeps_the_last_development_version_when_the_pom_is_unreadable(self):
+        pom = "<project><artifactId>geoserver</artifactId><version>3.1.0-SNAPSHOT</version></project>"
+        first = self.run_main([real_releases()], [[]], pom=pom)[1]
+        code, written, out, _ = self.run_main([real_releases()], [[]], existing=first)
+        self.assertIsNone(code)
+        self.assertIn("pom of the main branch is unreadable", out)
+        self.assertEqual(json.loads(first)["main"], json.loads(written)["main"])
 
     def test_main_fails_only_when_github_cannot_be_reached(self):
         import io

@@ -61,6 +61,7 @@ RELEASE_URL_BASE = "https://github.com/geoserver/geoserver/releases/tag/"
 USER_AGENT = "gs-updates-checker-feed"
 # the workflow points this at the feed branch checkout; run by hand, it writes ./versions.json
 OUTPUT_PATH = Path(os.environ.get("VERSIONS_JSON") or "versions.json")
+POM_PATH = Path(os.environ.get("MAIN_POM") or "src/pom.xml")
 
 SCHEMA_VERSION = 1
 SOURCE_NOTE = (
@@ -104,6 +105,7 @@ CVE_FIND_RE = re.compile(r"CVE-[0-9]{4}-[0-9]{4,7}")
 RANGE_RE = re.compile(r"[0-9A-Za-z.<>=,~^ +\-]{1,200}")
 RANGE_CLAUSE_RE = re.compile(r"\s*(?:<=|>=|<|>|=|~|\^)?\s*[0-9][0-9A-Za-z.+\-]*\s*")
 HASH_RE = re.compile(r"[0-9a-fA-F]{7,64}")
+MAIN_VERSION_RE = re.compile(r"([0-9]+)\.([0-9]+)\.([0-9]+)(?:-SNAPSHOT)?")
 TIMESTAMP_RE = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z")
 TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 POST_NAME_RE = re.compile(r"([0-9]{4})-([0-9]{2})-([0-9]{2})-([a-z0-9-]+)\.md")
@@ -744,11 +746,40 @@ def build_series_entries(releases, blog_lookup, previous_entries, now, log=print
     return entries
 
 
-def build_feed(releases, raw_advisories, blog_lookup, previous, now, log=print):
+def main_entry(version):
+    """The "main" element for the version of the development branch, or None if
+    that is not a release-style version such as 3.1.0-SNAPSHOT."""
+    match = MAIN_VERSION_RE.fullmatch(version) if isinstance(version, str) else None
+    if not match:
+        return None
+    return {"series": f"{int(match[1])}.{int(match[2])}.x", "version": version}
+
+
+def read_main(log=print):
+    """The version of the development branch, from the pom in the checkout: the
+    <revision> property, or the project <version> while the pom still writes it
+    literally. None (with a warning) when it cannot be read."""
+    try:
+        if POM_PATH.stat().st_size > MAX_API_BYTES:
+            raise OSError("too large")
+        text = POM_PATH.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        warning(log, "the pom of the main branch is unreadable")
+        return None
+    found = re.search(r"<revision>([^<]*)</revision>", text) or re.search(
+        r"<artifactId>geoserver</artifactId>\s*<version>([^<]*)</version>", text
+    )
+    entry = main_entry(found.group(1).strip() if found else None)
+    if entry is None:
+        warning(log, "no usable version in the pom of the main branch")
+    return entry
+
+
+def build_feed(releases, raw_advisories, blog_lookup, previous, now, log=print, main=None):
     """previous is the prior feed (or None). `releases` or `raw_advisories` may be
     None when GitHub's response could not be read: the previously published
-    section is kept. `generated` only moves when the content changes, so an
-    unchanged feed produces no commit."""
+    section is kept, and so is the "main" element when `main` is None. `generated`
+    only moves when the content changes, so an unchanged feed produces no commit."""
     if not isinstance(previous, dict):
         previous = None
     stamp = now.strftime(TIMESTAMP_FORMAT)
@@ -773,10 +804,15 @@ def build_feed(releases, raw_advisories, blog_lookup, previous, now, log=print):
     else:
         advisories = transform_advisories(raw_advisories, stamp, log)
 
+    if main is None and previous:
+        previous_main = previous.get("main")
+        main = main_entry(previous_main.get("version")) if isinstance(previous_main, dict) else None
+
     feed = {
         "source_note": SOURCE_NOTE,
         "schema_version": SCHEMA_VERSION,
         "generated": None,
+        **({"main": main} if main else {}),
         "series": series,
         "advisories": advisories,
     }
@@ -1030,7 +1066,9 @@ def main():
             releases = add_tagged_versions(
                 releases, fetch_tags(emit), (previous or {}).get("series"), lambda sha: commit_date(sha, emit), emit
             )
-        feed = build_feed(releases, fetch_raw_advisories(emit), BlogLookup(now, emit), previous, now, emit)
+        feed = build_feed(
+            releases, fetch_raw_advisories(emit), BlogLookup(now, emit), previous, now, emit, main=read_main(emit)
+        )
         text = serialize(feed, emit)
     except FeedError as error:
         print(f"ERROR: version check failed: {error}", file=sys.stderr)

@@ -77,6 +77,24 @@ class ValidatorTest(unittest.TestCase):
         self.assert_rejected(mutated(lambda d: d.update(source_note="javascript:alert(1)")), "script")
         self.assert_rejected(mutated(lambda d: d.update(source_note="x" * 501)), "source_note")
 
+    def test_main(self):
+        def with_main(value, position=3):
+            items = list(json.loads(valid_text()).items())
+            items.insert(position, ("main", value))
+            return cv.serialize(dict(items))
+
+        good = {"series": "3.1.x", "version": "3.1.0-SNAPSHOT"}
+        self.assertEqual([], problems(with_main(good)))
+        self.assertEqual([], problems(with_main({"series": "3.1.x", "version": "3.1.0"})))
+        self.assert_rejected(with_main(good, position=5), "keys")  # wrong position
+        self.assert_rejected(with_main(dict(good, extra=1)), "main")
+        self.assert_rejected(with_main({"series": "3.1.x"}), "main")
+        self.assert_rejected(with_main(dict(good, series="3.2.x")), "does not match")
+        for bad in ("3.1", "x.y.z", "3.1.0-RC1", " 3.1.0", 5, None):
+            self.assert_rejected(with_main(dict(good, version=bad)), "main.version")
+        for bad in ("3.1.0-SNAPSHOT", None, []):
+            self.assert_rejected(with_main(bad), "main")
+
     def test_series(self):
         def first(change):
             return mutated(lambda d: change(d["series"][0]))

@@ -437,5 +437,53 @@ class TagNetworkTest(unittest.TestCase):
                 self.assertIsNone(cv.commit_date(SHA_B, lambda m: None))
 
 
+class MainVersionTest(unittest.TestCase):
+    """The feed publishes the version of the development branch, read from the pom."""
+
+    MAIN = {"series": "3.1.x", "version": "3.1.0-SNAPSHOT"}
+
+    def read(self, text):
+        import tempfile
+        from unittest import mock
+
+        logged = []
+        with tempfile.TemporaryDirectory() as directory:
+            pom = Path(directory) / "pom.xml"
+            if text is not None:
+                pom.write_text(text, encoding="utf-8")
+            with mock.patch.object(cv, "POM_PATH", pom):
+                return cv.read_main(logged.append), logged
+
+    def test_the_literal_version_and_the_revision_property_are_both_read(self):
+        literal = "<project><artifactId>geoserver</artifactId><version>3.1.0-SNAPSHOT</version></project>"
+        revision = "<project><version>${revision}</version><properties><revision>3.1.0-SNAPSHOT</revision></properties></project>"
+        for text in (literal, revision):
+            self.assertEqual((self.MAIN, []), self.read(text))
+        self.assertEqual("3.1.x", self.read(literal.replace("3.1.0-SNAPSHOT", "3.1.0"))[0]["series"])
+
+    def test_an_unusable_pom_gives_none_and_a_warning(self):
+        for text in (None, "<project/>", "<revision>3.1</revision>", "<revision>x.y.z</revision>", "<revision>3.1.0-RC1</revision>"):
+            entry, logged = self.read(text)
+            self.assertIsNone(entry, text)
+            self.assertEqual(1, len(logged))
+
+    def test_the_element_comes_after_generated_and_is_kept_when_the_pom_is_unreadable(self):
+        feed = cv.build_feed(real_releases(), [], no_blog, None, datetime(2026, 10, 8, 6, tzinfo=UTC), main=self.MAIN)
+        self.assertEqual(["source_note", "schema_version", "generated", "main", "series", "advisories"], list(feed))
+        later = datetime(2026, 10, 9, 6, tzinfo=UTC)
+        kept = cv.build_feed(real_releases(), [], no_blog, feed, later)
+        self.assertEqual(self.MAIN, kept["main"])
+        self.assertEqual(feed["generated"], kept["generated"])  # nothing changed
+        moved = cv.build_feed(real_releases(), [], no_blog, feed, later, main={"series": "3.2.x", "version": "3.2.0-SNAPSHOT"})
+        self.assertEqual("3.2.x", moved["main"]["series"])
+        self.assertNotEqual(feed["generated"], moved["generated"])
+
+    def test_a_damaged_previous_element_is_not_carried_forward(self):
+        feed = cv.build_feed(real_releases(), [], no_blog, None, datetime(2026, 10, 8, 6, tzinfo=UTC), main=self.MAIN)
+        for damaged in ({"series": "9.9.x", "version": "<script>"}, "3.1.0", None, {}):
+            feed["main"] = damaged
+            self.assertNotIn("main", cv.build_feed(real_releases(), [], no_blog, feed, datetime(2026, 10, 9, tzinfo=UTC)))
+
+
 if __name__ == "__main__":
     unittest.main()

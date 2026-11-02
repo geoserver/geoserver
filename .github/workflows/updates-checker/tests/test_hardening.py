@@ -355,8 +355,17 @@ class ParseJsonTest(unittest.TestCase):
         while isinstance(node, dict):
             node, levels = node["a"], levels + 1
         self.assertIs(cv.POISON, node)
-        with self.assertRaises(cv.FeedError):
-            cv.parse_api_json("[" * 100000 + "]" * 100000)
+        # a very deep document is refused where the parser hits its recursion limit, and parsed and
+        # cut at MAX_JSON_DEPTH where it does not (Python 3.14 on Linux); it is never returned deep
+        try:
+            deep = cv.parse_api_json("[" * 100000 + "]" * 100000)
+        except cv.FeedError:
+            return
+        depth = 0
+        while isinstance(deep, list) and deep:
+            deep, depth = deep[0], depth + 1
+        self.assertIs(cv.POISON, deep)
+        self.assertLessEqual(depth, cv.MAX_JSON_DEPTH)
     def test_invalid_json_and_oversized_responses_are_rejected(self):
         for text in ("", "{", "[1,]", "nope"):
             with self.assertRaises(cv.FeedError, msg=text):

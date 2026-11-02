@@ -195,7 +195,9 @@ These definitions are described in more detail on the [Gridsets](gridsets.md) pa
 
 The in-memory tile cache keeps tiles in memory, in front of or instead of the layer blob store (see passthrough below), with each tile expiring on its own after a configurable time. Depending on the backend, it is shared by every node of a GeoServer cluster. It is meant for layers whose data is rebuilt every few minutes, where a tile is worth keeping only for that time. In particular, on a cluster where each node caches to its own disk, the same tile is otherwise rendered once per node, and the copies on disk outlive the data they were drawn from.
 
-The cache is disabled by default, and only the layers that opt in use it: check **Use the in-memory tile cache for this layer** in the layer **Tile Caching** tab (see [Configuring a cached layer](layers.md#configuring-a-cached-layer)). The settings are saved in the `<tileCache>` element of `geowebcache.xml`.
+The cache is disabled by default, and only the layers that opt in use it: check **Use the in-memory tile cache for this layer** in the layer **Tile Caching** tab (see [Configuring a cached layer](layers.md#configuring-a-cached-layer)). The settings are saved in the `<memoryCache>` element of `geowebcache.xml`, and can also be read and changed through the [REST API](../rest/memorycache.md).
+
+**On a GeoServer cluster, each node reads these settings when it starts or reloads**: after changing them on one node, reload (for example through `/rest/reload`) or restart every other node. It is to be noted that until then, another node saving any GeoWebCache setting, such as a blob store or a gridset, writes its old in-memory tile cache settings back over the change. The per-layer checkbox does not need this, it reaches the other nodes on its own.
 
 ### Enable the in-memory tile cache
 
@@ -205,15 +207,15 @@ Turns the cache on for every layer that opts in. When off, those layers use thei
 
 When checked (the default), the cache sits in front of the layer blob store: tiles are written to both, a tile missing from the cache is read from the blob store, and tiles survive a restart or a cache outage. Disk quota counts the tiles in the blob store.
 
-When unchecked, tiles live in the cache only. If the cache becomes unreachable, every request is rendered again.
+When unchecked, tiles live in the cache only. If the cache becomes unreachable, every request is rendered again. Truncating an area or a gridset then leaves the blob store alone, so tiles it still holds from before are kept: truncate the whole layer before checking this option again.
 
-**Even with passthrough off, the layer blob store keeps the layer metadata and the parameter mappings** that truncation by style, parameters or bounding box relies on. On a cluster it must therefore be shared by every node, for example an S3 or Azure blob store, not a local file blob store.
+**Even with passthrough off, the layer blob store keeps the layer metadata and the parameter mappings** that truncation by style, parameters or bounding box relies on. On a cluster it must therefore be shared by every node, for example an S3 or Azure blob store, not a local file blob store. If the blob store cannot be written, tiles are still cached and served, and the failure is logged once: until a later write succeeds, truncating by style, parameters or bounding box does not remove the tiles cached meanwhile, while truncating the whole layer still does.
 
-### Maximum time to live of a tile in memory
+### Default time to live of a tile in memory
 
-The longest time, in seconds, a tile stays in the cache, 300 by default. Each tile is kept for the shorter of this value and the layer **Expire server cache after n seconds** setting at its zoom level. A tile read from the blob store with passthrough on is kept only for what is left of the layer expiry.
+The time, in seconds, a tile stays in the cache when its layer has no **Expire server cache after n seconds** setting, 300 by default. **A layer that sets one keeps its tiles for exactly that long**, whether shorter or longer than this value, as a tile is rendered again once it expires anyway. A tile read from the blob store with passthrough on is kept for what is left of the layer expiry, and at most this value, so that a read racing a truncate cannot bring back a removed tile for longer than that.
 
-It is to be noted that **this value caps every layer expiry**. Set it to the longest refresh interval of the cached layers, and the expire server cache of each layer to its own refresh interval. For example, with one layer rebuilt every 2 minutes and one every hour, use at least 3600 here, and 120 and 3600 as layer expiries: with the default 300, the hourly layer would be rendered every 5 minutes.
+Set the expire server cache of each cached layer to its own refresh interval. For example, with one layer rebuilt every 2 minutes and one every hour, use 120 and 3600 as layer expiries.
 
 Remember to check the layer **Expire client cache after n seconds** setting too, so browsers do not keep a tile longer than its data is valid.
 
@@ -225,12 +227,21 @@ Every that many seconds, GeoServer logs one line per layer that received request
 
 Where the tiles are kept. GeoServer provides:
 
-- **Heap (single node)**: tiles are kept in the memory of each GeoServer node, up to **Maximum size on each node, in MB** (64 by default). The cache is not shared, and a truncate on one node does not reach the others, so use it on a single node only. Saving this page empties it.
+![](img/memorycache-heap.png)
 
-Other backends are added by extensions.
+*In-memory tile cache with the heap backend*
+
+- **Heap (single node)**: tiles are kept in the memory of each GeoServer node, up to **Maximum size on each node, in MB** (64 by default). The cache is not shared, and a truncate on one node does not reach the others, so use it on a single node only. Saving this page empties it, unless the in-memory tile cache settings are left unchanged.
+
+Other backends are added by extensions, such as the [GWC Hazelcast tile cache plugin](../../community/gwc-hazelcast/index.md), which shares the tiles among all the nodes of a cluster.
+
+When the configured backend cannot start, or its extension is removed, GeoServer still starts: the cache is unusable, with the reason in the log, and the layers are served as with an unreachable cache (see below), except that truncates still run on the blob store. With the extension removed, the page shows no backend selected, and saving it keeps the settings of the missing backend, unless another one is picked, so that installing the extension again restores them.
 
 ### Behavior on failures and truncation
 
 - An unreachable cache never fails a request: a failed read is treated as a missing tile, a failed write is dropped.
-- A truncate removes tiles from both the cache and the blob store. If the cache fails during a truncate, an error is reported and tiles may stay stale up to the maximum time to live: retry the truncate.
-- With passthrough on, S3 and Azure blob stores delete tiles in the background, so a truncated tile can come back into the cache until the deletion ends, and then stay for up to the maximum time to live.
+- A cache that answers too slowly counts as down, as an unreachable one does. How long a request waits for it depends on the backend, a couple of seconds at most with the Hazelcast plugin.
+- While the cache is down, requests do not wait for it: each node tries it again from time to time, from every second at the start of the outage up to every 30 seconds for long ones. A cache that keeps going down and up again is logged once with its error, then with a short "unreachable again" line each time.
+- A truncate of a layer using the cache removes its tiles from both the cache and the blob store. **While the cache is down, or when it fails to remove the tiles, the truncate is not run at all**, blob store included, and reports an error: retry it once the cache is back, since the tiles cached before the outage are served again when it recovers. It is to be noted that this applies to every truncate, the ones GeoServer runs on a style or layer change included. Deletes of single tiles or bounding boxes, as disk quota runs, are the exception with passthrough on: they still delete from the blob store, so that disk quota frees space during a long outage, and the copies cached before it are served until they expire. If the cache fails only after the blob store was truncated, an error is reported and cached tiles may stay stale up to their time to live.
+- Removing a layer always deletes its tiles from the blob store, even with the cache down; its cached tiles then expire with their time to live. Layers not using the cache are truncated in the blob store as usual, whatever the state of the cache.
+- With passthrough on, S3 and Azure blob stores delete tiles in the background, so a truncated tile can come back into the cache until the deletion ends, and then stay for up to its time to live.

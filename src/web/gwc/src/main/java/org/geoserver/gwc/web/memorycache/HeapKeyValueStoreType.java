@@ -2,18 +2,17 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.gwc.web.tilecache;
+package org.geoserver.gwc.web.memorycache;
 
 import java.io.Serial;
 import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.geowebcache.storage.tilecache.HeapTileCacheBackendInfo;
-import org.geowebcache.storage.tilecache.TileCacheBackendInfo;
+import org.geowebcache.storage.memorycache.HeapKeyValueStoreInfo;
 
-/** {@link TileCacheBackendType} for the heap backend, which keeps tiles in the memory of each node. */
-public class HeapTileCacheBackendType implements TileCacheBackendType {
+/** {@link KeyValueStoreType} for the heap backend, which keeps tiles in the memory of each node. */
+public class HeapKeyValueStoreType implements KeyValueStoreType<HeapKeyValueStoreInfo> {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -24,17 +23,17 @@ public class HeapTileCacheBackendType implements TileCacheBackendType {
     }
 
     @Override
-    public Class<HeapTileCacheBackendInfo> getSettingsClass() {
-        return HeapTileCacheBackendInfo.class;
+    public Class<HeapKeyValueStoreInfo> getConfigClass() {
+        return HeapKeyValueStoreInfo.class;
     }
 
     @Override
-    public TileCacheBackendInfo newSettings() {
-        return new HeapTileCacheBackendInfo();
+    public HeapKeyValueStoreInfo newConfigObject() {
+        return new HeapKeyValueStoreInfo();
     }
 
     @Override
-    public Panel createPanel(String id, IModel<TileCacheBackendInfo> model) {
+    public Panel createPanel(String id, IModel<HeapKeyValueStoreInfo> model) {
         return new HeapPanel(id, model);
     }
 
@@ -43,7 +42,7 @@ public class HeapTileCacheBackendType implements TileCacheBackendType {
         @Serial
         private static final long serialVersionUID = 1L;
 
-        HeapPanel(String id, IModel<TileCacheBackendInfo> model) {
+        HeapPanel(String id, IModel<HeapKeyValueStoreInfo> model) {
             super(id, model);
             NumberTextField<Integer> maxSize =
                     new NumberTextField<>("maxSizeMB", new PropertyModel<>(model, "maxSizeMB"), Integer.class);

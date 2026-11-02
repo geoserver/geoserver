@@ -86,7 +86,7 @@
   <bean id="tiledPreviewSectionProvider" class="org.geoserver.gwc.web.layer.TiledPreviewSectionProvider"/>
   
   <bean class="org.geoserver.gwc.web.blob.FileBlobStoreType" />
-  <bean class="org.geoserver.gwc.web.tilecache.HeapTileCacheBackendType" />
+  <bean class="org.geoserver.gwc.web.memorycache.HeapKeyValueStoreType" />
 
   <bean id="wmtsServicePage" class="org.geoserver.web.services.ServiceMenuPageInfo">
     <property name="id" value="wmts"/>

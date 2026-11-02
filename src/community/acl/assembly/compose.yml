@@ -10,7 +10,7 @@ volumes:
 services:
 
   acl:
-    image: geoservercloud/geoserver-acl:3.0.3
+    image: geoservercloud/geoserver-acl:3.0.4
     environment:
       # Basic Auth configuration
       # password for the admin and geoserver users, usually obtained from a secret in a production deployment
@@ -47,7 +47,7 @@ services:
     volumes:
       # bind-mount the zipfile to skip download. At the time of writing, there are no published community modules
       # for 2.26.x at https://build.geoserver.org/geoserver/2.26.x/community-latest/
-      - $PWD/../../target/release/geoserver-3.0-SNAPSHOT-acl-plugin.zip:/opt/additional_libs/geoserver-3.0-SNAPSHOT-acl-plugin.zip
+      - $PWD/../../target/release/geoserver-*-acl-plugin.zip:/opt/additional_libs/geoserver-acl-plugin.zip
     environment:
       - GEOSERVER_VERSION=3.0-SNAPSHOT
       - INSTALL_EXTENSIONS=true

@@ -27,7 +27,7 @@ jobs:
   generate:
     # forks have their own copy of this file but no feed branch to publish
     if: github.repository == 'geoserver/geoserver'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       # the module reads updates-checker-v1 for good, so only main may write to it; a branch that changes the
       # generator (a new schema, say) must publish somewhere else
@@ -73,7 +73,7 @@ jobs:
 
   publish:
     needs: generate
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     permissions:
       contents: write
     steps:

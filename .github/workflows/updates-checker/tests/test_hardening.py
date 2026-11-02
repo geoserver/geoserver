@@ -196,8 +196,11 @@ class IdentifierTest(HostileCase):
         self.assert_clean(feed, text)
     def test_bad_cve_ids_are_omitted_and_the_advisory_is_kept(self):
         for bad in ("<b>CVE-2026-0001</b>", "CVE-26-1", "cve-2026-00000", 5, ["CVE-2026-00000"], "CVE-2026-00000 "):
-            advisory = cv.transform_advisory(raw_advisory(cve_id=bad))
+            logged = []
+            advisory = cv.transform_advisory(raw_advisory(cve_id=bad), log=logged.append)
             self.assertNotIn("cve_id", advisory, repr(bad))
+            self.assertEqual(1, len(logged), repr(bad))
+            self.assertIn("invalid cve_id omitted", logged[0])
             feed, text, _ = generate([raw_advisory(cve_id=bad)])
             self.assert_clean(feed, text)
             self.assertEqual(1, len(feed["advisories"]))
@@ -355,8 +358,17 @@ class ParseJsonTest(unittest.TestCase):
         while isinstance(node, dict):
             node, levels = node["a"], levels + 1
         self.assertIs(cv.POISON, node)
-        with self.assertRaises(cv.FeedError):
-            cv.parse_api_json("[" * 100000 + "]" * 100000)
+        # a very deep document is refused where the parser hits its recursion limit, and parsed and
+        # cut at MAX_JSON_DEPTH where it does not (Python 3.14 on Linux); it is never returned deep
+        try:
+            deep = cv.parse_api_json("[" * 100000 + "]" * 100000)
+        except cv.FeedError:
+            return
+        depth = 0
+        while isinstance(deep, list) and deep:
+            deep, depth = deep[0], depth + 1
+        self.assertIs(cv.POISON, deep)
+        self.assertLessEqual(depth, cv.MAX_JSON_DEPTH)
     def test_invalid_json_and_oversized_responses_are_rejected(self):
         for text in ("", "{", "[1,]", "nope"):
             with self.assertRaises(cv.FeedError, msg=text):
@@ -625,15 +637,16 @@ class DegradeNotBlockTest(HostileCase):
         self.assertEqual(2, out.count("::warning::"))
 
     def test_main_fails_only_when_github_cannot_be_reached(self):
+        import io
         import urllib.error
 
+        unavailable = urllib.error.HTTPError("https://x", 503, "unavailable", {}, io.BytesIO())
+        self.addCleanup(unavailable.close)
         code, written, _, err = self.run_main(urllib.error.URLError("down"), [[]])
         self.assertEqual(1, code)
         self.assertIsNone(written)
         self.assertIn("could not be reached", err)
-        code, written, _, err = self.run_main(
-            [real_releases()], urllib.error.HTTPError("https://x", 503, "unavailable", {}, None)
-        )
+        code, written, _, err = self.run_main([real_releases()], unavailable)
         self.assertEqual(1, code)
         self.assertIn("HTTP 503", err)
         code, _, _, err = self.run_main([None], [None])

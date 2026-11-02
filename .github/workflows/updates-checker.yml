@@ -37,9 +37,13 @@ jobs:
           echo "::error title=Wrong feed branch::This run is on '${GITHUB_REF_NAME}', not main, but FEED_BRANCH is still the live feed, updates-checker-v1. Set FEED_BRANCH in .github/workflows/updates-checker.yml to another branch (for example updates-checker-v2), create that branch, and run again."
           exit 1
 
+      # the generator also reads the version of main from src/pom.xml
       - uses: actions/checkout@v7
         with:
-          sparse-checkout: .github/workflows/updates-checker
+          sparse-checkout: |
+            /.github/workflows/updates-checker/
+            /src/pom.xml
+          sparse-checkout-cone-mode: false
           fetch-depth: 1
           persist-credentials: false
 

@@ -36,7 +36,9 @@ STAMP = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z")
 SCHEME = re.compile(r"(?:javascript|vbscript|data)\s*:", re.IGNORECASE)
 RELEASE_URL = re.compile(r"https://github\.com/geoserver/geoserver/releases/tag/v?[0-9]+\.[0-9]+\.[0-9]+")
 
-TOP_KEYS = ["source_note", "schema_version", "generated", "series", "advisories"]
+TOP_KEYS = ["source_note", "schema_version", "generated", "main", "series", "advisories"]
+MAIN_KEYS = ["series", "version"]
+MAIN_VERSION = re.compile(r"([0-9]+)\.([0-9]+)\.([0-9]+)(?:-SNAPSHOT)?")
 SERIES_KEYS = [
     "series", "phase", "latest_version", "published_at", "release_url", "blog_url",
     "security_flagged", "synchronized_release", "recent_releases",
@@ -335,7 +337,7 @@ def validate_text(raw):
         if any(unicodedata.category(ch) in UNSAFE for ch in value):
             problems.add(where, "contains a control, format or private-use character")
 
-    if not exact_keys(problems, "feed", document, TOP_KEYS):
+    if not exact_keys(problems, "feed", document, TOP_KEYS, optional=("main",)):
         return problems.items
     if not isinstance(document["source_note"], str):
         problems.add("source_note", "is not a string")
@@ -344,9 +346,22 @@ def validate_text(raw):
     if type(document["schema_version"]) is not int or document["schema_version"] != 1:
         problems.add("schema_version", "is not the integer 1")
     check_stamp(problems, "generated", document["generated"])
+    if "main" in document:
+        check_main(problems, document["main"])
     check_series(problems, document["series"])
     check_advisories(problems, document["advisories"])
     return problems.items
+
+
+def check_main(problems, value):
+    if not exact_keys(problems, "main", value, MAIN_KEYS):
+        return
+    version = value["version"]
+    match = MAIN_VERSION.fullmatch(version) if isinstance(version, str) else None
+    if not match:
+        problems.add("main.version", f"{shown(version)} is not a release or -SNAPSHOT version")
+    elif value["series"] != f"{int(match[1])}.{int(match[2])}.x":
+        problems.add("main.series", f"{shown(value['series'])} does not match main.version")
 
 
 def main(argv):

@@ -42,8 +42,10 @@ import org.geoserver.filters.BufferedRequestWrapper;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.gwc.layer.StyleParameterFilter;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.util.DimensionWarning.WarningType;
+import org.geowebcache.config.XMLConfiguration;
 import org.geowebcache.filter.parameters.FloatParameterFilter;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.filter.parameters.StringParameterFilter;
@@ -751,5 +753,56 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals("", xpath.evaluate("//cacheWarningSkips/class", dom));
         assertEquals("Default", xpath.evaluate("//cacheWarningSkips/warning[1]", dom));
         assertEquals("FailedNearest", xpath.evaluate("//cacheWarningSkips/warning[2]", dom));
+    }
+
+    @Test
+    public void testPutMemoryCached() throws Exception {
+        String layerName = getLayerId(MockData.BRIDGES);
+        String url = "gwc/rest/layers/" + layerName + ".xml";
+
+        assertEquals(HttpServletResponse.SC_OK, putMemoryCached(url, layerName, "<memoryCached>true</memoryCached>"));
+        assertTrue(GWC.get().getTileLayerByName(layerName).isMemoryCached());
+        assertXpathEvaluatesTo("true", "/GeoServerLayer/memoryCached", getAsDOM(url));
+
+        // a PUT replaces the whole layer, so leaving the element out turns the flag off
+        assertEquals(HttpServletResponse.SC_OK, putMemoryCached(url, layerName, ""));
+        assertFalse(GWC.get().getTileLayerByName(layerName).isMemoryCached());
+    }
+
+    @Test
+    public void testPutMemoryCache() throws Exception {
+        String url = "gwc/rest/memorycache.xml";
+        // left disabled, the settings are shared by the other tests of this class
+        String xml =
+                """
+                <memoryCache>
+                  <timeToLive>120</timeToLive>
+                </memoryCache>""";
+
+        assertEquals(
+                HttpServletResponse.SC_OK,
+                putAsServletResponse(url, xml, "text/xml").getStatus());
+        assertEquals(
+                120,
+                GeoServerExtensions.bean(XMLConfiguration.class)
+                        .getMemoryCache()
+                        .getTimeToLive());
+        assertXpathEvaluatesTo("120", "/memoryCache/timeToLive", getAsDOM(url));
+    }
+
+    private int putMemoryCached(String url, String layerName, String memoryCached) throws Exception {
+        String id = getCatalog().getLayerByName(layerName).getId();
+        String xml =
+                """
+                <GeoServerLayer>
+                  <id>%s</id>
+                  <enabled>true</enabled>
+                  <name>%s</name>
+                  <mimeFormats><string>image/png</string></mimeFormats>
+                  <gridSubsets><gridSubset><gridSetName>EPSG:4326</gridSetName></gridSubset></gridSubsets>
+                  %s
+                </GeoServerLayer>"""
+                        .formatted(id, layerName, memoryCached);
+        return putAsServletResponse(url, xml, "text/xml").getStatus();
     }
 }

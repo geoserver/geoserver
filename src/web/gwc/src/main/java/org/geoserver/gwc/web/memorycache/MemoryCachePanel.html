@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <fieldset>
+        <legend>
+          <span>
+            <wicket:message key="MemoryCachePanel.title">In-memory tile cache</wicket:message>
+          </span>
+        </legend>
+        <div class="gs-form">
+          <div class="choiceItem">
+            <input id="memoryCacheEnabled" type="checkbox" wicket:id="enabled"/>
+            <label for="memoryCacheEnabled">
+              <wicket:message key="MemoryCachePanel.enabled">Enable the in-memory tile cache</wicket:message>
+            </label>
+          </div>
+          <div wicket:id="settings">
+            <div class="choiceItem">
+              <input id="memoryCachePassthrough" type="checkbox" wicket:id="passthrough"/>
+              <label for="memoryCachePassthrough">
+                <wicket:message key="MemoryCachePanel.passthrough">Also store tiles in the layer blob store</wicket:message>
+              </label>
+            </div>
+            <div class="gs-form-group">
+              <label for="memoryCacheTimeToLive">
+                <wicket:message key="MemoryCachePanel.timeToLive">Default time to live of a tile in memory, in seconds</wicket:message>
+              </label>
+              <input id="memoryCacheTimeToLive" wicket:id="timeToLive" type="number" class="w-sm"/>
+            </div>
+            <div class="gs-form-group">
+              <label for="memoryCacheStatsInterval">
+                <wicket:message key="MemoryCachePanel.statsInterval">Statistics log interval, in seconds</wicket:message>
+              </label>
+              <input id="memoryCacheStatsInterval" wicket:id="statsInterval" type="number" class="w-sm"/>
+            </div>
+            <div class="gs-form-group">
+              <label for="tileCacheBackend">
+                <wicket:message key="MemoryCachePanel.backend">Backend</wicket:message>
+              </label>
+              <select id="tileCacheBackend" wicket:id="backend" class="w-lg"></select>
+            </div>
+            <div wicket:id="backendContainer">
+              <div wicket:id="backendPanel"></div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </wicket:panel>
+  </body>
+</html>

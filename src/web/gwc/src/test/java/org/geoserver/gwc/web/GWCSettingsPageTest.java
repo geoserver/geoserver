@@ -7,18 +7,22 @@ package org.geoserver.gwc.web;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.gwc.ConfigurableLockProvider;
@@ -31,8 +35,10 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geowebcache.config.XMLConfiguration;
 import org.geowebcache.locks.MemoryLockProvider;
 import org.geowebcache.locks.NIOLockProvider;
-import org.geowebcache.storage.tilecache.HeapTileCacheBackendInfo;
-import org.geowebcache.storage.tilecache.TileCacheInfo;
+import org.geowebcache.storage.memorycache.HeapKeyValueStoreInfo;
+import org.geowebcache.storage.memorycache.KeyValueStore;
+import org.geowebcache.storage.memorycache.KeyValueStoreInfo;
+import org.geowebcache.storage.memorycache.MemoryCacheInfo;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,8 +59,8 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
     }
 
     @Before
-    public void resetTileCache() throws IOException {
-        xmlConfig().setTileCache(new TileCacheInfo());
+    public void resetMemoryCache() throws IOException {
+        xmlConfig().setMemoryCache(new MemoryCacheInfo());
     }
 
     private static XMLConfiguration xmlConfig() {
@@ -62,75 +68,120 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
     }
 
     /** Saves enabled tile cache settings, with the given passthrough and time to live. */
-    private static void enableTileCache(boolean passthrough, long timeToLive) throws IOException {
-        TileCacheInfo info = new TileCacheInfo();
+    private static void enableMemoryCache(boolean passthrough, long timeToLive) throws IOException {
+        MemoryCacheInfo info = new MemoryCacheInfo();
         info.setEnabled(true);
         info.setPassthrough(passthrough);
         info.setTimeToLive(timeToLive);
-        xmlConfig().setTileCache(info);
+        xmlConfig().setMemoryCache(info);
     }
 
     @Test
-    public void testEditTileCache() throws IOException {
-        enableTileCache(true, 300);
-        TileCacheInfo before = xmlConfig().getTileCache();
+    public void testEditMemoryCache() throws IOException {
+        enableMemoryCache(true, 300);
+        MemoryCacheInfo before = xmlConfig().getMemoryCache();
         tester.startPage(GWCSettingsPage.class);
 
         FormTester form = tester.newFormTester("form");
-        form.setValue("tileCachePanel:settings:passthrough", false);
-        form.setValue("tileCachePanel:settings:timeToLive", "3600");
-        form.setValue("tileCachePanel:settings:statsInterval", "0");
-        form.setValue("tileCachePanel:settings:backendContainer:backendPanel:maxSizeMB", "128");
+        form.setValue("memoryCachePanel:settings:passthrough", false);
+        form.setValue("memoryCachePanel:settings:timeToLive", "3600");
+        form.setValue("memoryCachePanel:settings:statsInterval", "0");
+        form.setValue("memoryCachePanel:settings:backendContainer:backendPanel:maxSizeMB", "128");
         form.submit("submit");
 
         tester.assertNoErrorMessage();
         // a new instance, so the running cache gets rebuilt
-        TileCacheInfo saved = xmlConfig().getTileCache();
+        MemoryCacheInfo saved = xmlConfig().getMemoryCache();
         assertNotSame(before, saved);
         assertTrue(saved.isEnabled());
         assertFalse(saved.isPassthrough());
         assertEquals(3600, saved.getTimeToLive());
         assertEquals(0, saved.getStatsInterval());
-        assertEquals(128, ((HeapTileCacheBackendInfo) saved.getBackend()).getMaxSizeMB());
+        assertEquals(128, ((HeapKeyValueStoreInfo) saved.getBackend()).getMaxSizeMB());
     }
 
     @Test
-    public void testEditMissingTileCache() throws IOException {
-        xmlConfig().setTileCache(null);
+    public void testUnchangedMemoryCacheKept() throws IOException {
+        enableMemoryCache(true, 300);
+        MemoryCacheInfo before = xmlConfig().getMemoryCache();
+        tester.startPage(GWCSettingsPage.class);
+
+        tester.newFormTester("form").submit("submit");
+
+        tester.assertNoErrorMessage();
+        // same instance, so the running cache keeps its tiles
+        assertSame(before, xmlConfig().getMemoryCache());
+    }
+
+    /** Settings of a backend no installed module provides. */
+    private static class UnknownBackendInfo implements KeyValueStoreInfo {
+        @Serial
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public KeyValueStore createStore() {
+            throw new UnsupportedOperationException("Test settings, no store");
+        }
+    }
+
+    @Test
+    public void testUnknownBackendKept() throws IOException {
+        MemoryCacheInfo info = new MemoryCacheInfo();
+        info.setEnabled(true);
+        info.setBackend(new UnknownBackendInfo());
+        xmlConfig().setMemoryCache(info);
+        tester.startPage(GWCSettingsPage.class);
+        String backend = "memoryCachePanel:settings:backend";
+        tester.assertComponent("form:memoryCachePanel:settings:backendContainer:backendPanel", EmptyPanel.class);
+
+        // pick the heap backend, then "Choose One" again
+        tester.newFormTester("form").select(backend, 0);
+        tester.executeAjaxEvent("form:" + backend, "change");
+        tester.newFormTester("form").setValue(backend, "");
+        tester.executeAjaxEvent("form:" + backend, "change");
+        tester.newFormTester("form").submit("submit");
+
+        tester.assertNoErrorMessage();
+        assertThat(xmlConfig().getMemoryCache().getBackend(), instanceOf(UnknownBackendInfo.class));
+    }
+
+    @Test
+    public void testEditMissingMemoryCache() throws IOException {
+        xmlConfig().setMemoryCache(null);
         tester.startPage(GWCSettingsPage.class);
         tester.assertRenderedPage(GWCSettingsPage.class);
 
         FormTester form = tester.newFormTester("form");
-        form.setValue("tileCachePanel:enabled", true);
+        form.setValue("memoryCachePanel:enabled", true);
         form.submit("submit");
 
         tester.assertNoErrorMessage();
-        assertTrue(xmlConfig().getTileCache().isEnabled());
+        assertTrue(xmlConfig().getMemoryCache().isEnabled());
     }
 
     @Test
-    public void testTileCacheSettingsShownWhenEnabled() {
+    public void testMemoryCacheSettingsShownWhenEnabled() {
         tester.startPage(GWCSettingsPage.class);
-        tester.assertInvisible("form:tileCachePanel:settings");
+        tester.assertInvisible("form:memoryCachePanel:settings");
 
         FormTester form = tester.newFormTester("form");
-        form.setValue("tileCachePanel:enabled", true);
-        tester.executeAjaxEvent("form:tileCachePanel:enabled", "click");
+        form.setValue("memoryCachePanel:enabled", true);
+        tester.executeAjaxEvent("form:memoryCachePanel:enabled", "click");
 
-        tester.assertVisible("form:tileCachePanel:settings");
+        tester.assertVisible("form:memoryCachePanel:settings");
     }
 
     @Test
-    public void testDisableKeepsTileCacheSettings() throws IOException {
-        enableTileCache(false, 3600);
+    public void testDisableKeepsMemoryCacheSettings() throws IOException {
+        enableMemoryCache(false, 3600);
         tester.startPage(GWCSettingsPage.class);
 
         FormTester form = tester.newFormTester("form");
-        form.setValue("tileCachePanel:enabled", false);
+        form.setValue("memoryCachePanel:enabled", false);
         form.submit("submit");
 
         tester.assertNoErrorMessage();
-        TileCacheInfo saved = xmlConfig().getTileCache();
+        MemoryCacheInfo saved = xmlConfig().getMemoryCache();
         assertFalse(saved.isEnabled());
         assertFalse(saved.isPassthrough());
         assertEquals(3600, saved.getTimeToLive());

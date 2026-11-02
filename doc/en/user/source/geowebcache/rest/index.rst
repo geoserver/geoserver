@@ -19,4 +19,5 @@ For example::
    layers
    seed
    diskquota
+   memorycache
 

@@ -146,25 +146,19 @@ jobs:
       - name: Validate the artifact again before publishing
         run: python3 "$TOOLS/scripts/validate_feed.py" incoming/versions.json
 
-      - name: Commit versions.json if changed
-        id: commit
+      # the changes job has already found a difference, and runs are serialised by the concurrency group, so
+      # there is always something to commit: if there is not, git commit fails and the run shows it
+      - name: Commit versions.json
         working-directory: feed
         run: |
           cp ../incoming/versions.json versions.json
-          if git diff --quiet -- versions.json; then
-            echo "No change in versions.json, nothing to commit."
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add versions.json
           git commit -m "Update versions.json [automated]"
           git push origin "HEAD:$FEED_BRANCH"
-          echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - name: Purge jsDelivr cache
-        if: steps.commit.outputs.changed == 'true'
         run: |
           # jsDelivr does not notice a new commit by itself, so a client could keep receiving a stale feed for hours
           url="https://purge.jsdelivr.net/gh/${GITHUB_REPOSITORY}@${FEED_BRANCH}/versions.json"

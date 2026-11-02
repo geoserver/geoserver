@@ -49,9 +49,9 @@ public final class TestFeedServer {
         server.start();
         respond();
         if (systemProperty) {
-            System.setProperty(UpdatesCheckerFeedClient.FEED_URL_PROPERTY, url(PATH));
+            System.setProperty(FeedClient.FEED_URL_PROPERTY, url(PATH));
         } else {
-            GeoServerExtensionsHelper.property(UpdatesCheckerFeedClient.FEED_URL_PROPERTY, url(PATH));
+            GeoServerExtensionsHelper.property(FeedClient.FEED_URL_PROPERTY, url(PATH));
         }
         return this;
     }
@@ -99,7 +99,7 @@ public final class TestFeedServer {
     public void stop() {
         close();
         if (systemProperty) {
-            System.clearProperty(UpdatesCheckerFeedClient.FEED_URL_PROPERTY);
+            System.clearProperty(FeedClient.FEED_URL_PROPERTY);
         } else {
             GeoServerExtensionsHelper.clear();
         }

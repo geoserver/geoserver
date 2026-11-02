@@ -14,13 +14,13 @@ public final class TestServices {
     private TestServices() {}
 
     /** @return a config persister over the data directory in {@code dir}. */
-    public static UpdatesCheckerConfigPersister persister(File dir) {
-        return new UpdatesCheckerConfigPersister(new GeoServerDataDirectory(new GeoServerResourceLoader(dir)));
+    public static ConfigPersister persister(File dir) {
+        return new ConfigPersister(new GeoServerDataDirectory(new GeoServerResourceLoader(dir)));
     }
 
     /** @return a service that reports {@code version} as the running version, or none when it is {@code null}. */
-    public static UpdatesCheckerService service(UpdatesCheckerConfigPersister persister, String version) {
-        return new UpdatesCheckerService(persister, new UpdatesCheckerFeedClient()) {
+    public static UpdatesCheckerService service(ConfigPersister persister, String version) {
+        return new UpdatesCheckerService(persister, new FeedClient()) {
             @Override
             protected String readManifestVersion() {
                 return version;

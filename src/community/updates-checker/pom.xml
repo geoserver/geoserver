@@ -69,6 +69,14 @@
           <release>11</release>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- a GeoServer test application resets the logging when it stops (seen on 2.27.x), which breaks the log
+               capture of the test classes that run after it in the same JVM -->
+          <reuseForks>false</reuseForks>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>

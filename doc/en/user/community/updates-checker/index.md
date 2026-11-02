@@ -25,7 +25,7 @@ builds](https://build.geoserver.org/geoserver/main/community-latest/) - search f
 Unpack the zip file contents into GeoServer's `WEB-INF/lib` directory and restart GeoServer.
 
 !!! note
-    The module is compiled for Java 11, so the same JAR can be copied into any GeoServer from version 2.23 onwards, including a server that is already running in production, without rebuilding it.
+    The module is compiled for Java 11. This JAR declares the module category, which GeoServer 3.0 introduced, so it is for GeoServer 3.0 and later. For GeoServer 2.23 to 2.28, take the JAR of the 2.28.x or 2.27.x community build: it is the same module without the category, and it can be copied into a server that is already running in production without rebuilding it.
 
 ### Installing with Docker
 

@@ -5,7 +5,9 @@
 package org.geoserver.gwc.web.tilecache;
 
 import java.io.Serial;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -81,6 +83,10 @@ public class TileCachePanel extends Panel {
         backendContainer.add(backendPanel(current, backendModel));
         settings.add(backendContainer);
 
+        // settings by class, so that switching backend and back keeps the edits; "Choose One" picks the original
+        Map<Class<?>, TileCacheBackendInfo> edited = new HashMap<>();
+        Class<?> original = info.getBackend().getClass();
+
         // ids by settings class, as the page holds deserialized copies of the type beans
         ChoiceRenderer<TileCacheBackendType> renderer = new ChoiceRenderer<>(null, "settingsClass.name");
         DropDownChoice<TileCacheBackendType> backend =
@@ -92,7 +98,9 @@ public class TileCachePanel extends Panel {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 TileCacheBackendType selected = backend.getModelObject();
-                backendModel.setObject(selected.newSettings());
+                edited.put(backendModel.getObject().getClass(), backendModel.getObject());
+                Class<?> key = selected == null ? original : selected.getSettingsClass();
+                backendModel.setObject(edited.computeIfAbsent(key, k -> selected.newSettings()));
                 backendContainer.addOrReplace(backendPanel(selected, backendModel));
                 target.add(backendContainer);
             }

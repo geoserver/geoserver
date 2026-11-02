@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (C) 2026 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+  <description>
+   Bean configuration file for the gwc-hazelcast module
+  </description>
+
+  <bean id="HazelcastTileCacheConfigProvider" class="org.geowebcache.hazelcast.HazelcastTileCacheConfigProvider" depends-on="gwcSynchEnv">
+    <description>
+      Contributes XStream configuration settings to org.geowebcache.config.XMLConfiguration to encode the Hazelcast tile cache backend settings
+    </description>
+  </bean>
+
+  <!-- Both backends are idle until the tile cache settings select one of them, their files sit next to geowebcache.xml -->
+  <bean id="gwcHazelcastClientTileCacheBackend" class="org.geowebcache.hazelcast.HazelcastClientTileCacheBackend">
+    <constructor-arg>
+      <bean class="org.geoserver.gwc.config.GeoserverXMLResourceProvider">
+        <constructor-arg value="hazelcast-client.xml"/>
+        <constructor-arg ref="resourceStore"/>
+      </bean>
+    </constructor-arg>
+    <property name="lockProvider" ref="hazelcastLock"/>
+  </bean>
+
+  <bean id="gwcHazelcastEmbeddedTileCacheBackend" class="org.geowebcache.hazelcast.HazelcastEmbeddedTileCacheBackend">
+    <constructor-arg>
+      <bean class="org.geoserver.gwc.config.GeoserverXMLResourceProvider">
+        <constructor-arg value="hazelcast.xml"/>
+        <constructor-arg ref="resourceStore"/>
+      </bean>
+    </constructor-arg>
+    <property name="lockProvider" ref="hazelcastLock"/>
+  </bean>
+
+  <!-- Offered in the tile locking mechanism of the caching defaults, locks on the cluster of the selected backend -->
+  <bean id="hazelcastLock" class="org.geowebcache.hazelcast.HazelcastLockProvider"/>
+
+  <bean class="org.geoserver.gwc.hazelcast.web.HazelcastClientTileCacheBackendType"/>
+  <bean class="org.geoserver.gwc.hazelcast.web.HazelcastEmbeddedTileCacheBackendType"/>
+</beans>

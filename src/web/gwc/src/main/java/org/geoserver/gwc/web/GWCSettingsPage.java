@@ -93,8 +93,11 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
         GWCConfig gwcConfig = gwcConfigModel.getObject();
         try {
             gwc.saveConfig(gwcConfig);
-            // a new instance per save, the cache is rebuilt when the instance changes
-            xmlConfig().setTileCache(SerializationUtils.clone(tileCacheModel.getObject()));
+            // a new instance only on change, as the cache is rebuilt, and emptied, when the instance changes
+            TileCacheInfo tileCache = tileCacheModel.getObject();
+            if (!tileCache.equals(xmlConfig().getTileCache())) {
+                xmlConfig().setTileCache(SerializationUtils.clone(tileCache));
+            }
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Error saving GWC config", e);
             form.error("Error saving GWC config: " + e.getMessage());

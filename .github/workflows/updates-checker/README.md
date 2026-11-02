@@ -33,4 +33,7 @@ VERSIONS_JSON=/tmp/versions.json python3 .github/workflows/updates-checker/scrip
 python3 .github/workflows/updates-checker/scripts/validate_feed.py /tmp/versions.json
 ```
 
+A version counts as released once it is tagged, even before GitHub has a release record for it. A tag with no release
+record is dated by its commit, once: the feed remembers the date. A run makes two tag-list requests.
+
 Changing the feed format means raising `schema_version` in the generator, the validator and the module together.

@@ -593,7 +593,7 @@ class DegradeNotBlockTest(HostileCase):
         self.assertNotIn("<", lines[0])
         self.assertEqual("excluded GHSA-aaaa-aaaa-aaaa", lines[1])
 
-    def run_main(self, releases, advisories, existing=None):
+    def run_main(self, releases, advisories, existing=None, tags=(), dates=None):
         import contextlib
         import io
         import tempfile
@@ -606,6 +606,8 @@ class DegradeNotBlockTest(HostileCase):
             buffer, errors = io.StringIO(), io.StringIO()
             with mock.patch.object(cv, "OUTPUT_PATH", output), \
                     mock.patch.object(cv, "fetch_releases", side_effect=releases), \
+                    mock.patch.object(cv, "fetch_tags", return_value=list(tags)), \
+                    mock.patch.object(cv, "commit_date", side_effect=lambda sha, log=print: (dates or {}).get(sha)), \
                     mock.patch.object(cv, "fetch_raw_advisories", side_effect=advisories), \
                     mock.patch.object(cv, "BlogLookup", lambda now, log: no_blog), \
                     contextlib.redirect_stdout(buffer), contextlib.redirect_stderr(errors):
@@ -635,6 +637,17 @@ class DegradeNotBlockTest(HostileCase):
         self.assertIsNone(code)
         self.assertEqual(existing, written)
         self.assertEqual(2, out.count("::warning::"))
+
+    def test_main_publishes_a_tagged_version_that_has_no_release_yet(self):
+        sha = "b" * 40
+        code, written, _, err = self.run_main(
+            [real_releases()], [[]], tags=[("2.28.6", sha)], dates={sha: "2026-10-16T18:45:01Z"}
+        )
+        self.assertIsNone(code)
+        self.assertEqual("", err)
+        self.assertEqual([], validate_feed.validate_text(written.encode("utf-8")))
+        entry = {e["series"]: e for e in json.loads(written)["series"]}["2.28.x"]
+        self.assertEqual(("2.28.6", "2026-10-16T18:45:01Z"), (entry["latest_version"], entry["published_at"]))
 
     def test_main_fails_only_when_github_cannot_be_reached(self):
         import io

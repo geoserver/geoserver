@@ -1,7 +1,11 @@
 {
   "source_note": "The version feed is a static file on GitHub, delivered directly (raw.githubusercontent.com) or through the public jsDelivr content delivery network (cdn.jsdelivr.net). The GeoServer team does not run these hosts and receives no request logs at all. We cannot see which GeoServer versions are running. This module sends nothing about your server. However, the feed hosts can see the public IP address of your server making the request.",
   "schema_version": 1,
-  "generated": "2026-11-02T12:02:59Z",
+  "generated": "2026-11-02T15:58:41Z",
+  "main": {
+    "series": "3.1.x",
+    "version": "3.1.0-SNAPSHOT"
+  },
   "series": [
     {
       "series": "3.0.x",

@@ -177,6 +177,7 @@
         <module>singlestore</module>
         <module>pmtiles-store</module>
         <module>png-wind</module>
+        <module>updates-checker</module>
       </modules>
     </profile>
     <profile>
@@ -592,6 +593,12 @@
       <id>png-wind</id>
       <modules>
         <module>png-wind</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>updates-checker</id>
+      <modules>
+        <module>updates-checker</module>
       </modules>
     </profile>
     <profile>

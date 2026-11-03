@@ -7,6 +7,7 @@ package org.geoserver.security.auth;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -85,8 +86,8 @@ public class GuavaAuthenticationCacheImpl implements AuthenticationCache, GeoSer
 
         cache = CacheBuilder.newBuilder()
                 .maximumSize(maxEntries)
-                .expireAfterAccess(timeToIdleSeconds, TimeUnit.SECONDS)
-                .expireAfterWrite(timeToLiveSeconds, TimeUnit.SECONDS)
+                .expireAfterAccess(Duration.ofSeconds(timeToIdleSeconds))
+                .expireAfterWrite(Duration.ofSeconds(timeToLiveSeconds))
                 .concurrencyLevel(concurrencyLevel)
                 .build();
         if (LOGGER.isLoggable(Level.CONFIG)) {

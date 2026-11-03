@@ -16,6 +16,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -26,7 +27,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.minidev.json.JSONArray;
@@ -119,7 +119,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService i
         cachedResponses = CacheBuilder.newBuilder()
                 .concurrencyLevel(restRoleServiceConfig.getCacheConcurrencyLevel())
                 .maximumSize(restRoleServiceConfig.getCacheMaximumSize())
-                .expireAfterWrite(restRoleServiceConfig.getCacheExpirationTime(), TimeUnit.MILLISECONDS)
+                .expireAfterWrite(Duration.ofMillis(restRoleServiceConfig.getCacheExpirationTime()))
                 .build(); // look Ma, no CacheLoader
     }
 

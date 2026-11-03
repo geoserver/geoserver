@@ -8,6 +8,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -40,19 +41,21 @@ public class AggregatesCache implements GeoServerLifecycleHandler {
                 ? TimeUnit.HOURS
                 : TimeUnit.valueOf(service.getAggregatesCacheTTLUnit().toUpperCase());
 
-        aggregates = CacheBuilder.newBuilder().expireAfterWrite(duration, unit).build(new CacheLoader<>() {
-            @Override
-            public Object load(AggregateCacheKey key) throws Exception {
-                String property = key.getProperty();
-                String aggregate = key.getAggregate();
-                String collectionIdentifier = key.getCollectionIdentifier();
-                OpenSearchAccess openSearchAccess = accessProvider.getOpenSearchAccess();
-                FeatureSource productSource = openSearchAccess.getProductSource();
-                AggregateStats aggregateStats =
-                        AggregateFactory.getAggregateStats(AggregateFactory.AggregateType.fromString(aggregate));
-                return aggregateStats.getStat(productSource, collectionIdentifier, property);
-            }
-        });
+        aggregates = CacheBuilder.newBuilder()
+                .expireAfterWrite(Duration.of(duration, unit.toChronoUnit()))
+                .build(new CacheLoader<>() {
+                    @Override
+                    public Object load(AggregateCacheKey key) throws Exception {
+                        String property = key.getProperty();
+                        String aggregate = key.getAggregate();
+                        String collectionIdentifier = key.getCollectionIdentifier();
+                        OpenSearchAccess openSearchAccess = accessProvider.getOpenSearchAccess();
+                        FeatureSource productSource = openSearchAccess.getProductSource();
+                        AggregateStats aggregateStats = AggregateFactory.getAggregateStats(
+                                AggregateFactory.AggregateType.fromString(aggregate));
+                        return aggregateStats.getStat(productSource, collectionIdentifier, property);
+                    }
+                });
     }
 
     /**

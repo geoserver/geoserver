@@ -6,7 +6,7 @@ package org.geoserver.geofence.cache;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -97,9 +97,9 @@ public class CacheManager {
         CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder()
                 .maximumSize(cacheConfiguration.getSize())
                 .refreshAfterWrite(
-                        cacheConfiguration.getRefreshMilliSec(), TimeUnit.MILLISECONDS) // reloadable after x time
+                        Duration.ofMillis(cacheConfiguration.getRefreshMilliSec())) // reloadable after x time
                 .expireAfterWrite(
-                        cacheConfiguration.getExpireMilliSec(), TimeUnit.MILLISECONDS) // throw away entries too old
+                        Duration.ofMillis(cacheConfiguration.getExpireMilliSec())) // throw away entries too old
                 .recordStats();
         // .expireAfterAccess(timeoutMillis, TimeUnit.MILLISECONDS)
         // .removalListener(MY_LISTENER)

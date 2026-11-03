@@ -8,6 +8,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -19,7 +20,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
@@ -210,7 +210,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService implem
         return CacheBuilder.newBuilder()
                 .maximumSize(1000)
                 .initialCapacity(100)
-                .expireAfterAccess(expireAfterMinutes, TimeUnit.MINUTES)
+                .expireAfterAccess(Duration.ofMinutes(expireAfterMinutes))
                 .build(loader);
     }
 

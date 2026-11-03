@@ -5,6 +5,7 @@
  */
 package org.geoserver.wfs.response;
 
+import java.util.Set;
 import org.geoserver.config.GeoServer;
 import org.geoserver.excel.ExcelWriter;
 
@@ -16,7 +17,7 @@ import org.geoserver.excel.ExcelWriter;
 public class Excel2007OutputFormat extends ExcelOutputFormat {
     /** Constructor setting the format type as "excel2007" in addition to file extension, and mime type */
     public Excel2007OutputFormat(GeoServer gs) {
-        super(gs, "excel2007");
+        super(gs, Set.of("excel2007", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
         fileExtension = "xlsx";
         mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     }

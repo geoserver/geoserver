@@ -8,7 +8,9 @@ package org.geoserver.wfs.response;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -155,5 +157,16 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
         // check the number of rows in the output
         fs = getFeatureSource(MockData.GENERICENTITY);
         assertEquals(fs.getCount(Query.ALL) + 1, sheet.getPhysicalNumberOfRows());
+    }
+
+    @Test
+    public void testExcel2007ByMimeType() throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse(
+                "wfs?request=GetFeature&version=1.1.0&typeName=" + getLayerId(MockData.PRIMITIVEGEOFEATURE)
+                        + "&outputFormat=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        assertEquals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", resp.getContentType());
+        try (XSSFWorkbook wb = new XSSFWorkbook(new ByteArrayInputStream(resp.getContentAsByteArray()))) {
+            assertTrue(wb.getSheetAt(0).getPhysicalNumberOfRows() > 1);
+        }
     }
 }

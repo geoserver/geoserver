@@ -5,6 +5,7 @@
  */
 package org.geoserver.wfs.response;
 
+import java.util.Set;
 import org.geoserver.config.GeoServer;
 import org.geoserver.excel.ExcelWriter;
 
@@ -17,7 +18,7 @@ public class Excel97OutputFormat extends ExcelOutputFormat {
 
     /** Constructor setting the format type as "excel" in addition to file extension, and mime type */
     public Excel97OutputFormat(GeoServer gs) {
-        super(gs, "excel");
+        super(gs, Set.of("excel", "application/msexcel"));
         fileExtension = "xls";
         mimeType = "application/msexcel";
     }

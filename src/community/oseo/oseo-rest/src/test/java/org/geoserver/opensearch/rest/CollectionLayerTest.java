@@ -9,7 +9,9 @@ import static org.geoserver.opensearch.eo.store.OpenSearchAccess.EO_IDENTIFIER;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYERS;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYER_DESCRIPTION;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYER_TITLE;
+import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
@@ -20,12 +22,14 @@ import com.jayway.jsonpath.DocumentContext;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -60,6 +64,7 @@ import org.geotools.api.style.Symbolizer;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.projection.MapProjection;
@@ -83,6 +88,17 @@ public class CollectionLayerTest extends OSEORestTestSupport {
     protected OSEOPostGISResource getOSEOPostGIS() {
         return postgis;
     }
+
+    /** Footprint of the granules in test123-product-granules-multiband.json */
+    private static final ReferencedEnvelope MULTIBAND_FOOTPRINT = new ReferencedEnvelope(
+            -177.00042291922284, -174.76149153759332, 63.92156040493162, 64.92413839630179, WGS84);
+
+    /** Footprint of the granule in test123-product-granules-rgb.json */
+    private static final ReferencedEnvelope RGB_FOOTPRINT =
+            new ReferencedEnvelope(176.9996640533398, 178.7949060358814, 56.74303077496077, 57.74229815232193, WGS84);
+
+    /** Pixel size in metres of the UTM test granules (rgb.tif and multiband/*.tif) */
+    private static final double UTM_PIXEL_SIZE = 501.37;
 
     private String resourceBase;
 
@@ -710,14 +726,30 @@ public class CollectionLayerTest extends OSEORestTestSupport {
 
     @Test
     public void testCreateCollectionUTMLayer() throws Exception {
-        // setup the granules and the layer in UTM 01
+        // setup the granules and the layer in UTM 01, not heterogeneousCRS, products need no crs
+        putProductWithoutCRS();
         setupDefaultLayer(
                 "/test123-product-granules-multiband.json",
                 "/test123-layer-multiband-utm.json",
                 "gs",
                 Boolean.TRUE,
                 false);
+        assertMultibandUTMLayer();
+    }
 
+    @Test
+    public void testCreateHeterogeneousUTMLayerWithProductCRS() throws Exception {
+        // products keep their crs (EPSG:32601), heterogeneousCRS is requested explicitly
+        setupDefaultLayer(
+                "/test123-product-granules-multiband.json",
+                "/test123-layer-multiband-utm-hetero.json",
+                "gs",
+                Boolean.TRUE,
+                Boolean.TRUE);
+        assertMultibandUTMLayer();
+    }
+
+    private void assertMultibandUTMLayer() throws Exception {
         // check the configuration elements are there too
         LayerInfo layer = validateBasicLayerStructure("gs", "test123", new String[] {"B02", "B03", "B04", "B08"});
         assertThat(layer.getDefaultStyle().prefixedName(), equalTo("gs:test123"));
@@ -726,9 +758,9 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         assertEquals("2", cs.getRGBChannels()[1].getChannelName().evaluate(null, String.class));
         assertEquals("1", cs.getRGBChannels()[2].getChannelName().evaluate(null, String.class));
         assertNull(cs.getGrayChannel());
-        // declared SRS is 32601 but native is 4326
         assertEquals("EPSG:32601", layer.getResource().getSRS());
-        assertEquals("EPSG:4326", CRS.lookupIdentifier(layer.getResource().getNativeCRS(), false));
+        assertEquals("EPSG:32601", CRS.lookupIdentifier(layer.getResource().getNativeCRS(), false));
+        assertUTMMosaic("EPSG:32601", MULTIBAND_FOOTPRINT, "B02", "B03", "B04", "B08");
 
         // request in native CRS
         BufferedImage image = getAsImage(
@@ -740,7 +772,8 @@ public class CollectionLayerTest extends OSEORestTestSupport {
 
     @Test
     public void testCreateCollectionSimpleLayerUTM() throws Exception {
-        // setup the granules
+        // not heterogeneousCRS, products need no crs
+        putProductWithoutCRS();
         setupDefaultLayer("/test123-product-granules-rgb.json", "/test123-layer-simple-utm.json", "gs", false, false);
 
         // check the configuration elements are there too
@@ -748,14 +781,99 @@ public class CollectionLayerTest extends OSEORestTestSupport {
                 validateBasicLayerStructure("gs", "test123", new String[] {"RED_BAND", "GREEN_BAND", "BLUE_BAND"});
         // ... its style is the default one
         assertThat(layer.getDefaultStyle().getName(), equalTo("raster"));
-        // declared SRS is 32660 but native is 4326
         assertEquals("EPSG:32660", layer.getResource().getSRS());
-        assertEquals("EPSG:4326", CRS.lookupIdentifier(layer.getResource().getNativeCRS(), false));
+        assertEquals("EPSG:32660", CRS.lookupIdentifier(layer.getResource().getNativeCRS(), false));
+        assertUTMMosaic("EPSG:32660", RGB_FOOTPRINT);
 
+        // the footprint is a 4326 bbox, a mosaic grid derived from it would shift the granule by a fraction of pixel
         BufferedImage image = getAsImage(
                 "wms/reflect?layers=gs:test123&format=image/png&width=200&bbox=504980,6295220,604780,6395020",
                 "image/png");
         File expected = new File("src/test/resources/test123-simple-rgb-utm.png");
         ImageAssert.assertEquals(expected, image, 1000);
+    }
+
+    @Test
+    public void testCreateHeterogeneousLayerProductWithoutCRS() throws Exception {
+        String layer =
+                """
+                {"workspace": "gs", "layer": "test123", "separateBands": false, "heterogeneousCRS": true, \
+                "mosaicCRS": "EPSG:32660"}""";
+        assertLayerCreatedWithoutCRS("/test123-product-granules-rgb.json", layer);
+    }
+
+    @Test
+    public void testCreateHeterogeneousMultibandLayerProductWithoutCRS() throws Exception {
+        String layer = getTestStringData("/test123-layer-multiband.json");
+        assertLayerCreatedWithoutCRS("/test123-product-granules-multiband.json", layer);
+    }
+
+    /** Products without crs only cause a warning, the layer is created as before. */
+    private void assertLayerCreatedWithoutCRS(String granulesResource, String layer) throws Exception {
+        putProductWithoutCRS();
+        String granules = getTestStringData(granulesResource).replace("$resources", resourceBase);
+        MockHttpServletResponse response = putAsServletResponse(
+                "/rest/oseo/collections/TEST123/products/TEST123_P1/granules",
+                granules,
+                MediaType.APPLICATION_JSON_VALUE);
+        assertEquals(200, response.getStatus());
+
+        response = putAsServletResponse("rest/oseo/collections/TEST123/layer", layer, MediaType.APPLICATION_JSON_VALUE);
+        assertEquals(HttpStatus.CREATED.value(), response.getStatus());
+        assertNotNull(getCatalog().getLayerByName("gs:test123"));
+    }
+
+    /** Checks the mosaic configuration and native bounds of gs:test123, a mosaic in a UTM mosaicCRS. */
+    private void assertUTMMosaic(String mosaicCRS, ReferencedEnvelope footprint, String... bands) throws Exception {
+        Properties indexer = getMosaicProperties("indexer.properties");
+        assertEquals(mosaicCRS, indexer.getProperty("MosaicCRS"));
+        assertEquals("true", indexer.getProperty("HeterogeneousCRS"));
+        assertEquals("crs", indexer.getProperty("CrsAttribute"));
+        for (String band : bands) {
+            Properties bandConfig = getMosaicProperties(band + ".properties");
+            assertEquals(mosaicCRS, bandConfig.getProperty("MosaicCRS"));
+            // levels in metres, the granule pixel size, not in degrees
+            String[] levels = bandConfig.getProperty("Levels").split(",");
+            assertEquals(UTM_PIXEL_SIZE, Double.parseDouble(levels[0]), 0.01);
+            assertEquals(UTM_PIXEL_SIZE, Double.parseDouble(levels[1]), 0.01);
+        }
+
+        // native bounds are the 4326 footprints in the mosaic CRS, PostGIS extents are single precision
+        ReferencedEnvelope expected = footprint.transform(CRS.decode(mosaicCRS, true), true);
+        ReferencedEnvelope actual =
+                getCatalog().getCoverageByName("gs", "test123").getNativeBoundingBox();
+        assertEquals(expected.getMinX(), actual.getMinX(), 2);
+        assertEquals(expected.getMinY(), actual.getMinY(), 2);
+        assertEquals(expected.getMaxX(), actual.getMaxX(), 2);
+        assertEquals(expected.getMaxY(), actual.getMaxY(), 2);
+    }
+
+    private Properties getMosaicProperties(String fileName) throws IOException {
+        Properties properties = new Properties();
+        try (InputStream in = getCatalog()
+                .getResourceLoader()
+                .get("data/gs/test123/" + fileName)
+                .in()) {
+            properties.load(in);
+        }
+        return properties;
+    }
+
+    @Test
+    public void testCreateLayerInvalidMosaicCRS() throws Exception {
+        String layer = "{\"workspace\": \"gs\", \"layer\": \"test123\", \"mosaicCRS\": \"EPSG:999999\"}";
+        MockHttpServletResponse response =
+                putAsServletResponse("rest/oseo/collections/TEST123/layer", layer, MediaType.APPLICATION_JSON_VALUE);
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+        assertThat(response.getContentAsString(), containsString("Invalid mosaicCRS"));
+        assertEquals(
+                404, getAsServletResponse("rest/oseo/collections/TEST123/layer").getStatus());
+    }
+
+    private void putProductWithoutCRS() throws Exception {
+        String product = getTestStringData("/test123-product.json").replace("\"EPSG:32601\"", "null");
+        MockHttpServletResponse response = putAsServletResponse(
+                "rest/oseo/collections/TEST123/products/TEST123_P1", product, MediaType.APPLICATION_JSON_VALUE);
+        assertEquals(200, response.getStatus());
     }
 }

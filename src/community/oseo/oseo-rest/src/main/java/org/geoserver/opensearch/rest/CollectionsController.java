@@ -367,6 +367,8 @@ public class CollectionsController extends AbstractOpenSearchController {
         }
         try {
             layerManager.createMosaicAndLayer(collection, layer);
+        } catch (RestException e) {
+            throw e;
         } catch (Exception e) {
             // rethrow to make the transaction fail
             throw new RuntimeException(e);

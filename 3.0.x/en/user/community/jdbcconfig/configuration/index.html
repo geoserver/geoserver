@@ -23469,6 +23469,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#request-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request cache
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -30189,6 +30200,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#request-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request cache
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -30239,10 +30261,16 @@
 <li><code>pool.poolPreparedStatements</code>: whether to pool prepared statements</li>
 <li><code>pool.maxOpenPreparedStatements</code>: size of prepared statement cache, only used if <code>pool.poolPreparedStatements</code> is true</li>
 <li><code>pool.testOnBorrow</code>: whether to validate connections when obtaining from the pool</li>
-<li><code>pool.validationQuery</code>: validation query for connections from pool, must be set when <code>pool.testOnBorrow</code> is true</li>
+<li><code>pool.validationQuery</code>: validation query for connections from pool, must be set when <code>pool.testOnBorrow</code> or <code>pool.testWhileIdle</code> is true</li>
 <li><code>pool.testWhileIdle</code>: whether to validate idle connections, used in conjunction with the idle timer below</li>
 <li><code>pool.setTimeBetweenEvictionRunsMillis</code>: period in milliseconds for the idle object evictor, -1 to disable</li>
 </ul>
+<p>With <code>pool.testOnBorrow</code> set to true, the validation query runs each time GeoServer takes a connection from the pool, which happens many times in a single request, and each run waits for a round trip to the database. Setting <code>pool.testOnBorrow</code> to false and <code>pool.testWhileIdle</code> to true checks the idle connections in the background instead. This still needs <code>pool.validationQuery</code>, and <code>pool.setTimeBetweenEvictionRunsMillis</code> set to a few minutes.</p>
+<h2 id="request-cache">Request cache<a class="headerlink" href="#request-cache" title="Permanent link">&para;</a></h2>
+<p>JDBCConfig uses two caches for configuration objects.</p>
+<p>The first one is shared by all requests. It keeps the objects found in the database, looked up by id or by name, and drops them after a time without use. It does not remember lookups that found nothing, so each such lookup queries the database again.</p>
+<p>The second one, the request cache, lives for a single request. It keeps every lookup made during that request, including the ones that found nothing, so asking twice for the same object, or for the same missing object, queries the database only once. When the request ends, GeoServer drops the cache, and the next request starts with an empty one. A change saved by another request on the same GeoServer is therefore visible from the next request on.</p>
+<p>To turn the cache off, set the <code>GEOSERVER_REQUEST_CACHE</code> system property or environment variable to <code>false</code>, for example <code>-DGEOSERVER_REQUEST_CACHE=false</code>.</p>
 
 
 

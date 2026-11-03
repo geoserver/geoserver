@@ -8,13 +8,13 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import org.eclipse.emf.common.util.URI;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -44,7 +44,7 @@ public class TemplateLoader extends AbstractLoader {
         templateCache = CacheBuilder.newBuilder()
                 .maximumSize(100)
                 .initialCapacity(1)
-                .expireAfterAccess(120, TimeUnit.MINUTES)
+                .expireAfterAccess(Duration.ofMinutes(120))
                 .build(new TemplateCacheLoader());
     }
 

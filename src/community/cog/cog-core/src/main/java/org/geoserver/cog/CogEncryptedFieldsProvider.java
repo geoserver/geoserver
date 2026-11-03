@@ -13,7 +13,7 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.security.password.EncryptedFieldsProvider;
 
 /** EncryptedFieldsProvider for COG stores containing a password in the connectionParameters */
-class CogEncryptedFieldsProvider implements EncryptedFieldsProvider {
+public class CogEncryptedFieldsProvider implements EncryptedFieldsProvider {
 
     public CogEncryptedFieldsProvider() {}
 

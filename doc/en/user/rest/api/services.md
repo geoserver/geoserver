@@ -24,6 +24,12 @@ Controls Web Coverage Service settings for a given workspace.
 | PUT | Create or modify WCS settings for workspace `ws` | 200 | XML,JSON |  |
 | DELETE | Delete WCS settings for workspace `ws` | 200 |  |  |
 
+### Exceptions
+
+| Exception                                              | Status code |
+|--------------------------------------------------------|-------------|
+| GET, PUT or DELETE for a workspace that does not exist | 404         |
+
 ## `/services/wfs/settings[.<format>]`
 
 Controls Web Feature Service settings.
@@ -45,6 +51,12 @@ Controls Web Feature Service settings for a given workspace.
 | POST |  | 405 |  |  |
 | PUT | Modify WFS settings for workspace `ws` | 200 | XML,JSON |  |
 | DELETE | Delete WFS settings for workspace `ws` | 200 |  |  |
+
+### Exceptions
+
+| Exception                                              | Status code |
+|--------------------------------------------------------|-------------|
+| GET, PUT or DELETE for a workspace that does not exist | 404         |
 
 ## `/services/wms/settings[.<format>]`
 
@@ -68,6 +80,12 @@ Controls Web Map Service settings for a given workspace.
 | PUT | Modify WMS settings for workspace `ws` | 200 | XML,JSON |  |
 | DELETE | Delete WMS settings for workspace `ws` | 200 |  |  |
 
+### Exceptions
+
+| Exception                                              | Status code |
+|--------------------------------------------------------|-------------|
+| GET, PUT or DELETE for a workspace that does not exist | 404         |
+
 ## `/services/wmts/settings[.<format>]`
 
 Controls Web Map Tile Service settings.
@@ -89,6 +107,12 @@ Controls Web Map Tile Service settings for a given workspace.
 | POST |  | 405 |  |  |
 | PUT | Modify WMTS settings for workspace `ws` | 200 | XML,JSON |  |
 | DELETE | Delete WMTS settings for workspace `ws` | 200 |  |  |
+
+### Exceptions
+
+| Exception                                              | Status code |
+|--------------------------------------------------------|-------------|
+| GET, PUT or DELETE for a workspace that does not exist | 404         |
 
 <!-- admonition follows -->
 

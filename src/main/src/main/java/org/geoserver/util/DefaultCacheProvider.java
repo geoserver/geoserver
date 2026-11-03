@@ -8,7 +8,7 @@ package org.geoserver.util;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import java.io.Serializable;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +33,7 @@ public class DefaultCacheProvider implements CacheProvider {
         Cache<K, V> cache = CacheBuilder.newBuilder()
                 .weakValues()
                 .concurrencyLevel(DEFAULT_CONCURRENCY_LEVEL)
-                .expireAfterAccess(DEFAULT_EXPIRATION_MINUTES, TimeUnit.MINUTES)
+                .expireAfterAccess(Duration.ofMinutes(DEFAULT_EXPIRATION_MINUTES))
                 .maximumSize(DEFAULT_MAX_ENTRIES)
                 .build();
 

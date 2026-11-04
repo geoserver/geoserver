@@ -31,8 +31,10 @@ import static org.geoserver.security.validation.SecurityConfigException.PASSWD_P
 import static org.geoserver.security.validation.SecurityConfigException.PASSWORD_ENCODER_REQUIRED;
 import static org.geoserver.security.validation.SecurityConfigException.RESERVED_ROLE_NAME;
 import static org.geoserver.security.validation.SecurityConfigException.ROLE_SERVICE_ACTIVE_$1;
+import static org.geoserver.security.validation.SecurityConfigException.ROLE_SERVICE_ACTIVE_CLASS_CHANGE_$1;
 import static org.geoserver.security.validation.SecurityConfigException.ROLE_SERVICE_ALREADY_EXISTS_$1;
 import static org.geoserver.security.validation.SecurityConfigException.ROLE_SERVICE_NOT_FOUND_$1;
+import static org.geoserver.security.validation.SecurityConfigException.ROLE_SERVICE_USED_BY_FILTER_$2;
 import static org.geoserver.security.validation.SecurityConfigException.USERGROUP_SERVICE_ACTIVE_$2;
 import static org.geoserver.security.validation.SecurityConfigException.USERGROUP_SERVICE_ALREADY_EXISTS_$1;
 import static org.geoserver.security.validation.SecurityConfigException.USERGROUP_SERVICE_NOT_FOUND_$1;
@@ -56,6 +58,7 @@ import org.geoserver.security.RequestFilterChain;
 import org.geoserver.security.ServiceLoginFilterChain;
 import org.geoserver.security.VariableFilterChain;
 import org.geoserver.security.config.PasswordPolicyConfig;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -377,6 +380,11 @@ public class SecurityConfigValidator extends AbstractSecurityValidator {
     public void validateModifiedRoleService(SecurityRoleServiceConfig config, SecurityRoleServiceConfig oldConfig)
             throws SecurityConfigException {
         validateModifiedNamedService(GeoServerRoleService.class, config);
+        if (oldConfig != null
+                && !oldConfig.getClassName().equals(config.getClassName())
+                && manager.getActiveRoleService().getName().equals(config.getName())) {
+            throw createSecurityException(ROLE_SERVICE_ACTIVE_CLASS_CHANGE_$1, config.getName());
+        }
         validate(config);
     }
 
@@ -425,6 +433,19 @@ public class SecurityConfigValidator extends AbstractSecurityValidator {
         validateRemoveNamedService(GeoServerRoleService.class, config);
         if (manager.getActiveRoleService().getName().equals(config.getName())) {
             throw createSecurityException(ROLE_SERVICE_ACTIVE_$1, config.getName());
+        }
+        try {
+            for (String name : manager.listFilters()) {
+                SecurityNamedServiceConfig filterConfig = manager.loadFilterConfig(name, true);
+                if (filterConfig instanceof PreAuthenticatedUserNameFilterConfig puConfig) {
+                    String roleServiceName = puConfig.getRoleServiceName();
+                    if (isNotEmpty(roleServiceName) && roleServiceName.equals(config.getName())) {
+                        throw createSecurityException(ROLE_SERVICE_USED_BY_FILTER_$2, config.getName(), name);
+                    }
+                }
+            }
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
         }
     }
 

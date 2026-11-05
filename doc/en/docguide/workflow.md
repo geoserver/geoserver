@@ -77,19 +77,20 @@ You should install MkDocs on your local system (see the page on [Installing](ins
     pip install -r requirements.txt
     ```
  
-3. Use ***mkdocs*** to preview from virtual environment:
+3. Use ***mkdocs*** to preview from virtual environment (opens browser):
 
     ```bash
-    mkdocs serve
+    mkdocs serve -o
     ```
     
     The documentation will refresh as you edit individual files.
-
-4. Open the preview in your browser:
-
+    
+    The **`mkdocs.yml`** setting `site_url` is based on the current branch, to override for local testing
+    use `SITE_URL` environment variable. Example of serving from `/`:
+    
     ```bash
-    python3 -m webbrowser http://localhost:8000
-    ```
+    SITE_URL=http://localhost:8000/ mkdocs serve -o
+    ``` 
 
 ### HTML
 

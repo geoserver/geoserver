@@ -86,6 +86,7 @@ final class PluginRegistry {
         TESTERS.put("geofence", new GeofenceTester());
         TESTERS.put("geofence-server", new GeofenceServerTester());
         TESTERS.put("fips", new FipsTester());
+        TESTERS.put("css", new CssTester());
     }
 
     private PluginRegistry() {}

@@ -25,11 +25,11 @@ current certification status of GeoServer.
 
 ## License
 
-GeoServer licensed under the [GPL](https://docs.geoserver.org/3.0.x/en/user/introduction/license/).
+GeoServer licensed under the [GPL](https://docs.geoserver.org/stable/en/user/introduction/license/).
 
 ## Using
 
-Please refer to the [user guide](https://docs.geoserver.org/3.0.x/en/user/) for information
+Please refer to the [user guide](https://docs.geoserver.org/stable/en/user/) for information
 on how to install and use GeoServer.
 
 ## Building
@@ -41,21 +41,27 @@ build the application run maven from the ```src``` directory.
 mvn clean install
 ```
 
-See the [developer guide](https://docs.geoserver.org/3.0.x/en/developer/) for more details.
+See the [developer guide](https://docs.geoserver.org/latest/en/developer/) for more details.
 
 ## Documentation
 
 GeoServer uses [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) for documentation written in Markdown. Use ``mkdocs`` to run the docs locally for feedback while editing:
 
-Serve live preview locally:
+Serve live preview locally (browser will open):
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-mkdocs serve --livereload --no-directory-urls -o
+mkdocs serve -o
 ```
 
-See the [documentation guide])(https://docs.geoserver.org/3.0.x/en/docguide/) for more details.
+See the [documentation guide](https://docs.geoserver.org/latest/en/docguide/) for more details.
+
+The default `site_url` from **`mkdocs.yml`** is based on the current branch. To override use environmental variable:
+
+```
+SITE_URL=http://localhost:8000/ mkdocs serve -o
+```
 
 ## Bugs
 

@@ -42,6 +42,6 @@
   <maxOutputMemory>0</maxOutputMemory>
   <defaultDeflateCompressionLevel>9</defaultDeflateCompressionLevel>
   <subsamplingEnabled>true</subsamplingEnabled>
-  <overviewPolicy>IGNORE</overviewPolicy>
+  <overviewPolicy>QUALITY</overviewPolicy>
   <maxRequestedDimensionValues>100</maxRequestedDimensionValues>
 </wcs>

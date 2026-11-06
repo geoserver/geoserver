@@ -37,9 +37,15 @@ jobs:
         key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           gs-${{ runner.os }}-maven-
+    - name: Check GeoServer tests dependencies are in gs-test-dependences profile
+      run: |
+        mvn -B -ntp -nsu validate -Dmaven.test.skip=true -Prelease,pending -f src/pom.xml
     - name: Build with Maven with full QA checks
       run: |
         mvn -B -ntp -U -T1C -fae -Dspotless.action=check -Dpom.fmt.action=verify -Dqa -DskipTests -Prelease,pending -f src/pom.xml clean install
+    - name: Check community GeoServer tests dependencies are in gs-test-dependences profile
+      run: |
+        mvn -B -ntp -nsu validate -Dmaven.test.skip=true -PcommunityRelease -f src/community/pom.xml
     - name: Build community and online test modules without unit tests, but applying formatting checks
       run: |
         mvn -B -ntp -nsu -U -T1C -fae -Dspotless.action=check -Dpom.fmt.action=verify -DskipTests -Prelease,communityRelease -f src/community/pom.xml clean install

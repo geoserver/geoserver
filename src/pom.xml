@@ -1943,6 +1943,41 @@
 
   <profiles>
     <profile>
+      <id>gs-test-dependences-check</id>
+      <activation>
+        <property>
+          <name>maven.test.skip</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>ban-gs-test-dependencies</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <bannedDependencies>
+                      <excludes>
+                        <exclude>org.geoserver*:*:*:*:*:tests</exclude>
+                      </excludes>
+                      <searchTransitive>false</searchTransitive>
+                      <message>Move GeoServer tests dependencies into the gs-test-dependences profile (see src/web/wms/pom.xml)</message>
+                    </bannedDependencies>
+                  </rules>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
       <!-- Builds a FIPS-capable GeoServer: BouncyCastle swapped for its FIPS-validated
            line, the community fips modules in the reactor, and gs-fips-provider on the
            classpath so the crypto provider is chosen through the extension point.

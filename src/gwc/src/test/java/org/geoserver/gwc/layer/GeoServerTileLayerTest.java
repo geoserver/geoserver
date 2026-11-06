@@ -1163,13 +1163,40 @@ public class GeoServerTileLayerTest {
 
         executorServiceSpy.awaitTermination(2, TimeUnit.SECONDS);
 
-        // 1 async threads: 1 to save the requested tile, 15 for encoding/saving additional tiles,
-        // and 1 to dispose of metatile (one of the tiles is performed on main thread)
-        verify(executorServiceSpy, times(17)).execute(any());
+        // 1 async threads: 1 to save the requested tile, 15 for encoding/saving additional tiles
+        // (the metatile is disposed on the thread completing the last of them)
+        verify(executorServiceSpy, times(16)).execute(any());
 
         // 16 tiles to put in storage
         verify(result.getStorageBroker(), times(16)).put(Mockito.any());
         executorServiceSpy.shutdown();
+    }
+
+    /** A configuration save shuts the executor down while a request renders: its tiles are saved on its own thread. */
+    @Test
+    public void testGetTileWithShutDownMetaTilingExecutor() throws Exception {
+        GetTileMockTester tester = new GetTileMockTester();
+        GeoServerTileLayer tileLayer = tester.prepareTileLayer();
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        executor.shutdown();
+        when(mockGWC.getMetaTilingExecutor()).thenReturn(executor);
+
+        // Ensure enough valid coverage to support metatiling
+        resource.setLatLonBoundingBox(new ReferencedEnvelope(-180, 180, -90, 90, WGS84));
+        resource.setNativeBoundingBox(new ReferencedEnvelope(-180, 180, -90, 90, WGS84));
+
+        int zoomLevel = 4;
+        long[] coverage = tileLayer.getGridSubset("EPSG:4326").getCoverage(zoomLevel);
+        long[] tileIndex = {coverage[0], coverage[1], zoomLevel};
+        ConveyorTile conveyorTile = tester.prepareConveyorTile(tileLayer, tileIndex);
+        Dispatcher.REQUEST.set(new Request());
+
+        GeoServerTileLayer.WEB_MAP.set(tester.prepareFakeMap(1024, 1024));
+        ConveyorTile result = tileLayer.getTile(conveyorTile);
+
+        assertEquals(200, result.getStatus());
+        assertNotNull(result.getBlob());
+        verify(result.getStorageBroker(), times(16)).put(Mockito.any());
     }
 
     /**

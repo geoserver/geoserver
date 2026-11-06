@@ -39,6 +39,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
@@ -228,6 +229,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     private ExecutorService metaTilingExecutor;
 
+    /** The configured thread count {@link #metaTilingExecutor} was built with, null for the default. */
+    private Integer metaTilingThreads;
+
     private final CoalescedRequestSplitter coalescedRequestSplitter;
 
     /**
@@ -286,7 +290,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         this.gwcSynchEnv = gwcSynchEnv;
         this.coalescedRequestSplitter = coalescedRequestSplitter;
 
-        this.metaTilingExecutor = buildMetaTilingExecutor(getConfig().getMetaTilingThreads());
+        this.metaTilingThreads = getConfig().getMetaTilingThreads();
+        this.metaTilingExecutor = buildMetaTilingExecutor(metaTilingThreads);
     }
 
     /** Updates the configurable lock provider to use the specified bean */
@@ -1245,9 +1250,12 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         // make sure we switch to the lock provider just configured
         updateLockProvider(gwcConfig.getLockProviderName());
 
-        // Reconfigure the metatiling executor because the thread count might have changed
+        // only on a thread count change: renders that read the old executor then save their tiles on their own thread
+        Integer threads = gwcConfig.getMetaTilingThreads();
+        if (Objects.equals(threads, metaTilingThreads)) return;
+        metaTilingThreads = threads;
         ExecutorService current = this.metaTilingExecutor;
-        this.metaTilingExecutor = buildMetaTilingExecutor(gwcConfig.getMetaTilingThreads());
+        this.metaTilingExecutor = buildMetaTilingExecutor(threads);
         if (current != null) current.shutdown();
     }
 

@@ -30,6 +30,12 @@
                     </label>
                     <select class="w-md" wicket:id="blobStoreId" id="blobStoreId"/>
                   </div>
+                  <div class="choiceItem">
+                    <input id="memoryCached" wicket:id="memoryCached" type="checkbox"/>
+                    <label for="memoryCached">
+                      <wicket:message key="memoryCached">Use the in-memory tile cache for this layer</wicket:message>
+                    </label>
+                  </div>
                   <div class="gs-form-group">
                     <label>
                       <wicket:message key="metaTiling">Meta tiling factors</wicket:message>

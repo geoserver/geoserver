@@ -752,4 +752,32 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals("Default", xpath.evaluate("//cacheWarningSkips/warning[1]", dom));
         assertEquals("FailedNearest", xpath.evaluate("//cacheWarningSkips/warning[2]", dom));
     }
+
+    @Test
+    public void testPutMemoryCached() throws Exception {
+        String layerName = getLayerId(MockData.BRIDGES);
+        String url = "gwc/rest/layers/" + layerName + ".xml";
+
+        assertEquals(HttpServletResponse.SC_OK, putMemoryCached(url, layerName, "<memoryCached>true</memoryCached>"));
+        assertTrue(GWC.get().getTileLayerByName(layerName).isMemoryCached());
+        assertXpathEvaluatesTo("true", "/GeoServerLayer/memoryCached", getAsDOM(url));
+
+        // a PUT replaces the whole layer, so leaving the element out turns the flag off
+        assertEquals(HttpServletResponse.SC_OK, putMemoryCached(url, layerName, ""));
+        assertFalse(GWC.get().getTileLayerByName(layerName).isMemoryCached());
+    }
+
+    private int putMemoryCached(String url, String layerName, String memoryCached) throws Exception {
+        String id = getCatalog().getLayerByName(layerName).getId();
+        String xml = """
+                <GeoServerLayer>
+                  <id>%s</id>
+                  <enabled>true</enabled>
+                  <name>%s</name>
+                  <mimeFormats><string>image/png</string></mimeFormats>
+                  <gridSubsets><gridSubset><gridSetName>EPSG:4326</gridSetName></gridSubset></gridSubsets>
+                  %s
+                </GeoServerLayer>""".formatted(id, layerName, memoryCached);
+        return putAsServletResponse(url, xml, "text/xml").getStatus();
+    }
 }

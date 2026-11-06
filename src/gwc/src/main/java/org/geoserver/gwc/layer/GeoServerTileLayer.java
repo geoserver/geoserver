@@ -37,6 +37,7 @@ import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.logging.Level;
@@ -871,7 +872,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                         // Save in cache on main thread if there's no executor
                         saveTileTask.run();
                     } else {
-                        CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(saveTileTask, executor);
+                        CompletableFuture<Void> completableFuture = runAsyncOrInline(saveTileTask, executor);
                         completableFutures.add(completableFuture);
                     }
                 } else {
@@ -890,8 +891,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                         encodeAndSaveTask.run();
                     } else {
                         // Fully asynchronous
-                        CompletableFuture<Void> completableFuture =
-                                CompletableFuture.runAsync(encodeAndSaveTask, executor);
+                        CompletableFuture<Void> completableFuture = runAsyncOrInline(encodeAndSaveTask, executor);
                         completableFutures.add(completableFuture);
                     }
                 }
@@ -903,7 +903,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
 
         // Dispose of meta-tile when all completable futures are done
         if (!completableFutures.isEmpty()) {
-            runAsyncAfterAllFuturesComplete(completableFutures, metaTile::dispose, executor);
+            runAsyncAfterAllFuturesComplete(completableFutures, metaTile::dispose);
         } else {
             // There were no asynchronous tasks, everything was run on the main thread
             // so we can dispose of the meta-tile right away
@@ -917,11 +917,22 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         return new ByteArrayResource(tileData);
     }
 
-    private void runAsyncAfterAllFuturesComplete(
-            List<CompletableFuture<?>> futures, Runnable runnable, Executor executor) {
+    /** Runs {@code task} on {@code executor}, or on this thread if a configuration save shut the executor down. */
+    private static CompletableFuture<Void> runAsyncOrInline(Runnable task, Executor executor) {
+        try {
+            return CompletableFuture.runAsync(task, executor);
+        } catch (RejectedExecutionException e) {
+            task.run();
+            return CompletableFuture.completedFuture(null);
+        }
+    }
+
+    private void runAsyncAfterAllFuturesComplete(List<CompletableFuture<?>> futures, Runnable runnable) {
         CompletableFuture<?>[] futureArray = futures.toArray(new CompletableFuture[0]);
         CompletableFuture<Void> afterAllFutures = CompletableFuture.allOf(futureArray);
-        afterAllFutures.thenRunAsync(runnable, executor);
+        // on the thread completing the last future: an executor shut down by a configuration save would reject the
+        // task without telling anyone, and the meta tile would never be disposed
+        afterAllFutures.thenRun(runnable);
     }
 
     private Runnable withRasterCleaner(Runnable runnable) {
@@ -1782,6 +1793,11 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
     @Override
     public void setBlobStoreId(String blobStoreId) {
         info.setBlobStoreId(blobStoreId);
+    }
+
+    @Override
+    public boolean isMemoryCached() {
+        return info.isMemoryCached();
     }
 
     @Override

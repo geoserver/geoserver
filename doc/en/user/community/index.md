@@ -48,6 +48,7 @@ Community modules are provided "as is" alongside the [nightly builds](https://bu
 - [GSR Extension](gsr/index.md)
 - [GWC Azure BlobStore plugin](gwc-azure-blob/index.md)
 - [GWC Google Cloud Storage BlobStore plugin](gwc-gcs-blob/index.md)
+- [GWC Hazelcast tile cache plugin](gwc-hazelcast/index.md)
 - [GWC MBTiles layer plugin](gwc-mbtiles/index.md)
 - [SAP HANA](hana/index.md)
 - [Hazelcast Clustering Plugin](hz-cluster/index.md)

@@ -172,6 +172,63 @@ public class MapBoxTileBuilderTest {
         assertEquals(0, features.get("Lines").get(1).getId());
     }
 
+    /** Some stores, e.g. PMTiles, use plain numbers as feature ids. */
+    @Test
+    public void testFeatureIdsWithoutTypeName() throws Exception {
+        MapBoxTileBuilder tileBuilder = tileBuilder(256, 256);
+
+        tileBuilder.addFeature("Lines", "123", "unused", geom("LINESTRING(10 10, 20 20)"), Map.of("name", "line1"));
+
+        ListMultimap<String, Feature> features = decode(tileBuilder.build(mock(WMSMapContent.class)));
+
+        assertEquals(1, features.size());
+        assertEquals(123, features.get("Lines").get(0).getId());
+    }
+
+    @Test
+    public void testFeatureIdsBeyondIntRange() throws Exception {
+        MapBoxTileBuilder tileBuilder = tileBuilder(256, 256);
+
+        tileBuilder.addFeature(
+                "Lines", "Lines.4000000000", "unused", geom("LINESTRING(10 10, 20 20)"), Map.of("name", "line1"));
+
+        ListMultimap<String, Feature> features = decode(tileBuilder.build(mock(WMSMapContent.class)));
+
+        assertEquals(1, features.size());
+        assertEquals(4_000_000_000L, features.get("Lines").get(0).getId());
+    }
+
+    /** The id is the number after the last dot, also for composite primary keys such as "Lines.1.2". */
+    @Test
+    public void testFeatureIdsWithDottedTypeName() throws Exception {
+        MapBoxTileBuilder tileBuilder = tileBuilder(256, 256);
+
+        tileBuilder.addFeature(
+                "Lines", "schema.Lines.42", "unused", geom("LINESTRING(10 10, 20 20)"), Map.of("name", "line1"));
+
+        ListMultimap<String, Feature> features = decode(tileBuilder.build(mock(WMSMapContent.class)));
+
+        assertEquals(1, features.size());
+        assertEquals(42, features.get("Lines").get(0).getId());
+    }
+
+    /** Numbers up to 18 digits are used as ids, longer ones could overflow a long and are left out. */
+    @Test
+    public void testFeatureIdsLengthLimit() throws Exception {
+        MapBoxTileBuilder tileBuilder = tileBuilder(256, 256);
+
+        tileBuilder.addFeature(
+                "Lines", "999999999999999999", "unused", geom("LINESTRING(10 10, 20 20)"), Map.of("name", "line1"));
+        tileBuilder.addFeature(
+                "Lines", "9999999999999999999", "unused", geom("LINESTRING(50 50, 50 30)"), Map.of("name", "line2"));
+
+        ListMultimap<String, Feature> features = decode(tileBuilder.build(mock(WMSMapContent.class)));
+
+        assertEquals(2, features.size());
+        assertEquals(999_999_999_999_999_999L, features.get("Lines").get(0).getId());
+        assertEquals(0, features.get("Lines").get(1).getId());
+    }
+
     private MapBoxTileBuilder tileBuilder(int width, int height) {
         MapBoxTileBuilderFactory builderFact = new MapBoxTileBuilderFactory();
         Rectangle screenSize = new Rectangle(width, height);

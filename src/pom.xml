@@ -9,7 +9,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.geoserver</groupId>
   <artifactId>geoserver</artifactId>
-  <version>3.1.0-SNAPSHOT</version>
+  <version>${revision}</version>
   <packaging>pom</packaging>
   <name>GeoServer</name>
   <inceptionYear>2006</inceptionYear>
@@ -94,6 +94,7 @@
     <!-- ================================ -->
     <!-- Project version management       -->
     <!-- ================================ -->
+    <revision>3.1.0-SNAPSHOT</revision>
     <gt.version>36-SNAPSHOT</gt.version>
     <gwc.version>2.1-SNAPSHOT</gwc.version>
     <spring.version>7.0.10</spring.version>
@@ -1419,6 +1420,11 @@
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
+          <artifactId>flatten-maven-plugin</artifactId>
+          <version>1.7.3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
           <artifactId>javacc-maven-plugin</artifactId>
           <version>3.1.1</version>
         </plugin>
@@ -1819,6 +1825,30 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>versions-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>flatten</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>flatten</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>flatten-clean</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <flattenMode>resolveCiFriendliesOnly</flattenMode>
+          <updatePomFile>true</updatePomFile>
+        </configuration>
       </plugin>
     </plugins>
 

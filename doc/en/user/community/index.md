@@ -76,6 +76,7 @@ Community modules are provided "as is" alongside the [nightly builds](https://bu
 - [STAC Datastore extension](stac-datastore/index.md)
 - [SOLR data store](solr/index.md)
 - [Task Manager](taskmanager/index.md)
+- [Check for Updates](updates-checker/index.md)
 - [Vector Mosaic datastore](vector-mosaic/index.md)
 - [VSI Virtual File System Support](vsi/index.md)
 - [HTTP Based Authorization plug-in](web-service-auth/index.md)

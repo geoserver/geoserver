@@ -9,6 +9,7 @@ import static org.geoserver.wms.mapbox.MapBoxTileBuilderFactory.MIME_TYPE;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import no.ecc.vectortile.VectorTileEncoder;
 import no.ecc.vectortile.VectorTileEncoderNoClip;
@@ -39,19 +40,14 @@ public class MapBoxTileBuilder implements VectorTileBuilder {
             String geometryName,
             Geometry geometry,
             Map<String, Object> properties) {
-        int id = -1;
-        if (featureId.matches(".*\\.[0-9]+")) {
-            try {
-                id = Integer.parseInt(featureId.split("\\.")[1]);
-            } catch (NumberFormatException e) {
-            }
+        // Feature ids are "typeName.number", plain numbers or text. Extract the trailing numeric part and make
+        // sure it can fit into a long, otherwise we will encode the feature without an id.
+        String tail = featureId.substring(featureId.lastIndexOf('.') + 1);
+        boolean numeric = !tail.isEmpty() && tail.length() <= 18 && tail.chars().allMatch(c -> c >= '0' && c <= '9');
+        if (!numeric && LOGGER.isLoggable(Level.FINEST)) {
+            LOGGER.finest("Feature id " + featureId + " is not numeric, the feature is encoded without an id");
         }
-
-        if (id < 0) {
-            LOGGER.warning("Cannot obtain numeric id from featureId: " + featureId);
-        }
-
-        encoder.addFeature(layerName, properties, geometry, id);
+        encoder.addFeature(layerName, properties, geometry, numeric ? Long.parseLong(tail) : -1);
     }
 
     @Override

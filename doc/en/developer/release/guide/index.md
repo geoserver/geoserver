@@ -154,7 +154,7 @@ After publishing the first release of a series from the main development branch 
 2.  Create the new stable branch, advance it to the next patch version, and push it to GitHub; for example, if `3.0.0` was published from the main development branch and the remote for the official GeoServer is called `geoserver`:
 
         git checkout -b 3.0.x
-        build/rename.sh advance 3.0.0 3.0.1
+        build/rename.sh advance
         git commit -am "Advance 3.0.x to 3.0.1-SNAPSHOT"
         git push geoserver 3.0.x
 
@@ -168,13 +168,15 @@ After publishing the first release of a series from the main development branch 
 
 5.  Update the version in all pom.xml files; for example, if changing the main development branch from `3.0.0-SNAPSHOT` to `3.1.0-SNAPSHOT`.
 
-    Run **`build/rename.sh`**, passing the current and next GeoServer versions along with the corresponding GeoTools and GeoWebCache versions:
+    Run **`build/rename.sh`**, which reads the current versions from `src/pom.xml` and moves to the next GeoServer series, GeoTools major and GeoWebCache minor version (here `3.1.0`, `36` and `2.1`):
 
     ```shell
-    build/rename.sh rename 3.0.0 3.1.0 35 36 2.0 2.1
+    build/rename.sh rename
     ```
 
-    This updates the `<revision>` property in `src/pom.xml` (inherited by all modules as `${revision}`), the standalone documentation and archetype `pom.xml` files, the Windows installer configs, release artifact descriptors, and `doc/version.py` in one step. The script works on macOS and Linux, and only changes files tracked by git.
+    The next versions can also be given explicitly, for example `build/rename.sh rename 4.0.0 38 3.0`.
+
+    This updates the `<revision>` property in `src/pom.xml` (inherited by all modules as `${revision}`), the standalone documentation and archetype `pom.xml` files, the `gt.version` and `gwc.version` properties, and `doc/version.py` in one step. The script works on macOS and Linux, and only changes files tracked by git.
 
 6.  Commit the changes and push to the main development branch on GitHub:
 
@@ -313,7 +315,7 @@ For GeoServer 3.x the publish also reverts the release commit on the `<RELEASE>.
 To advance a stable branch by hand, run `build/rename.sh` from a `main` checkout inside a checkout of the stable branch; it updates the git checkout of the current directory:
 
     cd geoserver-3.0.x
-    ../geoserver/build/rename.sh advance 3.0.2 3.0.3
+    ../geoserver/build/rename.sh advance
     git commit -am "Advance 3.0.x to 3.0.3-SNAPSHOT"
 
 ## Cite Certification

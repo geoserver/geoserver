@@ -205,7 +205,7 @@ if [ -z $SKIP_GT ]; then
       popd > /dev/null
 
       # derive the gt version
-      gt_tag=`get_pom_version $git_dir/pom.xml`
+      gt_tag=`get_pom_version $gt_dir/pom.xml`
     fi
   fi
 fi
@@ -278,7 +278,8 @@ fi
 old_ver=`get_pom_version src/pom.xml`
 
 echo "updating version numbers from $old_ver to $tag"
-update_version $old_ver $tag 'src/*pom.xml' 'doc/*pom.xml' 'doc/*conf.py'
+update_version ">$old_ver<" ">$tag<" 'src/*pom.xml' 'doc/*pom.xml'
+update_version "'$old_ver'" "'$tag'" 'doc/*conf.py'
 
 pushd src/release > /dev/null
 shopt -s extglob

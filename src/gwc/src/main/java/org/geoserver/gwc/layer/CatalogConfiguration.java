@@ -17,6 +17,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.UncheckedExecutionException;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -27,7 +28,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -130,7 +130,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
 
         this.layerCache = CacheBuilder.newBuilder() //
                 .concurrencyLevel(10) //
-                .expireAfterAccess(10, TimeUnit.MINUTES) //
+                .expireAfterAccess(Duration.ofMinutes(10)) //
                 .initialCapacity(10) //
                 .maximumSize(100) //
                 .build(new TileLayerLoader(tileLayerCatalog));

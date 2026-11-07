@@ -13,6 +13,7 @@ import org.geoserver.ogcapi.LinksBuilder;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geowebcache.grid.Grid;
 import org.geowebcache.grid.GridSet;
+import org.geowebcache.grid.SRS;
 import org.springframework.http.MediaType;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -21,19 +22,18 @@ public class TileMatrixSetDocument extends AbstractDocument {
     private String title;
     private String abstrac;
     private String[] keywords;
-    private String supportedCRS;
+    private String crs;
     private String wellKnownScaleSet;
     private final List<TileMatrixEntry> tileMatrices = new ArrayList<>();
 
     public TileMatrixSetDocument(GridSet gridSet, boolean summary) {
         this.id = gridSet.getName();
         this.title = Optional.ofNullable(gridSet.getDescription()).orElse(id);
-        if (gridSet.getSrs().getNumber() == 4326) {
-            this.supportedCRS = "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
-        } else {
-            this.supportedCRS =
-                    "http://www.opengis.net/def/crs/EPSG/0/" + gridSet.getSrs().getNumber();
-        }
+        // the point of origin is in the EPSG axis order, so is the CRS, also for 4326 (not CRS84).
+        // Aliases of web mercator such as 900913 are not EPSG codes, 3857 is
+        SRS srs = gridSet.getSrs();
+        int code = srs.equals(SRS.getEPSG3857()) ? 3857 : srs.getNumber();
+        this.crs = "http://www.opengis.net/def/crs/EPSG/0/" + code;
         // TODO: see if the current CRS matches a well konwn scale set or not
 
         String path = "ogc/tiles/v1/tileMatrixSets/" + ResponseUtils.urlEncode(id);
@@ -63,8 +63,13 @@ public class TileMatrixSetDocument extends AbstractDocument {
         return keywords;
     }
 
+    public String getCrs() {
+        return crs;
+    }
+
+    /** The name of the CRS property in TMS 1.0, kept for existing clients */
     public String getSupportedCRS() {
-        return supportedCRS;
+        return crs;
     }
 
     public String getWellKnownScaleSet() {
@@ -90,6 +95,7 @@ public class TileMatrixSetDocument extends AbstractDocument {
         private String abstrac;
         private String[] keywords;
         private double scaleDenominator;
+        private double cellSize;
         private String cornerOfOrigin = "topLeft";
         private double[] pointOfOrigin;
         private int tileWidth;
@@ -101,6 +107,7 @@ public class TileMatrixSetDocument extends AbstractDocument {
             Grid grid = gridSet.getGrid(z);
             this.id = grid.getName();
             this.scaleDenominator = grid.getScaleDenominator();
+            this.cellSize = grid.getResolution();
             this.pointOfOrigin = gridSet.getOrderedTopLeftCorner(z);
             this.tileWidth = gridSet.getTileWidth();
             this.tileHeight = gridSet.getTileHeight();
@@ -126,6 +133,10 @@ public class TileMatrixSetDocument extends AbstractDocument {
 
         public double getScaleDenominator() {
             return scaleDenominator;
+        }
+
+        public double getCellSize() {
+            return cellSize;
         }
 
         public double[] getPointOfOrigin() {

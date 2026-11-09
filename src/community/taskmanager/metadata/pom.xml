@@ -6,12 +6,12 @@
   <parent>
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-taskmanager</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-taskmanager-metadata</artifactId>
-  <version>3.1.0-SNAPSHOT</version>
+  <version>${revision}</version>
   <packaging>jar</packaging>
 
   <name>GeoServer Task Manager Metadata</name>

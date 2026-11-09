@@ -57,9 +57,12 @@ Multiple extensions can be enabled simultaneously:
 
     mvn clean install -P restconfig,oracle
 
-A special profile named `allExtensions` enables all extensions:
+The `release` profile enables all extensions, to build just the extensions run it from the `extension` folder:
 
-    mvn clean install -P allExtensions
+    cd src/extension
+    mvn clean install -P release
+
+Running `-P release` from `src` also builds the release module, and packages the web application with the release data directory.
 
 ## Recover Build {: #profiles }
 
@@ -149,6 +152,18 @@ This can also be used when running the local jetty application server:
 `mvn jetty:run -DconfigId=release -DconfigDirectory=../../../data/release`
 
 You may also use an absolute path, if you have a custom data directory you would like to use.
+
+## Project version
+
+The GeoServer version is defined once, as the `revision` property in the root `src/pom.xml`. Modules refer to it as `${revision}` in their `<parent>` section, and the [flatten-maven-plugin](https://www.mojohaus.org/flatten-maven-plugin/) writes the actual version into installed and deployed `pom.xml` files (see [Maven CI Friendly Versions](https://maven.apache.org/guides/mini/guide-maven-ci-friendly.html)).
+
+``` xml
+<parent>
+  <groupId>org.geoserver</groupId>
+  <artifactId>community</artifactId>
+  <version>${revision}</version>
+</parent>
+```
 
 ## Dependency Management
 

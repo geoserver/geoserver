@@ -139,8 +139,7 @@ A typical assembly descriptor includes:
 Extensions are activated through Maven profiles in `src/extension/pom.xml`:
 
 - Individual profiles for each extension (e.g., `-Pwps`, `-Pcsw`)
-- `allExtensions` profile: Builds all extensions
-- `release` profile: Builds all extensions for release
+- `release` profile: Builds all extensions
 - `assembly` profile: Creates ZIP packages from built modules
 
 ## Future Improvement: Migration to dependencySets

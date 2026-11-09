@@ -9,6 +9,7 @@ target
 *.class
 *.pyc
 .pmd
+.flattened-pom.xml
 # draw.io backup
 *.bkp
 

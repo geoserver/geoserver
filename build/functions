@@ -101,10 +101,38 @@ function is_version_num() {
 }
 
 # get_pom_version <pom>
-# gets the version declared in a pom file
+# gets the version declared in a pom file, using the <revision> property when present
 function get_pom_version() {
   local pom=$1
-  echo `grep "<version>" $pom | head -n 1 | sed 's/<.*>\(.*\)<\/.*>/\1/g' | sed 's/ //g'`
+  local element=version
+  if grep -q "<revision>" $pom; then
+    element=revision
+  fi
+  echo `grep "<$element>" $pom | head -n 1 | sed 's/<.*>\(.*\)<\/.*>/\1/g' | sed 's/ //g'`
+}
+
+# sed_i <expression> <file>...
+# in-place sed for both GNU (linux) and BSD (macos) sed
+function sed_i() {
+  local expr=$1
+  shift
+  local file
+  sed -i.bak "$expr" "$@"
+  for file in "$@"; do
+    rm -f "$file.bak"
+  done
+}
+
+# update_version <current> <release> <pathspec>...
+# replaces <current> with <release> in git tracked files matching <pathspec>
+function update_version() {
+  local current=$1
+  local release=$2
+  shift 2
+  local files=`git grep -l -F "$current" -- "$@"`
+  if [ -n "$files" ]; then
+    sed_i "s/${current//./\\.}/$release/g" $files
+  fi
 }
 
 # get_jira_id <tag>

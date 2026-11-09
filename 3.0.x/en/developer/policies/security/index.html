@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../../../img/geoserver.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
     
     
       
@@ -30552,6 +30552,7 @@
 <p>Assign a placeholder Jira issue with <code>Vulnerability</code> category with security level "geoserver-security"</p>
 <ul>
 <li>Mentioning the CVE is fine, even if it is not yet public, it will still show up in the database as reserved.</li>
+<li>Set the "Disclosure" field to the release the vulnerability will be disclosed with, normally the first release of the next series.</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -30561,12 +30562,18 @@
 </div>
 </li>
 <li>
-<p>During the release process list CVE in "Security Considerations" section of release announcements.</p>
+<p>During the release process the "Security Considerations" section of release announcements indicates that security fixes are included.</p>
 <ul>
-<li>Initially this lists CVE numbers, indicating a fix is included but does not provide any details</li>
+<li>CVE numbers and details are not listed, the section indicates when details will be provided.</li>
 <li>An indication of the severity is provided to encourage community to update.</li>
-<li>You may change the wording of the recommendation to "recommended" or "essential" or "urgent" as you see fit.</li>
+<li>You may change the wording of the recommendation to "important" or "urgent" as you see fit.</li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Example: Security considerations section of the GeoServer 3.0.2 release announcement.</p>
+<p><img alt="" src="../img/cve-announcement.png" /></p>
+<p><em>Release announcement before disclosure</em></p>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>It is our policy not to provide details at this time. Any deeply concerned parties can volunteer on the geoserver-security email list, or arrange a vendor relationship with a service provider.</p>
@@ -30580,7 +30587,12 @@
 <p>In practice this means that a batch of issues are disclosed alongside each initial release. Be considerate of those following at a slower paced maintenance release schedule, when two stable releases are made in a row it may be up to three months until they have a maintenance release to update to!</p>
 <p>For an urgent vulnerability both "stable" and "maintenance" may be issued concurrently via an emergency update rather than following the expected schedule. In this case the blog post should indicate when disclosure is expected (example "everyone has two weeks until public disclosure").</p>
 <ul>
-<li>Update prior release announcements, and placeholder Jira issue, with the complete title of the vulnerability.</li>
+<li>
+<p>Update the placeholder Jira issue with the complete title of the vulnerability.</p>
+</li>
+<li>
+<p>Update prior release announcements, the website <code>announcement.py --disclosure &lt;release&gt;</code> command lists the blog posts for each fix version and the "Security Considerations" text to add (see <a href="../../release/guide/#geoserver-release-announcement">Release Guide</a>).</p>
+</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -30775,7 +30787,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.indexes", "navigation.footer"], "search": "../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": false, "default": ["latest", "stable", "3.0.x"], "provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.c21346df.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="../../../../javascripts/hide-empty-toc.js"></script>
       

@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../../../img/geoserver.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
     
     
       
@@ -30584,12 +30584,12 @@
 </li>
 <li>
 <p><strong>Add a new module</strong></p>
-<p>Once commit access is obtained the module can be added. All community modules live under the directory <code>community</code>, directly under the root of the source tree. The community modules on trunk can be found <a href="https://github.com/geoserver/geoserver/tree/main/src/community">here</a>.</p>
+<p>Once commit access is obtained the module can be added. All community modules live under the directory <code>community</code>, directly under the root of the source tree. The community modules on the main branch can be found <a href="https://github.com/geoserver/geoserver/tree/main/src/community">here</a>.</p>
 <p>For example, from the root of the GeoServer source tree:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="o">[</span>geoserver<span class="o">]</span>%<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>src/community
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="o">[</span>geoserver/src/community<span class="o">]</span>%<span class="w"> </span>mkdir<span class="w"> </span>myCommunityModule
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="o">[</span>geoserver/src/community<span class="o">]</span>%<span class="w"> </span>git<span class="w"> </span>add<span class="w"> </span>myCommunityModule
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="o">[</span>geoserver/src/community<span class="o">]</span>%<span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"adding my community module"</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="o">[</span>geoserver/src/community<span class="o">]</span>%<span class="w"> </span>mkdir<span class="w"> </span>fun
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="o">[</span>geoserver/src/community<span class="o">]</span>%<span class="w"> </span>git<span class="w"> </span>add<span class="w"> </span>fun
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="o">[</span>geoserver/src/community<span class="o">]</span>%<span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"adding fun community module"</span>
 </code></pre></div>
 </li>
 <li>
@@ -30600,33 +30600,32 @@
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nt">&lt;parent&gt;</span>
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="nt">&lt;artifactId&gt;</span>geoserver<span class="nt">&lt;/artifactId&gt;</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="nt">&lt;version&gt;</span>2.8-SNAPSHOT<span class="nt">&lt;/version&gt;</span><span class="w"> </span><span class="cm">&lt;!-- change this to the proper GeoServer version --&gt;</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="nt">&lt;artifactId&gt;</span>community<span class="nt">&lt;/artifactId&gt;</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="nt">&lt;version&gt;</span>${revision}<span class="nt">&lt;/version&gt;</span>
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="nt">&lt;/parent&gt;</span>
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="nt">&lt;artifactId&gt;</span>myCommunityModule<span class="nt">&lt;/artifactId&gt;</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="nt">&lt;packaging&gt;</span>jar<span class="nt">&lt;/packaging&gt;</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="nt">&lt;name&gt;</span>My<span class="w"> </span>Community<span class="w"> </span>Module<span class="nt">&lt;/name&gt;</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="nt">&lt;dependencies&gt;</span>
-<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">  </span><span class="cm">&lt;!-- add any dependencies your module has here --&gt;</span>
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>
-<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">  </span><span class="cm">&lt;!-- Spring Framework dependencies - DO NOT specify version (managed by BOM) --&gt;</span>
-<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">  </span><span class="nt">&lt;dependency&gt;</span>
-<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
-<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-context<span class="nt">&lt;/artifactId&gt;</span>
-<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">  </span><span class="nt">&lt;/dependency&gt;</span>
-<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">  </span><span class="cm">&lt;!-- Spring Security dependencies - DO NOT specify version (managed by BOM) --&gt;</span>
-<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">  </span><span class="nt">&lt;dependency&gt;</span>
-<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.security<span class="nt">&lt;/groupId&gt;</span>
-<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-security-core<span class="nt">&lt;/artifactId&gt;</span>
-<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="w">  </span><span class="nt">&lt;/dependency&gt;</span>
-<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="nt">&lt;/dependencies&gt;</span>
-<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="w">   </span><span class="nt">&lt;/project&gt;</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="nt">&lt;groupId&gt;</span>org.geoserver.community<span class="nt">&lt;/groupId&gt;</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="nt">&lt;artifactId&gt;</span>gs-fun<span class="nt">&lt;/artifactId&gt;</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="nt">&lt;packaging&gt;</span>jar<span class="nt">&lt;/packaging&gt;</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="nt">&lt;name&gt;</span>Fun<span class="w"> </span>Community<span class="w"> </span>Module<span class="nt">&lt;/name&gt;</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="nt">&lt;dependencies&gt;</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">  </span><span class="cm">&lt;!-- add any dependencies your module has here --&gt;</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">  </span><span class="cm">&lt;!-- Spring Framework dependencies - DO NOT specify version (managed by BOM) --&gt;</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">  </span><span class="nt">&lt;dependency&gt;</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-context<span class="nt">&lt;/artifactId&gt;</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">  </span><span class="nt">&lt;/dependency&gt;</span>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">  </span><span class="cm">&lt;!-- Spring Security dependencies - DO NOT specify version (managed by BOM) --&gt;</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">  </span><span class="nt">&lt;dependency&gt;</span>
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.security<span class="nt">&lt;/groupId&gt;</span>
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-security-core<span class="nt">&lt;/artifactId&gt;</span>
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="w">  </span><span class="nt">&lt;/dependency&gt;</span>
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="nt">&lt;/dependencies&gt;</span>
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="nt">&lt;/project&gt;</span>
 </code></pre></div>
-<p>Add the file to the root of the new community module, <code>myCommunityModule/pom.xml</code></p>
+<p>Add the file to the root of the new community module, <code>fun/pom.xml</code></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>When adding Spring Framework or Spring Security dependencies, <strong>never specify the version</strong>. GeoServer uses Bill of Materials (BOM) to manage these versions centrally. See the <a href="../../maven-guide/">Maven Guide</a> for more details on dependency management.</p>
@@ -30641,9 +30640,9 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&lt;profiles&gt;</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span>...
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">&lt;profile&gt;</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">&lt;id&gt;</span>myCommunityModule<span class="nt">&lt;/id&gt;</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">&lt;id&gt;</span>fun<span class="nt">&lt;/id&gt;</span>
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="nt">&lt;modules&gt;</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">      </span><span class="nt">&lt;module&gt;</span>myCommunityModule<span class="nt">&lt;/module&gt;</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">      </span><span class="nt">&lt;module&gt;</span>fun<span class="nt">&lt;/module&gt;</span>
 <a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="nt">&lt;/modules&gt;</span>
 <a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">  </span><span class="nt">&lt;/profile&gt;</span>
 <a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="nt">&lt;/profiles&gt;</span>
@@ -30654,12 +30653,12 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">&lt;profiles&gt;</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span>...
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">&lt;profile&gt;</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="nt">&lt;id&gt;</span>myCommunityModule<span class="nt">&lt;/id&gt;</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="nt">&lt;id&gt;</span>fun<span class="nt">&lt;/id&gt;</span>
 <a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="nt">&lt;dependencies&gt;</span>
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">      </span><span class="nt">&lt;dependency&gt;</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">         </span><span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">         </span><span class="nt">&lt;artifactId&gt;</span>myCommunityModule<span class="nt">&lt;/artifactId&gt;</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">         </span><span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">         </span><span class="nt">&lt;groupId&gt;</span>org.geoserver.community<span class="nt">&lt;/groupId&gt;</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">         </span><span class="nt">&lt;artifactId&gt;</span>gs-fun<span class="nt">&lt;/artifactId&gt;</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">         </span><span class="nt">&lt;version&gt;</span>${project.version}<span class="nt">&lt;/version&gt;</span>
 <a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">       </span><span class="nt">&lt;/dependency&gt;</span>
 <a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">    </span><span class="nt">&lt;/dependencies&gt;</span>
 <a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">  </span><span class="nt">&lt;/profile&gt;</span>
@@ -30792,17 +30791,17 @@
 <p>Once the proposal is accepted, the next step is to move the module out of the community space. Where the module ends up depends on whether it is being promoted to a core module, or an extension.</p>
 <p><em>Core modules</em></p>
 <p>Core modules live under the root of the source tree:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="o">[</span>geoserver<span class="o">]</span>%<span class="w"> </span>mv<span class="w"> </span>src/community/myCommunityModule<span class="w"> </span>src/
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="o">[</span>geoserver<span class="o">]</span>%<span class="w"> </span>git<span class="w"> </span>add<span class="w"> </span>src/myCommunityModule
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="o">[</span>geoserver<span class="o">]</span>%<span class="w"> </span>git<span class="w"> </span>add<span class="w"> </span>--all<span class="w"> </span>src/community/myCommunityModule
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="o">[</span>geoserver<span class="o">]</span>%<span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"promoting my community module to a core module"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="o">[</span>geoserver<span class="o">]</span>%<span class="w"> </span>mv<span class="w"> </span>src/community/fun<span class="w"> </span>src/
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="o">[</span>geoserver<span class="o">]</span>%<span class="w"> </span>git<span class="w"> </span>add<span class="w"> </span>src/fun
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="o">[</span>geoserver<span class="o">]</span>%<span class="w"> </span>git<span class="w"> </span>add<span class="w"> </span>--all<span class="w"> </span>src/community/fun
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="o">[</span>geoserver<span class="o">]</span>%<span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"promoting fun community module to a core module"</span>
 </code></pre></div>
 <p><em>Extensions</em></p>
 <p>Extension modules live under the extension directory, under the root of the source tree:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="o">[</span>geoserver<span class="o">]</span>%<span class="w"> </span>mv<span class="w"> </span>src/community/myCommunityModule<span class="w"> </span>src/extension
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="o">[</span>geoserver<span class="o">]</span>%<span class="w"> </span>git<span class="w"> </span>add<span class="w"> </span>src/extension/myCommunityModule
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="o">[</span>geoserver<span class="o">]</span>%<span class="w"> </span>git<span class="w"> </span>add<span class="w"> </span>--all<span class="w"> </span>src/community/myCommunityModule
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="o">[</span>geoserver<span class="o">]</span>%<span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"promoting my community module to an extension"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="o">[</span>geoserver<span class="o">]</span>%<span class="w"> </span>mv<span class="w"> </span>src/community/fun<span class="w"> </span>src/extension
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="o">[</span>geoserver<span class="o">]</span>%<span class="w"> </span>git<span class="w"> </span>add<span class="w"> </span>src/extension/fun
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="o">[</span>geoserver<span class="o">]</span>%<span class="w"> </span>git<span class="w"> </span>add<span class="w"> </span>--all<span class="w"> </span>src/community/fun
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="o">[</span>geoserver<span class="o">]</span>%<span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"promoting fun community module to an extension"</span>
 </code></pre></div>
 </li>
 <li>
@@ -30817,7 +30816,7 @@
 <p>Edit <code>pom.xml</code> under the root of the source tree and add a module entry:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">&lt;modules&gt;</span>
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>...
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nt">&lt;module&gt;</span>myCommunityModule<span class="nt">&lt;/module&gt;</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nt">&lt;module&gt;</span>fun<span class="nt">&lt;/module&gt;</span>
 <a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="nt">&lt;/modules&gt;</span>
 </code></pre></div>
 </li>
@@ -30827,209 +30826,150 @@
 </ol>
 <p><em>Extensions</em></p>
 <ol>
-<li>Copy the profile for the community module from <code>community/pom.xml</code> to <code>extension/pom.xml</code></li>
-<li>Remove the profile from <code>community/pom.xml</code></li>
-<li>Remove the release descriptor from <code>community/pom.xml</code> contained in the maven-assembly-plugin configuration section</li>
-<li>Remove the dependency from <code>community/release/pom.xml</code></li>
+<li>Move the <code>fun</code> profile from <code>community/pom.xml</code> to <code>extension/pom.xml</code>.</li>
+<li>Remove <code>fun</code> from the <code>communityRelease</code> profile in <code>community/pom.xml</code>, and add it to the <code>release</code> profile in <code>extension/pom.xml</code>.</li>
+<li>
+<p>Change the parent of <code>fun/pom.xml</code> to <code>extension</code>, and the <code>groupId</code> of the module (and any sub-modules) to <code>org.geoserver.extension</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">&lt;parent&gt;</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span><span class="nt">&lt;artifactId&gt;</span>extension<span class="nt">&lt;/artifactId&gt;</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span><span class="nt">&lt;version&gt;</span>${revision}<span class="nt">&lt;/version&gt;</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="nt">&lt;/parent&gt;</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="nt">&lt;groupId&gt;</span>org.geoserver.extension<span class="nt">&lt;/groupId&gt;</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="nt">&lt;artifactId&gt;</span>gs-fun<span class="nt">&lt;/artifactId&gt;</span>
+</code></pre></div>
+</li>
+<li>
+<p>Update the <code>fun</code> profile in <code>web/app/pom.xml</code> to use the <code>org.geoserver.extension</code> group id.</p>
+</li>
 </ol>
 </li>
 <li>
 <p><strong>Update the release process</strong></p>
-<p>The next step is to include the new module in the release process.</p>
-<p><em>Extensions</em></p>
+<p>Each extension builds its own download zip, <code>geoserver-&lt;version&gt;-fun-plugin.zip</code>, using the <code>assembly</code> profile:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>mvn<span class="w"> </span>install<span class="w"> </span>-f<span class="w"> </span>src/extension/pom.xml<span class="w"> </span>-Prelease,assembly<span class="w"> </span>-DskipTests
+</code></pre></div>
+<p>The assembly files live in the <code>src/assembly</code> folder of the module (or of a <code>fun-assembly</code> sub-module when the extension has several modules, as for <a href="https://github.com/geoserver/geoserver/tree/main/src/extension/dxf/dxf-assembly">dxf</a>):</p>
 <ol>
 <li>
-<p>Create a new directory under <code>release/src/extensions</code> which matches the name of the extension</p>
-</li>
-<li>
-<p>Add the following to the new directory:</p>
-<ol>
-<li>
-<p>A license called <strong><code>&lt;module&gt;-LICENSE.md</code></strong> which contains the license notice for the extension (linking to full <code>licenses/</code> documents included below).</p>
-<p>Follow the <a href="https://github.com/geoserver/geoserver/blob/main/src/release/extensions/dxf/dxf-LICENSE.md">dxf-LICENSE.md</a> example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="gh">Extension License Notice</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="gh">========================</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>DXFOutputFormat WFS Output and WPS PPIO for GeoServer
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>Mauro Bartolomeoli, GeoSolutions Sas
-<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
-<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>    This program is free software; you can redistribute it and/or modify
-<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    it under the terms of the GNU General Public License as published by
-<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>    the Free Software Foundation; either version 2 of the License, or
-<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>    (at your option) any later version.
-<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>
-<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>    This program is distributed in the hope that it will be useful,
-<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>    but WITHOUT ANY WARRANTY; without even the implied warranty of
-<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>    GNU General Public License for more details.
-<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>
-<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>    You should have received a copy of the GNU General Public License
-<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>    along with this program; if not, write to the Free Software
-<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>
-<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>This GeoServer plugin is licensed under the GNU General Public License (GPL).
-<a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a>For more information see license notice and the full GPL.
-<a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a>
-<a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a>This software is an extension for GeoServer. You can find full information
-<a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a>on it at https://www.geoserver.org
+<p><strong><code>fun-LICENSE.md</code></strong>: the license notice for the extension, linking to the full <code>licenses/</code> documents.</p>
+<p>Follow the <a href="https://github.com/geoserver/geoserver/blob/main/src/extension/dxf/dxf-assembly/src/assembly/dxf-LICENSE.md">dxf-LICENSE.md</a> example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="gh">Extension License Notice</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="gh">========================</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>DXFOutputFormat WFS Output and WPS PPIO for GeoServer
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>Mauro Bartolomeoli, GeoSolutions Sas
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>    This program is free software; you can redistribute it and/or modify
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>    it under the terms of the GNU General Public License as published by
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>    the Free Software Foundation; either version 2 of the License, or
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>    (at your option) any later version.
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>    ...
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>This GeoServer plugin is licensed under the GNU General Public License (GPL).
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>For more information see license notice and the full GPL.
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>This software is an extension for GeoServer. You can find full information
+<a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a>on it at https://www.geoserver.org
 </code></pre></div>
 </li>
 <li>
-<p>A readme called <strong><code>&lt;module&gt;-README.md</code></strong> which contains instructions on how to install the extension.</p>
-<p>Follow the <a href="https://github.com/geoserver/geoserver/blob/main/src/release/extensions/dxf/dxf-README.md">dxf-README.md</a> example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="gh">DXFOutputFormat WFS Output and WPS PPIO for GeoServer</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="gh">=====================================================</span>
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>For more information http://docs.geoserver.org/latest/en/user/extensions/dxf/index.html
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>
-<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="gu">INSTALLATION</span>
-<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="gu">---------------------------</span>
-<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>If you only need the WFS Output, copy <span class="sb">`gs-dxf-core-*.jar`</span> to <span class="sb">`geoserver WEB-INF/lib`</span>.
-<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>If you need both the WFS Output and the WPS PPIO, copy <span class="sb">`gs-dxf-*.jar`</span> to
-<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="sb">`geoserver WEB-INF/lib`</span>.
-<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>
-<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>Please note that the WPS PPIO needs the WPS extension to be installed, so please
-<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>first download and install that.
-<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>
-<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>...
+<p><strong><code>fun-README.md</code></strong>: instructions on how to install the extension.</p>
+<p>Follow the <a href="https://github.com/geoserver/geoserver/blob/main/src/extension/dxf/dxf-assembly/src/assembly/dxf-README.md">dxf-README.md</a> example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="gh">DXFOutputFormat WFS Output and WPS PPIO for GeoServer</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="gh">=====================================================</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>For more information http://docs.geoserver.org/latest/en/user/extensions/dxf/index.html
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="gu">INSTALLATION</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="gu">---------------------------</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>If you only need the WFS Output, copy <span class="sb">`gs-dxf-core-*.jar`</span> to <span class="sb">`geoserver WEB-INF/lib`</span>.
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>If you need both the WFS Output and the WPS PPIO, copy <span class="sb">`gs-dxf-*.jar`</span> to
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="sb">`geoserver WEB-INF/lib`</span>.
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>...
 </code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Don't skip this step.</p>
 </div>
+<p>The <code>assembly-docs</code> profile renders both markdown files to HTML for inclusion in the zip.</p>
 </li>
 <li>
-<p>Any "static" files that are required by the extension.</p>
-<p>An example would be data files or a proprietary driver not available for download via maven.</p>
-</li>
-</ol>
-</li>
-<li>
-<p>Create a release assembly called <strong><code>ext-&lt;module&gt;.xml</code></strong> under the release <code>src/assembly</code> directory.</p>
-<p>Follow the example of <a href="https://github.com/geoserver/geoserver/blob/main/src/release/ext-dxf.xml">ext-dxf-xml</a>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nt">&lt;assembly&gt;</span>
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">  </span><span class="nt">&lt;id&gt;</span>dxf-plugin<span class="nt">&lt;/id&gt;</span>
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">  </span><span class="nt">&lt;formats&gt;</span>
-<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="nt">&lt;format&gt;</span>zip<span class="nt">&lt;/format&gt;</span>
-<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">  </span><span class="nt">&lt;/formats&gt;</span>
-<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">  </span><span class="nt">&lt;includeBaseDirectory&gt;</span>false<span class="nt">&lt;/includeBaseDirectory&gt;</span>
-<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">  </span><span class="nt">&lt;fileSets&gt;</span>
-<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">    </span><span class="nt">&lt;fileSet&gt;</span>
-<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">      </span><span class="nt">&lt;directory&gt;</span>release/target/dependency<span class="nt">&lt;/directory&gt;</span>
-<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">      </span><span class="nt">&lt;outputDirectory&gt;&lt;/outputDirectory&gt;</span>
-<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="w">      </span><span class="nt">&lt;includes&gt;</span>
-<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="w">        </span><span class="nt">&lt;include&gt;</span>gs-dxf*.jar<span class="nt">&lt;/include&gt;</span>
-<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="w">      </span><span class="nt">&lt;/includes&gt;</span>
-<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="w">    </span><span class="nt">&lt;/fileSet&gt;</span>
-<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="w">    </span><span class="nt">&lt;fileSet&gt;</span>
-<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="w">      </span><span class="nt">&lt;directory&gt;</span>release/target/html/licenses<span class="nt">&lt;/directory&gt;</span>
-<a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a><span class="w">      </span><span class="nt">&lt;outputDirectory&gt;</span>licenses<span class="nt">&lt;/outputDirectory&gt;</span>
-<a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a><span class="w">      </span><span class="nt">&lt;includes&gt;</span>
-<a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a><span class="w">         </span><span class="nt">&lt;include&gt;</span>GPL.html<span class="nt">&lt;/include&gt;</span>
-<a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a><span class="w">         </span><span class="nt">&lt;include&gt;</span>NOTICE.html<span class="nt">&lt;/include&gt;</span>
-<a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a><span class="w">      </span><span class="nt">&lt;/includes&gt;</span>
-<a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a><span class="w">    </span><span class="nt">&lt;/fileSet&gt;</span>
-<a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a><span class="w">  </span><span class="nt">&lt;/fileSets&gt;</span>
-<a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a><span class="w">  </span><span class="nt">&lt;files&gt;</span>
-<a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a><span class="w">     </span><span class="nt">&lt;file&gt;</span>
-<a id="__codelineno-9-26" name="__codelineno-9-26" href="#__codelineno-9-26"></a><span class="w">       </span><span class="nt">&lt;source&gt;</span>release/extensions/dxf/dxf-README.md<span class="nt">&lt;/source&gt;</span>
-<a id="__codelineno-9-27" name="__codelineno-9-27" href="#__codelineno-9-27"></a><span class="w">       </span><span class="nt">&lt;outputDirectory&gt;&lt;/outputDirectory&gt;</span>
-<a id="__codelineno-9-28" name="__codelineno-9-28" href="#__codelineno-9-28"></a><span class="w">       </span><span class="nt">&lt;destName&gt;</span>README.txt<span class="nt">&lt;/destName&gt;</span>
-<a id="__codelineno-9-29" name="__codelineno-9-29" href="#__codelineno-9-29"></a><span class="w">     </span><span class="nt">&lt;/file&gt;</span>
-<a id="__codelineno-9-30" name="__codelineno-9-30" href="#__codelineno-9-30"></a><span class="w">     </span><span class="nt">&lt;file&gt;</span>
-<a id="__codelineno-9-31" name="__codelineno-9-31" href="#__codelineno-9-31"></a><span class="w">       </span><span class="nt">&lt;source&gt;</span>release/target/html/extensions/dxf/dxf-LICENSE.html<span class="nt">&lt;/source&gt;</span>
-<a id="__codelineno-9-32" name="__codelineno-9-32" href="#__codelineno-9-32"></a><span class="w">       </span><span class="nt">&lt;outputDirectory&gt;&lt;/outputDirectory&gt;</span>
-<a id="__codelineno-9-33" name="__codelineno-9-33" href="#__codelineno-9-33"></a><span class="w">       </span><span class="nt">&lt;destName&gt;</span>LICENSE.html<span class="nt">&lt;/destName&gt;</span>
-<a id="__codelineno-9-34" name="__codelineno-9-34" href="#__codelineno-9-34"></a><span class="w">     </span><span class="nt">&lt;/file&gt;</span>
-<a id="__codelineno-9-35" name="__codelineno-9-35" href="#__codelineno-9-35"></a><span class="w">     </span><span class="nt">&lt;file&gt;</span>
-<a id="__codelineno-9-36" name="__codelineno-9-36" href="#__codelineno-9-36"></a><span class="w">       </span><span class="nt">&lt;source&gt;</span>release/target/html/extensions/dxf/dxf-README.html<span class="nt">&lt;/source&gt;</span>
-<a id="__codelineno-9-37" name="__codelineno-9-37" href="#__codelineno-9-37"></a><span class="w">       </span><span class="nt">&lt;outputDirectory&gt;&lt;/outputDirectory&gt;</span>
-<a id="__codelineno-9-38" name="__codelineno-9-38" href="#__codelineno-9-38"></a><span class="w">       </span><span class="nt">&lt;destName&gt;</span>README.html<span class="nt">&lt;/destName&gt;</span>
-<a id="__codelineno-9-39" name="__codelineno-9-39" href="#__codelineno-9-39"></a><span class="w">     </span><span class="nt">&lt;/file&gt;</span>
-<a id="__codelineno-9-40" name="__codelineno-9-40" href="#__codelineno-9-40"></a><span class="w">  </span><span class="nt">&lt;/files&gt;</span>
-<a id="__codelineno-9-41" name="__codelineno-9-41" href="#__codelineno-9-41"></a><span class="nt">&lt;/assembly&gt;</span>
+<p><strong><code>assembly.xml</code></strong>: the assembly descriptor listing the jars, licenses and documents to include.</p>
+<p>Follow the <a href="https://github.com/geoserver/geoserver/blob/main/src/extension/dxf/dxf-assembly/src/assembly/assembly.xml">dxf assembly.xml</a> example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nt">&lt;assembly&gt;</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span><span class="nt">&lt;id&gt;</span>fun-plugin<span class="nt">&lt;/id&gt;</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">  </span><span class="nt">&lt;formats&gt;</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="nt">&lt;format&gt;</span>zip<span class="nt">&lt;/format&gt;</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">  </span><span class="nt">&lt;/formats&gt;</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">  </span><span class="nt">&lt;includeBaseDirectory&gt;</span>false<span class="nt">&lt;/includeBaseDirectory&gt;</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">  </span><span class="nt">&lt;fileSets&gt;</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">    </span><span class="nt">&lt;fileSet&gt;</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">      </span><span class="nt">&lt;directory&gt;</span>target/dependency<span class="nt">&lt;/directory&gt;</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">      </span><span class="nt">&lt;outputDirectory/&gt;</span>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">      </span><span class="nt">&lt;includes&gt;</span>
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="w">        </span><span class="nt">&lt;include&gt;</span>gs-fun*.jar<span class="nt">&lt;/include&gt;</span>
+<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="w">      </span><span class="nt">&lt;/includes&gt;</span>
+<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="w">    </span><span class="nt">&lt;/fileSet&gt;</span>
+<a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="w">    </span><span class="nt">&lt;fileSet&gt;</span>
+<a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="w">      </span><span class="nt">&lt;directory&gt;</span>${geoserverBaseDir}/release/target/html/licenses<span class="nt">&lt;/directory&gt;</span>
+<a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a><span class="w">      </span><span class="nt">&lt;outputDirectory&gt;</span>licenses<span class="nt">&lt;/outputDirectory&gt;</span>
+<a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a><span class="w">      </span><span class="nt">&lt;includes&gt;</span>
+<a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a><span class="w">        </span><span class="nt">&lt;include&gt;</span>GPL.html<span class="nt">&lt;/include&gt;</span>
+<a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a><span class="w">        </span><span class="nt">&lt;include&gt;</span>NOTICE.html<span class="nt">&lt;/include&gt;</span>
+<a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a><span class="w">      </span><span class="nt">&lt;/includes&gt;</span>
+<a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a><span class="w">    </span><span class="nt">&lt;/fileSet&gt;</span>
+<a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a><span class="w">  </span><span class="nt">&lt;/fileSets&gt;</span>
+<a id="__codelineno-11-24" name="__codelineno-11-24" href="#__codelineno-11-24"></a><span class="w">  </span><span class="nt">&lt;files&gt;</span>
+<a id="__codelineno-11-25" name="__codelineno-11-25" href="#__codelineno-11-25"></a><span class="w">    </span><span class="nt">&lt;file&gt;</span>
+<a id="__codelineno-11-26" name="__codelineno-11-26" href="#__codelineno-11-26"></a><span class="w">      </span><span class="nt">&lt;source&gt;</span>src/assembly/fun-README.md<span class="nt">&lt;/source&gt;</span>
+<a id="__codelineno-11-27" name="__codelineno-11-27" href="#__codelineno-11-27"></a><span class="w">      </span><span class="nt">&lt;outputDirectory/&gt;</span>
+<a id="__codelineno-11-28" name="__codelineno-11-28" href="#__codelineno-11-28"></a><span class="w">      </span><span class="nt">&lt;destName&gt;</span>README.txt<span class="nt">&lt;/destName&gt;</span>
+<a id="__codelineno-11-29" name="__codelineno-11-29" href="#__codelineno-11-29"></a><span class="w">    </span><span class="nt">&lt;/file&gt;</span>
+<a id="__codelineno-11-30" name="__codelineno-11-30" href="#__codelineno-11-30"></a><span class="w">    </span><span class="nt">&lt;file&gt;</span>
+<a id="__codelineno-11-31" name="__codelineno-11-31" href="#__codelineno-11-31"></a><span class="w">      </span><span class="nt">&lt;source&gt;</span>target/html/fun-LICENSE.html<span class="nt">&lt;/source&gt;</span>
+<a id="__codelineno-11-32" name="__codelineno-11-32" href="#__codelineno-11-32"></a><span class="w">      </span><span class="nt">&lt;outputDirectory/&gt;</span>
+<a id="__codelineno-11-33" name="__codelineno-11-33" href="#__codelineno-11-33"></a><span class="w">      </span><span class="nt">&lt;destName&gt;</span>LICENSE.html<span class="nt">&lt;/destName&gt;</span>
+<a id="__codelineno-11-34" name="__codelineno-11-34" href="#__codelineno-11-34"></a><span class="w">    </span><span class="nt">&lt;/file&gt;</span>
+<a id="__codelineno-11-35" name="__codelineno-11-35" href="#__codelineno-11-35"></a><span class="w">    </span><span class="nt">&lt;file&gt;</span>
+<a id="__codelineno-11-36" name="__codelineno-11-36" href="#__codelineno-11-36"></a><span class="w">      </span><span class="nt">&lt;source&gt;</span>target/html/fun-README.html<span class="nt">&lt;/source&gt;</span>
+<a id="__codelineno-11-37" name="__codelineno-11-37" href="#__codelineno-11-37"></a><span class="w">      </span><span class="nt">&lt;outputDirectory/&gt;</span>
+<a id="__codelineno-11-38" name="__codelineno-11-38" href="#__codelineno-11-38"></a><span class="w">      </span><span class="nt">&lt;destName&gt;</span>README.html<span class="nt">&lt;/destName&gt;</span>
+<a id="__codelineno-11-39" name="__codelineno-11-39" href="#__codelineno-11-39"></a><span class="w">    </span><span class="nt">&lt;/file&gt;</span>
+<a id="__codelineno-11-40" name="__codelineno-11-40" href="#__codelineno-11-40"></a><span class="w">  </span><span class="nt">&lt;/files&gt;</span>
+<a id="__codelineno-11-41" name="__codelineno-11-41" href="#__codelineno-11-41"></a><span class="nt">&lt;/assembly&gt;</span>
 </code></pre></div>
 <ul>
-<li>Add additional <code>include</code> elements in the root folder (outputDirectory empty) for the jar dependencies of the module</li>
-<li>Add additional <code>include</code> elements in the licenses folder (outputDirectory <code>licenses</code>) for licenses required</li>
-<li>Add an additional fileSet if there are any static file dependencies of the module required by the module</li>
+<li>Add <code>include</code> elements in the root folder (<code>outputDirectory</code> empty) for the jar dependencies of the module, copied to <code>target/dependency</code> by the <code>assembly</code> profile</li>
+<li>Add <code>include</code> elements in the <code>licenses</code> folder for any additional licenses required</li>
+<li>Add a <code>fileSet</code> for any static files required by the module, such as data files or a proprietary driver not available from maven</li>
 <li>Use <code>file</code> with <code>destName</code> for any individual files that require renaming</li>
 </ul>
 </li>
-<li>
-<p>Add a dependency from <code>release/pom.xml</code> to the extension module:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">&lt;dependencies&gt;</span>
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">   </span>...
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">   </span><span class="nt">&lt;dependency&gt;</span>
-<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">     </span><span class="nt">&lt;groupId&gt;</span>org.geoserver.extension<span class="nt">&lt;/groupId&gt;</span>
-<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">     </span><span class="nt">&lt;artifactId&gt;</span>%module%<span class="nt">&lt;/artifactId&gt;</span>
-<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">     </span><span class="nt">&lt;version&gt;</span>%version%<span class="nt">&lt;/version&gt;</span>
-<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">   </span><span class="nt">&lt;/dependency&gt;</span>
-<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">   </span>...
-<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w"> </span><span class="nt">&lt;/dependencies&gt;</span>
-</code></pre></div>
-</li>
-<li>
-<p>Add an entry for the release descriptor to the root <code>pom.xml</code> of the source tree (i.e. one step up from the release directory):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="cm">&lt;!-- artifact assembly --&gt;</span>
-<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nt">&lt;plugin&gt;</span>
-<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">  </span><span class="nt">&lt;artifactId&gt;</span>maven-assembly-plugin<span class="nt">&lt;/artifactId&gt;</span>
-<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">  </span><span class="nt">&lt;version&gt;</span>2.1<span class="nt">&lt;/version&gt;</span>
-<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">  </span><span class="nt">&lt;configuration&gt;</span>
-<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">    </span><span class="nt">&lt;descriptors&gt;</span>
-<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">     </span><span class="nt">&lt;descriptor&gt;</span>release/war.xml<span class="nt">&lt;/descriptor&gt;</span>
-<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">     </span><span class="nt">&lt;descriptor&gt;</span>release/javadoc.xml<span class="nt">&lt;/descriptor&gt;</span>
-<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">     </span><span class="nt">&lt;descriptor&gt;</span>release/bin.xml<span class="nt">&lt;/descriptor&gt;</span>
-<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">     </span><span class="nt">&lt;descriptor&gt;</span>release/doc.xml<span class="nt">&lt;/descriptor&gt;</span>
-<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">     </span>...
-<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="w">     </span><span class="nt">&lt;descriptor&gt;</span>release/ext-%module%.xml<span class="nt">&lt;/descriptor&gt;</span>
-<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="w">    </span><span class="nt">&lt;/descriptors&gt;</span>
-<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="w">  </span><span class="nt">&lt;/configuration&gt;</span>
-<a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="nt">&lt;/plugin&gt;</span>
-</code></pre></div>
-</li>
 </ol>
+<p>A community module in the <code>communityRelease</code> profile already has these files; review them when promoting the module.</p>
 </li>
 <li>
-<p>Update the <code>/doc/en/user/source/community</code> documentation:</p>
-<ul>
-<li>Add a section to the user manual for the new module:</li>
-</ul>
-<p>Create a folder:</p>
-<ul>
-<li><code>community/%module%</code></li>
-<li><code>community/%module%/files</code> - example files</li>
-<li><code>community/%module%/img</code> - screen snaps</li>
-<li><code>community/%module%/index.rst</code></li>
-<li><code>community/%module%/installing.rst</code></li>
-<li>
-<p><code>community/%module%/usage.rst</code></p>
-</li>
-<li>
-<p>Include module in <code>community/index.rst</code> toctree:</p>
-</li>
-</ul>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">..</span> <span class="ow">toctree</span><span class="p">::</span>
-<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>   <span class="nc">:maxdepth:</span> 1
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
-<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>   backuprestore/index
-<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>   cog/index
-<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="c">   ...</span>
-<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="c">   %module%/index.rst</span>
+<p><strong>Update the user manual</strong></p>
+<p>Move the module documentation from <code>doc/en/user/community/fun</code> to <code>doc/en/user/extensions/fun</code>, and update the navigation in <code>mkdocs.yml</code> from the community modules section to the extensions section:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">en/user/extensions/fun/index.md</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">en/user/extensions/fun/installing.md</span>
 </code></pre></div>
-<ul>
-<li>
-<p>When writing <code>installing.rst</code> use the sphinx external link <code>download_community</code> to generate a download link for the current release.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>To install the JDBCConfig module:
-<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
-<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="m">#.</span> Visit the <span class="na">:website:</span><span class="nv">`website download &lt;download&gt;`</span> page and download :download_community:<span class="nv">`jdbcconfig`</span>.
+<p>When writing <code>installing.md</code> enable macros, and use the <code>download_extension</code> variable to link to the download for the current release:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>---
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="gu">render_macros: true</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="gu">---</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="gh"># Installing the Fun extension</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="k">-</span><span class="w"> </span>{{ release }} example: [<span class="nt">fun</span>](<span class="na">{{ download_extension }}fun-plugin.zip</span>)
 </code></pre></div>
-</li>
-</ul>
 <p>For more information see <a href="https://docs.geoserver.org/latest/en/docguide/">documentation guide</a>.</p>
 </li>
 <li>
-<p>Download and a contributor license agreement as pdf for txt file:</p>
+<p><strong>Contributor license agreement</strong></p>
+<p>Download a contributor license agreement as pdf or txt file:</p>
 <ul>
 <li>
 <p><a href="https://www.osgeo.org/resources/individual-contributor-license/">Individual Contributor License Agreement</a></p>
@@ -31039,8 +30979,6 @@
 </li>
 </ul>
 <p>This option can also be used as a "software grant" to donate a specific named contribution in its entirety, as was done for GeoFence, and indeed GeoServer itself.</p>
-</li>
-<li>
 <p>Follow the instructions on the form to submit it.</p>
 </li>
 </ol>
@@ -31224,7 +31162,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.indexes", "navigation.footer"], "search": "../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": false, "default": ["latest", "stable", "3.0.x"], "provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.c21346df.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="../../../../javascripts/hide-empty-toc.js"></script>
       

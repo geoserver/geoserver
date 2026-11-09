@@ -43,6 +43,11 @@ jobs:
         key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           gs-${{ runner.os }}-maven-
+    - name: Advance to an unpublished version to check release tooling
+      run: |
+        old=$(sed -n 's/.*<revision>\(.*\)<\/revision>.*/\1/p' src/pom.xml)
+        build/rename.sh advance
+        ! git grep -F ">$old<" -- '*pom.xml'
     - name: Build GeoServer release along with extension and pending plugins (without tests)
       run: |
         mvn --version

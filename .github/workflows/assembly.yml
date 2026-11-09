@@ -48,10 +48,10 @@ jobs:
         old=$(sed -n 's/.*<revision>\(.*\)<\/revision>.*/\1/p' src/pom.xml)
         build/rename.sh advance
         ! git grep -F ">$old<" -- '*pom.xml'
-    - name: Build GeoServer release along with extension and pending plugins (without tests)
+    - name: Build GeoServer release along with extension plugins (without tests)
       run: |
         mvn --version
-        mvn -B -ntp -U -T1C -DskipTests -Prelease,pending -f src/pom.xml install
+        mvn -B -ntp -U -T1C -DskipTests -Prelease -f src/pom.xml install
     - name: Package GeoServer release (without tests)
       run: |
         mvn -B -ntp -nsu -N -f src/pom.xml -DskipTests assembly:single

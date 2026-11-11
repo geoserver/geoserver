@@ -67,17 +67,29 @@ public class TilesetsDescriptionTest extends TilesTestSupport {
 
         // check basic properties
         assertThat(json.read("id"), equalTo("EPSG:4326"));
-        assertThat(json.read("supportedCRS"), equalTo("http://www.opengis.net/def/crs/OGC/1.3/CRS84"));
+        // the point of origin is latitude first, as in EPSG:4326
+        assertThat(json.read("crs"), equalTo("http://www.opengis.net/def/crs/EPSG/0/4326"));
+        assertThat(json.read("supportedCRS"), equalTo("http://www.opengis.net/def/crs/EPSG/0/4326"));
         assertThat(json.read("title"), startsWith("A default WGS84"));
 
         // check a tile matrix definitions
         assertThat(json.read("tileMatrices[0].id"), equalTo("EPSG:4326:0"));
         assertThat(json.read("tileMatrices[0].scaleDenominator", Double.class), closeTo(2.7954112E8, 1e3));
+        assertThat(json.read("tileMatrices[0].cellSize", Double.class), closeTo(360d / 512, 1e-9));
         assertThat(json.read("tileMatrices[0].tileWidth"), equalTo(256));
         assertThat(json.read("tileMatrices[0].tileWidth"), equalTo(256));
         assertThat(json.read("tileMatrices[0].matrixWidth"), equalTo(2));
         assertThat(json.read("tileMatrices[0].matrixHeight"), equalTo(1));
         assertThat(json.read("tileMatrices[0].pointOfOrigin"), contains(closeTo(90, 0), closeTo(-180, 0)));
+    }
+
+    @Test
+    public void testGetTileMatrixSetWebMercator() throws Exception {
+        DocumentContext json = getAsJSONPath("ogc/tiles/v1/tileMatrixSets/EPSG:900913", 200);
+
+        // 900913 is not an EPSG code
+        assertThat(json.read("crs"), equalTo("http://www.opengis.net/def/crs/EPSG/0/3857"));
+        assertThat(json.read("tileMatrices[0].cellSize", Double.class), closeTo(156543.0339, 1e-4));
     }
 
     @Test

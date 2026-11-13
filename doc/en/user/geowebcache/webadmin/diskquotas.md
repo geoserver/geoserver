@@ -14,6 +14,10 @@ When finished making any changes, remember to click **Submit**.
 
 When enabled, the disk quota will be set according to the options listed below. The setting is disabled by default.
 
+While the disk quota is disabled, GeoServer does not record disk usage and does not scan the tile cache at startup. Disabling it also deletes the usage recorded so far for the layers that exist at that time.
+
+When the disk quota is enabled, GeoServer computes the disk usage of every cached layer by scanning its tile cache in the background. On a large cache, or one on network storage, the scan can take hours. Until a layer is scanned, its own quota is not enforced, and the global quota counts only the usage found so far. After the scan, GeoServer updates the usage as tiles are added and removed, and keeps it across restarts.
+
 ## Disk quota check frequency
 
 This setting determines how often the cache is polled for any overage. Smaller values (more frequent polling) will slightly increase disk activity, but larger values (less frequent polling) may cause the disk quota to be temporarily exceeded. The default is **10 seconds**.

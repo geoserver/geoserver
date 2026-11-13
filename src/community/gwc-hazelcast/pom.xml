@@ -14,9 +14,6 @@
   <name>GeoWebCache Hazelcast tile cache</name>
   <description>GeoWebCache in-memory tile cache shared through Hazelcast</description>
 
-  <properties>
-    <assembly.useDependencySets>true</assembly.useDependencySets>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.geowebcache</groupId>

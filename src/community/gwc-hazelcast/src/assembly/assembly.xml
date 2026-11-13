@@ -4,14 +4,21 @@
     <format>zip</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
-  <dependencySets>
-    <dependencySet>
-      <outputDirectory>/</outputDirectory>
-      <useProjectArtifact>true</useProjectArtifact>
-      <!-- runtime also includes compile, the provided GeoServer jars stay out -->
-      <scope>runtime</scope>
-      <useTransitiveDependencies>true</useTransitiveDependencies>
-      <useTransitiveFiltering>false</useTransitiveFiltering>
-    </dependencySet>
-  </dependencySets>
+  <fileSets>
+    <fileSet>
+      <directory>target</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>${artifactId}-${project.version}.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gwc-hazelcast-*.jar</include>
+        <include>hazelcast-*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
 </assembly>

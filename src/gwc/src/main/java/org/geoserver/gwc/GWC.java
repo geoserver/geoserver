@@ -710,16 +710,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
         // reload the quota config
         try {
-            DiskQuotaMonitor monitor = getDiskQuotaMonitor();
-            monitor.reloadConfig();
-            ConfigurableQuotaStoreProvider provider = (ConfigurableQuotaStoreProvider) monitor.getQuotaStoreProvider();
-            provider.reloadQuotaStore();
-
-            // restart the monitor, the quota store might have been changed and pointed to another
-            // DB
-            // and we need to re-init the tile pages
-            monitor.shutDown(1);
-            monitor.startUp();
+            getDiskQuotaMonitor().reloadConfig();
+            reloadDiskQuotaStore();
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to reload the disk quoa configuration", e);
         }
@@ -1258,9 +1250,12 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         DiskQuotaMonitor monitor = getDiskQuotaMonitor();
         monitor.saveConfig(config);
         jdbcConfigurationStorage.saveDiskQuotaConfig(config, jdbcConfig);
+        reloadDiskQuotaStore();
+    }
 
-        // GeoServer own GWC is wired up to use the ConfigurableQuotaStoreProvider, force it to
-        // reload
+    /** Reloads the quota store from the saved configuration and restarts the disk quota monitor on it. */
+    public void reloadDiskQuotaStore() throws ConfigurationException, IOException, InterruptedException {
+        DiskQuotaMonitor monitor = getDiskQuotaMonitor();
         ConfigurableQuotaStoreProvider provider = (ConfigurableQuotaStoreProvider) monitor.getQuotaStoreProvider();
         provider.reloadQuotaStore();
 

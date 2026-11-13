@@ -7,8 +7,13 @@ package org.geoserver.gwc.config;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.util.IOUtils;
 import org.geoserver.util.PropertyRule;
@@ -53,6 +58,28 @@ public final class GWCExternalConfigTest extends GeoServerSystemTestSupport {
         testUseCase(tempDirectory1, null, tempDirectory1);
         testUseCase(null, tempDirectory2, tempDirectory2);
         testUseCase(tempDirectory3, tempDirectory4, tempDirectory3);
+    }
+
+    @Test
+    public void testEmptyConfigReplacedWithTemplate() throws Exception {
+        File dataDir = new File(rootTempDirectory, "test-case-5");
+        File config = new File(new File(dataDir, "gwc"), "geowebcache.xml");
+        config.getParentFile().mkdirs();
+        config.createNewFile();
+        assertEquals(0, config.length());
+
+        GeoserverXMLResourceProvider provider =
+                new GeoserverXMLResourceProvider("geowebcache.xml", new FileSystemResourceStore(dataDir));
+        provider.setTemplate("/geowebcache_empty.xml");
+
+        byte[] expected;
+        try (InputStream in = getClass().getResourceAsStream("/geowebcache_empty.xml")) {
+            expected = in.readAllBytes();
+        }
+        try (InputStream in = provider.in()) {
+            assertArrayEquals(expected, in.readAllBytes());
+        }
+        assertArrayEquals(expected, Files.readAllBytes(config.toPath()));
     }
 
     /**

@@ -128,6 +128,7 @@
         <module>gdal</module>
         <module>gwc-azure-blob</module>
         <module>gwc-gcs-blob</module>
+        <module>gwc-hazelcast</module>
         <module>backup-restore</module>
         <module>ncwms</module>
         <module>jwt-headers</module>
@@ -309,6 +310,12 @@
       <id>gwc-gcs-blob</id>
       <modules>
         <module>gwc-gcs-blob</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>gwc-hazelcast</id>
+      <modules>
+        <module>gwc-hazelcast</module>
       </modules>
     </profile>
     <profile>

@@ -46,6 +46,7 @@ symbolizers:
     x-composite: <text>
     x-allowOverruns: <boolean>
     x-autoWrap: <expression>
+    x-autoWrapBalanced: <boolean>
     x-conflictResolution: <boolean>
     x-followLine: <boolean>
     x-forceLeftToRight: <boolean>
@@ -53,10 +54,12 @@ symbolizers:
     x-graphic-margin: <expression>
     x-graphic-resize: <none|proportional|stretch>
     x-group: <boolean>
+    x-groupPriority: <sum|max>
     x-labelAllGroup: <boolean>
     x-repeat: <expression>
     x-maxAngleDelta: <expression>
     x-maxDisplacement: <expression>
+    x-displacementAnchor: <any|outside>
     x-minGroupDistance: <expression>
     x-partials: <boolean>
     x-polygonAlign: <boolean>
@@ -117,6 +120,7 @@ The following properties are equivalent to SLD "vendor options".
 |----|----|----|----|
 | `x-allowOverruns` | No | Allows labels on lines to move slightly beyond the beginning or end of the line. | `true` |
 | `x-autoWrap` | No | The number of pixels beyond which a label will be wrapped over multiple lines. Cannot use with `x-followLine`. | 0 |
+| `x-autoWrapBalanced` | No | When `true`, `x-autoWrap` splits a label into lines of about the same width, even if a line then goes past the `x-autoWrap` width. When `false`, each line takes as many words as fit. | `false` |
 | `x-conflictResolution` | No | Enables conflict resolution, meaning no two labels will be allowed to overlap. Without conflict resolution, symbolizers can overlap with other labels. | `true` |
 | `x-followLine` | No | On linear geometries, the label will follow the shape of the current line, as opposed to being drawn at a tangent. Will override | `false` |
 | `x-forceLeftToRight` | No | Forces labels to a readable orientation, otherwise will follow the line orientation, possibly making the label look upside-down. This setting is useful when using symbol fonts to add direction markers along a line. | `false` |
@@ -124,10 +128,12 @@ The following properties are equivalent to SLD "vendor options".
 | `x-graphic-margin` | No | Number of pixels between the stretched graphic and the text. Only applies when `x-graphic-resize` is set to `stretch` or `proportional`. | 0 |
 | `x-graphic-resize` | No | Allows for stretching the graphic underneath a label to fit the label size. Options are `none`, `stretch` or `proportional`. Used in conjunction with `x-graphic-margin`.. | `none` |
 | `x-group` | No | Geometries with identical labels will be considered a single entity to be labeled. Used to control repeated labels. | `false` |
+| `x-groupPriority` | No | How a group of labels gets its priority, when `x-group` is enabled and the priority is an expression. `sum` adds up the priorities of its features, `max` takes the highest one. | `sum` |
 | `x-labelAllGroup` | No | Used in conjunction with `x-group`. When `true` all items in a group are labeled. When `false`, only the largest geometry in the group is labeled. Valid for lines only. | `false` |
 | `x-repeat` | No | Desired distance (in pixels) between labels drawn on a group. If zero, only one label will be drawn. Used in conjunction with `x-group`. Valid for lines only. | 0 |
 | `x-maxAngleDelta` | No | Maximum allowed angle (in degrees) between two characters in a curved label. Used in conjunction with `x-followLine`. Values higher than `30` may cause loss of legibility of the label. | 22.5 |
 | `x-maxDisplacement` | No | Distance (in pixels) a label can be displaced from its natural position in an attempt to eliminate conflict with other labels. | 0 |
+| `x-displacementAnchor` | No | Label anchors tried when a label is displaced north, south, east or west. With `any` the label is first centered on the displaced position, so it may cover the point. With `outside` the label stays fully on the side it moves to, so it never covers the point. | `any` |
 | `x-minGroupDistance` | No | Minimum distance (in pixels) between two labels in the same label group. Used in conjunction with `displacement` or `repeat` to avoid having two labels too close to each other | No minimum distance |
 | `x-partials` | No | Will display partial labels (truncated on the border of the display area). | `false` |
 | `x-polygonAlign` | No | Overrides manual rotation to align label rotation automatically. Valid for polygons only. | `false` |

@@ -29,9 +29,12 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -42,12 +45,17 @@ import org.geoserver.filters.BufferedRequestWrapper;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.gwc.layer.StyleParameterFilter;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.util.DimensionWarning.WarningType;
+import org.geowebcache.diskquota.DiskQuotaConfig;
+import org.geowebcache.diskquota.jdbc.JDBCQuotaStore;
 import org.geowebcache.filter.parameters.FloatParameterFilter;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.filter.parameters.StringParameterFilter;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Test;
 import org.kordamp.json.JSONArray;
 import org.kordamp.json.JSONObject;
@@ -751,5 +759,36 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals("", xpath.evaluate("//cacheWarningSkips/class", dom));
         assertEquals("Default", xpath.evaluate("//cacheWarningSkips/warning[1]", dom));
         assertEquals("FailedNearest", xpath.evaluate("//cacheWarningSkips/warning[2]", dom));
+    }
+
+    @After
+    public void disableDiskQuota() throws Exception {
+        GWC gwc = GWC.get();
+        DiskQuotaConfig quota = gwc.getDiskQuotaConfig();
+        if (quota.isEnabled()) {
+            quota.setEnabled(false);
+            gwc.saveDiskQuotaConfig(quota, null);
+            File hsqlStore = getDataDirectory().findFile("gwc/diskquota_page_store_hsql");
+            if (hsqlStore != null) {
+                FileUtils.deleteDirectory(hsqlStore);
+            }
+        }
+    }
+
+    @Test
+    public void testEnableDiskQuota() throws Exception {
+        ConfigurableQuotaStoreProvider provider = GeoServerExtensions.bean(ConfigurableQuotaStoreProvider.class);
+        assertTrue(((ConfigurableQuotaStore) provider.getQuotaStore()).getStore() instanceof DummyQuotaStore);
+
+        String body = "<gwcQuotaConfiguration><enabled>true</enabled></gwcQuotaConfiguration>";
+        MockHttpServletResponse response = putAsServletResponse("gwc/rest/diskquota.xml", body, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        assertTrue(GWC.get().getDiskQuotaConfig().isEnabled());
+        assertTrue(((ConfigurableQuotaStore) provider.getQuotaStore()).getStore() instanceof JDBCQuotaStore);
+        Resource quotaFile = getDataDirectory().get("gwc/geowebcache-diskquota.xml");
+        try (InputStream in = quotaFile.in()) {
+            assertXpathEvaluatesTo("true", "/gwcQuotaConfiguration/enabled", dom(in));
+        }
     }
 }

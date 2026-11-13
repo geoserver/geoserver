@@ -1,0 +1,75 @@
+/* the banner also shows on the welcome page, which does not load UpdatesCheckerPage.css */
+.gs-updates-checker-notifications ul.feedbackPanel,
+.gs-updates-checker-status ul.feedbackPanel {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 3.x gives a feedback message this padding; 2.x gives none */
+.gs-updates-checker-item {
+  padding: 0.5rem;
+}
+
+/* the theme gives links in feedback panels the text colour and no underline, so they would not look clickable */
+.gs-updates-checker-item a,
+.gs-updates-checker-more a,
+.gs-updates-checker-clear a {
+  color: rgb(var(--gs-link-color-rgb));
+  text-decoration: underline;
+}
+
+.gs-updates-checker-item a:hover,
+.gs-updates-checker-more a:hover,
+.gs-updates-checker-clear a:hover {
+  color: rgb(var(--gs-link-hover-color-rgb));
+}
+
+.gs-updates-checker-item[hidden],
+.gs-updates-checker-more[hidden],
+.gs-updates-checker-none[hidden],
+.gs-updates-checker-clear[hidden] {
+  display: none;
+}
+
+.gs-updates-checker-label {
+  letter-spacing: 0.03em;
+}
+
+.gs-updates-checker-more {
+  margin: 0.25rem 0 0;
+}
+
+.gs-updates-checker-check-line {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.gs-updates-checker-check-now.gs-updates-checker-busy {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.gs-updates-checker-working,
+.gs-updates-checker-busy .gs-updates-checker-idle {
+  display: none;
+}
+
+.gs-updates-checker-busy .gs-updates-checker-working {
+  display: inline;
+}
+
+/* the feed time is out of date while a check runs */
+.gs-updates-checker-busy ~ .gs-updates-checker-feed-line {
+  display: none;
+}
+
+/* 2.x has none of the 3.x button classes; :where() adds no specificity, so the 3.x theme wins where it applies */
+:where(.gs-updates-checker-check-now) {
+  display: inline-block;
+  padding: 0.2em 0.8em;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  text-decoration: none;
+}

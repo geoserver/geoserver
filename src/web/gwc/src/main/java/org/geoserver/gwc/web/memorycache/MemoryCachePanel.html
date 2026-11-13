@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+<fieldset>
+  <legend><span><wicket:message key="MemoryCachePanel.title">In-memory tile cache</wicket:message></span></legend>
+  <ul>
+    <li class="choiceItem">
+      <input id="memoryCacheEnabled" type="checkbox" wicket:id="enabled"/>
+      <label for="memoryCacheEnabled">
+        <wicket:message key="MemoryCachePanel.enabled">Enable the in-memory tile cache</wicket:message>
+      </label>
+    </li>
+    <li wicket:id="settings">
+      <ul>
+        <li class="choiceItem">
+          <input id="memoryCachePassthrough" type="checkbox" wicket:id="passthrough"/>
+          <label for="memoryCachePassthrough">
+            <wicket:message key="MemoryCachePanel.passthrough">Also store tiles in the layer blob store</wicket:message>
+          </label>
+        </li>
+        <li>
+          <label for="memoryCacheTimeToLive">
+            <wicket:message key="MemoryCachePanel.timeToLive">Default time to live of a tile in memory, in seconds</wicket:message>
+          </label>
+          <input id="memoryCacheTimeToLive" wicket:id="timeToLive" type="number" class="field text w-10-em"/>
+        </li>
+        <li>
+          <label for="memoryCacheStatsInterval">
+            <wicket:message key="MemoryCachePanel.statsInterval">Statistics log interval, in seconds</wicket:message>
+          </label>
+          <input id="memoryCacheStatsInterval" wicket:id="statsInterval" type="number" class="field text w-10-em"/>
+        </li>
+        <li>
+          <label for="tileCacheBackend">
+            <wicket:message key="MemoryCachePanel.backend">Backend</wicket:message>
+          </label>
+          <select id="tileCacheBackend" wicket:id="backend" class="select"></select>
+        </li>
+        <li wicket:id="backendContainer">
+          <div wicket:id="backendPanel"></div>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</fieldset>
+</wicket:panel>
+</body>
+</html>

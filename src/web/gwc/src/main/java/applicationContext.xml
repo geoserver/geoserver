@@ -83,6 +83,7 @@
   <bean id="diskQuotaWarningProvider" class="org.geoserver.gwc.web.diskquota.DiskQuotaWarningProvider"/>
   
   <bean class="org.geoserver.gwc.web.blob.FileBlobStoreType" />
+  <bean class="org.geoserver.gwc.web.memorycache.HeapKeyValueStoreType" />
 
   <bean id="wmtsServicePage" class="org.geoserver.web.services.ServiceMenuPageInfo">
     <property name="id" value="wmts"/>

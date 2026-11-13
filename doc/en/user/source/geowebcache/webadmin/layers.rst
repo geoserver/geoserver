@@ -79,10 +79,26 @@ A confirmation will appear on the page as message with names of cleared Tile lay
 
 .. figure:: img/gwc_clean.png
    
+.. _gwc_webadmin_layers_configure:
+
 Configuring a cached layer
 --------------------------
 
 You have two options for layer configuration. The first option is to load the layer using the default (global) settings. To do this, select the layer you wish to start caching, and click the :guilabel:`Configure selected layers with caching defaults` link. The second option is to configure the caching parameters manually, via the :ref:`layer configuration <data_webadmin_layers>` pages. To do this, just click the layer name itself.
+
+Use the in-memory tile cache for this layer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: img/layer-memorycached.png
+   :align: center
+
+   *Using the in-memory tile cache for a layer*
+
+When checked, the layer tiles go through the in-memory tile cache configured in the :ref:`caching defaults <gwc_webadmin_defaults_memorycache>`. It has no effect while the in-memory tile cache is disabled there. Unchecked by default.
+
+Unchecking it does not empty the cache: the tiles already there stay until they expire, and are served again if the box is checked back before then. Truncating the layer removes them, checked or not, as long as the in-memory tile cache is enabled; removing a single tile, as disk quota does, only reaches the cache when the box is checked. It is to be noted that disabling the in-memory tile cache in the caching defaults stops truncates from reaching it, so tiles truncated meanwhile can be served again when it is enabled within their expiry.
+
+Set **Expire server cache after n seconds** to the refresh interval of the layer data: each tile in memory expires after that time. The time to live of the in-memory tile cache only applies to layers without one.
 
 
 Parameter Filters

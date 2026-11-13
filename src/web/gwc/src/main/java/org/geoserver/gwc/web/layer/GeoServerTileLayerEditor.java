@@ -110,6 +110,9 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
     /** The blobstoreId */
     private final DropDownChoice<String> blobStoreId;
 
+    /** Whether the tiles go through the in-memory tile cache (like in {@link TileLayer#isMemoryCached()}) */
+    private final FormComponent<Boolean> memoryCached;
+
     /** Container for {@link #configs} */
     private final WebMarkupContainer container;
 
@@ -243,6 +246,10 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
                 blobStoreId = new DropDownChoice<>("blobStoreId", blobStoreModel, blobStoreChoices, blobStoreRenderer));
         blobStoreId.setNullValid(true);
         blobStoreId.add(new AttributeModifier("title", new ResourceModel("blobStoreId.title")));
+
+        memoryCached = new CheckBox("memoryCached", new PropertyModel<>(getModel(), "memoryCached"));
+        memoryCached.add(new AttributeModifier("title", new ResourceModel("memoryCached.title")));
+        configs.add(memoryCached);
 
         add(new IValidator<>() {
             @Serial
@@ -480,6 +487,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
 
         if (createTileLayer) {
             enabled.processInput();
+            memoryCached.processInput();
             expireCache.processInput();
             expireClients.processInput();
             metaTilingX.processInput();

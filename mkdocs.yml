@@ -839,6 +839,7 @@ nav:
           - en/user/community/gsr/featureTable.md
       - GWC Azure BlobStore plugin: en/user/community/gwc-azure-blob/index.md
       - GWC Google Cloud Storage BlobStore plugin: en/user/community/gwc-gcs-blob/index.md
+      - GWC Hazelcast tile cache plugin: en/user/community/gwc-hazelcast/index.md
       - GWC MBTiles layer plugin: en/user/community/gwc-mbtiles/index.md
       - SAP HANA: en/user/community/hana/index.md
       - Hazelcast Clustering Plugin: en/user/community/hz-cluster/index.md

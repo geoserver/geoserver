@@ -81,6 +81,13 @@ public class SecurityConfigException extends AbstractSecurityException {
     public static final String ROLE_SERVICE_ACTIVE_$1 = "ROLE_SERVICE_ACTIVE";
     // return MessageFormat.format("Role service {0} is active and cannot be deleted",args);
 
+    public static final String ROLE_SERVICE_USED_BY_FILTER_$2 = "ROLE_SERVICE_USED_BY_FILTER";
+    // return MessageFormat.format("Role service {0} is used by filter {1} and cannot be deleted",args);
+
+    public static final String ROLE_SERVICE_ACTIVE_CLASS_CHANGE_$1 = "ROLE_SERVICE_ACTIVE_CLASS_CHANGE";
+    // return MessageFormat.format("Role service {0} is active, its implementation class cannot be
+    // changed",args);
+
     public static final String AUTH_PROVIDER_ACTIVE_$1 = "AUTH_PROVIDER_ACTIVE";
     // return MessageFormat.format("Authentication provider {0} is active and cannot be
     // deleted",args);

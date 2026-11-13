@@ -84,13 +84,16 @@ public class ResourceController extends RestBaseController {
 
     @Autowired
     public ResourceController(@Qualifier("resourceStore") ResourceStoreFactory factory) throws Exception {
-        super();
-        this.resources = factory.getObject();
+        this(factory.getObject());
     }
 
     public ResourceController(ResourceStore store) {
         super();
-        this.resources = store;
+        this.resources = secureResourceStore(store);
+    }
+
+    private ResourceStore secureResourceStore(ResourceStore store) {
+        return new SecureResourceStore(store);
     }
 
     /** Workaround to support format parameter when extension is in path */

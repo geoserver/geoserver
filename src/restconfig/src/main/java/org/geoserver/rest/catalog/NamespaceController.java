@@ -130,7 +130,13 @@ public class NamespaceController extends AbstractCatalogController {
     public void namespacePut(
             @RequestBody NamespaceInfo namespace, @PathVariable String prefix, UriComponentsBuilder builder) {
 
+        // only full admins can change the default namespace
+        final boolean isFullAdmin = isAuthenticatedAsAdmin();
+
         if ("default".equals(prefix)) {
+            if (!isFullAdmin) {
+                throw new RestException("Can't change default namespace", HttpStatus.FORBIDDEN);
+            }
             catalog.setDefaultNamespace(namespace);
         } else {
             // name must exist

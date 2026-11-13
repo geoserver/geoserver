@@ -1306,6 +1306,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertFalse("Disk quota is enabled??", quota.isEnabled());
         assertNull("jdbc quota config should be missing", jdbc);
         assertTrue(getActualStore(provider) instanceof DummyQuotaStore);
+        assertFalse(provider.getQuotaStore().tracksUsage());
 
         // enable disk quota in HSQL mode
         quota.setEnabled(true);
@@ -1317,6 +1318,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         String hsqlStorePath = "gwc/diskquota_page_store_hsql";
         assertNotNull("jdbc store (" + hsqlStorePath + ") should be there", dd.findFile(hsqlStorePath));
         assertTrue(getActualStore(provider) instanceof JDBCQuotaStore);
+        assertTrue(provider.getQuotaStore().tracksUsage());
 
         // disable again and clean up
         quota.setEnabled(false);

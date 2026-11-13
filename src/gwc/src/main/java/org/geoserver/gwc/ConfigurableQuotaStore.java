@@ -138,4 +138,9 @@ public class ConfigurableQuotaStore implements QuotaStore {
     public void deleteParameters(String layerName, String parametersId) {
         delegate.deleteParameters(layerName, parametersId);
     }
+
+    @Override
+    public boolean tracksUsage() {
+        return delegate.tracksUsage();
+    }
 }

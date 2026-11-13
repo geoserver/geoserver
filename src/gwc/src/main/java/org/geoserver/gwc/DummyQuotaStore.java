@@ -141,4 +141,10 @@ public class DummyQuotaStore implements QuotaStore {
 
     @Override
     public void deleteParameters(String layerName, String parametersId) {}
+
+    /** Returns false: this store discards all usage updates. */
+    @Override
+    public boolean tracksUsage() {
+        return false;
+    }
 }

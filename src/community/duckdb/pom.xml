@@ -32,13 +32,6 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-restconfig</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <profiles>
@@ -55,6 +48,13 @@
         <dependency>
           <groupId>org.geoserver</groupId>
           <artifactId>gs-main</artifactId>
+          <version>${project.version}</version>
+          <classifier>tests</classifier>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver</groupId>
+          <artifactId>gs-restconfig</artifactId>
           <version>${project.version}</version>
           <classifier>tests</classifier>
           <scope>test</scope>

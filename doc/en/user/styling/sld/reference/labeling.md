@@ -266,6 +266,17 @@ The `labelAllGroup` option can be used in conjunction with the `group` option (s
 <VendorOption name="labelAllGroup">true</VendorOption>
 ```
 
+### groupPriority {: #labeling_group_priority }
+
+The `groupPriority` option sets how a group of labels gets its priority, when [group](#labeling_group) is enabled and the label [priority](#labeling_priority) is an expression. Two values are accepted:
+
+- `sum` (default): adds up the priorities of the features in the group, so bigger groups win. This fits a priority based on area or length.
+- `max`: takes the highest priority in the group. This fits a priority that ranks features, such as a road class, where a long minor road should not win over a short major one.
+
+```xml
+<VendorOption name="groupPriority">max</VendorOption>
+```
+
 ### Overlapping and Separating Labels (spaceAround) {: #labeling_space_around }
 
 By default GeoServer will not render labels "on top of each other". By using the `spaceAround` option you can either allow labels to overlap, or add extra space around labels. The value supplied for the option is a positive or negative size, in pixels.
@@ -285,6 +296,8 @@ With a negative `spaceAround` value, overlapping is allowed:
 With a positive `spaceAround` value of 10, each label is at least 20 pixels apart from others:
 
 ![](img/space_10.png)
+
+Like [autoWrap](#labeling_autowrap), the value can also be a `${...}` CQL expression, evaluated for each feature.
 
 Positive `spaceAround` values actually provide twice the space that you might expect. This is because you can specify a spaceAround for one label as 5, and for another label (in another TextSymbolizer) as 3. The total distance between them is 8. Two labels in the first symbolizer ("5") will each be 5 pixels apart from each other, for a total of 10 pixels.
 
@@ -328,6 +341,8 @@ For points this causes the renderer to start circling around the point in search
 <VendorOption name="maxDisplacement">10</VendorOption> 
 ```
 
+Like [autoWrap](#labeling_autowrap), the value can also be a `${...}` CQL expression, evaluated for each feature.
+
 ### repeat {: #labeling_repeat }
 
 The `repeat` option determines how often GeoServer displays labels along a line. Normally GeoServer labels each line only once, regardless of length. Specifying a positive value for this option makes the labeller attempt to draw the label every **repeat** pixels. For long or complex lines (such as contour lines) this makes labeling more informative.
@@ -355,6 +370,21 @@ The `autoWrap` option wraps labels when they exceed the given width (in pixels).
 ![](img/label_autoWrap.png)
 
 *Labeling with autoWrap enabled*
+
+The value can also be a CQL expression, written as `${...}`, which is evaluated for each feature:
+
+```xml
+<VendorOption name="autoWrap">${if_then_else(greaterThan(population, 100000), 150, 80)}</VendorOption>
+```
+
+### autoWrapBalanced {: #labeling_autowrap_balanced }
+
+The `autoWrapBalanced` option changes how [autoWrap](#labeling_autowrap) splits a label. With `true`, the label is split into lines of about the same width, even if a line then goes past the `autoWrap` width. With `false` (the default), each line takes as many words as fit, so the last line can end up much shorter than the others.
+
+```xml
+<VendorOption name="autoWrap">100</VendorOption>
+<VendorOption name="autoWrapBalanced">true</VendorOption>
+```
 
 ### forceLeftToRight {: #labeling_force_left_to_right }
 
@@ -478,6 +508,8 @@ The `charSpacing` option controls the amount of space between characters, a posi
 <VendorOption name="charSpacing">3</VendorOption>
 ```
 
+Like [autoWrap](#labeling_autowrap), the value can also be a `${...}` CQL expression, evaluated for each feature.
+
 Example of adding 3 extra pixels of space between chars on road names:
 
 ![](img/charSpacing.png)
@@ -508,4 +540,16 @@ While this one allows displacement only in the vertical direction:
 
 ```xml
 <VendorOption name="displacementMode">N, S</VendorOption>
+```
+
+### displacementAnchor {: #labeling_displacement_anchor }
+
+The `displacementAnchor` option controls where a label sits when [displacementMode](#displacementmode) moves it in the `N`, `S`, `E` or `W` direction. Two values are accepted:
+
+- `any` (default): the label is first centered on the displaced position, so it may cover the point.
+- `outside`: the label stays fully on the side it moves to, so it never covers the point. With `E` the label starts at the displaced position, with `W` it ends there, with `N` its bottom edge sits there, and with `S` its top edge.
+
+```xml
+<VendorOption name="displacementMode">N, E, S, W</VendorOption>
+<VendorOption name="displacementAnchor">outside</VendorOption>
 ```

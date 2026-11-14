@@ -14,8 +14,9 @@
 
   <properties>
 
-    <confluent-version>8.2.0</confluent-version>
-    <kafka-version>3.9.2</kafka-version>
+    <confluent-version>8.4.1</confluent-version>
+    <kafka-version>4.4.0</kafka-version>
+    <avro-version>1.12.2</avro-version>
   </properties>
 
   <dependencies>
@@ -37,6 +38,13 @@
       <groupId>io.confluent</groupId>
       <artifactId>kafka-schema-registry-client</artifactId>
       <version>${confluent-version}</version>
+    </dependency>
+
+    <!-- confluent 8.4.1 still pulls avro 1.12.1, align it with the code generator -->
+    <dependency>
+      <groupId>org.apache.avro</groupId>
+      <artifactId>avro</artifactId>
+      <version>${avro-version}</version>
     </dependency>
 
     <dependency>
@@ -79,7 +87,7 @@
       <plugin>
         <groupId>org.apache.avro</groupId>
         <artifactId>avro-maven-plugin</artifactId>
-        <version>1.12.1</version>
+        <version>${avro-version}</version>
         <executions>
           <execution>
             <phase>generate-sources</phase>

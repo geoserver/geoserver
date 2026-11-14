@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
+import org.apache.avro.util.ClassSecurityValidator;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -36,6 +37,13 @@ public class KafkaDAO implements MonitorDAO, DisposableBean {
     ConnectionTester connectionTester;
 
     static Logger LOGGER = Logging.getLogger(Monitor.class);
+
+    static {
+        // avro 1.12.2+ refuses to build schemas from classes outside its trusted list
+        ClassSecurityValidator.setGlobal(ClassSecurityValidator.composite(
+                ClassSecurityValidator.getGlobal(),
+                ClassSecurityValidator.builder().add(RequestDataRecord.class).build()));
+    }
 
     AtomicLong REQUEST_ID_GEN = new AtomicLong(1);
 

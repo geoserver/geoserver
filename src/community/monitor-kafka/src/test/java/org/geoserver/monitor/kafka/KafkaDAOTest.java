@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -280,6 +281,23 @@ public class KafkaDAOTest {
         kafkaDAO.dispose();
         verify(producer).close(any());
         Assertions.assertNull(kafkaDAO.producer);
+    }
+
+    @Test
+    public void testAvroSerialization() {
+        RequestData data = new RequestData();
+        data.setId(1L);
+        data.setStatus(RequestData.Status.FINISHED);
+        data.setCategory(RequestData.Category.REST);
+        data.setStartTime(new Date(1L));
+        data.setEndTime(new Date(2L));
+        RequestDataRecord record = kafkaDAO.mapRequestData(data);
+
+        try (KafkaAvroSerializer serializer = new KafkaAvroSerializer()) {
+            serializer.configure(Map.of("schema.registry.url", "mock://kafka-dao-test"), false);
+            byte[] bytes = serializer.serialize("monitor", record);
+            Assertions.assertTrue(bytes.length > 0);
+        }
     }
 
     @AfterEach

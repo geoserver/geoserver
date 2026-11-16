@@ -30850,7 +30850,7 @@
 <td><code>label-padding</code></td>
 <td>length</td>
 <td>The amount of 'padding' space to provide around labels. Labels will not be rendered closer together than this threshold. This is equivalent to the <a href="../../sld/reference/labeling/#labeling_space_around">spaceAround</a> vendor parameter.</td>
-<td>no</td>
+<td>yes</td>
 </tr>
 <tr>
 <td><code>label-group</code></td>
@@ -30859,9 +30859,21 @@
 <td>no</td>
 </tr>
 <tr>
+<td><code>label-group-priority</code></td>
+<td>one of <code>sum</code> or <code>max</code></td>
+<td>How a group of labels gets its priority from the priorities of its features: <code>sum</code> adds them up, <code>max</code> takes the highest. This is equivalent to the <a href="../../sld/reference/labeling/#labeling_group_priority">groupPriority</a> vendor parameter.</td>
+<td>no</td>
+</tr>
+<tr>
 <td><code>label-max-displacement</code></td>
 <td>length</td>
 <td>If set, this is the maximum displacement that the renderer will apply to a label. Labels that need larger displacements to avoid collisions will simply be omitted. This is equivalent to the <a href="../../sld/reference/labeling/#labeling_max_displacement">maxDisplacement</a> vendor parameter.</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>label-displacement-anchor</code></td>
+<td>one of <code>any</code> or <code>outside</code></td>
+<td>With <code>outside</code>, a label moved north, south, east or west by displacementMode stays fully on that side, so it never covers its point. This is equivalent to the <a href="../../sld/reference/labeling/#labeling_displacement_anchor">displacementAnchor</a> vendor parameter.</td>
 <td>no</td>
 </tr>
 </tbody>
@@ -30923,6 +30935,12 @@
 <td><code>label-auto-wrap</code></td>
 <td>length</td>
 <td>Labels will be wrapped to multiple lines if they exceed this length in pixels. This is equivalent to the <a href="../../sld/reference/labeling/#labeling_autowrap">autoWrap</a> vendor parameter.</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>label-auto-wrap-balanced</code></td>
+<td>one of <code>true</code> or <code>false</code></td>
+<td>If true, wrapped labels are split into lines of about the same width. This is equivalent to the <a href="../../sld/reference/labeling/#labeling_autowrap_balanced">autoWrapBalanced</a> vendor parameter.</td>
 <td>no</td>
 </tr>
 <tr>
@@ -30990,7 +31008,7 @@
 <td><code>label-char-spacing</code></td>
 <td>an amount of pixels, can be negative</td>
 <td>If present, expands or shrinks the space between subsequent characters in a label according to the value specified</td>
-<td>no</td>
+<td>yes</td>
 </tr>
 <tr>
 <td><code>label-word-spacing</code></td>

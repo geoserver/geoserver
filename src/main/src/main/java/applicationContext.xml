@@ -202,6 +202,8 @@
   
   <bean id="filePublisherMapping"
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+     <!-- see OWSHandlerMapping.DEFAULT_ORDER -->
+     <property name="order" value="-50"/>
      <property name="alwaysUseFullPath" value="true"/>
      <property name="mappings">
        <props>
@@ -213,6 +215,8 @@
   
   <bean id="stylePublisherMapping"
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+     <!-- see OWSHandlerMapping.DEFAULT_ORDER -->
+     <property name="order" value="-50"/>
      <property name="alwaysUseFullPath" value="true"/>
      <property name="mappings">
        <props>
@@ -223,6 +227,8 @@
   
   <bean id="classpathPublisherMapping"
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+     <!-- see OWSHandlerMapping.DEFAULT_ORDER -->
+     <property name="order" value="-50"/>
      <property name="alwaysUseFullPath" value="true"/>
      <property name="mappings">
        <props>

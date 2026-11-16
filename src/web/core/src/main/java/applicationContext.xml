@@ -47,6 +47,8 @@
   <bean id="webDispatcherMapping"
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping"
     lazy-init="true">
+    <!-- see OWSHandlerMapping.DEFAULT_ORDER -->
+    <property name="order" value="-50"/>
     <property name="alwaysUseFullPath" value="true" />
     <property name="mappings">
       <props>

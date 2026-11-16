@@ -177,6 +177,8 @@
   <!-- Map dispatcher in order to publish the wcsTempStorage directory -->
   <bean id="wcs111DispatcherMapping"
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <!-- see OWSHandlerMapping.DEFAULT_ORDER -->
+    <property name="order" value="-50"/>
     <property name="alwaysUseFullPath" value="true" />
     <property name="mappings">
       <props>

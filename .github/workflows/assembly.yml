@@ -52,19 +52,19 @@ jobs:
     - name: Build GeoServer release along with extension plugins (without tests)
       run: |
         mvn --version
-        mvn -B -ntp -U -T1C -DskipTests -Prelease -f src/pom.xml install
+        mvn -B -ntp -U -T1C -Dmaven.test.skip=true -Prelease -f src/pom.xml install
     - name: Package GeoServer release (without tests)
       run: |
-        mvn -B -ntp -nsu -N -f src/pom.xml -DskipTests assembly:single
+        mvn -B -ntp -nsu -N -f src/pom.xml -Dmaven.test.skip=true assembly:single
     - name: Package GeoServer release extension plugins (without tests)
       run: |
-        mvn -B -ntp -nsu -f src/extension/pom.xml install -Prelease,assembly -DskipTests -T1C
+        mvn -B -ntp -nsu -f src/extension/pom.xml install -Prelease,assembly -Dmaven.test.skip=true -T1C
     - name: Clean extension target directories to free disk space
       run: |
         mvn -B -ntp -nsu clean -f src/extension/pom.xml -Prelease
     - name: Build and package communityRelease plugins (without tests)
       run: |
-        mvn -B -ntp -nsu -U -T1C -DskipTests -PcommunityRelease,assembly -f src/community/pom.xml install
+        mvn -B -ntp -nsu -U -T1C -Dmaven.test.skip=true -PcommunityRelease,assembly -f src/community/pom.xml install
     - name: Install GDAL for testing
       run: |
           sudo apt-get update

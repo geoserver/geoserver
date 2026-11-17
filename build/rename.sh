@@ -39,10 +39,10 @@ case "$1" in
         echo "Current version $current is not x.y.z, specify the release"
         exit 1
       fi
-      release=${current%.*}.$(( ${current##*.} + 1 ))
+      release=`get_next_version $current`
     fi
     echo "advancing $current-SNAPSHOT to $release-SNAPSHOT"
-    update_version ">$current-SNAPSHOT<" ">$release-SNAPSHOT<" '*pom.xml'
+    update_snapshot_version $release
     ;;
   rename)
     if [ ! -z $5 ] || ( [ ! -z $3 ] && [ -z $4 ] ); then
@@ -56,7 +56,7 @@ case "$1" in
     gt_release=${3:-$(( gt_current + 1 ))}
     gwc_release=${4:-${gwc_current%.*}.$(( ${gwc_current##*.} + 1 ))}
     echo "renaming $current-SNAPSHOT to $release-SNAPSHOT, GeoTools $gt_release-SNAPSHOT, GeoWebCache $gwc_release-SNAPSHOT"
-    update_version ">$current-SNAPSHOT<" ">$release-SNAPSHOT<" '*pom.xml'
+    update_snapshot_version $release
     update_version "default='$current'" "default='$release'" doc/version.py
     update_version "default='${current%.*}'" "default='${release%.*}'" doc/version.py
     sed_i "s/\(<gt.version>\).*\(<\/gt.version>\)/\1$gt_release-SNAPSHOT\2/" src/pom.xml

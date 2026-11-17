@@ -4629,6 +4629,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#labeling_group_priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        groupPriority
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#labeling_space_around" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4688,6 +4699,17 @@
     <span class="md-ellipsis">
       
         autoWrap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#labeling_autowrap_balanced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        autoWrapBalanced
       
     </span>
   </a>
@@ -4820,6 +4842,17 @@
     <span class="md-ellipsis">
       
         displacementMode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#labeling_displacement_anchor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        displacementAnchor
       
     </span>
   </a>
@@ -30701,6 +30734,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#labeling_group_priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        groupPriority
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#labeling_space_around" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30760,6 +30804,17 @@
     <span class="md-ellipsis">
       
         autoWrap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#labeling_autowrap_balanced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        autoWrapBalanced
       
     </span>
   </a>
@@ -30892,6 +30947,17 @@
     <span class="md-ellipsis">
       
         displacementMode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#labeling_displacement_anchor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        displacementAnchor
       
     </span>
   </a>
@@ -31134,9 +31200,17 @@ New York    |   8,107,916
 <p>The <code>labelAllGroup</code> option can be used in conjunction with the <code>group</code> option (see <a href="#labeling_group">Grouping Features (group)</a>). It causes <em>all</em> of the disjoint paths in a line group to be labeled, not just the longest one.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"labelAllGroup"</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
+<h3 id="labeling_group_priority">groupPriority<a class="headerlink" href="#labeling_group_priority" title="Permanent link">&para;</a></h3>
+<p>The <code>groupPriority</code> option sets how a group of labels gets its priority, when <a href="#labeling_group">group</a> is enabled and the label <a href="#labeling_priority">priority</a> is an expression. Two values are accepted:</p>
+<ul>
+<li><code>sum</code> (default): adds up the priorities of the features in the group, so bigger groups win. This fits a priority based on area or length.</li>
+<li><code>max</code>: takes the highest priority in the group. This fits a priority that ranks features, such as a road class, where a long minor road should not win over a short major one.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"groupPriority"</span><span class="nt">&gt;</span>max<span class="nt">&lt;/VendorOption&gt;</span>
+</code></pre></div>
 <h3 id="labeling_space_around">Overlapping and Separating Labels (spaceAround)<a class="headerlink" href="#labeling_space_around" title="Permanent link">&para;</a></h3>
 <p>By default GeoServer will not render labels "on top of each other". By using the <code>spaceAround</code> option you can either allow labels to overlap, or add extra space around labels. The value supplied for the option is a positive or negative size, in pixels.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"spaceAround"</span><span class="nt">&gt;</span>10<span class="nt">&lt;/VendorOption&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"spaceAround"</span><span class="nt">&gt;</span>10<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
 <p>Using the default value of 0, the bounding box of a label cannot overlap the bounding box of another label:</p>
 <p><img alt="" src="../img/space_0.png" /></p>
@@ -31144,6 +31218,7 @@ New York    |   8,107,916
 <p><img alt="" src="../img/space_neg.png" /></p>
 <p>With a positive <code>spaceAround</code> value of 10, each label is at least 20 pixels apart from others:</p>
 <p><img alt="" src="../img/space_10.png" /></p>
+<p>Like <a href="#labeling_autowrap">autoWrap</a>, the value can also be a <code>${...}</code> CQL expression, evaluated for each feature.</p>
 <p>Positive <code>spaceAround</code> values actually provide twice the space that you might expect. This is because you can specify a spaceAround for one label as 5, and for another label (in another TextSymbolizer) as 3. The total distance between them is 8. Two labels in the first symbolizer ("5") will each be 5 pixels apart from each other, for a total of 10 pixels.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -31157,42 +31232,51 @@ New York    |   8,107,916
 <p><strong>Straight Lines</strong></p>
 <p>You don't need to use followLine for straight lines. GeoServer will automatically follow the orientation of the line. However in this case <code>followLine</code> can be used to ensure the text isn't rendered if longer than the line.</p>
 </div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"followLine"</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span><span class="w">  </span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"followLine"</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span><span class="w">  </span>
 </code></pre></div>
 <p>It is required to use <code>&lt;LinePlacement&gt;</code> along with this option to ensure that labels are placed along lines:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nt">&lt;LabelPlacement&gt;</span>
-<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span><span class="nt">&lt;LinePlacement/&gt;</span>
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="nt">&lt;/LabelPlacement&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nt">&lt;LabelPlacement&gt;</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">  </span><span class="nt">&lt;LinePlacement/&gt;</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="nt">&lt;/LabelPlacement&gt;</span>
 </code></pre></div>
 <h3 id="labeling_max_displacement">maxDisplacement<a class="headerlink" href="#labeling_max_displacement" title="Permanent link">&para;</a></h3>
 <p>The <code>maxDisplacement</code> option controls the displacement of the label along a line, around a point and inside a polygon.</p>
 <p>For lines, normally GeoServer labels a line at its center point only. If this label conflicts with another one it may not be displayed at all. When this option is enabled the labeller will attempt to avoid conflict by using an alternate location within <strong>maxDisplacement</strong> pixels along the line from the pre-computed label point.</p>
 <p>If used in conjunction with <a href="#labeling_repeat">repeat</a>, the value for <code>maxDisplacement</code> should always be <strong>lower</strong> than the value for <code>repeat</code>.</p>
 <p>For points this causes the renderer to start circling around the point in search of a empty stop to place the label, step by step increasing the size of the circle until the max displacement is reached. The same happens for polygons, around the polygon labelling point (normally the centroid).</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"maxDisplacement"</span><span class="nt">&gt;</span>10<span class="nt">&lt;/VendorOption&gt;</span><span class="w"> </span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"maxDisplacement"</span><span class="nt">&gt;</span>10<span class="nt">&lt;/VendorOption&gt;</span><span class="w"> </span>
 </code></pre></div>
+<p>Like <a href="#labeling_autowrap">autoWrap</a>, the value can also be a <code>${...}</code> CQL expression, evaluated for each feature.</p>
 <h3 id="labeling_repeat">repeat<a class="headerlink" href="#labeling_repeat" title="Permanent link">&para;</a></h3>
 <p>The <code>repeat</code> option determines how often GeoServer displays labels along a line. Normally GeoServer labels each line only once, regardless of length. Specifying a positive value for this option makes the labeller attempt to draw the label every <strong>repeat</strong> pixels. For long or complex lines (such as contour lines) this makes labeling more informative.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"repeat"</span><span class="nt">&gt;</span>100<span class="nt">&lt;/VendorOption&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"repeat"</span><span class="nt">&gt;</span>100<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
 <h3 id="labeling_max_angle_delta">maxAngleDelta<a class="headerlink" href="#labeling_max_angle_delta" title="Permanent link">&para;</a></h3>
 <p>When used in conjunction with <a href="#labeling_follow_line">followLine</a>, the <code>maxAngleDelta</code> option sets the maximum angle, in degrees, between two subsequent characters in a curved label. Large angles create either visually disconnected words or overlapping characters. It is advised not to use angles larger than 30.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"maxAngleDelta"</span><span class="nt">&gt;</span>15<span class="nt">&lt;/VendorOption&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"maxAngleDelta"</span><span class="nt">&gt;</span>15<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
 <h3 id="labeling_autowrap">autoWrap<a class="headerlink" href="#labeling_autowrap" title="Permanent link">&para;</a></h3>
 <p>The <code>autoWrap</code> option wraps labels when they exceed the given width (in pixels). The size should be wide enough to accommodate the longest word, otherwise single words will be split over multiple lines.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"autoWrap"</span><span class="nt">&gt;</span>50<span class="nt">&lt;/VendorOption&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"autoWrap"</span><span class="nt">&gt;</span>50<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
 <p><img alt="" src="../img/label_autoWrap.png" /></p>
 <p><em>Labeling with autoWrap enabled</em></p>
+<p>The value can also be a CQL expression, written as <code>${...}</code>, which is evaluated for each feature:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"autoWrap"</span><span class="nt">&gt;</span>${if_then_else(greaterThan(population,<span class="w"> </span>100000),<span class="w"> </span>150,<span class="w"> </span>80)}<span class="nt">&lt;/VendorOption&gt;</span>
+</code></pre></div>
+<h3 id="labeling_autowrap_balanced">autoWrapBalanced<a class="headerlink" href="#labeling_autowrap_balanced" title="Permanent link">&para;</a></h3>
+<p>The <code>autoWrapBalanced</code> option changes how <a href="#labeling_autowrap">autoWrap</a> splits a label. With <code>true</code>, the label is split into lines of about the same width, even if a line then goes past the <code>autoWrap</code> width. With <code>false</code> (the default), each line takes as many words as fit, so the last line can end up much shorter than the others.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"autoWrap"</span><span class="nt">&gt;</span>100<span class="nt">&lt;/VendorOption&gt;</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"autoWrapBalanced"</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
+</code></pre></div>
 <h3 id="labeling_force_left_to_right">forceLeftToRight<a class="headerlink" href="#labeling_force_left_to_right" title="Permanent link">&para;</a></h3>
 <p>The renderer tries to draw labels along lines so that the text is upright, for maximum legibility. This means a label may not follow the line orientation, but instead may be rotated 180° to display the text the right way up. In some cases altering the orientation of the label is not desired; for example, if the label is a directional arrow showing the orientation of the line.</p>
 <p>The <code>forceLeftToRight</code> option can be set to <code>false</code> to disable label flipping, making the label always follow the inherent orientation of the line being labelled:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"forceLeftToRight"</span><span class="nt">&gt;</span>false<span class="nt">&lt;/VendorOption&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"forceLeftToRight"</span><span class="nt">&gt;</span>false<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
 <h3 id="labeling_conflict_resolution">conflictResolution<a class="headerlink" href="#labeling_conflict_resolution" title="Permanent link">&para;</a></h3>
 <p>By default labels are subject to <strong>conflict resolution</strong>, meaning the renderer will not allow any label to overlap with a label that has been already drawn. Setting the <code>conflictResolution</code> option to <code>false</code> causes this label to bypass conflict resolution. This means the label will be drawn even if it overlaps with other labels, and other labels drawn after it may overlap it.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"conflictResolution"</span><span class="nt">&gt;</span>false<span class="nt">&lt;/VendorOption&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"conflictResolution"</span><span class="nt">&gt;</span>false<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
 <h3 id="labeling_goodness_of_fit">goodnessOfFit<a class="headerlink" href="#labeling_goodness_of_fit" title="Permanent link">&para;</a></h3>
 <p>GeoServer will remove labels if they are a particularly bad fit for the geometry they are labeling.</p>
@@ -31219,11 +31303,11 @@ New York    |   8,107,916
 </tbody>
 </table>
 <p>The default value is 0.5, but it can be modified using:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"goodnessOfFit"</span><span class="nt">&gt;</span>0.3<span class="nt">&lt;/VendorOption&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"goodnessOfFit"</span><span class="nt">&gt;</span>0.3<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
 <h3 id="polygonalign">polygonAlign<a class="headerlink" href="#polygonalign" title="Permanent link">&para;</a></h3>
 <p>GeoServer normally tries to place labels horizontally within a polygon, and gives up if the label position is busy or if the label does not fit enough in the polygon. This option allows GeoServer to try alternate rotations for the labels.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"polygonAlign"</span><span class="nt">&gt;</span>mbr<span class="nt">&lt;/VendorOption&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"polygonAlign"</span><span class="nt">&gt;</span>mbr<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
 <table>
 <thead>
@@ -31249,7 +31333,7 @@ New York    |   8,107,916
 </table>
 <h3 id="labeling_graphic_resize">graphic-resize<a class="headerlink" href="#labeling_graphic_resize" title="Permanent link">&para;</a></h3>
 <p>When a <code>&lt;Graphic&gt;</code> is specified for a label by default it is displayed at its native size and aspect ratio. The <code>graphic-resize</code> option instructs the renderer to magnify or stretch the graphic to fully contain the text of the label. If this option is used the <code>graphic-margin</code> option may also be specified.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"graphic-resize"</span><span class="nt">&gt;</span>stretch<span class="nt">&lt;/VendorOption&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"graphic-resize"</span><span class="nt">&gt;</span>stretch<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
 <table>
 <thead>
@@ -31285,43 +31369,53 @@ New York    |   8,107,916
 <p><em>Labeling with a Graphic Mark "square" - L) at native size; R) with "graphic-resize"=stretch and "graphic-margin"=3</em></p>
 <h3 id="labeling_graphic_margin">graphic-margin<a class="headerlink" href="#labeling_graphic_margin" title="Permanent link">&para;</a></h3>
 <p>The <code>graphic-margin</code> options specifies a margin (in pixels) to use around the label text when the <code>graphic-resize</code> option is specified.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"graphic-margin"</span><span class="nt">&gt;</span>margin<span class="nt">&lt;/VendorOption&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"graphic-margin"</span><span class="nt">&gt;</span>margin<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
 <h3 id="partials">partials<a class="headerlink" href="#partials" title="Permanent link">&para;</a></h3>
 <p>The <code>partials</code> options instructs the renderer to render labels that cross the map extent, which are normally not painted since there is no guarantee that a map put on the side of the current one (tiled rendering) will contain the other half of the label. By enabling "partials" the style editor takes responsibility for the other half being there (maybe because the label points have been placed by hand and are assured not to conflict with each other, at all zoom levels).</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"partials"</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"partials"</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
 <h3 id="labeling_underline_text">underlineText<a class="headerlink" href="#labeling_underline_text" title="Permanent link">&para;</a></h3>
 <p>The <code>underlineText</code> option instruct the renderer to underline labels. The underline will work like a typical word processor text underline. The thickness and position of the underline will be defined by the font and color will be the same as the text. Spaces will also be underlined.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"underlineText"</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"underlineText"</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
 <p>Some underlines examples:</p>
 <p><img alt="" src="../img/label_underlines.png" /></p>
 <h3 id="labeling_strikethrough_text">strikethroughText<a class="headerlink" href="#labeling_strikethrough_text" title="Permanent link">&para;</a></h3>
 <p>The <code>strikethroughText</code> option instruct the renderer to strikethrough labels. The strikethrough will work like a typical word processor text strikethrough. The thickness and position of the line will be defined by the font and color will be the same as the text. Spaces will also be struck through.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"strikethroughText"</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"strikethroughText"</span><span class="nt">&gt;</span>true<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
 <p>Some strikethrough examples:</p>
 <p><img alt="" src="../img/label_strikethrough.png" /></p>
 <h3 id="charspacing">charSpacing<a class="headerlink" href="#charspacing" title="Permanent link">&para;</a></h3>
 <p>The <code>charSpacing</code> option controls the amount of space between characters, a positive value increases it, a negative value shrinks it (and will eventually make characters overlap). The value is specified in pixels.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"charSpacing"</span><span class="nt">&gt;</span>3<span class="nt">&lt;/VendorOption&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"charSpacing"</span><span class="nt">&gt;</span>3<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
+<p>Like <a href="#labeling_autowrap">autoWrap</a>, the value can also be a <code>${...}</code> CQL expression, evaluated for each feature.</p>
 <p>Example of adding 3 extra pixels of space between chars on road names:</p>
 <p><img alt="" src="../img/charSpacing.png" /></p>
 <h3 id="wordspacing">wordSpacing<a class="headerlink" href="#wordspacing" title="Permanent link">&para;</a></h3>
 <p>The <code>wordSpacing</code> option controls the amount of space between words, for this option only positive values (or zero) are accepted. The value is specified in pixels.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"wordSpacing"</span><span class="nt">&gt;</span>5<span class="nt">&lt;/VendorOption&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"wordSpacing"</span><span class="nt">&gt;</span>5<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
 <p>Example of adding 5 extra pixels of space between words on road names:</p>
 <p><img alt="" src="../img/wordSpacing.png" /></p>
 <h3 id="displacementmode">displacementMode<a class="headerlink" href="#displacementmode" title="Permanent link">&para;</a></h3>
 <p>Comma separated list of label displacement directions for point/polygon labels (used along with maxDisplacement). The indicated directions will be tried in turn. Valid values are cardinal directions abbreviations, in particular, <code>N, W, E, S, NW, NE, SW, SE</code>.</p>
 <p>The following example sets the typical "diagonal displacement" typically used for points:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"displacementMode"</span><span class="nt">&gt;</span>NE,<span class="w"> </span>NW,<span class="w"> </span>SW,<span class="w"> </span>SE<span class="nt">&lt;/VendorOption&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"displacementMode"</span><span class="nt">&gt;</span>NE,<span class="w"> </span>NW,<span class="w"> </span>SW,<span class="w"> </span>SE<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
 <p>While this one allows displacement only in the vertical direction:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"displacementMode"</span><span class="nt">&gt;</span>N,<span class="w"> </span>S<span class="nt">&lt;/VendorOption&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"displacementMode"</span><span class="nt">&gt;</span>N,<span class="w"> </span>S<span class="nt">&lt;/VendorOption&gt;</span>
+</code></pre></div>
+<h3 id="labeling_displacement_anchor">displacementAnchor<a class="headerlink" href="#labeling_displacement_anchor" title="Permanent link">&para;</a></h3>
+<p>The <code>displacementAnchor</code> option controls where a label sits when <a href="#displacementmode">displacementMode</a> moves it in the <code>N</code>, <code>S</code>, <code>E</code> or <code>W</code> direction. Two values are accepted:</p>
+<ul>
+<li><code>any</code> (default): the label is first centered on the displaced position, so it may cover the point.</li>
+<li><code>outside</code>: the label stays fully on the side it moves to, so it never covers the point. With <code>E</code> the label starts at the displaced position, with <code>W</code> it ends there, with <code>N</code> its bottom edge sits there, and with <code>S</code> its top edge.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"displacementMode"</span><span class="nt">&gt;</span>N,<span class="w"> </span>E,<span class="w"> </span>S,<span class="w"> </span>W<span class="nt">&lt;/VendorOption&gt;</span>
+<a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a><span class="nt">&lt;VendorOption</span><span class="w"> </span><span class="na">name=</span><span class="s">"displacementAnchor"</span><span class="nt">&gt;</span>outside<span class="nt">&lt;/VendorOption&gt;</span>
 </code></pre></div>
 
 

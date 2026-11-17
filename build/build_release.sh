@@ -278,8 +278,7 @@ fi
 old_ver=`get_pom_version src/pom.xml`
 
 echo "updating version numbers from $old_ver to $tag"
-update_version ">$old_ver<" ">$tag<" 'src/*pom.xml' 'doc/*pom.xml'
-update_version "'$old_ver'" "'$tag'" 'doc/*conf.py'
+update_release_version $tag
 
 pushd src/release > /dev/null
 shopt -s extglob

@@ -253,7 +253,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         } else {
             builder = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig);
         }
-        return builder.build();
+        return builder.useSystemProperties().build();
     }
 
     private void closeHttpClient() throws IOException {

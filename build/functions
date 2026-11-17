@@ -135,6 +135,29 @@ function update_version() {
   fi
 }
 
+# update_release_version <release>
+# changes the version read from src/pom.xml to <release> in pom.xml and doc conf.py files
+function update_release_version() {
+  local release=$1
+  local current=`get_pom_version src/pom.xml`
+  update_version ">$current<" ">$release<" '*pom.xml'
+  update_version "'$current'" "'$release'" 'doc/*conf.py'
+}
+
+# update_snapshot_version <release>
+# changes the version read from src/pom.xml to <release>-SNAPSHOT in pom.xml files
+function update_snapshot_version() {
+  local release=$1
+  local current=`get_pom_version src/pom.xml`
+  update_version ">$current<" ">$release-SNAPSHOT<" '*pom.xml'
+}
+
+# get_next_version <x.y.z>
+# echoes the next patch version
+function get_next_version() {
+  echo ${1%.*}.$(( ${1##*.} + 1 ))
+}
+
 # get_jira_id <tag>
 # gets the jira id for a version named <tag>
 function get_jira_id() {

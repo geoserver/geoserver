@@ -43,10 +43,11 @@ jobs:
         key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           gs-${{ runner.os }}-maven-
-    - name: Advance to an unpublished version to check release tooling
+    - name: Change to an unpublished -TEST version to check release tooling
       run: |
-        old=$(sed -n 's/.*<revision>\(.*\)<\/revision>.*/\1/p' src/pom.xml)
-        build/rename.sh advance
+        . build/functions
+        old=$(get_pom_version src/pom.xml)
+        update_release_version ${old%-SNAPSHOT}-TEST
         ! git grep -F ">$old<" -- '*pom.xml'
     - name: Build GeoServer release along with extension plugins (without tests)
       run: |
@@ -73,7 +74,8 @@ jobs:
         # Run each extension and community module through a startup test
         cd build/assembly_test
         mvn -B -ntp clean install
-    - name: Remove SNAPSHOT jars from repository
+    - name: Remove SNAPSHOT and -TEST jars from repository
       if: always()
       run: |
         find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}
+        find ~/.m2/repository -name "*-TEST" -type d | xargs rm -rf {}

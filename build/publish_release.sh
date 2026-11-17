@@ -138,10 +138,10 @@ if [ "$major_version" -ge 3 ]; then
   # stable branch advances to next patch SNAPSHOT
   if [[ "$branch" =~ ^[0-9]+\.[0-9]+\.x$ && "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     old_ver=`get_pom_version src/pom.xml`
-    new_ver="${tag%.*}.$(( ${tag##*.} + 1 ))-SNAPSHOT"
-    echo "updating version numbers from $old_ver to $new_ver"
-    update_version ">$old_ver<" ">$new_ver<" '*pom.xml'
-    git commit -am "Advance $branch to $new_ver"
+    new_ver=`get_next_version $tag`
+    echo "updating version numbers from $old_ver to $new_ver-SNAPSHOT"
+    update_snapshot_version $new_ver
+    git commit -am "Advance $branch to $new_ver-SNAPSHOT"
   fi
   git push origin $branch
 fi

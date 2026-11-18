@@ -228,6 +228,11 @@ public class TilesetDescriptionTest extends TilesTestSupport {
         String matrixDefinition = "http://localhost:8080/geoserver/ogc/tiles/v1/tileMatrixSets/EPSG%3A4326";
         assertEquals(matrixDefinition, json.read("tileMatrixSetURI"));
         assertEquals(matrixDefinition, json.read("tileMatrixSetDefinition"));
+        assertEquals(
+                matrixDefinition + "?f=application%2Fjson",
+                readSingle(
+                        json,
+                        "links[?(@.rel == '" + Tileset.TILING_SCHEME_REL + "' && @.type == 'application/json')].href"));
         assertEquals(dataType.toString(), json.read("dataType"));
         if (checkLimits) {
             assertEquals(Integer.valueOf(22), json.read("tileMatrixSetLimits.size()"));

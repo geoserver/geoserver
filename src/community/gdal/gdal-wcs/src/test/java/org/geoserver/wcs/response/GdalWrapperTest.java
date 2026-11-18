@@ -74,6 +74,7 @@ public class GdalWrapperTest {
         assertTrue(formats.contains("PDF"));
         assertTrue(formats.contains("AAIGrid"));
         assertTrue(formats.contains("XYZ"));
+        assertTrue(formats.contains("JP2OpenJPEG"));
         assertTrue(formats.contains("netCDF"));
         assertFalse(formats.contains("DERIVED"));
     }

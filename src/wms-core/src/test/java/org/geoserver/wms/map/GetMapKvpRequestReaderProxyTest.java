@@ -87,30 +87,31 @@ public class GetMapKvpRequestReaderProxyTest {
 
     @Test
     public void testJvmProxyRoute() throws Exception {
-        HttpClientConnectionManager manager = mock(HttpClientConnectionManager.class);
-        RuntimeException stopBeforeConnecting = new RuntimeException("Stop after selecting the route");
-        when(manager.lease(any(), any(), any(), any())).thenThrow(stopBeforeConnecting);
+        try (HttpClientConnectionManager manager = mock(HttpClientConnectionManager.class)) {
+            RuntimeException stopBeforeConnecting = new RuntimeException("Stop after selecting the route");
+            when(manager.lease(any(), any(), any(), any())).thenThrow(stopBeforeConnecting);
 
-        GetMapKvpRequestReader reader = new GetMapKvpRequestReader(mock(WMS.class), manager);
-        HttpClientBuilder builder = HttpClientBuilder.create().setConnectionManager(manager);
-        // The non-caching factory has no connection-manager argument. Supply a real builder
-        // with our mock manager so both branches stop before any DNS lookup or socket access.
-        try (MockedStatic<HttpClientBuilder> factory = mockStatic(HttpClientBuilder.class)) {
-            factory.when(HttpClientBuilder::create).thenReturn(builder);
-            try (CloseableHttpClient client =
-                    reader.createHttpClient(RequestConfig.DEFAULT, new CacheConfiguration(cacheEnabled))) {
-                HttpHost target = new HttpHost(scheme, "styles.example", scheme.equals("https") ? 443 : 80);
-                HttpGet request = new HttpGet(scheme + "://styles.example/style.sld");
-                assertSame(
-                        stopBeforeConnecting,
-                        assertThrows(RuntimeException.class, () -> client.executeOpen(target, request, null)));
+            GetMapKvpRequestReader reader = new GetMapKvpRequestReader(mock(WMS.class), manager);
+            HttpClientBuilder builder = HttpClientBuilder.create().setConnectionManager(manager);
+            // The non-caching factory has no connection-manager argument. Supply a real builder
+            // with our mock manager so both branches stop before any DNS lookup or socket access.
+            try (MockedStatic<HttpClientBuilder> factory = mockStatic(HttpClientBuilder.class)) {
+                factory.when(HttpClientBuilder::create).thenReturn(builder);
+                try (CloseableHttpClient client =
+                        reader.createHttpClient(RequestConfig.DEFAULT, new CacheConfiguration(cacheEnabled))) {
+                    HttpHost target = new HttpHost(scheme, "styles.example", scheme.equals("https") ? 443 : 80);
+                    HttpGet request = new HttpGet(scheme + "://styles.example/style.sld");
+                    assertSame(
+                            stopBeforeConnecting,
+                            assertThrows(RuntimeException.class, () -> client.executeOpen(target, request, null)));
 
-                ArgumentCaptor<HttpRoute> route = ArgumentCaptor.forClass(HttpRoute.class);
-                verify(manager).lease(any(), route.capture(), any(), any());
-                HttpHost expectedProxy =
-                        bypass ? null : new HttpHost("http", "proxy.example", scheme.equals("https") ? 3129 : 3128);
-                assertEquals(target, route.getValue().getTargetHost());
-                assertEquals(expectedProxy, route.getValue().getProxyHost());
+                    ArgumentCaptor<HttpRoute> route = ArgumentCaptor.forClass(HttpRoute.class);
+                    verify(manager).lease(any(), route.capture(), any(), any());
+                    HttpHost expectedProxy =
+                            bypass ? null : new HttpHost("http", "proxy.example", scheme.equals("https") ? 3129 : 3128);
+                    assertEquals(target, route.getValue().getTargetHost());
+                    assertEquals(expectedProxy, route.getValue().getProxyHost());
+                }
             }
         }
     }

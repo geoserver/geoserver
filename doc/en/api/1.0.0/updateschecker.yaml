@@ -1,0 +1,177 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Check for Updates
+  description: Runs the Check for Updates community module on demand, as its Check Now button does
+  contact:
+    name: GeoServer
+    email: 'geoserver-user@discourse.osgeo.org'
+    url: 'https://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
+
+paths:
+
+  /updates-checker/check:
+    get:
+      operationId: getUpdatesCheckerCheck
+      tags:
+       - "UpdatesChecker"
+      description: Invalid. Use POST to run the check.
+      responses:
+        405:
+          description: Method Not Allowed
+    post:
+      operationId: postUpdatesCheckerCheck
+      tags:
+       - "UpdatesChecker"
+      summary: Check for newer releases and security advisories
+      description: |
+                   Downloads the version feed, compares it with the running GeoServer version and returns the result.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: false
+          description: |
+                       Optional. Its suppressedCves list replaces the server's UPDATES_CHECKER_SUPPRESSED_CVES list
+                       for this call only. Leave it out, or leave out suppressedCves, to use the server's list.
+          schema:
+            $ref: "#/definitions/CheckRequest"
+      responses:
+        200:
+          description: OK. The body describes the outcome, including a failed check, which has the status CHECK_FAILED.
+          schema:
+            $ref: "#/definitions/CheckResult"
+          examples:
+            application/json: |
+              {
+                "status": "URGENT_UPDATE_AVAILABLE",
+                "message": "CVE-2026-76904 (critical): Unauthenticated PostGIS SQL injection",
+                "installedVersion": "2.27.0",
+                "newerVersion": "2.27.6",
+                "error": null,
+                "suppressed": [],
+                "suppressedBy": null,
+                "notifications": [
+                  {
+                    "type": "CVE_CONFIRMED",
+                    "severity": "CRITICAL",
+                    "message": "CVE-2026-76904 (critical): Unauthenticated PostGIS SQL injection",
+                    "discriminator": "GHSA-jvpx-6qxg-whgc",
+                    "link": "https://github.com/geoserver/geoserver/security/advisories/GHSA-jvpx-6qxg-whgc"
+                  }
+                ]
+              }
+        400:
+          description: Bad Request. The body is not a JSON object, suppressedCves is not an array of CVE or GHSA ids, or the body is over 64 KiB.
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+    put:
+      operationId: putUpdatesCheckerCheck
+      tags:
+       - "UpdatesChecker"
+      description: Invalid. Use POST to run the check.
+      responses:
+        405:
+          description: Method Not Allowed
+    delete:
+      operationId: deleteUpdatesCheckerCheck
+      tags:
+       - "UpdatesChecker"
+      description: Invalid. Use POST to run the check.
+      responses:
+        405:
+          description: Method Not Allowed
+
+definitions:
+  CheckRequest:
+    title: checkRequest
+    type: object
+    properties:
+      suppressedCves:
+        type: array
+        description: CVE or GHSA ids to leave out of this call's result. An empty array suppresses nothing.
+        items:
+          type: string
+        example: ["CVE-2026-76904"]
+  CheckResult:
+    title: checkResult
+    description: The outcome of a check
+    type: object
+    properties:
+      status:
+        type: string
+        description: What the notifications add up to
+        enum:
+          - URGENT_UPDATE_AVAILABLE
+          - UPDATE_AVAILABLE
+          - UP_TO_DATE
+          - CHECK_FAILED
+      message:
+        type: string
+        description: The most important notification, or a summary when there is none
+      installedVersion:
+        type: string
+        description: The GeoServer version the check ran for, null when it could not be determined
+      newerVersion:
+        type: string
+        description: The version to upgrade to, null when no newer patch or security release applies
+      error:
+        type: string
+        description: Why the check failed, null otherwise
+      suppressed:
+        type: array
+        description: The suppressed advisories that apply to this version
+        items:
+          type: string
+      suppressedBy:
+        type: string
+        description: Where the suppressed list came from, null when nothing was suppressed
+        enum:
+          - environment
+          - request
+      notifications:
+        type: array
+        description: Every active notification, most important first
+        items:
+          $ref: "#/definitions/Notification"
+  Notification:
+    title: notification
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - CVE_CONFIRMED
+          - CVE_UNVERIFIABLE
+          - SECURITY_RELEASE
+          - PATCH_AVAILABLE
+          - SERIES_MAINTENANCE
+          - SERIES_ARCHIVE
+          - FEED_UNAVAILABLE
+          - SCHEMA_TOO_NEW
+          - VERSION_UNKNOWN
+      severity:
+        type: string
+        enum:
+          - CRITICAL
+          - HIGH
+          - WARN
+          - NOTICE
+          - INFO
+      message:
+        type: string
+        description: The text shown to the administrator
+      discriminator:
+        type: string
+        description: Identifies the advisory, version or series the notification is about
+      link:
+        type: string
+        description: Where to read more, null when there is no page

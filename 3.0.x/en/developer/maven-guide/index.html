@@ -28123,7 +28123,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#profiles" class="md-nav__link">
+  <a href="#recover-build" class="md-nav__link">
     <span class="md-ellipsis">
       
         Recover Build
@@ -28134,7 +28134,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#profiles_1" class="md-nav__link">
+  <a href="#profiles" class="md-nav__link">
     <span class="md-ellipsis">
       
         Profiles
@@ -28142,9 +28142,32 @@
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="Profiles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#extensions" class="md-nav__link">
+    <span class="md-ellipsis">
       
-        <li class="md-nav__item">
+        Extensions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#community-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Community plugins
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#generating-test-coverage-reports" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -28152,6 +28175,11 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -28199,6 +28227,17 @@
   
     <nav class="md-nav" aria-label="Dependency Management">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-jar-dependency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test jar dependency
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#bill-of-materials-boms" class="md-nav__link">
@@ -30461,7 +30500,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#profiles" class="md-nav__link">
+  <a href="#recover-build" class="md-nav__link">
     <span class="md-ellipsis">
       
         Recover Build
@@ -30472,7 +30511,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#profiles_1" class="md-nav__link">
+  <a href="#profiles" class="md-nav__link">
     <span class="md-ellipsis">
       
         Profiles
@@ -30480,9 +30519,32 @@
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="Profiles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#extensions" class="md-nav__link">
+    <span class="md-ellipsis">
       
-        <li class="md-nav__item">
+        Extensions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#community-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Community plugins
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#generating-test-coverage-reports" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -30490,6 +30552,11 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -30537,6 +30604,17 @@
   
     <nav class="md-nav" aria-label="Dependency Management">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-jar-dependency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test jar dependency
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#bill-of-materials-boms" class="md-nav__link">
@@ -30637,6 +30715,9 @@
 <p>Often it is useful to skip unit tests when performing a build. Adding the flag <code>-DskipTests</code> to the build command will only compile unit tests, but not run them:</p>
 <div class="highlight"><pre><span></span><code>mvn -DskipTests clean install
 </code></pre></div>
+<p>To skip compiling the unit tests as well, use <code>-Dmaven.test.skip=true</code>. This is used when building a new release (as test jars are not yet available):</p>
+<div class="highlight"><pre><span></span><code>mvn -Dmaven.test.skip=true clean install
+</code></pre></div>
 <h2 id="building-offline">Building offline<a class="headerlink" href="#building-offline" title="Permanent link">&para;</a></h2>
 <p>Maven automatically downloads dependencies declared by modules being built. In the case of SNAPSHOT dependencies, Maven downloads updates each time it performs the first build of the day.</p>
 <p>GeoServer depends on SNAPSHOT versions of the GeoTools library managed through a Bill of Materials (BOM). The automatic download can result in lengthy build time while Maven downloads updated GeoTools modules. If GeoTools was built locally, these downloads are not necessary.</p>
@@ -30646,68 +30727,64 @@
 </code></pre></div>
 <p>In offline mode Maven will not download external dependencies, and will not update SNAPSHOT dependencies.</p>
 <h2 id="building-extensions">Building extensions<a class="headerlink" href="#building-extensions" title="Permanent link">&para;</a></h2>
-<p>By default, extensions are not included in the build. They are added to the build explicitly via <a href="#profiles">profiles</a>. For example the following command adds the <code>restconfig</code> extension to the build:</p>
-<div class="highlight"><pre><span></span><code>mvn clean install -P restconfig
+<p>By default, extensions are not included in the build. They are added to the build explicitly via <a href="#profiles">profiles</a>. For example the following command adds the <code>wps</code> extension to the build:</p>
+<div class="highlight"><pre><span></span><code>mvn clean install -P wps
 </code></pre></div>
 <p>Multiple extensions can be enabled simultaneously:</p>
-<div class="highlight"><pre><span></span><code>mvn clean install -P restconfig,oracle
+<div class="highlight"><pre><span></span><code>mvn clean install -P wps,oracle
 </code></pre></div>
 <p>The <code>release</code> profile enables all extensions, to build just the extensions run it from the <code>extension</code> folder:</p>
 <div class="highlight"><pre><span></span><code>cd src/extension
 mvn clean install -P release
 </code></pre></div>
 <p>Running <code>-P release</code> from <code>src</code> also builds the release module, and packages the web application with the release data directory.</p>
-<h2 id="profiles">Recover Build<a class="headerlink" href="#profiles" title="Permanent link">&para;</a></h2>
+<h2 id="recover-build">Recover Build<a class="headerlink" href="#recover-build" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
 <p>After fixing a test failure; you can "resume" from a specific point in the build:</p>
-<p>mvn install -rf extension/wps</p>
-</li>
-<li>
-<p>Recover from a 301 Redirect</p>
+<p>mvn install -rf :gs-wps-core</p>
 </li>
 </ul>
-<p>A long standing bug in Maven from 2.0.10 handling of 301 errors when an artifact has been moved. The work around is to run Maven with the option:</p>
-<div class="highlight"><pre><span></span><code>  mvn install -Dmaven.wagon.provider.http=httpclient
-</code></pre></div>
-<p>This is not a common issue.</p>
-<h2 id="profiles_1">Profiles<a class="headerlink" href="#profiles_1" title="Permanent link">&para;</a></h2>
-<p>Additional profiles are defined in the pom.xml files providing optional build steps. Profiles are directly enabled with the -P flag, others are automatically activated based on platform used or a -D property being defined.</p>
+<h2 id="profiles">Profiles<a class="headerlink" href="#profiles" title="Permanent link">&para;</a></h2>
+<p>Additional profiles are defined in the <code>pom.xml</code> files providing optional build steps. Profiles are directly enabled with the <code>-P</code> flag, others are automatically activated based on platform used or a <code>-D</code> property being defined.</p>
 <p>To build the release module as part of your build:</p>
 <div class="highlight"><pre><span></span><code>-Drelease
 </code></pre></div>
 <p>To include remote tests:</p>
-<div class="highlight"><pre><span></span><code>-PremoteOwsTests
+<div class="highlight"><pre><span></span><code>-DremoteOwsTests=true
 </code></pre></div>
-<p>Profiles are also used manage optional extensions community plugins:</p>
-<div class="highlight"><pre><span></span><code>-Pproxy
--Poracle
--Pupload
--Pwps
-</code></pre></div>
-<p>Additional profiles are defined in the pom.xml files providing optional build steps. Profiles are directly enabled with the -P flag, others are automatically activated based on platform used or a -D property being defined.</p>
 <p>To build javadocs with UML graph:</p>
 <div class="highlight"><pre><span></span><code>-Duml
 </code></pre></div>
-<p>To build the release module as part of your build:</p>
-<div class="highlight"><pre><span></span><code>-Drelease
-</code></pre></div>
-<p>To include the legacy modules:</p>
-<div class="highlight"><pre><span></span><code>-Plegacy
-</code></pre></div>
-<p>Profiles are also used manage several of the optional community plugins:</p>
-<div class="highlight"><pre><span></span><code>-Pupload
+<h3 id="extensions">Extensions<a class="headerlink" href="#extensions" title="Permanent link">&para;</a></h3>
+<p>Profiles are used to manage the optional extensions:</p>
+<div class="highlight"><pre><span></span><code>-Poracle
 -Pwps
--Pproxy
+-Pmapml
 </code></pre></div>
-<h2 id="generating-test-coverage-reports">Generating test coverage reports<a class="headerlink" href="#generating-test-coverage-reports" title="Permanent link">&para;</a></h2>
+<p>All extensions are available as:</p>
+<div class="highlight"><pre><span></span><code>-PallExtensions
+</code></pre></div>
+<h3 id="community-plugins">Community plugins<a class="headerlink" href="#community-plugins" title="Permanent link">&para;</a></h3>
+<p>Profiles are also used to manage the optional community plugins:</p>
+<div class="highlight"><pre><span></span><code>-Pjdbcconfig
+-Pogcapi-tiles
+-Poseo
+</code></pre></div>
+<p>The community plugins that are compiled each release are available as:</p>
+<div class="highlight"><pre><span></span><code>-PcommunityRelease
+</code></pre></div>
+<p>Community plugins being prepared for inclusion in the release are available as:</p>
+<div class="highlight"><pre><span></span><code>-Ppending
+</code></pre></div>
+<h3 id="generating-test-coverage-reports">Generating test coverage reports<a class="headerlink" href="#generating-test-coverage-reports" title="Permanent link">&para;</a></h3>
 <p>Test coverage reports can be generated by running tests with the <code>jacoco</code> profile enabled:</p>
 <div class="highlight"><pre><span></span><code>mvn test -Pjacoco
 </code></pre></div>
 <p>Coverage reports are generated in the <code>target/site/jacoco</code> directory of each module.</p>
 <h2 id="running-the-web-module-with-jetty">Running the web module with Jetty<a class="headerlink" href="#running-the-web-module-with-jetty" title="Permanent link">&para;</a></h2>
 <p>The maven jetty plugin can be used to run modules which are web based in an embedded Jetty container:</p>
-<div class="highlight"><pre><span></span><code>cd geoserver_2.0.x/src/web/app
+<div class="highlight"><pre><span></span><code>cd src/web/app
 mvn jetty:run
 </code></pre></div>
 <div class="admonition note">
@@ -30734,78 +30811,93 @@ mvn jetty:run
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nt">&lt;/parent&gt;</span>
 </code></pre></div>
 <h2 id="dependency-management">Dependency Management<a class="headerlink" href="#dependency-management" title="Permanent link">&para;</a></h2>
-<p>GeoServer uses Maven's Bill of Materials (BOM) pattern to centrally manage dependency versions for GeoTools, Spring Framework, and Spring Security. This ensures consistent versions across all modules and simplifies dependency declarations.</p>
+<h3 id="test-jar-dependency">Test jar dependency<a class="headerlink" href="#test-jar-dependency" title="Permanent link">&para;</a></h3>
+<p>When making a new release test jars (those with classifier <code>tests</code>) are not yet available, and the build is performed using <code>maven.test.skip=true</code>.</p>
+<p>Gotcha! For this to work any dependency on a GeoServer test jar must be placed in the <code>gs-test-dependences</code> profile, so that it is only included when tests are compiled. The QA build fails if a GeoServer test jar dependency is declared outside of this profile.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;profiles&gt;</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&lt;profile&gt;</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">&lt;id&gt;</span>gs-test-dependences<span class="nt">&lt;/id&gt;</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="nt">&lt;activation&gt;</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="nt">&lt;property&gt;</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">        </span><span class="nt">&lt;name&gt;</span>!maven.test.skip<span class="nt">&lt;/name&gt;</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">      </span><span class="nt">&lt;/property&gt;</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="nt">&lt;/activation&gt;</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="nt">&lt;dependencies&gt;</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">      </span><span class="nt">&lt;dependency&gt;</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">        </span><span class="nt">&lt;groupId&gt;</span>org.geoserver<span class="nt">&lt;/groupId&gt;</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">        </span><span class="nt">&lt;artifactId&gt;</span>gs-main<span class="nt">&lt;/artifactId&gt;</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">        </span><span class="nt">&lt;version&gt;</span>${project.version}<span class="nt">&lt;/version&gt;</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">        </span><span class="nt">&lt;classifier&gt;</span>tests<span class="nt">&lt;/classifier&gt;</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">        </span><span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">      </span><span class="nt">&lt;/dependency&gt;</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">    </span><span class="nt">&lt;/dependencies&gt;</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">  </span><span class="nt">&lt;/profile&gt;</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="nt">&lt;/profiles&gt;</span>
+</code></pre></div>
 <h3 id="bill-of-materials-boms">Bill of Materials (BOMs)<a class="headerlink" href="#bill-of-materials-boms" title="Permanent link">&para;</a></h3>
+<p>GeoServer uses Maven's Bill of Materials (BOM) pattern to centrally manage dependency versions for GeoTools, Spring Framework, and Spring Security. This ensures consistent versions across all modules and simplifies dependency declarations.</p>
 <p>The root <code>src/pom.xml</code> imports multiple BOMs in the <code>&lt;dependencyManagement&gt;</code> section:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&lt;dependencyManagement&gt;</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&lt;dependencies&gt;</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="cm">&lt;!-- GeoTools platform dependencies BOM - provides managed versions for third-party libraries --&gt;</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="nt">&lt;dependency&gt;</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="nt">&lt;groupId&gt;</span>org.geotools<span class="nt">&lt;/groupId&gt;</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">      </span><span class="nt">&lt;artifactId&gt;</span>gt-platform-dependencies<span class="nt">&lt;/artifactId&gt;</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">      </span><span class="nt">&lt;version&gt;</span>${gt.version}<span class="nt">&lt;/version&gt;</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">      </span><span class="nt">&lt;type&gt;</span>pom<span class="nt">&lt;/type&gt;</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">      </span><span class="nt">&lt;scope&gt;</span>import<span class="nt">&lt;/scope&gt;</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="nt">&lt;/dependency&gt;</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="cm">&lt;!-- GeoTools BOM - provides access to all GeoTools artifacts --&gt;</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="nt">&lt;dependency&gt;</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">      </span><span class="nt">&lt;groupId&gt;</span>org.geotools<span class="nt">&lt;/groupId&gt;</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">      </span><span class="nt">&lt;artifactId&gt;</span>gt-bom<span class="nt">&lt;/artifactId&gt;</span>
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">      </span><span class="nt">&lt;version&gt;</span>${gt.version}<span class="nt">&lt;/version&gt;</span>
-<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">      </span><span class="nt">&lt;type&gt;</span>pom<span class="nt">&lt;/type&gt;</span>
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">      </span><span class="nt">&lt;scope&gt;</span>import<span class="nt">&lt;/scope&gt;</span>
-<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">    </span><span class="nt">&lt;/dependency&gt;</span>
-<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>
-<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">    </span><span class="cm">&lt;!-- Spring Framework BOM --&gt;</span>
-<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">    </span><span class="nt">&lt;dependency&gt;</span>
-<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">      </span><span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
-<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">      </span><span class="nt">&lt;artifactId&gt;</span>spring-framework-bom<span class="nt">&lt;/artifactId&gt;</span>
-<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">      </span><span class="nt">&lt;version&gt;</span>${spring.version}<span class="nt">&lt;/version&gt;</span>
-<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">      </span><span class="nt">&lt;type&gt;</span>pom<span class="nt">&lt;/type&gt;</span>
-<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="w">      </span><span class="nt">&lt;scope&gt;</span>import<span class="nt">&lt;/scope&gt;</span>
-<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="w">    </span><span class="nt">&lt;/dependency&gt;</span>
-<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>
-<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="w">    </span><span class="cm">&lt;!-- Spring Security BOM --&gt;</span>
-<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a><span class="w">    </span><span class="nt">&lt;dependency&gt;</span>
-<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a><span class="w">      </span><span class="nt">&lt;groupId&gt;</span>org.springframework.security<span class="nt">&lt;/groupId&gt;</span>
-<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a><span class="w">      </span><span class="nt">&lt;artifactId&gt;</span>spring-security-bom<span class="nt">&lt;/artifactId&gt;</span>
-<a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a><span class="w">      </span><span class="nt">&lt;version&gt;</span>${spring.security.version}<span class="nt">&lt;/version&gt;</span>
-<a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a><span class="w">      </span><span class="nt">&lt;type&gt;</span>pom<span class="nt">&lt;/type&gt;</span>
-<a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a><span class="w">      </span><span class="nt">&lt;scope&gt;</span>import<span class="nt">&lt;/scope&gt;</span>
-<a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a><span class="w">    </span><span class="nt">&lt;/dependency&gt;</span>
-<a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a><span class="w">  </span><span class="nt">&lt;/dependencies&gt;</span>
-<a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a><span class="nt">&lt;/dependencyManagement&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&lt;dependency&gt;</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&lt;groupId&gt;</span>org.geotools<span class="nt">&lt;/groupId&gt;</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">&lt;artifactId&gt;</span>gt-platform-dependencies<span class="nt">&lt;/artifactId&gt;</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">&lt;version&gt;</span>${gt.version}<span class="nt">&lt;/version&gt;</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="nt">&lt;type&gt;</span>pom<span class="nt">&lt;/type&gt;</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span><span class="nt">&lt;scope&gt;</span>import<span class="nt">&lt;/scope&gt;</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="nt">&lt;/dependency&gt;</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="cm">&lt;!-- Import the GeoTools BOM to have access to all gt artifacts without specifying the version --&gt;</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="nt">&lt;dependency&gt;</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">  </span><span class="nt">&lt;groupId&gt;</span>org.geotools<span class="nt">&lt;/groupId&gt;</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">  </span><span class="nt">&lt;artifactId&gt;</span>gt-bom<span class="nt">&lt;/artifactId&gt;</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">  </span><span class="nt">&lt;version&gt;</span>${gt.version}<span class="nt">&lt;/version&gt;</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">  </span><span class="nt">&lt;type&gt;</span>pom<span class="nt">&lt;/type&gt;</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">  </span><span class="nt">&lt;scope&gt;</span>import<span class="nt">&lt;/scope&gt;</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="nt">&lt;/dependency&gt;</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="cm">&lt;!-- Spring Framework BOM --&gt;</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="nt">&lt;dependency&gt;</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">  </span><span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">  </span><span class="nt">&lt;artifactId&gt;</span>spring-framework-bom<span class="nt">&lt;/artifactId&gt;</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">  </span><span class="nt">&lt;version&gt;</span>${spring.version}<span class="nt">&lt;/version&gt;</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">  </span><span class="nt">&lt;type&gt;</span>pom<span class="nt">&lt;/type&gt;</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">  </span><span class="nt">&lt;scope&gt;</span>import<span class="nt">&lt;/scope&gt;</span>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="nt">&lt;/dependency&gt;</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="cm">&lt;!-- Spring Security BOM --&gt;</span>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="nt">&lt;dependency&gt;</span>
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="w">  </span><span class="nt">&lt;groupId&gt;</span>org.springframework.security<span class="nt">&lt;/groupId&gt;</span>
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a><span class="w">  </span><span class="nt">&lt;artifactId&gt;</span>spring-security-bom<span class="nt">&lt;/artifactId&gt;</span>
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="w">  </span><span class="nt">&lt;version&gt;</span>${spring.security.version}<span class="nt">&lt;/version&gt;</span>
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="w">  </span><span class="nt">&lt;type&gt;</span>pom<span class="nt">&lt;/type&gt;</span>
+<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a><span class="w">  </span><span class="nt">&lt;scope&gt;</span>import<span class="nt">&lt;/scope&gt;</span>
+<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a><span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div>
 <h3 id="adding-dependencies">Adding Dependencies<a class="headerlink" href="#adding-dependencies" title="Permanent link">&para;</a></h3>
 <p>When adding GeoTools, Spring Framework, or Spring Security dependencies to any module, <strong>do not specify the version</strong>. The appropriate BOM will automatically provide the correct version:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&lt;dependencies&gt;</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="cm">&lt;!-- GeoTools dependencies - no version specified --&gt;</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">&lt;dependency&gt;</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.geotools<span class="nt">&lt;/groupId&gt;</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>gt-process<span class="nt">&lt;/artifactId&gt;</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span><span class="nt">&lt;/dependency&gt;</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">  </span><span class="cm">&lt;!-- Spring Framework dependencies - no version specified --&gt;</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">  </span><span class="nt">&lt;dependency&gt;</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-context<span class="nt">&lt;/artifactId&gt;</span>
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">  </span><span class="nt">&lt;/dependency&gt;</span>
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>
-<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">  </span><span class="cm">&lt;!-- Spring Security dependencies - no version specified --&gt;</span>
-<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">  </span><span class="nt">&lt;dependency&gt;</span>
-<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.security<span class="nt">&lt;/groupId&gt;</span>
-<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-security-core<span class="nt">&lt;/artifactId&gt;</span>
-<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">  </span><span class="nt">&lt;/dependency&gt;</span>
-<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="nt">&lt;/dependencies&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">&lt;dependencies&gt;</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="cm">&lt;!-- GeoTools dependencies - no version specified --&gt;</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">&lt;dependency&gt;</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.geotools<span class="nt">&lt;/groupId&gt;</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>gt-process<span class="nt">&lt;/artifactId&gt;</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">  </span><span class="nt">&lt;/dependency&gt;</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">  </span><span class="cm">&lt;!-- Spring Framework dependencies - no version specified --&gt;</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">  </span><span class="nt">&lt;dependency&gt;</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-context<span class="nt">&lt;/artifactId&gt;</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">  </span><span class="nt">&lt;/dependency&gt;</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">  </span><span class="cm">&lt;!-- Spring Security dependencies - no version specified --&gt;</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">  </span><span class="nt">&lt;dependency&gt;</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.security<span class="nt">&lt;/groupId&gt;</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-security-core<span class="nt">&lt;/artifactId&gt;</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="w">  </span><span class="nt">&lt;/dependency&gt;</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="nt">&lt;/dependencies&gt;</span>
 </code></pre></div>
 <p>For GeoTools test JARs, use the <code>&lt;classifier&gt;tests&lt;/classifier&gt;</code> approach instead of <code>&lt;type&gt;test-jar&lt;/type&gt;</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">&lt;dependency&gt;</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&lt;groupId&gt;</span>org.geotools<span class="nt">&lt;/groupId&gt;</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">&lt;artifactId&gt;</span>gt-jdbc<span class="nt">&lt;/artifactId&gt;</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">&lt;classifier&gt;</span>tests<span class="nt">&lt;/classifier&gt;</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">  </span><span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="nt">&lt;/dependency&gt;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">&lt;dependency&gt;</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">&lt;groupId&gt;</span>org.geotools<span class="nt">&lt;/groupId&gt;</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">&lt;artifactId&gt;</span>gt-jdbc<span class="nt">&lt;/artifactId&gt;</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">&lt;classifier&gt;</span>tests<span class="nt">&lt;/classifier&gt;</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">  </span><span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -30825,10 +30917,14 @@ mvn jetty:run
 <li><strong>Transitive dependencies</strong>: If you need to add or upgrade a transitive dependency that is managed by GeoTools, it must be added or upgraded in the <code>gt-platform-dependencies</code> BOM in the GeoTools project, not in GeoServer.</li>
 </ul>
 <p>This ensures that all GeoTools-related dependency versions are consistently managed upstream and shared across all projects that depend on GeoTools.</p>
-<p>For a complete list of dependencies managed by the BOMs, see the "Managed dependencies" section at:</p>
+<p>The Spring versions are defined as properties in <code>src/pom.xml</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">&lt;spring.version&gt;</span>7.0.10<span class="nt">&lt;/spring.version&gt;</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nt">&lt;spring.security.version&gt;</span>7.1.2<span class="nt">&lt;/spring.security.version&gt;</span>
+</code></pre></div>
+<p>For a complete list of dependencies managed by the BOMs, see the "Managed dependencies" section for the above versions at:</p>
 <ul>
-<li><a href="https://mvnrepository.com/artifact/org.springframework/spring-framework-bom/5.3.39">Spring Framework BOM</a></li>
-<li><a href="https://mvnrepository.com/artifact/org.springframework.security/spring-security-bom/5.8.16">Spring Security BOM</a></li>
+<li><a href="https://mvnrepository.com/artifact/org.springframework/spring-framework-bom">Spring Framework BOM</a></li>
+<li><a href="https://mvnrepository.com/artifact/org.springframework.security/spring-security-bom">Spring Security BOM</a></li>
 </ul>
 
 

@@ -930,7 +930,7 @@
       <dependency>
         <groupId>io.swagger.core.v3</groupId>
         <artifactId>swagger-core</artifactId>
-        <version>2.0.2</version>
+        <version>3.0.0</version>
         <!-- exclude: javax.xml.bind, org.slf4j, swagger-annotations -->
       </dependency>
       <dependency>

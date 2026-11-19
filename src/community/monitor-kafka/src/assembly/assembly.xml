@@ -22,7 +22,21 @@
         <include>avro-*.jar</include>
         <include>kafka-schema-serializer-*.jar</include>
         <include>kafka-schema-registry-client-*.jar</include>
+        <include>kafka-avro-types-*.jar</include>
+        <include>kafka-schema-types-*.jar</include>
         <include>snappy-java-*.jar</include>
+        <include>zstd-jni-*.jar</include>
+        <include>lz4-java-*.jar</include>
+        <include>common-utils-*.jar</include>
+        <include>logredactor-*.jar</include>
+        <include>minimal-json-*.jar</include>
+        <include>commons-compress-*.jar</include>
+        <include>snakeyaml-*.jar</include>
+        <!-- GeoServer 3 ships Jackson 3 (tools.jackson), avro and the confluent serializers need Jackson 2 -->
+        <include>jackson-core-2.*.jar</include>
+        <include>jackson-databind-2.*.jar</include>
+        <include>jackson-datatype-jdk8-2.*.jar</include>
+        <include>jackson-dataformat-csv-2.*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

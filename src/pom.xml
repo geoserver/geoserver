@@ -1001,7 +1001,7 @@
       <dependency>
         <groupId>org.apache.xbean</groupId>
         <artifactId>xbean-spring</artifactId>
-        <version>3.5</version>
+        <version>5.0.0</version>
         <exclusions>
           <exclusion>
             <artifactId>commons-logging</artifactId>

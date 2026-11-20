@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -204,8 +205,11 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
 
     /** If an expiration attribute is set, we can use it to cache the access token */
     private static void collectExpiration(HttpServletRequest req, Map<String, Object> properties) {
-        if (properties.get("exp") instanceof Number) {
-            long exp = ((Number) properties.get("exp")).longValue();
+        Object value = properties.get("exp");
+        // introspection returns epoch seconds, while Nimbus parses the JWT claim into a Date
+        if (value instanceof Date date) value = date.toInstant().getEpochSecond();
+        if (value instanceof Number number) {
+            long exp = number.longValue();
             if (exp > Instant.now().getEpochSecond()) { // epoch is guaranteed to be in UTC like exp
                 req.setAttribute(ACCESS_TOKEN_EXPIRATION, exp);
             }
@@ -333,6 +337,10 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
         Object idTokenValue = request.getAttribute(ID_TOKEN_VALUE);
         if (idTokenValue instanceof String idToken && !idToken.trim().isEmpty()) {
             return idToken;
+        }
+        // bearer requests carry no id token, and reading the session-scoped client context would create a session
+        if (request.getAttribute(OAUTH2_AUTHENTICATION_TYPE_KEY) == OAuth2AuthenticationType.BEARER) {
+            return null;
         }
 
         OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();

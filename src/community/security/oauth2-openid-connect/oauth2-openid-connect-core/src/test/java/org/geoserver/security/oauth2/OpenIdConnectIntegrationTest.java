@@ -21,13 +21,18 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.matching.RequestPattern;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.PlainJWT;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import javax.servlet.Filter;
+import javax.servlet.FilterChain;
 import javax.servlet.ServletRequestEvent;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -77,6 +82,14 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
     private static final String TEST_OPAQUE_TOKEN =
             "eyJhbGciOiJSU0EtT0FFUCIsImVuYyI6IkEyNTZDQkMtSFM1MTIiLCJraWQiOiI2MEJEQkVDM0I1RDA4RTAyMjYyMjc2OTk3QzU4RDBCMzE5QUE1QzQwIiwidHlwIjoiYXQrand0IiwiY3R5IjoiSldUIn0.M3XYgq7_AoCgSBLslRmc26bD3CXabctyk9nJDWYLLZFk3Qsc2rlerStlLDNnnCeW9b8NQeEh4PibX0M2gmhHLvVyk0GXicxPG8HzEe1A-TYiFH9Y0eQViQZFwEUKDH8cDZbR8-xc9FVdntgrrkuJZI3nNbHM_eavZppPKILCacW49w8R6iH20ANUoAQi3azyYPpO_mV89hhJ5aZYW5ZON8jnFD0bKSCJgxcMJgSyU14Nlk9oQ9wxPfxrSnuaJanbqSdpYDii2LkTm_O5b8v72jaLwr-3ZDnA6LA8_4KXcXJvJaAdzMDWA_eCbzDFb1T6BbUmOEIukX25ssAgTDMczw.TL9b1TcXwhRRinASSr7tvg.MdNG-2HgHsjHykL_6mepDkJlCUXPnEQvpG82eApGfSSx3EwMfzLfahPAcigwSoVDW5oN-tZwmTHg8PIQ7mj3kaJiZ5XVgrF6LYUZPcXKi_d6WZCO2hL2tHkZKqAndIjGhI3km1nw6i1nF86kn7Pam6uXd-5P9NOqk53VLt711-76GHfGXOZfOfRvNK9IgFwyf8jWL4reIj6f57X5TKWr732DydUUnt9U-V1klUHaKgHNMXkit2zs8pmfWzqA6PjkPejX2xUKqYpC4KHhf4mCkShMyJg2OcA_Mocz8ZGoNDdt1SmWtMZKemEAkoauQ8qmWc1tmXl44raiIkKLP2OJY_nNZVr3TM8zl0dkGZmDfgAmT-coJOVsnNAiWJrhh4rDf7ybWdQfr58FtKtdZQWQklXwk3-fprBSJWzdpaxWkVgXtAfco4Z11KN3vs8csCksUVUXQTTH5UI7Lqri_7lI-ykIeDQ2qMglIem-l7mQ7ycgNLQjxHnJN8_u6Z6IFAbQk807X-4JccS21IeM_l7WvjTNbWQL40HOpcs_EAMw61vT-Jj2CTJ9d-ACqtpno4Uzk_YDX2NV81wZ--3043bjkaikVlsdlzr423JYWplQ7q8_ArN154UmoiTOao0Jy2dzgYLxC4SIIO7MuKYg88VuAWE6Wt19dAW8m7ekgMW3jFpq4E7fqBoeiEA5Vkiv9BnN6S33p964wt9X9fqUF0LehqQ-QYtSA3MUQpxz0kj9pjIzuUKCIch2CbR12RPrsyXKCawTmRS1J_BWRKtC9sHcmdhCTmZUULggYo_T9GJjBxbUC-IddElF1tlgs9iwfQCWvE600lnk4mCsOh6AE2kz95JvoJSpQwHVhtgxyMdb55tQvrCNKsLrWcF2NohLCdoErce7jfkjFaVZUTgHQYOVwu-icwGqrtnFClmPbIGo7x95vprKtZfBIlwWYBVSSMtjw4kwkJerW1jMchjlqfJR6_1Lr2yyS9DBVbmE6kLw_xltHFU6NYGCnKQjWVDzhxlN-nEanIQvPcIaTqYrXxY74fNFU0DpRmScnX920C-_3BPG8sVsgfAC1pRw-3bec4YCrGFhCJoMmc0dnJV8wi9uws5trPKffDEOD4iMXiXsy3gcCS5z-JJlddy19NLB6qPWI8kSJkfKBdlrwGx7R-_rcS6dxImI-ov3JSpvy100C3X6IF-F5VRQrL7wH1LTF2r05OxxYOv4uYtvmpQVXQc3UePA5gjknUEmtEobDVeiP4NjOBiIsWK4AMqIfy7Mn55_cVlSOXWZe2qJO70pGI3fjV7wP0ubJzHbPAj50EedghtSUtkwDdIyfgvLssvoHlVTn4HLPLaw6IHEmlS51HIyVPGdckqTzEyijV3hyNEl2cLDPYy1uuvTyUzjezh6rLxUTnqE7zOLhVsDh8zxLgFVrpXXzlrMUwt0ZM3Vshsv2ENC_SwbC9j18FaL0nHkzdv_YtC_ME0Rk_3edxZNgxhkynJjzoIyov4TvUhaI4okidrztwbGZOsK008-Qx-Trgs_mkkp6XmgT7SlP33cvhQ6DXwgBzb0BzwWCdq7JpDbANSORARoW2rNt75dEylVy53H0_urrRlaY4-zMdsPuHEcKzzzfKR5pj_0VCSL9C8ws1RfcGX1Kzt621JUH07rHL0uBlc4xkE54MS1AuAK2wENVm2PbUdykqdpx17ug_eS6v-ndQ4UUjFhYU0yEl1zZKiT.wskwKJEtkwHmmvc74Ay8uk0dKwJVnNW6uW5anSlpZsQ";
 
+    /** Unsigned JWT access token for the userinfo-opaque.json user, the bearer validators only check its claims */
+    private static final String TEST_JWT_TOKEN = new PlainJWT(new JWTClaimsSet.Builder()
+                    .audience(CLIENT_ID)
+                    .subject("100301874944276879963462152")
+                    .expirationTime(Date.from(Instant.now().plusSeconds(3600)))
+                    .build())
+            .serialize();
+
     @BeforeClass
     public static void beforeClass() throws Exception {
         openIdService = new WireMockServer(wireMockConfig()
@@ -112,7 +125,9 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
                         .withBodyFile("token_response_with_secret.json")));
 
         openIdService.stubFor(WireMock.get(WireMock.urlMatching(".*/userinfo")) // disallow query parameters
-                .withHeader("Authorization", equalTo("Bearer " + TEST_OPAQUE_TOKEN))
+                .withHeader(
+                        "Authorization",
+                        WireMock.or(equalTo("Bearer " + TEST_OPAQUE_TOKEN), equalTo("Bearer " + TEST_JWT_TOKEN)))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -352,17 +367,10 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletRequest request = createRequest(
                 "wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=" + getLayerId(MockData.BASIC_POLYGONS));
         request.addHeader("Authorization", "Bearer " + TEST_OPAQUE_TOKEN);
-        MockHttpServletResponse response = executeOnSecurityFilters(request);
 
-        SecurityContext context = new HttpSessionSecurityContextRepository()
-                .loadContext(new HttpRequestResponseHolder(request, response));
-        Authentication auth = context.getAuthentication();
-        assertNotNull(auth);
-        assertTrue(auth.getPrincipal() instanceof GeoServerUser);
-        assertEquals("claudius.ptolemy@gmail.com", ((GeoServerUser) auth.getPrincipal()).getUsername());
-        assertThat(
-                auth.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toList()),
-                CoreMatchers.hasItems("geography", "astronomy", "ROLE_AUTHENTICATED"));
+        assertUser(authenticate(request), "claudius.ptolemy@gmail.com", "geography", "astronomy");
+        // bearer requests are stateless, the default chain does not allow session creation
+        assertNull(request.getSession(false));
     }
 
     @Test
@@ -381,9 +389,7 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         request.addHeader("Authorization", "Bearer " + TEST_OPAQUE_TOKEN);
 
         // execute the request
-        MockHttpServletResponse response = executeOnSecurityFilters(request);
-        assertPtolemyUser(request, response);
-        clearAuthentication(request, response);
+        assertUser(authenticate(request), "claudius.ptolemy@gmail.com", "geography", "astronomy");
 
         // as the first request with no cache around, it should have contacted the introspection and the user info
         RequestPattern introspectPattern =
@@ -395,22 +401,43 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         openIdService.resetRequests();
 
         // request again, it should be cached now, no new requests to the oidc server
-        response = executeOnSecurityFilters(request);
-        assertPtolemyUser(request, response);
+        assertUser(authenticate(request), "claudius.ptolemy@gmail.com", "geography", "astronomy");
         assertEquals(0, openIdService.countRequestsMatching(introspectPattern).getCount());
         assertEquals(0, openIdService.countRequestsMatching(userInfoPattern).getCount());
     }
 
-    private static void assertPtolemyUser(MockHttpServletRequest request, MockHttpServletResponse response) {
-        SecurityContext context = new HttpSessionSecurityContextRepository()
-                .loadContext(new HttpRequestResponseHolder(request, response));
-        Authentication auth = context.getAuthentication();
+    @Test
+    public void testCacheJwtBearerToken() throws Exception {
+        GeoServerSecurityManager manager = getSecurityManager();
+        OpenIdConnectFilterConfig filterConfig =
+                (OpenIdConnectFilterConfig) manager.loadFilterConfig("openidconnect", true);
+        filterConfig.setRoleSource(OpenIdConnectFilterConfig.OpenIdRoleSource.UserInfo);
+        filterConfig.setCacheAuthentication(true);
+        manager.saveFilter(filterConfig);
+
+        MockHttpServletRequest request = createRequest(
+                "wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=" + getLayerId(MockData.BASIC_POLYGONS));
+        request.addHeader("Authorization", "Bearer " + TEST_JWT_TOKEN);
+        assertUser(authenticate(request), "claudius.ptolemy@gmail.com", "geography", "astronomy");
+        RequestPattern userInfoPattern =
+                WireMock.getRequestedFor(urlPathEqualTo("/userinfo")).build();
+        assertEquals(1, openIdService.countRequestsMatching(userInfoPattern).getCount());
+        openIdService.resetRequests();
+
+        // the JWT exp claim makes the authentication cacheable, no new request to the oidc server
+        assertUser(authenticate(request), "claudius.ptolemy@gmail.com", "geography", "astronomy");
+        assertEquals(0, openIdService.countRequestsMatching(userInfoPattern).getCount());
+        assertNull(request.getSession(false));
+    }
+
+    private static void assertUser(Authentication auth, String username, String... roles) {
         assertNotNull(auth);
         assertTrue(auth.getPrincipal() instanceof GeoServerUser);
-        assertEquals("claudius.ptolemy@gmail.com", ((GeoServerUser) auth.getPrincipal()).getUsername());
-        assertThat(
-                auth.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toList()),
-                CoreMatchers.hasItems("geography", "astronomy", "ROLE_AUTHENTICATED"));
+        assertEquals(username, ((GeoServerUser) auth.getPrincipal()).getUsername());
+        List<String> authorities =
+                auth.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toList());
+        assertThat(authorities, CoreMatchers.hasItems(roles));
+        assertThat(authorities, CoreMatchers.hasItem("ROLE_AUTHENTICATED"));
     }
 
     /**
@@ -492,19 +519,25 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         assertFalse(principal.getProperties().containsKey(UserProfilePropertyNames.PREFERRED_USERNAME));
     }
 
-    private static void clearAuthentication(MockHttpServletRequest request, MockHttpServletResponse response) {
-        SecurityContext context = new HttpSessionSecurityContextRepository()
-                .loadContext(new HttpRequestResponseHolder(request, response));
-        context.setAuthentication(null);
+    /** Returns the authentication seen past the security filters, as stateless chains do not keep it in a session */
+    private Authentication authenticate(MockHttpServletRequest request) throws Exception {
+        AtomicReference<Authentication> result = new AtomicReference<>();
+        executeOnSecurityFilters(
+                request,
+                (req, res) -> result.set(SecurityContextHolder.getContext().getAuthentication()));
+        return result.get();
     }
 
     private MockHttpServletResponse executeOnSecurityFilters(MockHttpServletRequest request)
             throws IOException, javax.servlet.ServletException {
+        return executeOnSecurityFilters(request, new MockFilterChain());
+    }
+
+    private MockHttpServletResponse executeOnSecurityFilters(MockHttpServletRequest request, FilterChain chain)
+            throws IOException, javax.servlet.ServletException {
         // for session local support in Spring
         new RequestContextListener().requestInitialized(new ServletRequestEvent(request.getServletContext(), request));
 
-        // run on the
-        MockFilterChain chain = new MockFilterChain();
         MockHttpServletResponse response = new MockHttpServletResponse();
         GeoServerSecurityFilterChainProxy filterChainProxy =
                 GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class);

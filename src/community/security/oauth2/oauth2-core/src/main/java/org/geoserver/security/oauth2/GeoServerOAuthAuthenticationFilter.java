@@ -43,10 +43,11 @@ import org.springframework.security.oauth2.client.resource.OAuth2AccessDeniedExc
 import org.springframework.security.oauth2.client.resource.UserRedirectRequiredException;
 import org.springframework.security.oauth2.client.token.AccessTokenRequest;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
-import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.BearerTokenExtractor;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -119,12 +120,6 @@ public abstract class GeoServerOAuthAuthenticationFilter extends GeoServerPreAut
         // Search for an access_token on the request (simulating SSO)
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
             String accessToken = getAccessTokenFromRequest(request);
-            OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
-
-            if (accessToken != null && token != null && !token.getValue().equals(accessToken)) {
-                restTemplate.getOAuth2ClientContext().setAccessToken(null);
-                token = restTemplate.getOAuth2ClientContext().getAccessToken();
-            }
 
             HttpServletRequest httpRequest = (HttpServletRequest) request;
 
@@ -145,7 +140,6 @@ public abstract class GeoServerOAuthAuthenticationFilter extends GeoServerPreAut
             }
 
             if ((authentication != null && accessToken != null)
-                    || (accessToken != null && token == null)
                     || authentication == null
                     || authentication instanceof AnonymousAuthenticationToken) {
 
@@ -390,9 +384,6 @@ public abstract class GeoServerOAuthAuthenticationFilter extends GeoServerPreAut
     protected String getPreAuthenticatedPrincipal(HttpServletRequest req, HttpServletResponse resp)
             throws IOException, ServletException {
 
-        // Make sure the REST Resource Template has been correctly configured
-        configureRestTemplate();
-
         // Avoid retrieving the user name more than once
         /*
          * if (req.getAttribute(UserNameAlreadyRetrieved) != null) return (String) req.getAttribute(UserName);
@@ -402,22 +393,20 @@ public abstract class GeoServerOAuthAuthenticationFilter extends GeoServerPreAut
         String accessToken = getAccessTokenFromRequest(req);
         if (accessToken != null) {
             req.setAttribute(OAUTH2_AUTHENTICATION_TYPE_KEY, OAuth2AuthenticationType.BEARER);
+            configureTokenServices();
         } else {
             req.setAttribute(OAUTH2_AUTHENTICATION_TYPE_KEY, OAuth2AuthenticationType.USER);
+            configureRestTemplate();
+            filter.setRestTemplate(restTemplate);
+            filter.setTokenServices(tokenServices);
         }
-
-        if (accessToken != null) {
-            restTemplate.getOAuth2ClientContext().setAccessToken(new DefaultOAuth2AccessToken(accessToken));
-        }
-
-        // Setting up OAuth2 Filter services and resource template
-        filter.setRestTemplate(restTemplate);
-        filter.setTokenServices(tokenServices);
 
         // Validating the access_token
         Authentication authentication = null;
         try {
-            authentication = filter.attemptAuthentication(req, null);
+            authentication = accessToken != null
+                    ? loadBearerAuthentication(req, accessToken)
+                    : filter.attemptAuthentication(req, null);
             req.setAttribute(OAUTH2_AUTHENTICATION_KEY, authentication);
 
             // the authentication (in the extensions) should contain a Map which is the result of
@@ -517,6 +506,19 @@ public abstract class GeoServerOAuthAuthenticationFilter extends GeoServerPreAut
         return username;
     }
 
+    /** Validates the bearer token without touching the session-scoped rest template, so no HTTP session is created. */
+    private OAuth2Authentication loadBearerAuthentication(HttpServletRequest req, String accessToken) {
+        try {
+            OAuth2Authentication result = tokenServices.loadAuthentication(accessToken);
+            // same attribute the OAuth2 client filter sets, read by bearer validation and role extraction
+            req.setAttribute(OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE, accessToken);
+            return result;
+        } catch (InvalidTokenException e) {
+            // same exception the OAuth2 client filter throws, so the logging below stays the same
+            throw new BadCredentialsException("Could not obtain user details from token", e);
+        }
+    }
+
     private String getAccessTokenFromRequest(ServletRequest req) {
         String accessToken = getParameterValue("access_token", req);
         if (accessToken == null) {
@@ -530,18 +532,19 @@ public abstract class GeoServerOAuthAuthenticationFilter extends GeoServerPreAut
 
         details.setClientId(filterConfig.getCliendId());
         details.setClientSecret(filterConfig.getClientSecret());
-        ((GeoServerOAuthRemoteTokenServices) this.tokenServices).setClientId(filterConfig.getCliendId());
-        ((GeoServerOAuthRemoteTokenServices) this.tokenServices).setClientSecret(filterConfig.getClientSecret());
-
         details.setAccessTokenUri(filterConfig.getAccessTokenUri());
         details.setUserAuthorizationUri(filterConfig.getUserAuthorizationUri());
         details.setPreEstablishedRedirectUri(filterConfig.getRedirectUri());
-        ((GeoServerOAuthRemoteTokenServices) this.tokenServices)
-                .setCheckTokenEndpointUrl(filterConfig.getCheckTokenEndpointUrl());
-        ((GeoServerOAuthRemoteTokenServices) this.tokenServices)
-                .setIntrospectionEndpointUrl(filterConfig.getIntrospectionEndpointUrl());
-
         details.setScope(parseScopes(filterConfig.getScopes()));
+        configureTokenServices();
+    }
+
+    private void configureTokenServices() {
+        GeoServerOAuthRemoteTokenServices services = (GeoServerOAuthRemoteTokenServices) this.tokenServices;
+        services.setClientId(filterConfig.getCliendId());
+        services.setClientSecret(filterConfig.getClientSecret());
+        services.setCheckTokenEndpointUrl(filterConfig.getCheckTokenEndpointUrl());
+        services.setIntrospectionEndpointUrl(filterConfig.getIntrospectionEndpointUrl());
     }
 
     protected List<String> parseScopes(String commaSeparatedScopes) {

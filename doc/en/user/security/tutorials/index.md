@@ -8,3 +8,4 @@
 - [HTTP header proxy authentication](httpheaderproxy/index.md)
 - [Credentials from headers](credentialsfromheaders/index.md)
 - [CAS authentication](cas/index.md)
+- [Workspace administration with the REST API](workspaceadmin/index.md)

@@ -1,0 +1,16 @@
+Supported Formats:
+  VRT -raster,multidimensional raster- (rw+v): Virtual Raster
+  DERIVED -raster- (ro): Derived datasets using VRT pixel functions
+  GTiff -raster- (rw+vs): GeoTIFF
+  COG -raster- (wv): Cloud optimized GeoTIFF generator
+  NITF -raster- (rw+vs): National Imagery Transmission Format
+  AAIGrid -raster- (rwv): Arc/Info ASCII Grid
+  MEM -raster,multidimensional raster- (rw+): In Memory Raster
+  JPEG -raster- (rwv): JPEG JFIF
+  PNG -raster- (rwv): Portable Network Graphics
+  netCDF -raster,multidimensional raster,vector- (rw+s): Network Common Data Format
+  JP2OpenJPEG -raster,vector- (rwv): JPEG-2000 driver based on OpenJPEG library
+  PDF -raster,vector- (rw+vs): Geospatial PDF
+  XYZ -raster- (rwv): ASCII Gridded XYZ
+  WMS -raster- (rwvs): OGC Web Map Service
+  GPKG -raster,vector- (rw+vs): GeoPackage

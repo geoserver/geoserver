@@ -4,7 +4,6 @@
  */
 package org.geoserver.wcs.response;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -27,52 +26,38 @@ public class GdalWrapper extends AbstractToolWrapper {
 
     private static final Logger LOGGER = Logging.getLogger(GdalWrapper.class);
 
+    private static final Pattern FORMAT = Pattern.compile("^\\s+(\\S+)(?: -[^(]*-)? \\(([^)]*)\\):");
+
     public GdalWrapper(String executable, Map<String, String> environment) {
         super(executable, environment);
     }
 
     /**
-     * Returns a list of the gdal_translate supported formats (i.e. what must be passed to gdal_translate via its -of
-     * parameter)
+     * Returns the gdal_translate output formats (i.e. what must be passed to gdal_translate via its -of parameter),
+     * parsed from <code>--formats</code>.
      */
     @Override
     public Set<String> getSupportedFormats() {
         try {
-            // this works with gdal_translate v. 1.11.2
-            // TODO: test with other GDAL versions
-            List<String> commands = new ArrayList<>();
-            commands.add(getExecutable());
-            commands.add("--long-usage");
-
-            Set<String> formats = new HashSet<>();
-            addFormats(commands, formats);
-
-            return formats;
+            StringBuilder sb = new StringBuilder();
+            run(List.of(getExecutable(), "--formats"), sb);
+            return parseFormats(sb.toString());
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Could not get the list of output formats supported by gdal_translate", e);
             return Collections.emptySet();
         }
     }
 
-    /**
-     * Runs the provided command and parses its output to extract a set of supported formats.
-     *
-     * @param commands the command to run
-     * @param formats the parsed formats will be added to this set
-     */
-    private void addFormats(List<String> commands, Set<String> formats) throws IOException, InterruptedException {
-        StringBuilder sb = new StringBuilder();
-        run(commands, sb);
-
-        Pattern formatRegExp = Pattern.compile("^\\s{2}(\\w+)\\:\\s");
-        String[] lines = sb.toString().split("\n");
-        for (String line : lines) {
-            Matcher formatMatcher = formatRegExp.matcher(line);
-            if (formatMatcher.find()) {
-                String format = formatMatcher.group(1);
-                formats.add(format);
+    /** Parses <code>--formats</code> output, keeping the drivers that can write. */
+    static Set<String> parseFormats(String output) {
+        Set<String> formats = new HashSet<>();
+        for (String line : output.split("\\R")) {
+            Matcher matcher = FORMAT.matcher(line);
+            if (matcher.find() && matcher.group(2).contains("w")) {
+                formats.add(matcher.group(1));
             }
         }
+        return formats;
     }
 
     /**

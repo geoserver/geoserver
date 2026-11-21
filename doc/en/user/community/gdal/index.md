@@ -24,90 +24,27 @@ Once installed in GeoServer, a bunch of new supported formats will be listed in 
 
 ## gdal_translate conversion abilities
 
-The gdal_translate utility is usually able to convert more formats than the default setup of this output format allows for, but the exact list depends on how the utility was built from sources. To get a full list of the formats available by your ogr2ogr build just run:
+The gdal_translate utility is usually able to convert more formats than the default setup of this output format allows for, but the exact list depends on how the utility was built from sources. To get a full list of the formats available by your gdal_translate build just run:
 
-    gdal_translate --long-usage 
+```bash
+gdal_translate --formats
+```
 
-and you'll get the full set of options usable by the program, along with the supported formats.
-
-For example, the above produces the following output using gdal 1.11.2 compiled with libgeotiff 1.4.0, libpng 1.6,  libjpeg-turbo 1.3.1, libjasper 1.900.1 and libecwj2 3.3:
+Drivers with `w` in their mode can be used for output. For example, using GDAL 3.13.3:
 
 ```
-Usage: gdal_translate [--help-general] [--long-usage]
-    [-ot {Byte/Int16/UInt16/UInt32/Int32/Float32/Float64/
-          CInt16/CInt32/CFloat32/CFloat64}] [-strict]
-    [-of format] [-b band] [-mask band] [-expand {gray|rgb|rgba}]
-    [-outsize xsize[%] ysize[%]]
-    [-unscale] [-scale[_bn] [src_min src_max [dst_min dst_max]]]* [-exponent[_bn] exp_val]*
-    [-srcwin xoff yoff xsize ysize] [-projwin ulx uly lrx lry] [-epo] [-eco]
-    [-a_srs srs_def] [-a_ullr ulx uly lrx lry] [-a_nodata value]
-    [-gcp pixel line easting northing [elevation]]*
-    [-mo "META-TAG=VALUE"]* [-q] [-sds]
-    [-co "NAME=VALUE"]* [-stats] [-norat]
-    src_dataset dst_dataset
-
-GDAL 1.11.2, released 2015/02/10
-
-The following format drivers are configured and support output:
-  VRT: Virtual Raster
-  GTiff: GeoTIFF
-  NITF: National Imagery Transmission Format
-  HFA: Erdas Imagine Images (.img)
-  ELAS: ELAS
-  AAIGrid: Arc/Info ASCII Grid
-  DTED: DTED Elevation Raster
-  PNG: Portable Network Graphics
-  JPEG: JPEG JFIF
-  MEM: In Memory Raster
-  GIF: Graphics Interchange Format (.gif)
-  XPM: X11 PixMap Format
-  BMP: MS Windows Device Independent Bitmap
-  PCIDSK: PCIDSK Database File
-  PCRaster: PCRaster Raster File
-  ILWIS: ILWIS Raster Map
-  SGI: SGI Image File Format 1.0
-  SRTMHGT: SRTMHGT File Format
-  Leveller: Leveller heightfield
-  Terragen: Terragen heightfield
-  ISIS2: USGS Astrogeology ISIS cube (Version 2)
-  ERS: ERMapper .ers Labelled
-  ECW: ERDAS Compressed Wavelets (SDK 3.x)
-  JP2ECW: ERDAS JPEG2000 (SDK 3.x)
-  FIT: FIT Image
-  JPEG2000: JPEG-2000 part 1 (ISO/IEC 15444-1)
-  RMF: Raster Matrix Format
-  RST: Idrisi Raster A.1
-  INGR: Intergraph Raster
-  GSAG: Golden Software ASCII Grid (.grd)
-  GSBG: Golden Software Binary Grid (.grd)
-  GS7BG: Golden Software 7 Binary Grid (.grd)
-  R: R Object Data Store
-  PNM: Portable Pixmap Format (netpbm)
-  ENVI: ENVI .hdr Labelled
-  EHdr: ESRI .hdr Labelled
-  PAux: PCI .aux Labelled
-  MFF: Vexcel MFF Raster
-  MFF2: Vexcel MFF2 (HKV) Raster
-  BT: VTP .bt (Binary Terrain) 1.3 Format
-  LAN: Erdas .LAN/.GIS
-  IDA: Image Data and Analysis
-  LCP: FARSITE v.4 Landscape File (.lcp)
-  GTX: NOAA Vertical Datum .GTX
-  NTv2: NTv2 Datum Grid Shift
-  CTable2: CTable2 Datum Grid Shift
-  KRO: KOLOR Raw
-  ARG: Azavea Raster Grid format
-  USGSDEM: USGS Optional ASCII DEM (and CDED)
-  ADRG: ARC Digitized Raster Graphics
-  BLX: Magellan topo (.blx)
-  Rasterlite: Rasterlite
-  PostGISRaster: PostGIS Raster driver
-  SAGA: SAGA GIS Binary Grid (.sdat)
-  KMLSUPEROVERLAY: Kml Super Overlay
-  XYZ: ASCII Gridded XYZ
-  HF2: HF2/HFZ heightfield raster
-  PDF: Geospatial PDF
-  ZMap: ZMap Plus Grid
+Supported Formats: (ro:read-only, rw:read-write, +:write from scratch, u:update, v:virtual-I/O s:subdatasets)
+  DERIVED -raster- (ro): Derived datasets using VRT pixel functions
+  GTiff -raster- (rw+uvs): GeoTIFF (*.tif, *.tiff)
+  COG -raster- (w+v): Cloud optimized GeoTIFF generator (*.tif, *.tiff)
+  VRT -raster,multidimensional raster- (rw+uv): Virtual Raster (*.vrt)
+  AAIGrid -raster- (rwv): Arc/Info ASCII Grid (*.asc)
+  PNG -raster- (rwv): Portable Network Graphics (*.png)
+  JPEG -raster- (rwv): JPEG JFIF (*.jpg, *.jpeg)
+  JP2OpenJPEG -raster,vector- (rwv): JPEG-2000 driver based on JP2OpenJPEG library (*.jp2, *.j2k)
+  PDF -raster,vector- (rw+uvs): Geospatial PDF (*.pdf)
+  XYZ -raster- (rwv): ASCII Gridded XYZ (*.xyz)
+  ...
 ```
 
 The full list of formats that gdal_translate is able to support is available on the [GDAL site](http://www.gdal.org/formats_list.md). Mind that this output format can handle only outputs that are file based and that do support creation. So, for example, you won't be able to use the PostGIS Raster output (since it's database based) or the Arc/Info Binary Grid (creation not supported).
@@ -129,14 +66,14 @@ The default configuration is equivalent to the following xml file:
   </environment>
   <formats>
     <Format>
-      <toolFormat>JPEG2000</toolFormat>
+      <toolFormat>JP2OpenJPEG</toolFormat>
       <geoserverFormat>GDAL-JPEG2000</geoserverFormat>
       <fileExtension>.jp2</fileExtension>
       <singleFile>true</singleFile>
       <mimeType>image/jp2</mimeType>
       <type>binary</type> <!-- not really needed, it's the default -->
- <option>-co</option>
- <option>FORMAT=JP2</option>
+      <option>-co</option>
+      <option>CODEC=JP2</option>
     </Format>
     <Format>
       <toolFormat>PDF</toolFormat>
@@ -188,7 +125,7 @@ The file showcases all possible usage of the configuration elements:
     - `toolFormat`: the name of the format to be passed to gdal_translate with the -of option (case insensitive).
     - `geoserverFormat`: is the name of the output format as advertised by GeoServer
     - `fileExtension`: is the extension of the file generated after the translation, if any (can be omitted)
-    - `option`: can be used to add one or more options to the gdal_translate command line. As you can see by the JPEG2000 example, each item must be contained in its own `option` tag. You can get a full list of options by running `gdal_translate --help` or by visiting the [GDAL website](http://www.gdal.org)). Also, consider that each format supports specific creation options, listed in the description page for each format (for example, here is the [JPEG2000 one](http://www.gdal.org/frmt_jpeg2000.md)).
+    - `option`: can be used to add one or more options to the gdal_translate command line. As you can see by the JP2OpenJPEG example, each item must be contained in its own `option` tag. You can get a full list of options by running `gdal_translate --help` or by visiting the [GDAL website](http://www.gdal.org)). Also, consider that each format supports specific creation options, listed in the description page for each format (for example, here is the [JP2OpenJPEG one](https://gdal.org/drivers/raster/jp2openjpeg.html)).
     - `singleFile`: if true the output of the conversion is supposed to be a single file that can be streamed directly back without the need to wrap it into a zip file
     - `mimeType`: the mime type of the file returned when using `singleFile`. If not specified `application/octet-stream` will be used as a default.
     - `formatAdapters`: transformations on the coverage that might need to be applied in order to successfully encode the output. The transformations are applied only if their input conditions are met.

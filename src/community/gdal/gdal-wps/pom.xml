@@ -63,6 +63,12 @@
           <classifier>tests</classifier>
           <scope>test</scope>
         </dependency>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-wcs1_1</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+        </dependency>
       </dependencies>
     </profile>
   </profiles>

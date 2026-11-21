@@ -192,7 +192,7 @@ public class GdalCoverageResponseDelegate
     /** Replaces currently supported formats with the provided list. */
     @Override
     public void replaceFormats(List<Format> formats) {
-        if (formats == null || formats.isEmpty()) {
+        if (formats == null) {
             throw new IllegalArgumentException("No formats provided");
         }
 

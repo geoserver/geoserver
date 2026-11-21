@@ -144,7 +144,7 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
     private Resource findOrCreateConfFile() throws IOException {
         Resource xmlFile = findConfigFile();
 
-        if (Resources.exists(xmlFile)) {
+        if (Resources.exists(xmlFile) && xmlFile.getContents().length > 0) {
             LOGGER.fine("Found configuration file '" + xmlFile.path() + "'");
         } else if (templateLocation != null) {
             LOGGER.config("Create configuration file '"

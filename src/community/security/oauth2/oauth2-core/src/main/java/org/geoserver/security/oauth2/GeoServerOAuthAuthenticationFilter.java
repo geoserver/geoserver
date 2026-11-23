@@ -129,6 +129,12 @@ public abstract class GeoServerOAuthAuthenticationFilter extends GeoServerPreAut
              */
             final String customSessionCookie = getCustomSessionCookieValue(httpRequest);
 
+            if (accessToken == null && customSessionCookie == null && !mayContinueLogin(httpRequest)) {
+                // nothing to authenticate, touching the session-scoped rest template would only create a session
+                chain.doFilter(request, response);
+                return;
+            }
+
             if (accessToken == null
                     && customSessionCookie == null
                     && (authentication == null || authentication instanceof AnonymousAuthenticationToken)) {
@@ -154,6 +160,19 @@ public abstract class GeoServerOAuthAuthenticationFilter extends GeoServerPreAut
             }
         }
         chain.doFilter(request, response);
+    }
+
+    /**
+     * True if a request without credentials can be part of an interactive login: existing session, code callback, login
+     * endpoint, or redirect to the identity provider.
+     */
+    private boolean mayContinueLogin(HttpServletRequest request) {
+        // both settings can be missing in older config.xml files
+        String loginEndpoint = filterConfig.getLoginEndpoint();
+        return request.getSession(false) != null
+                || request.getParameter("code") != null
+                || (loginEndpoint != null && request.getRequestURI().endsWith(loginEndpoint))
+                || Boolean.TRUE.equals(filterConfig.getEnableRedirectAuthenticationEntryPoint());
     }
 
     /**

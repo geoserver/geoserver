@@ -62,6 +62,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -223,6 +224,7 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         OpenIdConnectFilterConfig filterConfig =
                 (OpenIdConnectFilterConfig) manager.loadFilterConfig("openidconnect", true);
         filterConfig.setRoleSource(OpenIdConnectFilterConfig.OpenIdRoleSource.IdToken);
+        filterConfig.setEnableRedirectAuthenticationEntryPoint(true);
         manager.saveFilter(filterConfig);
     }
 
@@ -427,6 +429,20 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         // the JWT exp claim makes the authentication cacheable, no new request to the oidc server
         assertUser(authenticate(request), "claudius.ptolemy@gmail.com", "geography", "astronomy");
         assertEquals(0, openIdService.countRequestsMatching(userInfoPattern).getCount());
+        assertNull(request.getSession(false));
+    }
+
+    @Test
+    public void testAnonymousRequestNoSession() throws Exception {
+        GeoServerSecurityManager manager = getSecurityManager();
+        OpenIdConnectFilterConfig filterConfig =
+                (OpenIdConnectFilterConfig) manager.loadFilterConfig("openidconnect", true);
+        filterConfig.setEnableRedirectAuthenticationEntryPoint(false);
+        manager.saveFilter(filterConfig);
+
+        MockHttpServletRequest request = createRequest(
+                "wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=" + getLayerId(MockData.BASIC_POLYGONS));
+        assertThat(authenticate(request), CoreMatchers.instanceOf(AnonymousAuthenticationToken.class));
         assertNull(request.getSession(false));
     }
 

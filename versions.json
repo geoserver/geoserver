@@ -1,7 +1,7 @@
 {
   "source_note": "The version feed is a static file on GitHub, delivered directly (raw.githubusercontent.com) or through the public jsDelivr content delivery network (cdn.jsdelivr.net). The GeoServer team does not run these hosts and receives no request logs at all. We cannot see which GeoServer versions are running. This module sends nothing about your server. However, the feed hosts can see the public IP address of your server making the request.",
   "schema_version": 1,
-  "generated": "2026-11-02T15:58:41Z",
+  "generated": "2026-11-23T22:12:28Z",
   "main": {
     "series": "3.1.x",
     "version": "3.1.0-SNAPSHOT"
@@ -228,6 +228,179 @@
     }
   ],
   "advisories": [
+    {
+      "ghsa_id": "GHSA-3x82-qq72-g4p3",
+      "cve_id": "CVE-2026-120701",
+      "summary": "Unauthenticated SSRF via WPS gs:DownloadMap (wps-download extension)",
+      "severity": "high",
+      "published_at": "2026-11-23T22:12:23Z",
+      "vulnerable_versions": [
+        "\u003c= 2.27.6",
+        "\u003e= 2.28.0, \u003c= 2.28.5",
+        "\u003e= 3.0.0, \u003c= 3.0.1"
+      ],
+      "patched_versions": {
+        "3.0.x": "3.0.2",
+        "2.28.x": "2.28.6",
+        "2.27.x": "2.27.7"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-wc3v-48j7-xf57",
+      "cve_id": "CVE-2026-120704",
+      "summary": "Remote Code Execution via SQLite JDBC Extension Loading in GeoServer JDBC Security Configuration",
+      "severity": "high",
+      "published_at": "2026-11-23T22:11:56Z",
+      "vulnerable_versions": [
+        "\u003c= 2.27.6",
+        "\u003e= 2.28.0, \u003c= 2.28.5",
+        "\u003e= 3.0.0, \u003c= 3.0.1"
+      ],
+      "patched_versions": {
+        "3.0.x": "3.0.2",
+        "2.28.x": "2.28.6",
+        "2.27.x": "2.27.7"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-39mw-5chv-jh47",
+      "cve_id": "CVE-2026-120705",
+      "summary": "Unauthenticated WFS GetFeatureById XML injection",
+      "severity": "high",
+      "published_at": "2026-11-23T22:10:29Z",
+      "vulnerable_versions": [
+        "\u003c= 2.27.6",
+        "\u003e= 2.28.0, \u003c= 2.28.5",
+        "\u003e= 3.0.0, \u003c= 3.0.1",
+        "\u003c= 33.6",
+        "\u003e= 34.0, \u003c= 34.5",
+        "\u003e= 35.0, \u003c= 35.1"
+      ],
+      "patched_versions": {
+        "3.0.x": "3.0.2",
+        "2.28.x": "2.28.6",
+        "2.27.x": "2.27.7"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-65mr-5frw-93xf",
+      "cve_id": "CVE-2026-129294",
+      "summary": "Unauthenticated style management in OGC API Styles",
+      "severity": "high",
+      "published_at": "2026-11-23T22:10:15Z",
+      "vulnerable_versions": [
+        "\u003e= 3.0.0, \u003c= 3.0.1",
+        "\u003e= 2.28.0, \u003c= 2.28.5",
+        "\u003c= 2.27.6"
+      ],
+      "patched_versions": {
+        "3.0.x": "3.0.2",
+        "2.28.x": "2.28.6",
+        "2.27.x": "2.27.7"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-3xvw-cfcr-v3h7",
+      "cve_id": "CVE-2026-129293",
+      "summary": "Stored XSS via style name in style editor Layer Preview",
+      "severity": "high",
+      "published_at": "2026-11-23T22:10:06Z",
+      "vulnerable_versions": [
+        "\u003e= 3.0.0, \u003c= 3.0.1",
+        "\u003e= 2.28.0, \u003c= 2.28.5",
+        "\u003c= 2.27.6"
+      ],
+      "patched_versions": {
+        "3.0.x": "3.0.2",
+        "2.28.x": "2.28.6",
+        "2.27.x": "2.27.7"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-hgm3-wq4h-8vvq",
+      "cve_id": "CVE-2026-129245",
+      "summary": "Predictable remember-me key allows administrator session forgery",
+      "severity": "critical",
+      "published_at": "2026-11-23T22:09:50Z",
+      "vulnerable_versions": [
+        "\u003e= 3.0.0, \u003c= 3.0.1",
+        "\u003e= 2.28.0, \u003c= 2.28.5",
+        "\u003c= 2.27.6"
+      ],
+      "patched_versions": {
+        "3.0.x": "3.0.2",
+        "2.28.x": "2.28.6",
+        "2.27.x": "2.27.7"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-4v26-c537-jvxc",
+      "cve_id": "CVE-2026-129244",
+      "summary": "WFS stored query exception discloses data directory path",
+      "severity": "medium",
+      "published_at": "2026-11-23T22:09:32Z",
+      "vulnerable_versions": [
+        "\u003e= 3.0.0, \u003c= 3.0.1",
+        "\u003e= 2.28.0, \u003c= 2.28.5",
+        "\u003c= 2.27.6"
+      ],
+      "patched_versions": {
+        "3.0.x": "3.0.2",
+        "2.28.x": "2.28.6",
+        "2.27.x": "2.27.7"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-9wf2-fcgq-vxhq",
+      "cve_id": "CVE-2026-129242",
+      "summary": "Deserialization in JDBC user and role services allows administrator code execution",
+      "severity": "high",
+      "published_at": "2026-11-23T22:09:15Z",
+      "vulnerable_versions": [
+        "\u003e= 3.0.0, \u003c= 3.0.1",
+        "\u003e= 2.28.0, \u003c= 2.28.5",
+        "\u003c= 2.27.6"
+      ],
+      "patched_versions": {
+        "3.0.x": "3.0.2",
+        "2.28.x": "2.28.6",
+        "2.27.x": "2.27.7"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-rv5g-g2r9-58rj",
+      "cve_id": "CVE-2026-129243",
+      "summary": "Service security rules bypassed with a prefixed service name such as x/WFS",
+      "severity": "high",
+      "published_at": "2026-11-23T22:08:51Z",
+      "vulnerable_versions": [
+        "\u003e= 3.0.0, \u003c= 3.0.1",
+        "\u003e= 2.28.0, \u003c= 2.28.5",
+        "\u003c= 2.27.6"
+      ],
+      "patched_versions": {
+        "3.0.x": "3.0.2",
+        "2.28.x": "2.28.6",
+        "2.27.x": "2.27.7"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-rg89-jmrw-x26f",
+      "cve_id": "CVE-2026-129240",
+      "summary": "Local file probing via file:// schemaLocation during strict schema validation",
+      "severity": "medium",
+      "published_at": "2026-11-23T22:08:38Z",
+      "vulnerable_versions": [
+        "\u003c= 2.27.6",
+        "\u003e= 2.28.0, \u003c= 2.28.5",
+        "\u003e= 3.0.0, \u003c= 3.0.1"
+      ],
+      "patched_versions": {
+        "3.0.x": "3.0.2",
+        "2.28.x": "2.28.6",
+        "2.27.x": "2.27.7"
+      }
+    },
     {
       "ghsa_id": "GHSA-jvpx-6qxg-whgc",
       "cve_id": "CVE-2026-76904",

@@ -1,7 +1,7 @@
 {
   "source_note": "The version feed is a static file on GitHub, delivered directly (raw.githubusercontent.com) or through the public jsDelivr content delivery network (cdn.jsdelivr.net). The GeoServer team does not run these hosts and receives no request logs at all. We cannot see which GeoServer versions are running. This module sends nothing about your server. However, the feed hosts can see the public IP address of your server making the request.",
   "schema_version": 1,
-  "generated": "2026-11-23T22:12:28Z",
+  "generated": "2026-11-23T22:24:51Z",
   "main": {
     "series": "3.1.x",
     "version": "3.1.0-SNAPSHOT"
@@ -228,6 +228,148 @@
     }
   ],
   "advisories": [
+    {
+      "ghsa_id": "GHSA-8w5h-q76f-7mc7",
+      "cve_id": "CVE-2026-120702",
+      "summary": "CSW DirectDownload served for layers where it is disabled",
+      "severity": "medium",
+      "published_at": "2026-11-23T22:14:09Z",
+      "vulnerable_versions": [
+        "\u003e= 3.0.0, \u003c= 3.0.1",
+        "\u003e= 2.28.0, \u003c= 2.28.5",
+        "\u003c= 2.27.6"
+      ],
+      "patched_versions": {
+        "3.0.x": "3.0.2",
+        "2.28.x": "2.28.6",
+        "2.27.x": "2.27.7"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-9j5h-q8xc-hppq",
+      "cve_id": "CVE-2026-120708",
+      "summary": "ACL Source IP rules bypass via X-Forwarded-For",
+      "severity": "high",
+      "published_at": "2026-11-23T22:13:56Z",
+      "vulnerable_versions": [
+        "\u003e= 3.0.0, \u003c= 3.0.1",
+        "\u003c= 2.3.2",
+        "= 2.4.0"
+      ],
+      "patched_versions": {
+        "3.0.x": "3.0.2",
+        "2.4.x": "2.4.1",
+        "2.3.x": "2.3.3"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-37mm-jp7f-64jp",
+      "cve_id": "CVE-2026-120707",
+      "summary": "GeoFence source IP rules bypass via X-Forwarded-For",
+      "severity": "high",
+      "published_at": "2026-11-23T22:13:40Z",
+      "vulnerable_versions": [
+        "\u003e= 3.0.0, \u003c= 3.0.1",
+        "\u003e= 2.28.0, \u003c= 2.28.5",
+        "\u003c= 2.27.6"
+      ],
+      "patched_versions": {
+        "3.0.x": "3.0.2",
+        "2.28.x": "2.28.6",
+        "2.27.x": "2.27.7"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-vv34-hm2r-7h59",
+      "cve_id": "CVE-2026-120703",
+      "summary": "JWT Headers community module roles header trusted without validation",
+      "severity": "high",
+      "published_at": "2026-11-23T22:13:22Z",
+      "vulnerable_versions": [
+        "\u003e= 3.0.0, \u003c= 3.0.1",
+        "\u003e= 2.28.0, \u003c= 2.28.5",
+        "\u003c= 2.27.6"
+      ],
+      "patched_versions": {
+        "3.0.x": "3.0.2",
+        "2.28.x": "2.28.6",
+        "2.27.x": "2.27.7"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-5v3x-f56f-2xm8",
+      "cve_id": "CVE-2026-120706",
+      "summary": "Unauthenticated SSRF and file read via WPS inline VRT to native GDAL",
+      "severity": "high",
+      "published_at": "2026-11-23T22:13:12Z",
+      "vulnerable_versions": [
+        "\u003e= 3.0.0, \u003c= 3.0.1",
+        "\u003e= 2.28.0, \u003c= 2.28.5",
+        "\u003c= 2.27.6"
+      ],
+      "patched_versions": {
+        "3.0.x": "3.0.2",
+        "2.28.x": "2.28.6",
+        "2.27.x": "2.27.7"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-9vfc-p7x6-xxwh",
+      "cve_id": "CVE-2026-120709",
+      "summary": "Unauthenticated SSRF and file read via printing legend icon URL",
+      "severity": "medium",
+      "published_at": "2026-11-23T22:13:02Z",
+      "vulnerable_versions": [
+        "\u003e= 3.0.0, \u003c= 3.0.1",
+        "\u003e= 2.28.0, \u003c= 2.28.5",
+        "\u003c= 2.27.6",
+        "\u003c= 2.3.6",
+        "\u003e= 2.4.0, \u003c= 2.4.1",
+        "= 2.5.0"
+      ],
+      "patched_versions": {
+        "3.0.x": "3.0.2",
+        "2.28.x": "2.28.6",
+        "2.27.x": "2.27.7",
+        "2.5.x": "2.5.1",
+        "2.4.x": "2.4.2",
+        "2.3.x": "2.3.7"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-cggp-wx63-hrxr",
+      "cve_id": "CVE-2025-53607",
+      "summary": "Unauthenticated XXE file read and SSRF via xsi:schemaLocation in OWS requests",
+      "severity": "high",
+      "published_at": "2026-11-23T22:12:49Z",
+      "vulnerable_versions": [
+        "\u003c= 2.27.5",
+        "\u003e= 2.28.0, \u003c= 2.28.3",
+        "\u003c= 33.5",
+        "\u003e= 34.0, \u003c= 34.3"
+      ],
+      "patched_versions": {
+        "3.0.x": "3.0.0",
+        "2.28.x": "2.28.4",
+        "2.27.x": "2.27.6"
+      }
+    },
+    {
+      "ghsa_id": "GHSA-hw87-7mx2-47cw",
+      "cve_id": "CVE-2024-35233",
+      "summary": "ImageMosaic remote code execution via REST coverage store file upload",
+      "severity": "high",
+      "published_at": "2026-11-23T22:12:35Z",
+      "vulnerable_versions": [
+        "\u003c= 2.27.5",
+        "\u003e= 2.28.0, \u003c= 2.28.4"
+      ],
+      "patched_versions": {
+        "3.0.x": "3.0.0",
+        "2.28.x": "2.28.5",
+        "2.27.x": "2.27.6"
+      }
+    },
     {
       "ghsa_id": "GHSA-3x82-qq72-g4p3",
       "cve_id": "CVE-2026-120701",

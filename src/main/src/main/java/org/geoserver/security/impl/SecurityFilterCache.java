@@ -6,9 +6,9 @@ package org.geoserver.security.impl;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 import org.geoserver.catalog.CatalogInfo;
@@ -103,7 +103,7 @@ class SecurityFilterCache {
         this(
                 CacheBuilder.newBuilder()
                         .maximumSize(maxSize)
-                        .expireAfterAccess(expiryMinutes, TimeUnit.MINUTES)
+                        .expireAfterAccess(Duration.ofMinutes(expiryMinutes))
                         .build(),
                 loader);
     }

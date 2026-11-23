@@ -9,9 +9,9 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.security.filter.GeoServerWebAuthenticationDetails;
@@ -39,7 +39,7 @@ public class GeoServerTokenBasedRememberMeServices extends TokenBasedRememberMeS
 
     // remember-me tokens are valid for 2 weeks, so we expire after 2 weeks
     static Cache<String, String> unauthorizedRememberMeCookieCache =
-            CacheBuilder.newBuilder().expireAfterWrite(14 * 24, TimeUnit.HOURS).build();
+            CacheBuilder.newBuilder().expireAfterWrite(Duration.ofDays(14)).build();
 
     public GeoServerTokenBasedRememberMeServices(String key, UserDetailsService userDetailsService) {
         super(key, userDetailsService);

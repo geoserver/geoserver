@@ -33,4 +33,10 @@
         </property>
     </bean>
 
- </beans>
+ 
+    <bean id="cswIsoModule" class="org.geoserver.platform.ModuleStatusImpl">
+        <constructor-arg index="0" value="gs-csw-iso"/>
+        <constructor-arg index="1" value="CSW ISO Metadata Profile"/>
+        <property name="category" value="EXTENSION"/>
+    </bean>
+</beans>

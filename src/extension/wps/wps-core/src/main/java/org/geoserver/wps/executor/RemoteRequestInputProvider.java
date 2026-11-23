@@ -31,6 +31,7 @@ import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.HostnameVerificationPolicy;
 import org.apache.hc.client5.http.ssl.HttpsSupport;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
 import org.apache.hc.core5.http.ClassicHttpResponse;
@@ -160,8 +161,8 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
             SSLContext sslContext = SSLContexts.custom()
                     .loadTrustMaterial((chain, authType) -> true)
                     .build();
-
-            DefaultClientTlsStrategy tlsStrategy = new DefaultClientTlsStrategy(sslContext, this.hostnameVerifier);
+            DefaultClientTlsStrategy tlsStrategy =
+                    new DefaultClientTlsStrategy(sslContext, HostnameVerificationPolicy.CLIENT, this.hostnameVerifier);
 
             PoolingHttpClientConnectionManager cm = PoolingHttpClientConnectionManagerBuilder.create()
                     .setDefaultConnectionConfig(connConfig)

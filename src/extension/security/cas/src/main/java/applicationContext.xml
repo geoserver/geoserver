@@ -31,5 +31,9 @@
 
     <!--  CAS single sign out handler -->
   <bean id="casSingleSignOutHandler" class="org.apereo.cas.client.session.SingleSignOutHandler" />
-
+  <bean id="casModule" class="org.geoserver.platform.ModuleStatusImpl">
+    <constructor-arg index="0" value="gs-sec-cas"/>
+    <constructor-arg index="1" value="CAS Security Extension"/>
+    <property name="category" value="EXTENSION"/>
+  </bean>
 </beans>

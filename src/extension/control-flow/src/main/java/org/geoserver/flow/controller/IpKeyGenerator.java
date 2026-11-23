@@ -4,7 +4,6 @@
  */
 package org.geoserver.flow.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.geoserver.ows.Request;
 
 /**
@@ -16,7 +15,6 @@ public class IpKeyGenerator implements KeyGenerator {
 
     @Override
     public String getUserKey(Request request) {
-        HttpServletRequest httpRequest = request.getHttpRequest();
-        return IpFlowController.getRemoteAddr(httpRequest);
+        return request.getHttpRequest().getRemoteAddr();
     }
 }

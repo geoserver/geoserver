@@ -10,6 +10,6 @@ import org.junit.Test;
 public class ModuleStatusTest extends GeoServerSystemTestSupport {
     @Test
     public void test() {
-        assertModuleStatus("gs-dxf", "DXF Extension");
+        assertModuleStatus("gs-dxf-core", "DXF Extension");
     }
 }

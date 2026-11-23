@@ -17,7 +17,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import org.geoserver.security.jwtheaders.JwtConfiguration;
 
 /**
@@ -38,7 +38,7 @@ public class TokenEndpointValidator {
     // keyed by endpoint URL + subject setting + token digest, see cacheKey()
     public static Cache<Object, Object> validEndpoints = CacheBuilder.newBuilder()
             .maximumSize(50000)
-            .expireAfterWrite(1, TimeUnit.HOURS)
+            .expireAfterWrite(Duration.ofHours(1))
             .build();
 
     public TokenEndpointValidator(JwtConfiguration config) {

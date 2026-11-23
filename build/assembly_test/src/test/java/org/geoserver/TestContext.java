@@ -9,6 +9,7 @@ import java.nio.file.Path;
 /** Runtime context shared with plugin-specific smoke testers. */
 public record TestContext(
         String pluginName,
+        Path pluginZip,
         Path workDir,
         Process process,
         int httpPort,

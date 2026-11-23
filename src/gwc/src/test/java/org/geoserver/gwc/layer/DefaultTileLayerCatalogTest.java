@@ -9,8 +9,10 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.ImmutableSet;
 import com.thoughtworks.xstream.XStream;
@@ -102,6 +104,34 @@ public class DefaultTileLayerCatalogTest {
         assertEquals(info, ModificationProxy.unwrap(deleted));
 
         assertNull(catalog.getLayerById("id1"));
+    }
+
+    @Test
+    public void testInMemoryCachedIgnored() throws IOException {
+        // the flag of the removed in-memory store defaulted to true, it must not turn on the tile cache
+        String xml =
+                """
+                <org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl>
+                  <id>id1</id>
+                  <name>name1</name>
+                  <inMemoryCached>true</inMemoryCached>
+                </org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl>""";
+        FileUtils.writeStringToFile(new File(baseDirectory, "gwc-layers/id1.xml"), xml, StandardCharsets.UTF_8);
+        catalog.initialize();
+
+        assertFalse(catalog.getLayerById("id1").isMemoryCached());
+    }
+
+    @Test
+    public void testMemoryCachedRoundTrip() {
+        GeoServerTileLayerInfo info = new GeoServerTileLayerInfoImpl();
+        info.setId("id1");
+        info.setName("name1");
+        info.setMemoryCached(true);
+        catalog.save(info);
+        catalog.initialize();
+
+        assertTrue(catalog.getLayerById("id1").isMemoryCached());
     }
 
     @Test

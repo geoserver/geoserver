@@ -7,13 +7,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
-  <bean id="oracleDbExtension" class="org.geoserver.platform.ModuleStatusImpl">
-    <property name="module" value="gs-oracle" />
-    <property name="name" value="Oracle DB Extension"/>
+  <bean id="oracleDbExtension" class="org.geoserver.platform.LibraryModuleStatus">
+    <constructor-arg index="0" value="gs-oracle"/>
+    <constructor-arg index="1" value="Oracle DB Extension"/>
+    <constructor-arg index="2" value="Oracle JDBC driver"/>
+    <constructor-arg index="3" value="oracle.jdbc.OracleDriver"/>
     <property name="component" value="Oracle DB extension"/>
     <property name="documentation" value="data/database/oracle.html"/>
-    <property name="available" value="true"/>
-    <property name="enabled" value="true"/>
     <property name="category" value="EXTENSION"/>
   </bean>
  

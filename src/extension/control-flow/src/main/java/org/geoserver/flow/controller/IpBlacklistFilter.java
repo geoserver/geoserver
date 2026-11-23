@@ -99,7 +99,7 @@ public class IpBlacklistFilter implements GeoServerFilter {
         if (blackListedAddresses.isEmpty()) {
             return false;
         }
-        String incomingIp = IpFlowController.getRemoteAddr(httpRequest);
+        String incomingIp = httpRequest.getRemoteAddr();
         boolean blocked = false;
         // Check IP on blackList roles (to block)
         for (String blackListRole : blackListedAddresses) {

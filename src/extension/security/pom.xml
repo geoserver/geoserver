@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>extension</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
@@ -75,17 +75,6 @@
     <profile>
       <id>oidc</id>
       <modules>
-        <module>oidc-core</module>
-        <module>oidc-web</module>
-        <module>oidc-assembly</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>allExtensions</id>
-      <modules>
-        <module>cas</module>
-        <module>cas-assembly</module>
         <module>oidc-core</module>
         <module>oidc-web</module>
         <module>oidc-assembly</module>

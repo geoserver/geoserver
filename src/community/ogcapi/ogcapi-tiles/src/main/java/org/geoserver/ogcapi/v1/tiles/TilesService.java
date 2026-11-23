@@ -672,10 +672,9 @@ public class TilesService {
 
     /** Utility method to check if a given tile layer supports filtering */
     public static boolean supportsFiltering(TileLayer tileLayer) {
-        return (tileLayer instanceof GeoServerTileLayer gstl)
-                && (((GeoServerTileLayer) tileLayer).getPublishedInfo() instanceof LayerInfo)
-                && (((LayerInfo) ((GeoServerTileLayer) tileLayer).getPublishedInfo()).getResource()
-                        instanceof FeatureTypeInfo);
+        return tileLayer instanceof GeoServerTileLayer gstl
+                && gstl.getPublishedInfo() instanceof LayerInfo li
+                && li.getResource() instanceof FeatureTypeInfo;
     }
 
     @GetMapping(path = "/collections/{collectionId}/map/tiles/{tileMatrixSetId}/metadata", name = "getTilesMetadata")

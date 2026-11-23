@@ -29,4 +29,9 @@
     </bean>
 
 
+    <bean id="ogcapiCoveragesModule" class="org.geoserver.platform.ModuleStatusImpl">
+        <constructor-arg index="0" value="gs-ogcapi-coverages"/>
+        <constructor-arg index="1" value="OGC API Coverages"/>
+        <property name="category" value="COMMUNITY"/>
+    </bean>
 </beans>

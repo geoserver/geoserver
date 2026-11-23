@@ -11,6 +11,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.StyleProperty;
@@ -63,5 +64,15 @@ public class StylesTestSupport extends OGCApiTestSupport {
         lg.getStyles().add(s);
         new CatalogBuilder(catalog).calculateLayerGroupBounds(lg);
         catalog.add(lg);
+    }
+
+    /** Sets the style management conformance class, {@code null} restores the default. */
+    protected void setManageStyles(Boolean enabled) {
+        GeoServer gs = getGeoServer();
+        StylesServiceInfo service = gs.getService(StylesServiceInfo.class);
+        StylesConformance conformance = StylesConformance.configuration(service);
+        conformance.setManageStyles(enabled);
+        service.getMetadata().put(StylesConformance.METADATA_KEY, conformance);
+        gs.save(service);
     }
 }

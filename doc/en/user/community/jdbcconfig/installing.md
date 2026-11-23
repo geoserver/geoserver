@@ -13,7 +13,7 @@ To install the JDBCConfig module:
 
     Follow the **Community Modules** link and download `jdbcconfig` zip archive.
 
-    - {{ snapshot }} example: [jdbcconfig](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-jdbcconfig-plugin.zip)
+    - {{ snapshot }} example: [jdbcconfig]({{ nightly_community }}jdbcconfig-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 

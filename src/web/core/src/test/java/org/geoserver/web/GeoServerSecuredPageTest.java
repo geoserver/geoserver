@@ -69,6 +69,8 @@ public class GeoServerSecuredPageTest extends GeoServerWicketTestSupport {
         request.setParameter("username", "admin");
         request.setParameter("password", "geoserver");
         String oldSessionId = request.getSession().getId();
+        // Spring 7.0.10+ mocks no longer assume the requested session id is valid
+        request.setRequestedSessionId(oldSessionId);
         dispatch(request);
         // verify that the session ID changed
         assertNotEquals(oldSessionId, request.getSession().getId());

@@ -52,7 +52,7 @@ public class UserFlowControllerTest extends AbstractFlowControllerTest {
             waitTerminated(t1, MAX_WAIT);
 
             assertEquals(ThreadState.COMPLETE, t1.state);
-            assertEquals(ThreadState.PROCESSING, t2.state);
+            waitState(ThreadState.PROCESSING, t2, MAX_WAIT);
 
             t2.interrupt();
         } finally {

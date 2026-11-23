@@ -11,6 +11,10 @@ import com.google.common.base.Stopwatch;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.LongAdder;
@@ -18,12 +22,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.MetatileContextHolder;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.AbstractMapOutputFormat;
+import org.geoserver.wms.map.LiteFeatureTypeStyle;
 import org.geoserver.wms.map.MetaTilingOutputFormat;
 import org.geoserver.wms.map.RawMap;
 import org.geoserver.wms.map.StyleQueryUtil;
@@ -34,9 +40,19 @@ import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.Query;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.data.DataUtilities;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.store.FilteringFeatureCollection;
+import org.geotools.data.store.ReTypingFeatureCollection;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.collection.FilteringSimpleFeatureCollection;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.process.geometry.PolygonLabelProcess;
@@ -64,6 +80,8 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat implement
 
     /** A logger for this class. */
     private static final Logger LOGGER = Logging.getLogger(VectorTileMapOutputFormat.class);
+
+    private static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     private final VectorTileBuilderFactory tileBuilderFactory;
 
@@ -252,10 +270,9 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat implement
             }
 
             sourceCrs = geometryDescriptor.getType().getCoordinateReferenceSystem();
-            int buffer = StyleQueryUtil.getComputedBuffer(
-                    mapContent.getBuffer(),
-                    StyleQueryUtil.getFeatureStyles(
-                            layer, StyleQueryUtil.getMapScale(mapContent, renderingArea), schema));
+            double mapScale = StyleQueryUtil.getMapScale(mapContent, renderingArea);
+            List<LiteFeatureTypeStyle> styles = StyleQueryUtil.getFeatureStyles(layer, mapScale, schema);
+            int buffer = StyleQueryUtil.getComputedBuffer(mapContent.getBuffer(), styles);
             if (this.tileBuilderFactory.shouldOversampleScale()) {
                 // buffer is in pixels (style pixels), need to convert to paint area pixels
                 buffer *= Math.max(
@@ -263,13 +280,15 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat implement
                         1); // if 0 (i.e. test case), don't expand
             }
             VectorTileOptions vectorTileOptions = new VectorTileOptions(layer, mapContent);
-            Query query = StyleQueryUtil.getStyleQuery(layer, mapContent);
+            int maxFilters = DefaultWebMapService.getMaxFilterRules();
+            Query query = StyleQueryUtil.getStyleQuery(layer, mapContent, styles, maxFilters);
+            Filter ruleFilter = getRuleFilterNotInQuery(styles, maxFilters, schema);
             vectorTileOptions.customizeQuery(query);
             Hints hints = query.getHints();
             Pipeline pipeline = getPipeline(
                     mapContent, renderingArea, paintArea, sourceCrs, featureSource.getSupportedHints(), hints, buffer);
             hints.remove(Hints.SCREENMAP);
-            FeatureCollection<?, ?> features = featureSource.getFeatures(query);
+            FeatureCollection<?, ?> features = getFeatures(featureSource, query, ruleFilter);
             final FeatureSink sink;
             if (!metatiled) {
                 // Single tile -> single sink
@@ -285,7 +304,7 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat implement
 
             if (vectorTileOptions.generateLabelLayer()) {
                 vectorTileOptions.customizeLabelQuery(query);
-                features = featureSource.getFeatures(query);
+                features = getFeatures(featureSource, query, ruleFilter);
                 layerName = layerName + "_labels";
                 run(
                         features,
@@ -313,6 +332,49 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat implement
             }
             return new VectorTileMetatilingWebMap(mapContent, metaX, tiles);
         }
+    }
+
+    /**
+     * Returns the OR of the active rule filters when there are too many for the style query, {@link Filter#INCLUDE}
+     * otherwise.
+     */
+    private static Filter getRuleFilterNotInQuery(
+            List<LiteFeatureTypeStyle> styles, int maxFilters, FeatureType schema) {
+        List<Filter> filters = StyleQueryUtil.getRuleFilters(styles);
+        if (filters == null || filters.size() <= maxFilters) return Filter.INCLUDE;
+        // evaluated on every feature: resolve env() calls and constant branches once
+        SimplifyingFilterVisitor simplifier = new SimplifyingFilterVisitor();
+        simplifier.setFeatureType(schema);
+        return (Filter) FF.or(filters).accept(simplifier, null);
+    }
+
+    /**
+     * Returns the features of the query that the rule filter accepts. Simple features keep only the attributes the
+     * query asks for, even when the rule filter needs others.
+     */
+    private static FeatureCollection<?, ?> getFeatures(FeatureSource<?, ?> source, Query query, Filter ruleFilter)
+            throws IOException {
+        if (ruleFilter == Filter.INCLUDE) return source.getFeatures(query);
+        String[] names = query.getPropertyNames();
+        if (names == null) return filter(source.getFeatures(query), ruleFilter);
+
+        // read the attributes the rules use as well, filter, then drop them
+        Set<String> readNames = new LinkedHashSet<>(Arrays.asList(names));
+        readNames.addAll(Arrays.asList(DataUtilities.attributeNames(ruleFilter)));
+        Query readQuery = new Query(query);
+        readQuery.setPropertyNames(new ArrayList<>(readNames));
+        FeatureCollection<?, ?> features = filter(source.getFeatures(readQuery), ruleFilter);
+        if (readNames.size() == names.length || !(features instanceof SimpleFeatureCollection simple)) {
+            return features;
+        }
+        return new ReTypingFeatureCollection(simple, SimpleFeatureTypeBuilder.retype(simple.getSchema(), names));
+    }
+
+    private static FeatureCollection<?, ?> filter(FeatureCollection<?, ?> features, Filter filter) {
+        if (features instanceof SimpleFeatureCollection simple) {
+            return new FilteringSimpleFeatureCollection(simple, filter);
+        }
+        return new FilteringFeatureCollection<>(features, filter);
     }
 
     private MetatileBuilders createMetatileBuilders(

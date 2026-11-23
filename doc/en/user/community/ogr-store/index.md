@@ -51,6 +51,14 @@ Once the package is available on disk, one has to set the following environment 
     set GDAL_DRIVER_PATH=C:\path\to\release-1900-x64-gdal-2-4-0-mapserver-7-2-1\bin\gdal\plugins
     set GDAL_DATA=C:\path\to\release-1900-x64-gdal-2-4-0-mapserver-7-2-1\bin\gdal-data
 
+### Testing the installation
+
+Once these steps have been completed, restart GeoServer.
+
+Navigate to **About > Server Status** page, change to the **Modules** tab, and click the **OGR DataStore** link for status information.
+
+This information can be used to verify that the GDAL native library was found, the version of GDAL used, the `GDAL_DATA` location, and the version of the Java bindings (`gdal-<version>.jar`) used.
+
 ## Configuring a store
 
 If the library is properly installed you will get the "OGR" data store among the supported stores in the "new store" page. In case it's not there, check the logs, they might be reporting that the GDAL/OGR native libs are missing, if the error is not there, check that the jars have been unpacked in the right position instead.

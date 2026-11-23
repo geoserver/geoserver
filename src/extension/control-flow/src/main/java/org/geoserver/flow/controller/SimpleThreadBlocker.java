@@ -4,8 +4,6 @@
  */
 package org.geoserver.flow.controller;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import org.geoserver.ows.Request;
 
@@ -17,15 +15,15 @@ public class SimpleThreadBlocker implements ThreadBlocker {
 
     /**
      * This queue contains the requests that are running. The ones waiting are not "visible", are all blocked on
-     * {@link BlockingQueue#offer(Object, long, TimeUnit)}} or {@link BlockingQueue#put(Object)}
+     * {@link RequestSlots#offer(Request, long, TimeUnit)} or {@link RequestSlots#put(Request)}
      */
-    BlockingQueue<Request> queue;
+    RequestSlots queue;
 
     private final int queueSize;
 
     public SimpleThreadBlocker(int queueSize) {
         this.queueSize = queueSize;
-        queue = new ArrayBlockingQueue<>(queueSize, true);
+        queue = new RequestSlots(queueSize);
     }
 
     @Override

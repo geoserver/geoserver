@@ -14,7 +14,7 @@ render_macros: true
     From the list of **Miscellaneous** extensions download **Monitor (Core)**.
 
     - {{ release }} example: [monitor](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-monitor-plugin.zip)
-    - {{ snapshot }} example: [monitor](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-monitor-plugin.zip)
+    - {{ snapshot }} example: [monitor]({{ nightly_extension }}monitor-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 
@@ -22,7 +22,7 @@ render_macros: true
 
     Follow the **Community Modules** link and download `monitor-micrometer` zip archive.
 
-    - {{ snapshot }} example: [monitor-micrometer](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-monitor-micrometer-plugin.zip)
+    - {{ snapshot }} example: [monitor-micrometer]({{ nightly_community }}monitor-micrometer-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 

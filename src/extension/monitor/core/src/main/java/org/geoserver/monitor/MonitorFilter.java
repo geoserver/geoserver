@@ -225,13 +225,7 @@ public class MonitorFilter implements GeoServerFilter {
     }
 
     String getRemoteAddr(HttpServletRequest req) {
-        String forwardedFor = req.getHeader("X-Forwarded-For");
-        if (forwardedFor != null) {
-            String[] ips = forwardedFor.split(", ");
-            return ips[0];
-        } else {
-            return req.getRemoteAddr();
-        }
+        return req.getRemoteAddr();
     }
 
     String getHttpReferer(HttpServletRequest req) {

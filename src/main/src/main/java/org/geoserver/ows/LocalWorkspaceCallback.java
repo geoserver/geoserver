@@ -37,6 +37,8 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
 
     static final Logger LOGGER = Logging.getLogger(LocalWorkspaceCallback.class);
 
+    private static final String GWC_SERVICE = "gwc/service";
+
     GeoServer gs;
 
     public LocalWorkspaceCallback(GeoServer gs) {
@@ -48,7 +50,7 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
     public Request init(Request request) {
         WorkspaceInfo ws = null;
         LayerGroupInfo lg = null;
-        if (request.context != null) {
+        if (request.context != null && !isGlobalGwc(request.context)) {
             String first = request.context;
             String last = null;
 
@@ -114,6 +116,11 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
         }
 
         return request;
+    }
+
+    /** In the global GWC endpoints "gwc" is part of the service path, never a workspace or layer group name. */
+    static boolean isGlobalGwc(String context) {
+        return context.equals(GWC_SERVICE) || context.startsWith(GWC_SERVICE + "/");
     }
 
     @Override

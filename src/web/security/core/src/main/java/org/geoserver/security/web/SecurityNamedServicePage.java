@@ -68,7 +68,7 @@ public class SecurityNamedServicePage<T extends SecurityNamedServiceConfig> exte
             doReturn();
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error saving config", e);
-            error(e);
+            error(SecurityNamedServicePanel.errorMessage(e, this));
         }
     }
 }

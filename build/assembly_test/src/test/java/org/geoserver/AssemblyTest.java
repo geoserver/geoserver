@@ -417,6 +417,7 @@ public class AssemblyTest {
                 try {
                     TestContext context = new TestContext(
                             name,
+                            pluginZip,
                             testWorkDir,
                             process,
                             httpPort,

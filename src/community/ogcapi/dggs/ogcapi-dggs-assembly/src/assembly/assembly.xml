@@ -27,6 +27,10 @@
         <include>h3*.jar</include>
         <include>jep*.jar</include>
         <include>*clickhouse*.jar</include>
+        <!-- clickhouse-jdbc delegates to jdbc-v2. No asm/antlr4: unused by reads with the default JavaCC parser -->
+        <include>jdbc-v2-*.jar</include>
+        <include>client-v2-*.jar</include>
+        <include>commons-compress-*.jar</include>
         <include>*httpmime*.jar</include>
         <include>*lz4*.jar</include>
       </includes>

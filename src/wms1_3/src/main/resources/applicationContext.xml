@@ -44,5 +44,9 @@
           class="org.geoserver.wms.capabilities.GetCapabilitiesTransformerFactory13">
         <constructor-arg ref="wms"/>
     </bean>
-
+    <bean id="wms13Module" class="org.geoserver.platform.ModuleStatusImpl">
+        <constructor-arg index="0" value="gs-wms1_3"/>
+        <constructor-arg index="1" value="GeoServer Web Map Service 1.3"/>
+        <property name="category" value="CORE"/>
+    </bean>
 </beans>

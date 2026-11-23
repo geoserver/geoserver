@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -82,6 +83,7 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.coverage.grid.io.PAMResourceInfo;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
+import org.geotools.coverage.grid.io.footprint.FootprintBehavior;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.coverage.processing.CoverageProcessor;
 import org.geotools.coverage.processing.operation.GridCoverage2DRIA;
@@ -258,8 +260,17 @@ public class CoverageViewReader implements GridCoverage2DReader {
         // cached to be used for its other bands that possibly take part in the CoverageView
         // definition
         boolean fillMissingBands = Boolean.TRUE.equals(coverageView.getFillMissingBands());
+        Map<String, Integer> delegateBands =
+                computeDelegateBands(parameters, bands, selectedBandIndices, compositionType, fillMissingBands);
         ViewInputs inputAlphaNonNull = getInputAlphaNonNullCoverages(
-                parameters, selectedBandIndices, bands, checker, true, compositionType, fillMissingBands);
+                parameters,
+                selectedBandIndices,
+                bands,
+                checker,
+                true,
+                compositionType,
+                fillMissingBands,
+                delegateBands);
         if (inputAlphaNonNull == null) return null;
 
         // all readers returned null?
@@ -268,7 +279,8 @@ public class CoverageViewReader implements GridCoverage2DReader {
         }
 
         if (compositionType == CoverageView.CompositionType.BAND_SELECT) {
-            return readUsingBandSelect(inputAlphaNonNull, bands, selectedBandIndices, requestedGridGeometry);
+            return readUsingBandSelect(
+                    inputAlphaNonNull, bands, selectedBandIndices, requestedGridGeometry, delegateBands);
         } else if (compositionType == CoverageView.CompositionType.JIFFLE) {
             return readUsingJiffle(inputAlphaNonNull);
         } else {
@@ -280,7 +292,8 @@ public class CoverageViewReader implements GridCoverage2DReader {
             ViewInputs inputAlphaNonNull,
             List<CoverageBand> bands,
             ArrayList<Integer> selectedBandIndices,
-            GridGeometry2D requestedGridGeometry)
+            GridGeometry2D requestedGridGeometry,
+            Map<String, Integer> delegateBands)
             throws IOException {
         List<GridCoverage2D> coverages = new ArrayList<>();
 
@@ -327,10 +340,13 @@ public class CoverageViewReader implements GridCoverage2DReader {
 
             // Get band indices for band selection
             ArrayList<Integer> bandIndices = new ArrayList<>(selectedBands.size());
+            // the delegate already selected the single band this coverage contributes, so the
+            // indices now address the narrowed coverage, where that band sits at position 0
+            boolean selectedByDelegate = delegateBands.containsKey(coverageName);
             for (InputCoverageBand icb : selectedBands) {
                 int bandIdx = 0;
                 final String bandString = icb.getBand();
-                if (bandString != null && !bandString.isEmpty()) {
+                if (!selectedByDelegate && bandString != null && !bandString.isEmpty()) {
                     bandIdx = Integer.parseInt(bandString);
                 }
                 bandIndices.add(bandIdx);
@@ -497,6 +513,82 @@ public class CoverageViewReader implements GridCoverage2DReader {
         return nodatas;
     }
 
+    /**
+     * Maps each input coverage to the single delegate band the view needs from it, or an empty map when band selection
+     * cannot be left to the delegate reader at all.
+     *
+     * <p>Reading only the needed band keeps the delegate mosaic single banded, so its nodata check cannot see a valid
+     * sample in a sibling band and keep an otherwise transparent pixel. Coverages contributing more than one band, or a
+     * band without explicit index, are left out, because the delegate coverage is read once and shared by every view
+     * band that references it. Single banded coverages are left out too, as there is nothing to narrow.
+     */
+    private Map<String, Integer> computeDelegateBands(
+            GeneralParameterValue[] parameters,
+            List<CoverageBand> bands,
+            ArrayList<Integer> selectedBandIndices,
+            CoverageView.CompositionType compositionType,
+            boolean fillMissingBands)
+            throws IOException {
+        if (compositionType != CoverageView.CompositionType.BAND_SELECT
+                || fillMissingBands
+                || !checkIfDelegateReaderSupportsBands()
+                || addsDynamicAlpha(parameters)) {
+            return Collections.emptyMap();
+        }
+        Map<String, Integer> delegateBands = new HashMap<>();
+        Set<String> multiBanded = new HashSet<>();
+        for (int bandIdx : selectedBandIndices) {
+            for (InputCoverageBand icb : bands.get(bandIdx).getInputCoverageBands()) {
+                final String coverageName = icb.getCoverageName();
+                final String bandString = icb.getBand();
+                if (bandString == null || bandString.isEmpty()) {
+                    multiBanded.add(coverageName);
+                    continue;
+                }
+                int band = Integer.parseInt(bandString);
+                Integer previous = delegateBands.put(coverageName, band);
+                // more than one band wanted from this coverage, its delegate mosaic stays multi banded
+                if (previous != null && previous != band) {
+                    multiBanded.add(coverageName);
+                }
+            }
+        }
+        // drop only the coverages that cannot be narrowed, the others still get only their band from the delegate
+        delegateBands.keySet().removeAll(multiBanded);
+        // single banded coverages have no sibling band to hide, and native band selection on a palette image
+        // returns the palette color instead of the index
+        for (String coverageName : new ArrayList<>(delegateBands.keySet())) {
+            if (delegate.getImageLayout(coverageName).getSampleModel(null).getNumBands() == 1) {
+                delegateBands.remove(coverageName);
+            }
+        }
+        return delegateBands;
+    }
+
+    /**
+     * Checks whether the read will make the delegate add an alpha band that the view has to preserve, in which case the
+     * band indices cannot be rebased on the narrowed coverage (see {@code hasDynamicAlpha}).
+     */
+    private boolean addsDynamicAlpha(GeneralParameterValue[] parameters) {
+        if (parameters == null) {
+            return false;
+        }
+        return Arrays.stream(parameters)
+                .filter(p -> matches(p, AbstractGridFormat.FOOTPRINT_BEHAVIOR))
+                .map(p -> ((ParameterValue) p).getValue())
+                .anyMatch(v -> v != null && !FootprintBehavior.None.name().equalsIgnoreCase(v.toString()));
+    }
+
+    /** Appends a delegate space bands selection to the given read parameters, or returns them untouched if null. */
+    private GeneralParameterValue[] withDelegateBands(GeneralParameterValue[] parameters, Integer band) {
+        if (band == null) {
+            return parameters;
+        }
+        ParameterValue<int[]> bandsParam = AbstractGridFormat.BANDS.createValue();
+        bandsParam.setValue(new int[] {band.intValue()});
+        return parameters == null ? new GeneralParameterValue[] {bandsParam} : ArrayUtils.add(parameters, bandsParam);
+    }
+
     private ViewInputs getInputAlphaNonNullCoverages(
             GeneralParameterValue[] parameters,
             ArrayList<Integer> selectedBandIndices,
@@ -504,7 +596,8 @@ public class CoverageViewReader implements GridCoverage2DReader {
             CoveragesConsistencyChecker checker,
             Boolean includeCoverages,
             CoverageView.CompositionType compositionType,
-            boolean fillMissingBands)
+            boolean fillMissingBands,
+            Map<String, Integer> delegateBands)
             throws IOException {
 
         // bands selection parameter inside on final bands so they should not be propagated
@@ -552,7 +645,8 @@ public class CoverageViewReader implements GridCoverage2DReader {
             if (!multiThreadedLoading || EXECUTOR == null) {
                 for (String coverageName : composer.getCoverageNames()) {
                     GridCoverage2DReader reader = composer.getReader(coverageName);
-                    GridCoverage2D coverage = reader.read(filteredParameters);
+                    GridCoverage2D coverage =
+                            reader.read(withDelegateBands(filteredParameters, delegateBands.get(coverageName)));
                     if (!composer.shouldProcessCoverage(coverageName, reader, coverage)) {
                         return null;
                     }
@@ -566,7 +660,8 @@ public class CoverageViewReader implements GridCoverage2DReader {
                 for (String coverageName : composer.getCoverageNames()) {
                     Future<ParallelLoadingResult> future = EXECUTOR.submit(() -> {
                         GridCoverage2DReader reader = composer.getReader(coverageName);
-                        GridCoverage2D coverage = reader.read(filteredParameters);
+                        GridCoverage2D coverage =
+                                reader.read(withDelegateBands(filteredParameters, delegateBands.get(coverageName)));
                         return new ParallelLoadingResult(coverageName, reader, coverage);
                     });
                     futures.add(future);
@@ -1074,7 +1169,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
                     ? coverageView.getCompositionType()
                     : CoverageView.CompositionType.BAND_SELECT;
             ViewInputs viewInputs = getInputAlphaNonNullCoverages(
-                    null, selectedBandIndices, bands, null, false, compositionType, false);
+                    null, selectedBandIndices, bands, null, false, compositionType, false, Collections.emptyMap());
 
             if (viewHasPAM(viewInputs)) {
                 return new CoverageViewPamResourceInfo(viewInputs);

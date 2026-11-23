@@ -39,6 +39,10 @@ updates:
         versions: [ "[2.1.0,)" ]
       - dependency-name: "org.apereo.cas.client:cas-client-core"
         versions: [ "[4.1.0,)" ]
+      - dependency-name: "org.apache.wicket:*"
+        versions: [ "[11.0.0,)" ]
+      - dependency-name: "org.wicketstuff:*"
+        versions: [ "[11.0.0,)" ]
 
   - package-ecosystem: 'github-actions'
     directory: '/'

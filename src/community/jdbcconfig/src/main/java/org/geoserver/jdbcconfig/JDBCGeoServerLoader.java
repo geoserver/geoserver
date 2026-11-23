@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.impl.CatalogImpl;
+import org.geoserver.catalog.impl.RequestCachingFacade;
 import org.geoserver.config.DefaultGeoServerLoader;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerFacade;
@@ -82,7 +83,7 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
     }
 
     private void loadCatalogInternal(Catalog catalog, XStreamPersister xp) throws Exception {
-        ((CatalogImpl) catalog).setFacade(catalogFacade);
+        ((CatalogImpl) catalog).setFacade(RequestCachingFacade.create(catalogFacade));
 
         // if this is the first time loading up with jdbc configuration, migrate from old
         // file based structure
@@ -107,7 +108,7 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
             return;
         }
 
-        ((GeoServerImpl) geoServer).setFacade(geoServerFacade);
+        ((GeoServerImpl) geoServer).setFacade(RequestCachingFacade.create(geoServerFacade));
 
         // if this is the first time loading up with bdb je configuration, migrate from old
         // file based structure

@@ -14,6 +14,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -22,6 +24,7 @@ import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.config.GeoServer;
 import org.geoserver.csw.DownloadLinkHandler.CloseableLinksIterator;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
@@ -82,6 +85,8 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
     private static final String GET_RECORD_REQUEST = "csw?service=csw&version=2.0.2&request=GetRecords"
             + "&elementsetname=full&typeNames=csw:Record&resultType=results"
             + "&constraint=title=%27watertemp%27";
+
+    private static final String DOWNLOAD_REQUEST = "ows?service=CSW&version=2.0.2&request=DirectDownload&resourceId=";
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -220,9 +225,112 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
         }
         link = link.substring(link.indexOf("ows?"));
 
-        // The output will be a zip.
+        // The output will be a zip holding only the requested granule
         MockHttpServletResponse response = getAsServletResponse(link);
         assertEquals("application/zip", response.getContentType());
+        String fileId = link.substring(link.indexOf("file=") + "file=".length()).split("&")[0];
+        // the file id is the 40 chars SHA-1 hex digest, a "-" and the file name
+        assertEquals(Set.of(fileId.substring(41)), getZipEntries(response));
+    }
+
+    private static Set<String> getZipEntries(MockHttpServletResponse response) throws Exception {
+        Set<String> names = new HashSet<>();
+        try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(response.getContentAsByteArray()))) {
+            for (ZipEntry entry = zis.getNextEntry(); entry != null; entry = zis.getNextEntry()) {
+                names.add(entry.getName());
+            }
+        }
+        return names;
+    }
+
+    @Test
+    public void testDirectDownloadMissingNamespace() throws Exception {
+        assertInvalidParameter(
+                DOWNLOAD_REQUEST + "watertemp", "resourceId", DirectDownload.INVALID_RESOURCE + "watertemp");
+    }
+
+    @Test
+    public void testDirectDownloadUnknownLayer() throws Exception {
+        assertInvalidParameter(
+                DOWNLOAD_REQUEST + "csw:missing",
+                "resourceId",
+                DirectDownload.INVALID_COVERAGE_DOWNLOAD + "csw:missing");
+    }
+
+    @Test
+    public void testDirectDownloadShortFileId() throws Exception {
+        assertInvalidParameter(
+                DOWNLOAD_REQUEST + "csw:watertemp&file=abc-watertemp.tiff",
+                "file",
+                DirectDownload.INVALID_FILE + "abc-watertemp.tiff");
+    }
+
+    @Test
+    public void testDirectDownloadUnknownFileId() throws Exception {
+        String fileId = "0".repeat(40) + "-watertemp.tiff";
+        assertInvalidParameter(
+                DOWNLOAD_REQUEST + "csw:watertemp&file=" + fileId, "file", DirectDownload.INVALID_FILE + fileId);
+    }
+
+    @Test
+    public void testDirectDownloadLayerOverride() throws Exception {
+        String request = DOWNLOAD_REQUEST + "csw:watertemp";
+        String unavailable = DirectDownload.INVALID_COVERAGE_DOWNLOAD + "csw:watertemp";
+        // no size limit, the full mosaic exceeds the one set by enableDirectDownload
+        DirectDownloadSettings enabled = new DirectDownloadSettings();
+        enabled.setDirectDownloadEnabled(true);
+        try {
+            // enabled on the layer
+            setLayerSettings(enabled);
+            assertEquals("application/zip", getAsServletResponse(request).getContentType());
+
+            // no layer settings, the service ones apply
+            setLayerSettings(null);
+            setServiceSettings(enabled);
+            assertEquals("application/zip", getAsServletResponse(request).getContentType());
+
+            // the layer settings win over the service ones
+            setLayerSettings(new DirectDownloadSettings());
+            assertInvalidParameter(request, "resourceId", unavailable);
+
+            // neither layer nor service settings
+            setLayerSettings(null);
+            setServiceSettings(null);
+            assertInvalidParameter(request, "resourceId", unavailable);
+        } finally {
+            setServiceSettings(null);
+            enableDirectDownload();
+        }
+    }
+
+    private void assertInvalidParameter(String request, String locator, String message) throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(request);
+        assertEquals("application/xml", response.getContentType());
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+        assertXpathEvaluatesTo("InvalidParameterValue", "//ows:Exception/@exceptionCode", dom);
+        assertXpathEvaluatesTo(locator, "//ows:Exception/@locator", dom);
+        assertXpathEvaluatesTo(message, "//ows:Exception/ows:ExceptionText", dom);
+    }
+
+    private void setLayerSettings(DirectDownloadSettings settings) {
+        CoverageInfo coverageInfo = getCatalog().getCoverageByName("watertemp");
+        putOrRemove(coverageInfo.getMetadata(), settings);
+        getCatalog().save(coverageInfo);
+    }
+
+    private void setServiceSettings(DirectDownloadSettings settings) {
+        GeoServer gs = getGeoServer();
+        CSWInfo csw = gs.getService(CSWInfo.class);
+        putOrRemove(csw.getMetadata(), settings);
+        gs.save(csw);
+    }
+
+    private static void putOrRemove(MetadataMap metadata, DirectDownloadSettings settings) {
+        if (settings == null) {
+            metadata.remove(DirectDownloadSettings.DIRECTDOWNLOAD_KEY);
+        } else {
+            metadata.put(DirectDownloadSettings.DIRECTDOWNLOAD_KEY, settings);
+        }
     }
 
     private XpathEngine getXpathEngine() {

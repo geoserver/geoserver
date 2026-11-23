@@ -11,7 +11,7 @@ render_macros: true
 
     Follow the **Community Modules** link and download `wfs-freemarker` zip archive.
 
-    - {{ snapshot }} example: [wfs-freemarker](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-wfs-freemarker-plugin.zip)
+    - {{ snapshot }} example: [wfs-freemarker]({{ nightly_community }}wfs-freemarker-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 

@@ -48,6 +48,19 @@ public class StoredQueryProvider {
 
     public static String LANGUAGE_20 = "urn:ogc:def:queryLanguage:OGC-WFS::WFSQueryExpression";
 
+    /**
+     * Upper bound on a stored query id once non-word characters are stripped, so it always maps to a valid file name.
+     * The 255 byte name limit must hold ".xml" and the ".<uuid>.tmp" suffix of the temporary file
+     * {@code FileSystemResourceStore} writes first, then renames.
+     */
+    public static final int MAX_ID_LENGTH =
+            255 - ".xml".length() - ".00000000-0000-0000-0000-000000000000.tmp".length();
+
+    /** Returns true if the id is too long to map to a valid stored query file name. */
+    public static boolean isIdTooLong(String id) {
+        return toFilename(id).length() > MAX_ID_LENGTH + ".xml".length();
+    }
+
     /** logger */
     static Logger LOGGER = Logging.getLogger(StoredQueryProvider.class);
 
@@ -193,6 +206,11 @@ public class StoredQueryProvider {
             return StoredQuery.DEFAULT;
         }
 
+        // an id too long to form a valid file name cannot match a stored query
+        if (name == null || isIdTooLong(name)) {
+            return null;
+        }
+
         try {
             Resource res = getResourceByContext(toFilename(name));
 
@@ -202,7 +220,8 @@ public class StoredQueryProvider {
 
             return parseStoredQuery(res);
         } catch (Exception e) {
-            throw new RuntimeException("Error accessing stored query: " + name, e);
+            LOGGER.log(Level.WARNING, e, () -> "Error accessing stored query: " + name);
+            throw new RuntimeException("Error accessing stored query: " + name);
         }
     }
 
@@ -245,7 +264,7 @@ public class StoredQueryProvider {
         }
     }
 
-    String toFilename(String name) {
+    static String toFilename(String name) {
         // remove any special characters... like ':'
         return name.replaceAll("\\W", "") + ".xml";
     }

@@ -12,7 +12,7 @@ render_macros: true
 
    Follow the **Community Modules** link and download the `sec-keycloak-roles` archive:
 
-   - {{ snapshot }} example: [sec-keycloak-roles](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-sec-keycloak-roles-plugin.zip)
+   - {{ snapshot }} example: [sec-keycloak-roles]({{ nightly_community }}sec-keycloak-roles-plugin.zip)
 
 3. Extract the contents of the archive into the **`WEB-INF/lib`** directory of your GeoServer installation.
 

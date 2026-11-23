@@ -37,10 +37,7 @@ public class ImageNInitializer implements GeoServerInitializer {
             public void handleGlobalChange(
                     GeoServerInfo global, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
 
-                if (propertyNames.contains("jAI")) { // TODO: check why the propertyname is reported as jAI
-                    // instead of JAI
-                    // Make sure to proceed with ImageN init
-                    // only in case the global change involved that section
+                if (propertyNames.contains("imageProcessing")) {
                     initJAI(global.getImageProcessing());
                 }
             }
@@ -56,9 +53,9 @@ public class ImageNInitializer implements GeoServerInitializer {
         imageN.setRenderingHint(ImageN.KEY_CACHED_TILE_RECYCLING_ENABLED, imageProcessing.isRecycling());
 
         // force the tile cache to be the one provided by GeoServer
-        TileCache oldTileCache = imageProcessing.getTileCache();
+        TileCache oldTileCache = imageN.getTileCache();
         if (oldTileCache != tileCache) {
-            imageProcessing.setTileCache(tileCache);
+            imageN.setTileCache(tileCache);
             oldTileCache.flush();
         }
 

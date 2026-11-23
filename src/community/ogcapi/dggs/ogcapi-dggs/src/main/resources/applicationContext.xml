@@ -27,4 +27,9 @@
         <constructor-arg index="1" value="1.0.1"/>
     </bean>
     
+    <bean id="ogcapiDggsModule" class="org.geoserver.platform.ModuleStatusImpl">
+        <constructor-arg index="0" value="gs-ogcapi-dggs"/>
+        <constructor-arg index="1" value="OGC API DGGS"/>
+        <property name="category" value="COMMUNITY"/>
+    </bean>
 </beans>

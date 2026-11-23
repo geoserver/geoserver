@@ -87,7 +87,7 @@
     <constructor-arg ref="gwcXmlConfig"/>
     <constructor-arg ref="gwcBlobStoreAggregator"/>
   </bean>
-  
+
   <!-- Static definition of where to put the blobstore. 
        Note that the directory MUST EXIST when GWC is started. -->
   <!-- bean id="gwcBlobStore" class="org.geowebcache.storage.blobstore.file.FileBlobStore" destroy-method="destroy">

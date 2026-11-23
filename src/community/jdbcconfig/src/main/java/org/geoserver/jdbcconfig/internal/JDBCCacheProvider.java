@@ -7,7 +7,7 @@ package org.geoserver.jdbcconfig.internal;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import java.io.Serializable;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import org.geoserver.util.CacheProvider;
 
 /**
@@ -43,7 +43,7 @@ public class JDBCCacheProvider implements CacheProvider {
         Cache<K, V> cache = CacheBuilder.newBuilder()
                 .softValues()
                 .concurrencyLevel(DEFAULT_CONCURRENCY_LEVEL)
-                .expireAfterAccess(expirationMinutes, TimeUnit.MINUTES)
+                .expireAfterAccess(Duration.ofMinutes(expirationMinutes))
                 .maximumSize(maxEntries)
                 .build();
 

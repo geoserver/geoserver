@@ -6,16 +6,20 @@
 package org.geoserver.importer.transform;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
+import java.sql.Types;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import org.geoserver.importer.ImportTask;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
@@ -36,6 +40,22 @@ public class TransformTest {
         assertEquals(1980, cal.get(GregorianCalendar.YEAR));
         assertEquals(9, cal.get(GregorianCalendar.MONTH) + 1); // 0-based month!
         assertEquals(10, cal.get(GregorianCalendar.DAY_OF_MONTH));
+    }
+
+    /** A remapped attribute loses the native type of the source column, or a database target creates a text column. */
+    @Test
+    public void testRemapDropsNativeType() throws Exception {
+        sftb.setName("ft");
+        sftb.userData(JDBCDataStore.JDBC_NATIVE_TYPENAME, "text");
+        sftb.userData(JDBCDataStore.JDBC_NATIVE_TYPE, Types.VARCHAR);
+        sftb.add("date", String.class);
+        SimpleFeatureType type =
+                new DateFormatTransform("date", null).apply(new ImportTask(), null, sftb.buildFeatureType());
+
+        AttributeDescriptor date = type.getDescriptor("date");
+        assertEquals(Date.class, date.getType().getBinding());
+        assertNull(date.getUserData().get(JDBCDataStore.JDBC_NATIVE_TYPENAME));
+        assertNull(date.getUserData().get(JDBCDataStore.JDBC_NATIVE_TYPE));
     }
 
     @Test

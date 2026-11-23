@@ -26,4 +26,9 @@
     <constructor-arg index="1" value="1.0.0"/>
   </bean>
   
+    <bean id="ogcapi3DGeoVolumesModule" class="org.geoserver.platform.ModuleStatusImpl">
+        <constructor-arg index="0" value="gs-ogcapi-3d-geovolumes"/>
+        <constructor-arg index="1" value="OGC API 3D GeoVolumes"/>
+        <property name="category" value="COMMUNITY"/>
+    </bean>
 </beans>

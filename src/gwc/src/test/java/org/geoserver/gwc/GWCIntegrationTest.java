@@ -1681,6 +1681,37 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertWmtsDisabled(CITE_PREFIX);
     }
 
+    /**
+     * A workspace named "gwc" does not turn the global GWC endpoint into its virtual service, so its disabled WMTS does
+     * not disable the global one and the global capabilities keep all layers.
+     */
+    @Test
+    public void testGwcWorkspaceName() throws Exception {
+        String capabilities = "/gwc/service/wmts?request=GetCapabilities";
+        String layerCount = "count(//wmts:Contents/wmts:Layer)";
+        String globalCount = WMTS_XPATH_10.evaluate(layerCount, getAsDOM(capabilities));
+        assertThat(Integer.parseInt(globalCount), greaterThan(0));
+
+        Catalog catalog = getCatalog();
+        GeoServer geoServer = getGeoServer();
+        WorkspaceInfo gwcWs = catalog.getFactory().createWorkspace();
+        gwcWs.setName("gwc");
+        catalog.add(gwcWs);
+        WMTSInfo gwcWmts = geoServer.getFactory().create(WMTSInfo.class);
+        gwcWmts.setWorkspace(gwcWs);
+        gwcWmts.setName(geoServer.getService(WMTSInfo.class).getName());
+        gwcWmts.setEnabled(false);
+        geoServer.add(gwcWmts);
+        try {
+            MockHttpServletResponse response = getAsServletResponse(capabilities);
+            assertEquals(HttpStatus.OK.value(), response.getStatus());
+            assertEquals(globalCount, WMTS_XPATH_10.evaluate(layerCount, dom(response, true)));
+        } finally {
+            geoServer.remove(gwcWmts);
+            catalog.remove(gwcWs);
+        }
+    }
+
     @Test
     public void testWMTSEnablingWithLocalLayer() throws Exception {
 

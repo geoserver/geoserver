@@ -26,7 +26,7 @@ public class IpRequestMatcher implements Predicate<Request> {
 
     @Override
     public boolean apply(Request request) {
-        final String incomingIp = IpFlowController.getRemoteAddr(request.getHttpRequest());
+        final String incomingIp = request.getHttpRequest().getRemoteAddr();
         boolean matches = ip.equals(incomingIp);
         return matches;
     }

@@ -9,7 +9,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.geoserver</groupId>
   <artifactId>geoserver</artifactId>
-  <version>3.1.0-SNAPSHOT</version>
+  <version>${revision}</version>
   <packaging>pom</packaging>
   <name>GeoServer</name>
   <inceptionYear>2006</inceptionYear>
@@ -94,24 +94,28 @@
     <!-- ================================ -->
     <!-- Project version management       -->
     <!-- ================================ -->
+    <revision>3.1.0-SNAPSHOT</revision>
     <gt.version>36-SNAPSHOT</gt.version>
     <gwc.version>2.1-SNAPSHOT</gwc.version>
-    <spring.version>7.0.9</spring.version>
-    <spring.security.version>7.1.1</spring.security.version>
+    <!-- -8<- [start:bom-versions] -->
+    <spring.version>7.0.10</spring.version>
+    <spring.security.version>7.1.2</spring.security.version>
+    <!-- -8<- [end:bom-versions] -->
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
-    <spring.ldap.version>4.1.1</spring.ldap.version>
-    <spring-integration.version>7.1.1</spring-integration.version>
+    <spring.ldap.version>4.1.2</spring.ldap.version>
+    <spring-integration.version>7.1.2</spring-integration.version>
     <tika.version>4.0.0</tika.version>
-    <wicket.version>10.11.0</wicket.version>
+    <wicket.version>10.12.0</wicket.version>
     <!-- WicketStuff provides additional components and extensions for the Wicket framework,
     such as select2 integration, which is used in GeoServer's admin interface.
     This version should match the Wicket version, but may differ in patch versions. -->
-    <wicketstuff.version>10.11.0</wicketstuff.version>
+    <wicketstuff.version>10.12.0</wicketstuff.version>
     <!-- ================================ -->
     <!-- Dependency version management    -->
     <!-- ================================ -->
     <ant.version>1.10.18</ant.version>
     <apacheds.version>2.0.0.AM27</apacheds.version>
+    <asm.version>9.11.1</asm.version>
     <compress-lzf.version>1.0.3</compress-lzf.version>
     <eclipse.emf.version>2.15.0</eclipse.emf.version>
     <errorProne.version>2.31.0</errorProne.version>
@@ -129,25 +133,25 @@
          profile, because the community fips modules need them in every build. -->
     <bc.fips.prov.version>2.1.2</bc.fips.prov.version>
     <bc.fips.pkix.version>2.1.10</bc.fips.pkix.version>
-    <hibernate-version>7.4.13.Final</hibernate-version>
+    <hibernate-version>7.4.16.Final</hibernate-version>
     <httpcore.version>4.4.16</httpcore.version>
-    <httpclient.version>5.4.4</httpclient.version>
+    <httpclient.version>5.6.5</httpclient.version>
     <jacoco.version>0.8.14</jacoco.version>
     <jasypt.version>1.9.3</jasypt.version>
     <javac.version>9+181-r4173-1</javac.version>
     <javaapiforkml.version>3.0.11</javaapiforkml.version>
-    <jetty.version>12.1.14</jetty.version>
+    <jetty.version>12.1.15</jetty.version>
     <jmh.version>1.37</jmh.version>
     <joda-time.version>2.8.1</joda-time.version>
     <marlin.version>0.9.4.8</marlin.version>
-    <mf.version>2.5.1-SNAPSHOT</mf.version>
+    <mf.version>2.5.2</mf.version>
     <mockito.version>5.24.0</mockito.version>
     <!-- nimbus-jose-jwt is a transitive of spring-security-oauth2-jose; managed here so direct
          consumers (sec-oidc) inherit the same version Spring Security expects (do not pin it lower). -->
     <nimbus-jose-jwt.version>10.10</nimbus-jose-jwt.version>
     <opengeo-geodb.version>0.9</opengeo-geodb.version>
     <pmd.version>7.23.0</pmd.version>
-    <poi.version>5.5.1</poi.version>
+    <poi.version>6.0.0</poi.version>
     <postgis.jdbc.version>1.3.3</postgis.jdbc.version>
     <servlet-api.version>6.1.0</servlet-api.version>
     <xalan.version>2.7.3</xalan.version>
@@ -223,6 +227,7 @@
         <version>4.0.5</version>
         <scope>compile</scope>
       </dependency>
+      <!-- -8<- [start:bom-imports] -->
       <dependency>
         <groupId>org.geotools</groupId>
         <artifactId>gt-platform-dependencies</artifactId>
@@ -254,6 +259,7 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <!-- -8<- [end:bom-imports] -->
       <dependency>
         <groupId>org.springframework.integration</groupId>
         <artifactId>spring-integration-bom</artifactId>
@@ -568,7 +574,7 @@
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.14.0</version>
+        <version>2.15.0</version>
       </dependency>
       <dependency>
         <groupId>net.sf.opencsv</groupId>
@@ -667,6 +673,27 @@
         <artifactId>httpclient5-cache</artifactId>
         <version>${httpclient.version}</version>
       </dependency>
+      <!-- single asm version, shared by parboiled (css) and clickhouse-jdbc (dggs) -->
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-tree</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-analysis</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-util</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
       <dependency>
         <groupId>commons-validator</groupId>
         <artifactId>commons-validator</artifactId>
@@ -687,7 +714,7 @@
         which provides runtime scope; however gs-auth has a compile time dependency-->
         <groupId>net.minidev</groupId>
         <artifactId>json-smart</artifactId>
-        <version>2.6.0</version>
+        <version>2.6.1</version>
         <scope>compile</scope>
       </dependency>
       <dependency>
@@ -893,12 +920,12 @@
       <dependency>
         <groupId>org.restlet</groupId>
         <artifactId>org.restlet.ext.spring</artifactId>
-        <version>2.6.0</version>
+        <version>2.7.0</version>
       </dependency>
       <dependency>
         <groupId>org.restlet</groupId>
         <artifactId>org.restlet.ext.json</artifactId>
-        <version>2.6.0</version>
+        <version>2.7.0</version>
       </dependency>
       <dependency>
         <groupId>com.noelios.restlet</groupId>
@@ -959,7 +986,7 @@
       <dependency>
         <groupId>ar.com.hjg</groupId>
         <artifactId>pngj</artifactId>
-        <version>2.0.1</version>
+        <version>2.1.0</version>
       </dependency>
       <dependency>
         <groupId>xerces</groupId>
@@ -980,7 +1007,7 @@
       <dependency>
         <groupId>org.apache.xbean</groupId>
         <artifactId>xbean-spring</artifactId>
-        <version>3.5</version>
+        <version>5.0.0</version>
         <exclusions>
           <exclusion>
             <artifactId>commons-logging</artifactId>
@@ -1403,6 +1430,11 @@
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
+          <artifactId>flatten-maven-plugin</artifactId>
+          <version>1.7.3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
           <artifactId>javacc-maven-plugin</artifactId>
           <version>3.1.1</version>
         </plugin>
@@ -1694,7 +1726,7 @@
             <link>https://locationtech.github.io/jts/javadoc/</link>
             <link>https://docs.geotools.org/latest/javadocs/</link>
             <link>https://xmlgraphics.apache.org/batik/javadoc/</link>
-            <link>https://freemarker.sourceforge.io/docs/api/</link>
+            <link>https://freemarker.apache.org/docs/api/</link>
             <link>https://nightlies.apache.org/wicket/apidocs/9.x/</link>
           </links>
           <additionalJOptions>
@@ -1804,6 +1836,30 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>versions-maven-plugin</artifactId>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>flatten</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>flatten</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>flatten-clean</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <flattenMode>resolveCiFriendliesOnly</flattenMode>
+          <updatePomFile>true</updatePomFile>
+        </configuration>
+      </plugin>
     </plugins>
 
   </build>
@@ -1859,7 +1915,7 @@
             <link>https://locationtech.github.io/jts/javadoc/</link>
             <link>http://xmlgraphics.apache.org/batik/javadoc/</link>
             <link>https://docs.geotools.org/latest/javadocs/</link>
-            <link>https://freemarker.sourceforge.io/docs/api/</link>
+            <link>https://freemarker.apache.org/docs/api/</link>
             <link>https://nightlies.apache.org/wicket/apidocs/9.x/</link>
           </links>
 
@@ -1926,6 +1982,41 @@
   </reporting>
 
   <profiles>
+    <profile>
+      <id>gs-test-dependences-check</id>
+      <activation>
+        <property>
+          <name>maven.test.skip</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>ban-gs-test-dependencies</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <bannedDependencies>
+                      <excludes>
+                        <exclude>org.geoserver*:*:*:*:*:tests</exclude>
+                      </excludes>
+                      <searchTransitive>false</searchTransitive>
+                      <message>Move GeoServer tests dependencies into the gs-test-dependences profile (see src/web/wms/pom.xml)</message>
+                    </bannedDependencies>
+                  </rules>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <!-- Builds a FIPS-capable GeoServer: BouncyCastle swapped for its FIPS-validated
            line, the community fips modules in the reactor, and gs-fips-provider on the
@@ -2090,7 +2181,7 @@
           -link https://locationtech.github.io/jts/javadoc/
           -link http://xmlgraphics.apache.org/batik/javadoc/
           -link https://docs.geotools.org/latest/javadocs/
-          -link https://freemarker.sourceforge.io/docs/api/
+          -link https://freemarker.apache.org/docs/api/
           -link https://nightlies.apache.org/wicket/apidocs/9.x/
           -tag generated:tfmc:
           -tag todo:tfmc:TODO:

@@ -43,9 +43,8 @@ public class CQL2Conformance extends ConformanceInfo<ServiceInfo> {
             new APIConformance(ConformanceClass.CQL2_TEMPORAL, STANDARD, "temporal").builtIn(false);
 
     /** CQL2_ARRAY excluded, no support for array operations now. */
-    public static final APIConformance CQL2_ARRAY = new APIConformance(
-                    "http://www.opengis.net/spec/ogcapi-features-3/1.0/req/arrays", STANDARD, "array")
-            .builtIn(false);
+    public static final APIConformance CQL2_ARRAY =
+            new APIConformance(ConformanceClass.CQL2_ARRAY, STANDARD, "array").builtIn(false);
 
     public static final APIConformance CQL2_PROPERTY_PROPERTY =
             new APIConformance(ConformanceClass.CQL2_PROPERTY_PROPERTY, STANDARD, "propertyProperty").builtIn(true);

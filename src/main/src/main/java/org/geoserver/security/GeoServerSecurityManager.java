@@ -1738,7 +1738,12 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 GeoServerUser.ADMIN_USERNAME, GeoServerUser.DEFAULT_ADMIN_PASSWD);
 
         try {
-            Authentication result = BruteForceListener.withThrottlingDisabled(() -> providerMgr.authenticate(token));
+            // Use a separate manager with no event publisher. The shared providerMgr publishes an
+            // authentication event on every attempt, and listeners such as the session renewal in
+            // GeoServerApplication and BruteForceListener would treat this check as a real login.
+            ProviderManager probeMgr = new ProviderManager(providerMgr.getProviders());
+            probeMgr.setEraseCredentialsAfterAuthentication(true);
+            Authentication result = probeMgr.authenticate(token);
             return result.isAuthenticated();
         } catch (Exception e) {
             // authentication failed

@@ -19,7 +19,9 @@ import static org.geoserver.ogcapi.ConformanceClass.FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.QUERYABLES;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.in;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
@@ -78,6 +80,24 @@ public class ConformanceTest extends FeaturesTestSupport {
     }
 
     @Test
+    public void testCQL2ConformanceURIs() throws Exception {
+        List<String> classes = getAsJSONPath("ogc/features/v1/conformance", 200).read("$.conformsTo");
+        assertThat(
+                classes,
+                hasItems(
+                        "http://www.opengis.net/spec/cql2/1.0/conf/basic-cql2",
+                        "http://www.opengis.net/spec/cql2/1.0/conf/advanced-comparison-operators",
+                        "http://www.opengis.net/spec/cql2/1.0/conf/arithmetic",
+                        "http://www.opengis.net/spec/cql2/1.0/conf/property-property",
+                        "http://www.opengis.net/spec/cql2/1.0/conf/basic-spatial-functions",
+                        "http://www.opengis.net/spec/cql2/1.0/conf/spatial-functions",
+                        "http://www.opengis.net/spec/cql2/1.0/conf/functions",
+                        "http://www.opengis.net/spec/cql2/1.0/conf/cql2-text",
+                        "http://www.opengis.net/spec/cql2/1.0/conf/cql2-json"));
+        assertThat(classes, everyItem(not(containsString("/cql2/1.0/req/"))));
+    }
+
+    @Test
     public void testCollectionsYaml() throws Exception {
         String yaml = getAsString("ogc/features/v1/conformance?f=application/yaml");
         checkConformance(convertYamlToJsonPath(yaml));
@@ -126,6 +146,11 @@ public class ConformanceTest extends FeaturesTestSupport {
             expected.add(ConformanceClass.SORTBY);
             expected.add(ConformanceClass.PROPERTY_SELECTION);
             assertThat(json.read("$.conformsTo"), containsInAnyOrder(expected.toArray(String[]::new)));
+            assertThat(
+                    json.read("$.conformsTo"),
+                    hasItems(
+                            "http://www.opengis.net/spec/ogcapi-features-1/1.1/conf/ids",
+                            "http://www.opengis.net/spec/ogcapi-records-1/1.0/conf/sorting"));
         } finally {
             // reset defaults
             features.setIDs(null);

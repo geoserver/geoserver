@@ -59,6 +59,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         tileLayerModel = new GeoServerTileLayerInfoModel(tileLayer.getInfo(), false);
         // clean up fake format added during tests
         tileLayer.getInfo().getMimeFormats().remove("foo/bar");
+        tileLayer.getInfo().setMemoryCached(false);
     }
 
     @Test
@@ -344,6 +345,19 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         assertThat(
                 tileLayer.getInfo().getCacheWarningSkips(),
                 Matchers.containsInAnyOrder(WarningType.Default, WarningType.FailedNearest));
+    }
+
+    @Test
+    public void testSaveMemoryCached() {
+        tester.startPage(new FormTestPage(id -> new LayerCacheOptionsTabPanel(id, layerModel, tileLayerModel)));
+
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("panel:tileLayerEditor:container:configs:memoryCached", true);
+        ft.submit();
+
+        tester.assertNoErrorMessage();
+        TileLayer tileLayer = GWC.get().getTileLayerByName(getLayerId(MockData.BUILDINGS));
+        assertTrue(tileLayer.isMemoryCached());
     }
 
     @Test

@@ -17,5 +17,6 @@ For example:
 - [Managing Layers](layers.md)
 - [Seeding and Truncating](seed.md)
 - [Disk Quota](diskquota.md)
+- [In-memory tile cache](memorycache.md)
 
 </div>

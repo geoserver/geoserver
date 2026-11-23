@@ -33,19 +33,12 @@ import org.geotools.util.Version;
 public class RequestUtils {
 
     /**
-     * Pulls out the first IP address from the X-Forwarded-For request header if it was provided; otherwise just gets
-     * the client IP address.
+     * Returns the IP address of the client that sent the request.
      *
      * @return the IP address of the client that sent the request
      */
     public static String getRemoteAddr(HttpServletRequest req) {
-        String forwardedFor = req.getHeader("X-Forwarded-For");
-        if (forwardedFor != null) {
-            String[] ips = forwardedFor.split(", ");
-            return ips[0];
-        } else {
-            return req.getRemoteAddr();
-        }
+        return req.getRemoteAddr();
     }
 
     /**

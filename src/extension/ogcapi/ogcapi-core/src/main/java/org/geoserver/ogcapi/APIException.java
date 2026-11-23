@@ -19,6 +19,7 @@ public class APIException extends RuntimeException {
     public static final String NO_APPLICABLE_CODE = "NoApplicableCode";
     public static final String NOT_IMPLEMENTED = "NotImplemented";
     public static final String CONFLICT = "Conflict";
+    public static final String METHOD_NOT_ALLOWED = "MethodNotAllowed";
 
     private final HttpStatus status;
     private final String code;

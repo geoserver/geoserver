@@ -281,15 +281,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
                 LOGGER.log(Level.WARNING, "No HTTP connection available.");
                 return null;
             }
-
-            String forwardedFor = http.getHeader("X-Forwarded-For");
-            if (forwardedFor != null) {
-                String[] ips = forwardedFor.split(", ");
-                String parsed = parseAddress(ips[0]);
-                return InetAddress.getByName(parsed).getHostAddress();
-            } else {
-                return parseAddress(http.getRemoteAddr());
-            }
+            return InetAddress.getByName(parseAddress(http.getRemoteAddr())).getHostAddress();
         } catch (Exception e) {
             LOGGER.log(Level.INFO, "Failed to get remote address", e);
             return null;

@@ -13,7 +13,7 @@ The 3D GeoVolumes implementation is based on August 2024 draft of the specificat
 
 ## Installing the GeoServer OGC API 3D GeoVolumes module
 
-1.  Download the OGC API nightly GeoServer community module from [ogcapi-3d-geovolumes](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-ogcapi-3d-geovolumes-plugin.zip).
+1.  Download the OGC API nightly GeoServer community module from [ogcapi-3d-geovolumes]({{ nightly_community }}ogcapi-3d-geovolumes-plugin.zip).
 
     !!! warning
         Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-{{ release }}-ogcapi-3dgeovolumes-plugin.zip above).

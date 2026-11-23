@@ -1,5 +1,5 @@
 site_name: Documentation
-site_url: https://docs.geoserver.org/3.1.x
+site_url: !ENV [SITE_URL, 'https://docs.geoserver.org/3.1.x']
 repo_url: https://github.com/geoserver/geoserver
 repo_name: geoserver/geoserver
 edit_uri: edit/main/doc/
@@ -785,6 +785,7 @@ nav:
         - en/user/community/backuprestore/extensions.md
         - en/user/community/backuprestore/usecases.md
         - en/user/community/backuprestore/migration.md
+      - Check for Updates: en/user/community/updates-checker/index.md
       - COG (Cloud Optimized GeoTIFF) Documentation:
         - en/user/community/cog/index.md
         - en/user/community/cog/cog.md
@@ -838,6 +839,7 @@ nav:
           - en/user/community/gsr/featureTable.md
       - GWC Azure BlobStore plugin: en/user/community/gwc-azure-blob/index.md
       - GWC Google Cloud Storage BlobStore plugin: en/user/community/gwc-gcs-blob/index.md
+      - GWC Hazelcast tile cache plugin: en/user/community/gwc-hazelcast/index.md
       - GWC MBTiles layer plugin: en/user/community/gwc-mbtiles/index.md
       - SAP HANA: en/user/community/hana/index.md
       - Hazelcast Clustering Plugin: en/user/community/hz-cluster/index.md

@@ -22,7 +22,7 @@ The control flow method does not normally reject requests, it just queues up tho
     From the list of **Miscellaneous** extensions download **Control Flow**.
 
     - {{ release }} example: [control-flow](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-control-flow-plugin.zip)
-    - {{ snapshot }} example: [control-flow](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-control-flow-plugin.zip)
+    - {{ snapshot }} example: [control-flow]({{ nightly_extension }}control-flow-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 
@@ -94,6 +94,8 @@ ip=<count>
 ```
 
 Where `<count>` is the maximum number of requests a single ip address can execute in parallel.
+
+Behind a reverse proxy on another host or container, list the proxy in `GEOSERVER_TRUSTED_PROXIES` (see [Client address behind a reverse proxy](../../production/misc.md#client-address-behind-a-reverse-proxy)). Otherwise every request comes from the proxy address, and this rule becomes a single limit for the whole server.
 
 It is also possible to make this a bit more specific and throttle a single ip address instead by using the following:
 
@@ -278,7 +280,6 @@ An example output, filtered on a the single thread `http-nio-8080-exec-8` and a 
     19 018 15:18:31 'http-nio-8080-exec-8' DEBUG  [geoserver.flow] - Request [WFS 1.0.0 GetFeature] enter BasicOWSController(wcs.getcoverage,SimpleBlocker(1))/0
     19 018 15:18:31 'http-nio-8080-exec-8' DEBUG  [geoserver.flow] - Request [WFS 1.0.0 GetFeature] exit  BasicOWSController(wcs.getcoverage,SimpleBlocker(1))/0
     19 018 15:18:31 'http-nio-8080-exec-8' DEBUG  [geoserver.flow] - Request [WFS 1.0.0 GetFeature] enter IpFlowController(3)
-    19 018 15:18:31 'http-nio-8080-exec-8' DEBUG  [flow.controller] - X-Forwarded-For: 185.230.235.34, 10.12.81.32 -> 185.230.235.34
     19 018 15:18:44 'http-nio-8080-exec-8' DEBUG  [flow.controller] - IpFlowController(3) 185.230.235.34, concurrent requests: 3
     19 018 15:18:44 'http-nio-8080-exec-8' DEBUG  [flow.controller] - IpFlowController(3,185.230.235.34) queue size 3
     19 018 15:18:44 'http-nio-8080-exec-8' DEBUG  [geoserver.flow] - Request [WFS 1.0.0 GetFeature] exit  IpFlowController(3)
@@ -296,7 +297,7 @@ In this example:
 
 - A RateFlowController imposes a delay of 10 seconds on WPS, and 1 second on WMS requests, when the configured limit is exceeded.
 - A WCS concurrency control has a limit of 1, but there are 0 WCS request executing.
-- A concurrency limit by IP address is set to 3, and there are 3 requests executing from a single IP (with details on how the IP address has been extracted from the X-Forwarded-For header).
+- A concurrency limit by IP address is set to 3, and there are 3 requests executing from a single IP.
 - A concurrency control on wps.execute with 4 requests is in place, with none executing.
 - A concurrency control on wms.getmap with 6 requests is in place, with none executing.
 - A concurrency control on wfs.getfeature with 8 requests is in place, with 3 executing.

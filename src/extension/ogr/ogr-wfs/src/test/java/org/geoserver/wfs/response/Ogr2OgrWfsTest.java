@@ -7,7 +7,9 @@ package org.geoserver.wfs.response;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -174,5 +176,26 @@ public class Ogr2OgrWfsTest extends GeoServerSystemTestSupport {
             assertEquals("kml", dom.getDocumentElement().getTagName());
             assertEquals(2, dom.getElementsByTagName("Placemark").getLength());
         }
+    }
+
+    @Test
+    public void testModuleStatus() {
+        assertModuleStatus("gs-ogr-core", "OGR Core Module");
+        assertModuleStatus("gs-ogr-wfs", "OGR WFS Module");
+
+        OGRWFSModuleStatus status = applicationContext.getBean(OGRWFSModuleStatus.class);
+        Ogr2OgrOutputFormat format = applicationContext.getBean(Ogr2OgrOutputFormat.class);
+        String executable = format.getExecutable();
+        assertTrue(status.isAvailable());
+        String message = status.getMessage().orElseThrow();
+        assertTrue(message, message.startsWith("ogr2ogr executable: " + executable + "\nGDAL_DATA: "));
+
+        try {
+            format.setExecutable("not-ogr2ogr");
+            assertFalse(status.isAvailable());
+        } finally {
+            format.setExecutable(executable);
+        }
+        assertTrue(status.isAvailable());
     }
 }

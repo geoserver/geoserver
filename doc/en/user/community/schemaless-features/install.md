@@ -11,7 +11,7 @@ render_macros: true
 
     Follow the **Community Modules** link and download `mongodb-schemaless` zip archive.
 
-    - {{ snapshot }} example: [mongodb-schemaless](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-mongodb-schemaless-plugin.zip)
+    - {{ snapshot }} example: [mongodb-schemaless]({{ nightly_community }}mongodb-schemaless-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 

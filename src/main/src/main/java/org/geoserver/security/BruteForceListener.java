@@ -185,6 +185,7 @@ public class BruteForceListener implements ApplicationListener<AbstractAuthentic
         return authentication.getName();
     }
 
+    @SuppressWarnings("PMD.AvoidXForwardedForHeader") // logged for diagnostics only, never for a decision
     private void logFailedRequest(HttpServletRequest request, String name, int count) {
         StringBuilder sb = new StringBuilder("Failed login, user ").append(name).append(" from ");
         sb.append(request.getRemoteAddr());

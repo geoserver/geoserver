@@ -1,8 +1,24 @@
 # Upgrading GeoServer 3
 
-## Upgrading GeoServer 3.0.0 Guidance
+GeoServer 3 was released June 2026 as the first major upgrade from the GeoServer 2 series.
 
-GeoServer 3.0.x is scheduled for release in April/May 2026.
+## Upgrading GeoServer 3.0.2 Guidance
+
+### Client address behind a reverse proxy
+
+GeoServer now only trusts `X-Forwarded-For` from a reverse proxy on the local host. If your proxy runs on another host or container, set the `GEOSERVER_TRUSTED_PROXIES` [application property](../configuration/properties/index.md) to its address or address range. See [Client address behind a reverse proxy](../production/misc.md#client-address-behind-a-reverse-proxy) for details.
+
+A customized `web.xml` needs the new `Remote IP Resolution` filter, see [Customized web.xml](../production/misc.md#customized-webxml).
+
+### WCS reads overviews by default
+
+When the WCS settings do not set an overview policy, WCS now uses **Higher resolution overview**: a GetCoverage request for a lower resolution than the data reads the overview just finer than the request, instead of the native resolution. Scaled requests take much less CPU and memory, and their output changes: the pixel values come from the overview, which usually holds averages, instead of being picked from the native pixels.
+
+A policy set in the WCS settings stays as it is. Saving the WCS settings page writes the policy it shows, so a data directory whose WCS settings were saved before 3.1 usually holds **Don't use overviews** and keeps it: check the setting after the upgrade. To get the previous behavior back, set **Overview policy** to **Don't use overviews** on the WCS settings page.
+
+The names of two choices in that list were swapped. **Higher resolution overview** now names the policy that reads the overview finer than the request (`QUALITY` in `wcs.xml` and the REST API), and **Lower resolution overview** the one that reads the overview coarser than the request (`SPEED`). Saved settings do not change, only the names shown.
+
+## Upgrading GeoServer 3.0.0 Guidance
 
 The upgrade to GeoServer 3.0 is seamless maintaining the same data directory and Java 17 environment as used previously for GeoServer 2.28.
 

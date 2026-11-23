@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import org.geoserver.platform.GeoServerEnvironment;
@@ -21,7 +22,12 @@ import org.geoserver.security.password.PasswordValidator;
 import org.geoserver.test.SystemTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.springframework.context.ApplicationListener;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
+import org.springframework.security.core.Authentication;
 
 @Category(SystemTest.class)
 public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
@@ -34,6 +40,50 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
                 new TestingAuthenticationToken("admin", "geoserver", List.of(GeoServerRole.ADMIN_ROLE));
         auth.setAuthenticated(true);
         assertTrue(secMgr.checkAuthenticationForAdminRole(auth));
+    }
+
+    @Test
+    public void testDefaultPasswordCheckPublishesNoEventOnSuccess() throws Exception {
+        List<AbstractAuthenticationEvent> events = new ArrayList<>();
+        assertTrue(checkDefaultPassword(events));
+        assertEquals(List.of(), events);
+    }
+
+    @Test
+    public void testDefaultPasswordCheckPublishesNoEventOnFailure() throws Exception {
+        GeoServerSecurityManager secMgr = getSecurityManager();
+        List<AuthenticationProvider> providers = secMgr.getProviders();
+        secMgr.setProviders(List.of(new RejectingProvider()));
+        try {
+            List<AbstractAuthenticationEvent> events = new ArrayList<>();
+            assertFalse(checkDefaultPassword(events));
+            assertEquals(List.of(), events);
+        } finally {
+            secMgr.setProviders(providers);
+        }
+    }
+
+    /** Runs the default password check, collecting the authentication events published meanwhile. */
+    private boolean checkDefaultPassword(List<AbstractAuthenticationEvent> events) {
+        ApplicationListener<AbstractAuthenticationEvent> listener = events::add;
+        applicationContext.addApplicationListener(listener);
+        try {
+            return getSecurityManager().checkForDefaultAdminPassword();
+        } finally {
+            applicationContext.removeApplicationListener(listener);
+        }
+    }
+
+    private static class RejectingProvider implements AuthenticationProvider {
+        @Override
+        public Authentication authenticate(Authentication authentication) {
+            throw new BadCredentialsException("Rejected: " + authentication.getName());
+        }
+
+        @Override
+        public boolean supports(Class<?> authentication) {
+            return true;
+        }
     }
 
     @Test

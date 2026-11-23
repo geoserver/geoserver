@@ -24,6 +24,8 @@ public class ProxifyingURLMangler implements URLMangler {
         FORWARDED_PROTO("X-Forwarded-Proto"),
         FORWARDED_HOST("X-Forwarded-Host"),
         FORWARDED_PATH("X-Forwarded-Path"),
+        // used to build proxy base URLs, not for a per-request client address decision
+        @SuppressWarnings("PMD.AvoidXForwardedForHeader")
         FORWARDED_FOR("X-Forwarded-For"),
         HOST("Host");
 

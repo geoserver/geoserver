@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>web</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
   <groupId>org.geoserver.web</groupId>
   <artifactId>gs-web-app</artifactId>
@@ -438,7 +438,17 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-graticule</artifactId>
-          <version>3.1.0-SNAPSHOT</version>
+          <version>${revision}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>updates-checker</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-updates-checker</artifactId>
+          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -589,8 +599,9 @@
       <id>pyramid</id>
       <dependencies>
         <dependency>
-          <groupId>org.geotools</groupId>
-          <artifactId>gt-imagepyramid</artifactId>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-pyramid</artifactId>
+          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -1250,6 +1261,16 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>gwc-hazelcast</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-gwc-hazelcast</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
 
     <profile>
       <id>wps-jdbc</id>
@@ -1882,8 +1903,9 @@
       <id>stac-store</id>
       <dependencies>
         <dependency>
-          <groupId>org.geotools</groupId>
-          <artifactId>gt-stac-store</artifactId>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-stac-datastore</artifactId>
+          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -1906,8 +1928,9 @@
       <id>iau</id>
       <dependencies>
         <dependency>
-          <groupId>org.geotools</groupId>
-          <artifactId>gt-iau-wkt</artifactId>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-iau</artifactId>
+          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>

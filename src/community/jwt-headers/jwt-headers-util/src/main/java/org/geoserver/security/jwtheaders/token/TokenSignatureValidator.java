@@ -15,7 +15,7 @@ import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import org.geoserver.security.jwtheaders.JwtConfiguration;
 
 /**
@@ -31,7 +31,7 @@ public class TokenSignatureValidator {
 
     public static LoadingCache<String, JWKSet> jwks = CacheBuilder.newBuilder()
             .maximumSize(50000)
-            .expireAfterWrite(1, TimeUnit.HOURS)
+            .expireAfterWrite(Duration.ofHours(1))
             .build(new CacheLoader<String, JWKSet>() {
                 public JWKSet load(String urlStr) throws Exception {
 
@@ -42,7 +42,7 @@ public class TokenSignatureValidator {
     // keyed by key set URL + token digest, see cacheKey()
     public static Cache<Object, Object> validAccessKeys = CacheBuilder.newBuilder()
             .maximumSize(50000)
-            .expireAfterWrite(1, TimeUnit.HOURS)
+            .expireAfterWrite(Duration.ofHours(1))
             .build();
 
     JwtConfiguration jwtHeadersConfig;

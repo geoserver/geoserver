@@ -23,7 +23,7 @@ This service describes, retrieves and updates the styles present on the server. 
 
     Follow the **Community Modules** link and download `ogcapi-styles` zip archive.
 
-    - {{ snapshot }} example: [ogcapi-styles](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-ogcapi-styles-plugin.zip)
+    - {{ snapshot }} example: [ogcapi-styles]({{ nightly_community }}ogcapi-styles-plugin.zip)
 
     The website lists active nightly builds to provide feedback to developers, you may also [browse](https://build.geoserver.org/geoserver/) for earlier branches.
 
@@ -38,4 +38,24 @@ This service describes, retrieves and updates the styles present on the server. 
 
 ## Configuration of OGC API - Styles module
 
-At the time of writing the module has no configuration, it's simply exposing all available GeoServer styles.
+The module exposes all available GeoServer styles. Its settings are on the **Services > Styles** page in the admin UI, on the **Styles** tab.
+
+### Conformance classes
+
+Use the provided [Conformance table](../../../configuration/ogc-api-services/index.md#conformance) to manage the conformance classes.
+
+The service always supports reading styles, as Mapbox styles, SLD 1.0 and SLD 1.1. These classes are always enabled and are listed in the conformance declaration.
+
+The **Manage styles** conformance class allows clients to create, update and delete styles, and to update style metadata. It is disabled by default.
+
+Managing styles changes the GeoServer catalog, so decide who may do it before enabling the class. Service security rules control this, in **Security > Services** or in `security/services.properties`. A good starting point allows only administrators:
+
+```
+styles.addStyle=ROLE_ADMINISTRATOR
+styles.updateStyle=ROLE_ADMINISTRATOR
+styles.deleteStyle=ROLE_ADMINISTRATOR
+styles.updateStyleMetadata=ROLE_ADMINISTRATOR
+styles.patchStyleMetadata=ROLE_ADMINISTRATOR
+```
+
+Add other roles to these rules to allow more users to manage styles. Use a rule for each operation, as above: a `styles.*` rule also applies to the operations that read styles.

@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
@@ -66,6 +67,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 import org.aopalliance.intercept.MethodInvocation;
@@ -1620,6 +1622,25 @@ public class GWCTest {
         newConfig.setMetaTilingThreads(0);
         mediator.saveConfig(newConfig);
         assertNull(mediator.getMetaTilingExecutor());
+    }
+
+    /** Renders in flight keep using the executor they read, so a save keeping the thread count must keep it running. */
+    @Test
+    public void testSaveConfigKeepsMetatilingExecutor() throws IOException {
+        GWCConfig config = new GWCConfig();
+        config.setMetaTilingThreads(12);
+        mediator.saveConfig(config);
+        ExecutorService executor = (ExecutorService) mediator.getMetaTilingExecutor();
+
+        config.setDirectWMSIntegrationEnabled(!config.isDirectWMSIntegrationEnabled());
+        mediator.saveConfig(config);
+        assertSame(executor, mediator.getMetaTilingExecutor());
+        assertFalse(executor.isShutdown());
+
+        config.setMetaTilingThreads(13);
+        mediator.saveConfig(config);
+        assertNotSame(executor, mediator.getMetaTilingExecutor());
+        assertTrue(executor.isShutdown());
     }
 
     @Test

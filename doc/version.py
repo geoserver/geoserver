@@ -10,6 +10,7 @@ To update the version for a new release, change the values below.
 
 import os
 import re
+import subprocess
 from urllib.parse import urlparse
 
 
@@ -86,6 +87,44 @@ def _guess_release(branch, version, default='3.1.0'):
     return default
 
 
+def _pom_version():
+    pom = os.path.join(os.path.dirname(__file__), '..', 'src', 'pom.xml')
+    try:
+        with open(pom, encoding='utf-8') as f:
+            text = f.read()
+    except OSError:
+        return None
+    m = re.search(r'<revision>([^<]+)</revision>', text) or re.search(
+        r'<artifactId>geoserver</artifactId>\s*<version>([^<]+)</version>', text
+    )
+    return m.group(1) if m else None
+
+
+def _latest_release_before(major, minor):
+    try:
+        out = subprocess.run(
+            ['git', 'ls-remote', '--tags', '--refs', 'https://github.com/geoserver/geoserver'],
+            capture_output=True, text=True, timeout=30, check=True,
+        ).stdout
+    except (OSError, subprocess.SubprocessError):
+        return None
+    tags = [tuple(map(int, m.groups())) for m in re.finditer(r'refs/tags/(\d+)\.(\d+)\.(\d+)$', out, re.M)]
+    older = [t for t in tags if t[:2] < (major, minor)]
+    return '.'.join(map(str, max(older))) if older else None
+
+
+def _release_from_pom(pom_version):
+    m = re.match(r'^(\d+)\.(\d+)\.(\d+)(-SNAPSHOT)?$', pom_version or '')
+    if not m:
+        return None
+    major, minor, patch = int(m[1]), int(m[2]), int(m[3])
+    if not m[4]:
+        return pom_version
+    if patch > 0:
+        return f'{major}.{minor}.{patch - 1}'
+    return _latest_release_before(major, minor)
+
+
 def define_env(env):
     """
     Define macros and variables for mkdocs-macros-plugin.
@@ -113,13 +152,13 @@ def define_env(env):
     version = _guess_version(branch, default='3.1')
 
     # release for build artifacts is exact tag on true release branch, else derived or default
+    pom_version = _pom_version()
     if is_release and release_branch:
         release = branch
     else:
-        release = _guess_release(branch, version, default='3.1.0')
+        release = _release_from_pom(pom_version) or _guess_release(branch, version, default='3.1.0')
 
-    # nightly artifacts carry the full Maven version (3.1.0-SNAPSHOT), not the 3.1 series
-    snapshot = f"{_guess_release(branch, version)}-SNAPSHOT"
+    snapshot = pom_version or f"{_guess_release(branch, version)}-SNAPSHOT"
 
     env.variables['branch'] = branch
     env.variables['is_snapshot'] = is_snapshot
@@ -149,19 +188,11 @@ def define_env(env):
         + env.variables['release'] + '/extensions/geoserver-' + env.variables['release'] + '-'
     )
 
-    # Usage: [geoserver-{{ snapshot }}-war.zip]({{ nightly_release }}war)
-    env.variables['nightly_release'] = (
-        'https://build.geoserver.org/geoserver/'
-        + build_branch + '/geoserver-' + env.variables['snapshot'] + '-'
-    )
-    env.variables['nightly_extension'] = (
-        'https://build.geoserver.org/geoserver/'
-        + build_branch + '/extensions/geoserver-' + env.variables['snapshot'] + '-'
-    )
-    env.variables['nightly_community'] = (
-        'https://build.geoserver.org/geoserver/'
-        + build_branch + '/community-latest/geoserver-' + env.variables['snapshot'] + '-'
-    )
+    # Usage: [geoserver-{{ snapshot }}-war.zip]({{ nightly_release }}war.zip)
+    nightly = 'https://build.geoserver.org/geoserver/' + build_branch + '/'
+    env.variables['nightly_release'] = nightly + 'geoserver-' + build_branch + '-latest-'
+    env.variables['nightly_extension'] = nightly + 'ext-latest/geoserver-' + snapshot + '-'
+    env.variables['nightly_community'] = nightly + 'community-latest/geoserver-' + snapshot + '-'
 
     # Additional useful variables
     env.variables['geoserver_repo'] = 'https://github.com/geoserver/geoserver'

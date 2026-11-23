@@ -200,12 +200,10 @@ Raw images are not used very often:
 
 Take consistent screenshots by following these guidelines:
 
-* Create a responsive design profile of 900 x 800 for consistent size of on screen components.
-  This size allows the user interface to display two-column layout of forms, and
-  avoid responsive design layout changes.
+* Use a responsive design mode "Laptop with MDPI screen" profile of 1280 x 800 at 72 DPI (1x) for consistent size of on
+  screen components. This size leaves room for the sidebar, displays forms in a two-column layout, and
+  avoids responsive design layout changes.
   
-    This can be accomplished using responsive design mode in your browser development tools.
-    
     The browser may also have a screenshot button to save an image at the requested DPI.
 
 * Use light appearance in the application, adjust monitor to sRGB.
@@ -226,7 +224,7 @@ Be considerate of file size:
     ![](img/screen-snap-alpha.png)  
     *Do not include alpha band when saving*
 
-Full screen 900 x 800 is used sparingly, and are presented as figures (with a caption):
+Full screen 1280 x 800 is used sparingly, and are presented as figures (with a caption):
 
 === "Markdown"
     
@@ -240,7 +238,7 @@ Full screen 900 x 800 is used sparingly, and are presented as figures (with a ca
     ![](img/screen-snap.png)  
     *Full screen*
 
-Crop for form and data entry steps:
+Crop the full screen to the form content for form and data entry steps:
 
 === "Markdown"
     

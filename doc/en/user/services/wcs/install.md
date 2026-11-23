@@ -21,12 +21,12 @@ To install the WCS 1.0 and 1.1 extensions:
     **WCS 1.0**:
 
     - {{ release }} [geoserver-{{ release }}-wcs1_0-plugin.zip](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-wcs1_0-plugin.zip)
-    - {{ snapshot }} [geoserver-{{ snapshot }}-wcs1_0-plugin.zip](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-wcs1_0-plugin.zip)
+    - {{ snapshot }} [geoserver-{{ snapshot }}-wcs1_0-plugin.zip]({{ nightly_extension }}wcs1_0-plugin.zip)
 
     **WCS 1.1**:
 
     - {{ release }} [geoserver-{{ release }}-wcs1_1-plugin.zip](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-wcs1_1-plugin.zip)
-    - {{ snapshot }} [geoserver-{{ snapshot }}-wcs1_1-plugin.zip](https://build.geoserver.org/geoserver/main/ext-latest/geoserver-{{ snapshot }}-wcs1_1-plugin.zip)
+    - {{ snapshot }} [geoserver-{{ snapshot }}-wcs1_1-plugin.zip]({{ nightly_extension }}wcs1_1-plugin.zip)
 
     The download link for **WCS 1.0** or **WCS 1.1** will be in the **Extensions** section under **Other**.
 

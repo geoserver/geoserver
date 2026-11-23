@@ -5,12 +5,15 @@
  */
 package org.geoserver.wfs;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.opengis.wfs20.CreateStoredQueryResponseType;
 import net.opengis.wfs20.CreateStoredQueryType;
 import net.opengis.wfs20.QueryExpressionTextType;
 import net.opengis.wfs20.StoredQueryDescriptionType;
 import net.opengis.wfs20.Wfs20Factory;
 import org.geoserver.platform.ServiceException;
+import org.geotools.util.logging.Logging;
 
 /**
  * Web Feature Service CreateStoredQuery operation.
@@ -18,6 +21,8 @@ import org.geoserver.platform.ServiceException;
  * @author Justin Deoliveira, OpenGeo
  */
 public class CreateStoredQuery {
+
+    static final Logger LOGGER = Logging.getLogger(CreateStoredQuery.class);
 
     /** The default create stored query language, according to spec */
     public static final String DEFAULT_LANGUAGE = "urn:ogc:def:queryLanguage:OGC-WFS::WFSQueryExpression";
@@ -51,7 +56,8 @@ public class CreateStoredQuery {
             try {
                 storedQueryProvider.createStoredQuery(sqd);
             } catch (Exception e) {
-                throw new WFSException(request, "Error occured creating stored query", e);
+                LOGGER.log(Level.WARNING, e, () -> "Error creating stored query: " + sqd.getId());
+                throw new WFSException(request, "Error occurred creating stored query");
             }
         }
 
@@ -62,6 +68,13 @@ public class CreateStoredQuery {
     }
 
     void validateStoredQuery(CreateStoredQueryType request, StoredQueryDescriptionType sq) throws WFSException {
+        if (sq.getId() != null && StoredQueryProvider.isIdTooLong(sq.getId())) {
+            WFSException e =
+                    new WFSException(request, "Stored query id too long", ServiceException.INVALID_PARAMETER_VALUE);
+            e.setLocator("STOREDQUERY_ID");
+            throw e;
+        }
+
         if (sq.getQueryExpressionText().isEmpty()) {
             throw new WFSException(request, "Stored query does not specify any queries");
         }

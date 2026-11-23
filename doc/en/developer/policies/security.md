@@ -149,6 +149,7 @@ This represents a balance between transparency and participation that does not o
 5.  Assign a placeholder Jira issue with `Vulnerability` category with security level "geoserver-security"
 
     - Mentioning the CVE is fine, even if it is not yet public, it will still show up in the database as reserved.
+    - Set the "Disclosure" field to the release the vulnerability will be disclosed with, normally the first release of the next series.
 
     !!! note
         Example: The Jira issue GEOS-11121 ticket is created for CVE-2023-41339.
@@ -157,11 +158,18 @@ This represents a balance between transparency and participation that does not o
 
         *Jira GEOS-11121 Placeholder*
 
-6.  During the release process list CVE in "Security Considerations" section of release announcements.
+6.  During the release process the "Security Considerations" section of release announcements indicates that security fixes are included.
 
-    - Initially this lists CVE numbers, indicating a fix is included but does not provide any details
+    - CVE numbers and details are not listed, the section indicates when details will be provided.
     - An indication of the severity is provided to encourage community to update.
-    - You may change the wording of the recommendation to "recommended" or "essential" or "urgent" as you see fit.
+    - You may change the wording of the recommendation to "important" or "urgent" as you see fit.
+
+    !!! note
+          Example: Security considerations section of the GeoServer 3.0.2 release announcement.
+
+          ![](img/cve-announcement.png)
+
+          *Release announcement before disclosure*
 
     !!! note
         It is our policy not to provide details at this time. Any deeply concerned parties can volunteer on the geoserver-security email list, or arrange a vendor relationship with a service provider.
@@ -174,7 +182,9 @@ This represents a balance between transparency and participation that does not o
 
       For an urgent vulnerability both "stable" and "maintenance" may be issued concurrently via an emergency update rather than following the expected schedule. In this case the blog post should indicate when disclosure is expected (example "everyone has two weeks until public disclosure").
 
-    - Update prior release announcements, and placeholder Jira issue, with the complete title of the vulnerability.
+    - Update the placeholder Jira issue with the complete title of the vulnerability.
+
+    - Update prior release announcements, the website `announcement.py --disclosure <release>` command lists the blog posts for each fix version and the "Security Considerations" text to add (see [Release Guide](../release/guide/index.md#geoserver-release-announcement)).
 
     !!! note
           Example: Security considerations section showing a mix of disclosed and not yet disclosed (no hyperlink) vulnerabilities.

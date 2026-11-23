@@ -11,12 +11,12 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.Catalog;
@@ -56,7 +56,7 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         // the size() method in a time minor than a second
         CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
 
-        cache = builder.expireAfterWrite(DEFAULT_CACHE_TIME, TimeUnit.SECONDS).build();
+        cache = builder.expireAfterWrite(Duration.ofSeconds(DEFAULT_CACHE_TIME)).build();
         // Callable which internally calls the size method
         sizeCaller = new SizeCallable();
         // Callable which internally calls the fullSize() method

@@ -12,9 +12,15 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
+import java.util.zip.ZipFile;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
@@ -26,10 +32,88 @@ import org.xml.sax.SAXException;
  */
 abstract class AbstractPluginTester {
 
-    /** Runs the standard startup probe and then any plugin-specific verification. */
+    private static final String ADMIN = "admin:geoserver";
+
+    private static final Pattern GS_JAR = Pattern.compile("(gs-.+?)-\\d+\\.\\d+.*\\.jar");
+
+    /** Runs the standard startup probe, any plugin-specific verification, and the module status check. */
     public final void verify(TestContext context) throws Exception {
         StartupProbeResult probe = waitForStartup(context);
         verifyStarted(context, probe);
+        if (context.pluginZip() == null) {
+            verifyCoreModuleStatus(context);
+        } else if (!PluginRegistry.isModuleStatusIgnored(context.pluginName())) {
+            verifyModuleStatus(context);
+        }
+    }
+
+    /** Checks that every GeoServer jar of the bin package, and PostGIS, reports a module status with a version. */
+    protected void verifyCoreModuleStatus(TestContext context) throws Exception {
+        String html = getAsAdmin(context, "/geoserver/rest/about/status.html");
+        List<String> missingVersion = Stream.of(html.split("<h3>Module name: "))
+                .skip(1)
+                .filter(module -> !module.contains("<b>Version</b>"))
+                .map(module -> module.substring(0, module.indexOf("</h3>")))
+                .toList();
+        if (!missingVersion.isEmpty()) {
+            fail(context.pluginName() + " - Module status without a version: " + missingVersion);
+        }
+        List<String> missingStatus;
+        try (Stream<Path> jars = Files.list(context.workDir().resolve("webapps/geoserver/WEB-INF/lib"))) {
+            missingStatus = jars.map(jar -> GS_JAR.matcher(jar.getFileName().toString()))
+                    .filter(Matcher::matches)
+                    .map(matcher -> matcher.group(1))
+                    .filter(module -> !html.contains("<b>Module</b> : " + module + "</li>"))
+                    .sorted()
+                    .toList();
+        }
+        if (!missingStatus.isEmpty()) {
+            fail(context.pluginName() + " - Jars without a module status: " + missingStatus);
+        }
+        if (!html.contains("PostgreSQL JDBC driver version: ")) {
+            fail(context.pluginName() + " - PostGIS module status not found");
+        }
+    }
+
+    /** Checks that a GeoServer jar from the plugin zip reports a module status with a version. */
+    protected void verifyModuleStatus(TestContext context) throws Exception {
+        List<String> artifacts = gsArtifacts(context.pluginZip());
+        for (String artifact : artifacts) {
+            String path = "/geoserver/rest/about/status/" + artifact + ".html";
+            HttpURLConnection connection = openConnection(context, path, ADMIN);
+            try {
+                if (connection.getResponseCode() == 200
+                        && readProbeResult(connection, 200).bodyAsString().contains("<b>Version</b>")) {
+                    return;
+                }
+            } finally {
+                connection.disconnect();
+            }
+        }
+        fail(context.pluginName() + " - No module status with a version found for any of " + artifacts);
+    }
+
+    private String getAsAdmin(TestContext context, String path) throws Exception {
+        HttpURLConnection connection = openConnection(context, path, ADMIN);
+        try {
+            if (connection.getResponseCode() != 200) {
+                fail(context.pluginName() + " - Request to " + path + " returned HTTP " + connection.getResponseCode());
+            }
+            return readProbeResult(connection, 200).bodyAsString();
+        } finally {
+            connection.disconnect();
+        }
+    }
+
+    private static List<String> gsArtifacts(Path pluginZip) throws IOException {
+        try (ZipFile zip = new ZipFile(pluginZip.toFile())) {
+            return zip.stream()
+                    .map(entry -> Path.of(entry.getName()).getFileName().toString())
+                    .map(GS_JAR::matcher)
+                    .filter(Matcher::matches)
+                    .map(matcher -> matcher.group(1))
+                    .toList();
+        }
     }
 
     /**
@@ -129,10 +213,14 @@ abstract class AbstractPluginTester {
     protected abstract void verifyStarted(TestContext context, StartupProbeResult probe) throws Exception;
 
     protected HttpURLConnection openConnection(TestContext context, String path) throws IOException {
+        return openConnection(context, path, basicAuthCredentials());
+    }
+
+    protected HttpURLConnection openConnection(TestContext context, String path, String credentials)
+            throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(context.baseUrl() + path).openConnection();
         connection.setConnectTimeout(2000);
         connection.setReadTimeout(5000);
-        String credentials = basicAuthCredentials();
         if (credentials != null) {
             String encoded = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
             connection.setRequestProperty("Authorization", "Basic " + encoded);

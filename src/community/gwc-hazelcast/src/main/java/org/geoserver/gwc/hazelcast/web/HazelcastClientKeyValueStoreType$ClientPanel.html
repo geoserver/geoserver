@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <div class="gs-form-group">
+        <label for="hazelcastClusterName">
+          <wicket:message key="HazelcastClientKeyValueStoreType.clusterName">Cluster name</wicket:message>
+        </label>
+        <input id="hazelcastClusterName" wicket:id="clusterName" type="text" class="w-md"/>
+      </div>
+      <div class="gs-form-group">
+        <label for="hazelcastMembers">
+          <wicket:message key="HazelcastClientKeyValueStoreType.members">Cluster members, comma separated host:port</wicket:message>
+        </label>
+        <input id="hazelcastMembers" wicket:id="members" type="text" class="w-lg"/>
+      </div>
+      <div class="gs-form-group">
+        <label for="hazelcastMapName">
+          <wicket:message key="HazelcastClientKeyValueStoreType.mapName">Map name</wicket:message>
+        </label>
+        <input id="hazelcastMapName" wicket:id="mapName" type="text" class="w-md"/>
+      </div>
+    </wicket:panel>
+  </body>
+</html>

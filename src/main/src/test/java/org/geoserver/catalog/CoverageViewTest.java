@@ -17,7 +17,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
 import org.eclipse.imagen.PlanarImage;
 import org.geoserver.catalog.CoverageView.CompositionType;
@@ -77,6 +79,10 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     protected static QName IR_RGB = new QName(MockData.SF_URI, "ir-rgb", MockData.SF_PREFIX);
     protected static QName BANDS_FLAGS = new QName(MockData.SF_URI, "bands-flags", MockData.SF_PREFIX);
     protected static QName S2MASK = new QName(MockData.WCS_URI, "s2mask", MockData.WCS_PREFIX);
+    // coverages "a" and "b", each two fully overlapping granules with band 0 always valid and band 1 valid (20) or
+    // nodata on opposite halves, so a multi banded mosaic hides valid band 1 samples whichever granule ends on top
+    protected static QName NODATA_BANDS = new QName(MockData.SF_URI, "nodata-bands", MockData.SF_PREFIX);
+    private static final int VALID = 20;
 
     @Before
     public void cleanupCatalog() {
@@ -93,6 +99,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         testData.setUpRasterLayer(S2MASK, "s2mask.zip", null, null, TestData.class);
         testData.setUpRasterLayer(IR_RGB, "ir-rgb.zip", null, null, TestData.class);
         testData.setUpRasterLayer(BANDS_FLAGS, "bands-flags.zip", null, null, TestData.class);
+        testData.setUpRasterLayer(NODATA_BANDS, "nodata-bands.zip", null, null, CoverageViewTest.class);
 
         UTM32N = CRS.decode("EPSG:32632", true);
     }
@@ -1006,6 +1013,65 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             disposeCoverage(solidCoverage);
             disposeCoverage(b04Coverage);
             disposeCoverage(b08Coverage);
+        }
+    }
+
+    @Test
+    public void testBandSelectNoDataInSiblingBand() throws Exception {
+        CoverageInfo info = addNoDataBandsView("nodataSingleBand", new InputCoverageBand("a", "1"));
+        assertEquals(Set.of(VALID), readBandSamples(info, 0));
+    }
+
+    @Test
+    public void testDelegateBandSelectPerCoverage() throws Exception {
+        // "b" contributes two bands and stays multi banded, that must not prevent narrowing "a"
+        CoverageInfo info = addNoDataBandsView(
+                "nodataMixedBands",
+                new InputCoverageBand("a", "1"),
+                new InputCoverageBand("b", "0"),
+                new InputCoverageBand("b", "1"));
+        assertEquals(Set.of(VALID), readBandSamples(info, 0));
+    }
+
+    @Test
+    public void testDelegateBandSelectWithoutBandIndex() throws Exception {
+        // "b" has no explicit band and cannot be narrowed, that must not prevent narrowing "a"
+        CoverageInfo info = addNoDataBandsView(
+                "nodataNoBandIndex", new InputCoverageBand("a", "1"), new InputCoverageBand("b", ""));
+        assertEquals(Set.of(VALID), readBandSamples(info, 0));
+    }
+
+    @Test
+    public void testPaletteBandKeepsIndexes() throws Exception {
+        // QUALITY_SNOW is a single band palette coverage, 0 maps to black and 1 to white
+        CoverageInfo info = getCatalog().getCoverageByName(BANDS_FLAGS_VIEW);
+        assertEquals(Set.of(0, 1), readBandSamples(info, 10));
+    }
+
+    private CoverageInfo addNoDataBandsView(String name, InputCoverageBand... inputs) throws Exception {
+        List<CoverageBand> bands = new ArrayList<>();
+        for (InputCoverageBand input : inputs) {
+            String bandName = input.getCoverageName() + "@" + input.getBand();
+            bands.add(new CoverageBand(List.of(input), bandName, bands.size(), CompositionType.BAND_SELECT));
+        }
+        Catalog cat = getCatalog();
+        CoverageStoreInfo store = cat.getCoverageStoreByName(NODATA_BANDS.getLocalPart());
+        CatalogBuilder builder = new CatalogBuilder(cat);
+        builder.setStore(store);
+        CoverageInfo info = new CoverageView(name, bands).createCoverageInfo(name, store, builder);
+        cat.add(info);
+        return info;
+    }
+
+    private Set<Integer> readBandSamples(CoverageInfo info, int band) throws IOException {
+        GridCoverage2D coverage =
+                (GridCoverage2D) info.getGridCoverageReader(null, null).read();
+        try {
+            Raster r = coverage.getRenderedImage().getData();
+            int[] samples = r.getSamples(r.getMinX(), r.getMinY(), r.getWidth(), r.getHeight(), band, (int[]) null);
+            return Arrays.stream(samples).boxed().collect(Collectors.toSet());
+        } finally {
+            coverage.dispose(true);
         }
     }
 }

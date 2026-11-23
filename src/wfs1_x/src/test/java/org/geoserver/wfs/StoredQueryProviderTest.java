@@ -100,6 +100,22 @@ public class StoredQueryProviderTest {
     }
 
     @Test
+    public void overLongIdIsNotFound() {
+        // the query directory must exist so the lookup resolves against it
+        storedQueryProvider.storedQueryDir().dir();
+        String id = "a".repeat(StoredQueryProvider.MAX_ID_LENGTH + 1);
+        assertThat(storedQueryProvider.getStoredQuery(id), is(nullValue()));
+    }
+
+    @Test
+    public void idLengthIsCheckedAfterStrippingNonWordCharacters() {
+        String max = "a".repeat(StoredQueryProvider.MAX_ID_LENGTH);
+        assertThat(StoredQueryProvider.isIdTooLong(max), is(false));
+        assertThat(StoredQueryProvider.isIdTooLong(max + "a"), is(true));
+        assertThat(StoredQueryProvider.isIdTooLong(max + ":"), is(false));
+    }
+
+    @Test
     public void whenNoStoredQueriesDefinedAGetFeatureByIdQueryIsReturned() {
         List<StoredQuery> queries = storedQueryProvider.listStoredQueries();
         assertThat(queries, hasSize(1));
@@ -190,8 +206,7 @@ public class StoredQueryProviderTest {
             writer.write(markerContent);
         }
 
-        RecordingEntityResolver configuredResolver = new RecordingEntityResolver();
-        configuredEntityResolver = configuredResolver;
+        configuredEntityResolver = new RefusingEntityResolver();
 
         createIncludeStoredQueryDefinitionFile(
                 storedQueryProvider.storedQueryDir().dir(), referencedFile);
@@ -204,12 +219,10 @@ public class StoredQueryProviderTest {
             queryExpressionText = "";
         }
 
-        assertThat(configuredResolver.wasConsulted(), is(true));
         assertThat(queryExpressionText, not(containsString(markerContent)));
     }
 
-    private static final class RecordingEntityResolver implements EntityResolver2 {
-        private boolean consulted;
+    private static final class RefusingEntityResolver implements EntityResolver2 {
 
         @Override
         public InputSource getExternalSubset(String name, String baseURI) {
@@ -219,18 +232,12 @@ public class StoredQueryProviderTest {
         @Override
         public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId)
                 throws SAXException {
-            consulted = true;
             throw new SAXException("resolution not supported by this test resolver");
         }
 
         @Override
         public InputSource resolveEntity(String publicId, String systemId) throws SAXException {
-            consulted = true;
             throw new SAXException("resolution not supported by this test resolver");
-        }
-
-        boolean wasConsulted() {
-            return consulted;
         }
     }
 

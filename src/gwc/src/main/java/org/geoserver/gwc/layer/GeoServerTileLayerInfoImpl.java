@@ -58,6 +58,9 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
 
     private String blobStoreId;
 
+    // Boolean, so layers that never set it do not get the element written on save
+    private Boolean memoryCached;
+
     @SuppressWarnings("unused")
     private transient LayerMetaInformation metaInformation;
 
@@ -230,6 +233,16 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
     @Override
     public void setBlobStoreId(@Nullable String blobStoreId) {
         this.blobStoreId = blobStoreId;
+    }
+
+    @Override
+    public boolean isMemoryCached() {
+        return Boolean.TRUE.equals(memoryCached);
+    }
+
+    @Override
+    public void setMemoryCached(boolean memoryCached) {
+        this.memoryCached = memoryCached;
     }
 
     /** @see org.geoserver.gwc.layer.GeoServerTileLayerInfo#getMetaTilingX() */

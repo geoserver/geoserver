@@ -17,7 +17,7 @@ stock GeoServer does not start on a machine that is already in FIPS mode.
     and find the nightly build matching your version. Follow the **Community Modules** link and
     download the `fips` archive.
 
-    - {{ snapshot }} example: [fips](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-fips-plugin.zip)
+    - {{ snapshot }} example: [fips]({{ nightly_community }}fips-plugin.zip)
 
 3.  Stop GeoServer.
 

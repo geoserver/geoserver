@@ -25,4 +25,9 @@
             </list>
         </property>
     </bean>
+    <bean id="ratModule" class="org.geoserver.platform.ModuleStatusImpl">
+        <constructor-arg index="0" value="gs-rat"/>
+        <constructor-arg index="1" value="Raster Attribute Table Extension"/>
+        <property name="category" value="EXTENSION"/>
+    </bean>
 </beans>

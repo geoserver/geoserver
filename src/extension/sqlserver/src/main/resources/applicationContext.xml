@@ -7,14 +7,14 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
-  <bean id="sqlServerExtension" class="org.geoserver.platform.ModuleStatusImpl">
-    <property name="module" value="gs-sqlserver" />
-    <property name="name" value="SQL Server Extension"/>
+  <bean id="sqlServerExtension" class="org.geoserver.platform.LibraryModuleStatus">
+    <constructor-arg index="0" value="gs-sqlserver"/>
+    <constructor-arg index="1" value="SQL Server Extension"/>
+    <constructor-arg index="2" value="Microsoft JDBC Driver for SQL Server"/>
+    <constructor-arg index="3" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
     <property name="component" value="Sql Server extension"/>
     <property name="documentation" value="data/database/sqlserver.html"/>
-    <property name="available" value="true"/>
-    <property name="enabled" value="true"/>
-      <property name="category" value="EXTENSION"/>
+    <property name="category" value="EXTENSION"/>
   </bean>
  
 </beans>

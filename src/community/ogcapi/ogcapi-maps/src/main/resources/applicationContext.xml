@@ -23,4 +23,9 @@
         <constructor-arg index="1" value="1.0.1"/>
     </bean>
 
+    <bean id="ogcapiMapsModule" class="org.geoserver.platform.ModuleStatusImpl">
+        <constructor-arg index="0" value="gs-ogcapi-maps"/>
+        <constructor-arg index="1" value="OGC API Maps"/>
+        <property name="category" value="COMMUNITY"/>
+    </bean>
 </beans>

@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../../img/geoserver.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -30489,14 +30489,13 @@ theme/
 </code></pre></div>
 </li>
 <li>
-<p>Use <strong><em>mkdocs</em></strong> to preview from virtual environment:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>mkdocs<span class="w"> </span>serve
+<p>Use <strong><em>mkdocs</em></strong> to preview from virtual environment (opens browser):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>mkdocs<span class="w"> </span>serve<span class="w"> </span>-o
 </code></pre></div>
 <p>The documentation will refresh as you edit individual files.</p>
-</li>
-<li>
-<p>Open the preview in your browser:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python3<span class="w"> </span>-m<span class="w"> </span>webbrowser<span class="w"> </span>http://localhost:8000
+<p>The <strong><code>mkdocs.yml</code></strong> setting <code>site_url</code> is based on the current branch, to override for local testing
+use <code>SITE_URL</code> environment variable. Example of serving from <code>/</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nv">SITE_URL</span><span class="o">=</span>http://localhost:8000/<span class="w"> </span>mkdocs<span class="w"> </span>serve<span class="w"> </span>-o
 </code></pre></div>
 </li>
 </ol>

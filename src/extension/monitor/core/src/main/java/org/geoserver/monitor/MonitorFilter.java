@@ -28,7 +28,6 @@ import java.util.logging.Logger;
 import org.geoserver.filters.GeoServerFilter;
 import org.geoserver.monitor.RequestData.Status;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.security.SecurityUtils;
 import org.geoserver.wms.map.RenderTimeStatistics;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
@@ -132,7 +131,9 @@ public class MonitorFilter implements GeoServerFilter {
         if (SecurityContextHolder.getContext() != null
                 && SecurityContextHolder.getContext().getAuthentication() != null) {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            String username = SecurityUtils.getUsername(auth.getPrincipal());
+            // use the authentication name rather than the principal: for bearer tokens the principal is a Jwt,
+            // while the name holds the user name resolved from the configured claim
+            String username = auth.getName();
             if (username != null) {
                 data.setRemoteUser(username);
             }

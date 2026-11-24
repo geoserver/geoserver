@@ -167,6 +167,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         form.setValue("context:panel:name", "previewzip");
         form.setValue("context:panel:format", "zip");
         form.submit();
+        tester.assertNoErrorMessage();
         tester.executeAjaxEvent("styleForm:context:panel:preview", "click");
         tester.assertErrorMessages("Failed to build legend preview. Check to see if the style is valid.");
     }
@@ -182,6 +183,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.setValue("context:panel:name", "nolegendtest");
         form.submit();
+        tester.assertNoErrorMessage();
 
         tester.assertRenderedPage(StyleNewPage.class);
         tester.executeAjaxEvent("save", "click");
@@ -358,6 +360,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.setValue("context:panel:name", "repeatedname");
         form.submit();
+        tester.assertNoErrorMessage();
         tester.assertRenderedPage(StyleNewPage.class);
 
         tester.executeAjaxEvent("save", "click");
@@ -384,6 +387,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.setValue("context:panel:name", "test");
         form.submit();
+        tester.assertNoErrorMessage();
 
         tester.assertRenderedPage(StyleNewPage.class);
         assertNotNull(getCatalog().getStyleByName("test"));
@@ -471,6 +475,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.assertVisible("dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:display");
 
         formTester.submit("submit");
+        tester.assertNoErrorMessage();
 
         // we can at least test that the right javascript code is there
         Pattern pattern = Pattern.compile("replaceSelection\\('<ExternalGraphic "
@@ -492,6 +497,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
                 getClass().getResource("GeoServer_75.png").getFile());
         formTester.setFile("userPanel:upload", file, "image/png");
         formTester.submit("submit");
+        tester.assertNoErrorMessage();
 
         assertTrue(Resources.exists(dd.getStyles().get("GeoServer_75.png")));
 
@@ -570,6 +576,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         formTester.setFile("userPanel:upload", file, "image/png");
         formTester.submit("submit");
         String response = tester.getLastResponseAsString();
+        tester.assertNoErrorMessage();
 
         assertTrue(Resources.exists(dd.getStyles().get("');foo('.1.png")));
 
@@ -615,6 +622,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.assertVisible("dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:display");
 
         formTester.submit("submit");
+        tester.assertNoErrorMessage();
 
         tester.assertModelValue(
                 "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource", "somepicture.png");
@@ -627,6 +635,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
                 getClass().getResource("GeoServer_75.png").getFile());
         formTester.setFile("userPanel:upload", file, "image/png");
         formTester.submit("submit");
+        tester.assertNoErrorMessage();
 
         assertTrue(Resources.exists(dd.getStyles().get("GeoServer_75.png")));
 

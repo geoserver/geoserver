@@ -254,6 +254,19 @@ public final class CapabilityUtil {
         return getGroupDefaultStyleName(groupName.prefixedName());
     }
 
+    /**
+     * Checks if the given style name requests no explicit layer group style: either {@code null}/empty, or the
+     * auto-generated default style name advertised in GetCapabilities for the given layer group (see
+     * {@link #getGroupDefaultStyleName(LayerGroupInfo)}). Such names do not correspond to an actual, explicitly
+     * configured layer group style, so they must not be looked up via {@link LayerGroupInfo#styles(String)} /
+     * {@link LayerGroupInfo#layers(String)}.
+     */
+    public static boolean isDefaultGroupStyleName(WMS wms, LayerGroupInfo groupInfo, String styleName) {
+        return styleName == null
+                || styleName.isEmpty()
+                || (encodeGroupDefaultStyle(wms, groupInfo) && styleName.equals(getGroupDefaultStyleName(groupInfo)));
+    }
+
     /** Stores the Min and Max scale denominators for a set of styles. */
     private static class MinMaxDenominator {
         private Double min;

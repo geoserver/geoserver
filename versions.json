@@ -1,7 +1,7 @@
 {
   "source_note": "The version feed is a static file on GitHub, delivered directly (raw.githubusercontent.com) or through the public jsDelivr content delivery network (cdn.jsdelivr.net). The GeoServer team does not run these hosts and receives no request logs at all. We cannot see which GeoServer versions are running. This module sends nothing about your server. However, the feed hosts can see the public IP address of your server making the request.",
   "schema_version": 1,
-  "generated": "2026-11-23T22:24:51Z",
+  "generated": "2026-11-25T13:54:50Z",
   "main": {
     "series": "3.1.x",
     "version": "3.1.0-SNAPSHOT"
@@ -76,13 +76,6 @@
           "published_at": "2026-03-04T08:27:58Z",
           "blog_url": "https://geoserver.org/announcements/2026/01/21/geoserver-2-28-2-released.html",
           "security_flagged": false,
-          "synchronized_release": false
-        },
-        {
-          "version": "2.28.1",
-          "published_at": "2025-11-25T13:52:02Z",
-          "blog_url": "https://geoserver.org/announcements/vulnerability/2025/11/25/geoserver-2-28-1-released.html",
-          "security_flagged": true,
           "synchronized_release": false
         }
       ]

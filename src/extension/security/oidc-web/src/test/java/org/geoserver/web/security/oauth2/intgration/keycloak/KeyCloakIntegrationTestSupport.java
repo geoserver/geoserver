@@ -62,6 +62,7 @@ import org.testcontainers.utility.MountableFile;
  * <ul>
  *   <li>master-realm.json (admin user geoserver/geoserver)
  *   <li>gs-realm-realm.json (test users &amp; client)
+ *   <li>partner-realm.json (a second issuer, for the tests with two filters)
  * </ul>
  *
  * <p>See README in resources/org/geoserver/web/security/oauth2/intgration/keycloak for details.
@@ -126,6 +127,10 @@ public class KeyCloakIntegrationTestSupport extends GeoServerWicketTestSupport {
                             MountableFile.forClasspathResource(
                                     "org/geoserver/web/security/oauth2/login/keycloak/gs-realm-realm.json"),
                             "/opt/keycloak/data/import/gs-realm-realm.json")
+                    .withCopyToContainer(
+                            MountableFile.forClasspathResource(
+                                    "org/geoserver/web/security/oauth2/login/keycloak/partner-realm.json"),
+                            "/opt/keycloak/data/import/partner-realm.json")
                     // Use INFO logging level to avoid memory issues from verbose output
                     .withCustomCommand("--log-level=INFO");
 
@@ -196,7 +201,17 @@ public class KeyCloakIntegrationTestSupport extends GeoServerWicketTestSupport {
      * @return JSON response containing access_token, refresh_token, id_token, etc.
      */
     protected JSONObject getTokenFromKeycloak(String username, String password) throws Exception {
-        String tokenUrl = authServerUrl + "/realms/gs-realm/protocol/openid-connect/token";
+        return getTokenFromKeycloak("gs-realm", oidcClient, oidcClientSecret, username, password);
+    }
+
+    /**
+     * Same as {@link #getTokenFromKeycloak(String, String)}, for a client of any realm.
+     *
+     * @param clientSecret null for a public client
+     */
+    protected JSONObject getTokenFromKeycloak(
+            String realm, String clientId, String clientSecret, String username, String password) throws Exception {
+        String tokenUrl = authServerUrl + "/realms/" + realm + "/protocol/openid-connect/token";
 
         URL url = new URL(tokenUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -207,11 +222,13 @@ public class KeyCloakIntegrationTestSupport extends GeoServerWicketTestSupport {
         connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
         String body = "grant_type=password"
-                + "&client_id=" + oidcClient
-                + "&client_secret=" + oidcClientSecret
+                + "&client_id=" + clientId
                 + "&username=" + username
                 + "&password=" + password
                 + "&scope=openid profile email";
+        if (clientSecret != null) {
+            body += "&client_secret=" + clientSecret;
+        }
 
         try (OutputStream os = connection.getOutputStream()) {
             os.write(body.getBytes(StandardCharsets.UTF_8));

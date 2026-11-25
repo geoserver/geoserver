@@ -12,6 +12,11 @@ credential (`root`/`root`). It exists so `KeyCloakAdminPrincipalIntegrationTest`
 `root` is refused GeoServer roles. It has the same `geoserverAdmin` client role as `admin`, so that test fails loudly
 if the guard ever stops firing. If you regenerate the realm by exporting from a container, add the user back.
 
+`partner-realm.json` is written by hand, not exported. It is a second issuer for the tests with two filters
+(`KeyCloakMultiFilterIntegrationTest`): its tokens are signed with other keys than those of `gs-realm`. `carol`
+holds the realm role `gis-admin`, and `dave` holds no role. Keycloak refuses to import a realm from a file not named
+`<realm>-realm.json`.
+
 Create New Realm Export Files
 -----------------------------
 

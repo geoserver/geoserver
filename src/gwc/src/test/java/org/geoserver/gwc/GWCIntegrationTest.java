@@ -112,6 +112,7 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -1662,6 +1663,37 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
             // restoring initial configuration value
             getGeoServer().getService(WMTSInfo.class).setEnabled(initialValue);
             LocalWorkspace.set(null);
+        }
+    }
+
+    /**
+     * A workspace named "gwc" does not turn the global GWC endpoint into its virtual service, so its disabled WMTS does
+     * not disable the global one and the global capabilities keep all layers.
+     */
+    @Test
+    public void testGwcWorkspaceName() throws Exception {
+        String capabilities = "/gwc/service/wmts?request=GetCapabilities";
+        String layerCount = "count(//wmts:Contents/wmts:Layer)";
+        String globalCount = WMTS_XPATH_10.evaluate(layerCount, getAsDOM(capabilities));
+        assertThat(Integer.parseInt(globalCount), greaterThan(0));
+
+        Catalog catalog = getCatalog();
+        GeoServer geoServer = getGeoServer();
+        WorkspaceInfo gwcWs = catalog.getFactory().createWorkspace();
+        gwcWs.setName("gwc");
+        catalog.add(gwcWs);
+        WMTSInfo gwcWmts = geoServer.getFactory().create(WMTSInfo.class);
+        gwcWmts.setWorkspace(gwcWs);
+        gwcWmts.setName(geoServer.getService(WMTSInfo.class).getName());
+        gwcWmts.setEnabled(false);
+        geoServer.add(gwcWmts);
+        try {
+            MockHttpServletResponse response = getAsServletResponse(capabilities);
+            assertEquals(HttpStatus.OK.value(), response.getStatus());
+            assertEquals(globalCount, WMTS_XPATH_10.evaluate(layerCount, dom(response, true)));
+        } finally {
+            geoServer.remove(gwcWmts);
+            catalog.remove(gwcWs);
         }
     }
 

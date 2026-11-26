@@ -29,6 +29,7 @@ import org.geowebcache.mime.MimeType;
 public class Tileset extends AbstractDocument {
 
     public static final String TILE_REL = "item";
+    public static final String TILING_SCHEME_REL = "http://www.opengis.net/def/rel/ogc/1.0/tiling-scheme";
     private final String styleId;
     private final String tileMatrixId;
 
@@ -102,6 +103,13 @@ public class Tileset extends AbstractDocument {
         }
 
         if (addDetails) {
+            new LinksBuilder(TileMatrixSetDocument.class)
+                    .segment("ogc/tiles/v1/tileMatrixSets/"
+                            + ResponseUtils.urlEncode(gridSubset.getGridSet().getName()))
+                    .title("Tile matrix set definition as ")
+                    .rel(TILING_SCHEME_REL)
+                    .add(this);
+
             // links depend on the data type
             List<MimeType> tileTypes = tileLayer.getMimeTypes();
             if (dataType == DataType.vector) {

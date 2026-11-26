@@ -8,7 +8,7 @@
 
   <h2>${model.id}</h2>
   <p class="my-4">
-    Tile matrix set definition for ${model.id}, expressed in ${model.supportedCRS}
+    Tile matrix set definition for ${model.id}, expressed in ${model.crs}
     <#if model.title??>${model.title}</#if>
     The tile matrix composing the set are reported in the following table.
   </p>

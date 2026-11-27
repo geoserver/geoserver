@@ -124,7 +124,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         assertTrue(img.getBehaviors().get(0) instanceof AttributeModifier);
 
         AttributeModifier mod = (AttributeModifier) img.getBehaviors().get(0);
-        assertTrue(mod.toString().contains("cite/wms?REQUEST=GetLegendGraphic"));
+        assertTrue(mod.toString().contains("cite/wms?SERVICE=WMS&REQUEST=GetLegendGraphic"));
         assertTrue(mod.toString().contains("style=cite:Ponds"));
 
         // restore style
@@ -147,8 +147,8 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         assertTrue(img.getBehaviors().get(0) instanceof AttributeModifier);
 
         AttributeModifier mod = (AttributeModifier) img.getBehaviors().get(0);
-        assertFalse(mod.toString().contains("cite/wms?REQUEST=GetLegendGraphic"));
-        assertTrue(mod.toString().contains("wms?REQUEST=GetLegendGraphic"));
+        assertFalse(mod.toString().contains("cite/wms?SERVICE=WMS&REQUEST=GetLegendGraphic"));
+        assertTrue(mod.toString().contains("wms?SERVICE=WMS&REQUEST=GetLegendGraphic"));
         assertTrue(mod.toString().contains("style=Ponds"));
     }
 

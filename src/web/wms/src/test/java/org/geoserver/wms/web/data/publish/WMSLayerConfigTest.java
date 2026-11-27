@@ -14,7 +14,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.net.URL;
 import java.util.HashSet;
-import org.apache.wicket.AttributeModifier;
+import javax.imageio.ImageIO;
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
 import org.apache.wicket.feedback.FeedbackMessage;
@@ -32,8 +32,9 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.WMSLayerInfoImpl;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.data.test.MockData;
@@ -42,6 +43,7 @@ import org.geoserver.test.http.MockHttpResponse;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.web.publish.CartographyConfigPanel;
 import org.geoserver.wms.web.publish.StylesModel;
 import org.geoserver.wms.web.publish.WMSRemoteLayerConfig;
@@ -103,53 +105,54 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    public void testLegendGraphicURL() throws Exception {
-        // force style into ponds workspace
-        Catalog catalog = getCatalog();
-        StyleInfo style = catalog.getStyleByName(MockData.PONDS.getLocalPart());
-        WorkspaceInfo ws = catalog.getWorkspaceByName(MockData.PONDS.getPrefix());
-        style.setWorkspace(ws);
-        catalog.save(style);
-
-        final LayerInfo layer = getCatalog().getLayerByName(MockData.PONDS.getLocalPart());
-        FormTestPage page =
-                new FormTestPage((ComponentBuilder) id -> new CartographyConfigPanel(id, new Model<>(layer)));
-        tester.startPage(page);
-        tester.assertRenderedPage(FormTestPage.class);
-        tester.debugComponentTrees();
-
-        Image img = (Image) tester.getComponentFromLastRenderedPage("form:panel:styles:defaultStyleLegendGraphic");
-        assertNotNull(img);
-        assertEquals(1, img.getBehaviors().size());
-        assertTrue(img.getBehaviors().get(0) instanceof AttributeModifier);
-
-        AttributeModifier mod = (AttributeModifier) img.getBehaviors().get(0);
-        assertTrue(mod.toString().contains("cite/wms?REQUEST=GetLegendGraphic"));
-        assertTrue(mod.toString().contains("style=cite:Ponds"));
-
-        // restore style
-        style.setWorkspace(null);
-        catalog.save(style);
+    public void testLegendGraphic() throws Exception {
+        assertLegendGraphic(getCatalog().getLayerByName(MockData.PONDS.getLocalPart()));
     }
 
     @Test
-    public void testLegendGraphicURLNoWorkspace() throws Exception {
-        final LayerInfo layer = getCatalog().getLayerByName(MockData.PONDS.getLocalPart());
-        FormTestPage page =
-                new FormTestPage((ComponentBuilder) id -> new CartographyConfigPanel(id, new Model<>(layer)));
-        tester.startPage(page);
+    public void testLegendGraphicWorkspaceStyle() throws Exception {
+        Catalog catalog = getCatalog();
+        StyleInfo style = catalog.getStyleByName(MockData.PONDS.getLocalPart());
+        style.setWorkspace(catalog.getWorkspaceByName(MockData.PONDS.getPrefix()));
+        catalog.save(style);
+        try {
+            assertLegendGraphic(catalog.getLayerByName(MockData.PONDS.getLocalPart()));
+        } finally {
+            style.setWorkspace(null);
+            catalog.save(style);
+        }
+    }
+
+    @Test
+    public void testLegendGraphicServicesDisabled() throws Exception {
+        GeoServer gs = getGeoServer();
+        GeoServerInfo global = gs.getGlobal();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        global.setGlobalServices(false);
+        gs.save(global);
+        wms.setEnabled(false);
+        gs.save(wms);
+        try {
+            assertLegendGraphic(getCatalog().getLayerByName(MockData.PONDS.getLocalPart()));
+        } finally {
+            global.setGlobalServices(true);
+            gs.save(global);
+            wms.setEnabled(true);
+            gs.save(wms);
+        }
+    }
+
+    /** Renders the layer cartography panel and checks the default style legend is a PNG rendered in-process. */
+    private void assertLegendGraphic(LayerInfo layer) throws Exception {
+        tester.startPage(new FormTestPage((ComponentBuilder) id -> new CartographyConfigPanel(id, new Model<>(layer))));
         tester.assertRenderedPage(FormTestPage.class);
-        tester.debugComponentTrees();
+        assertFalse(tester.getLastResponseAsString().contains("GetLegendGraphic"));
 
         Image img = (Image) tester.getComponentFromLastRenderedPage("form:panel:styles:defaultStyleLegendGraphic");
-        assertNotNull(img);
-        assertEquals(1, img.getBehaviors().size());
-        assertTrue(img.getBehaviors().get(0) instanceof AttributeModifier);
-
-        AttributeModifier mod = (AttributeModifier) img.getBehaviors().get(0);
-        assertFalse(mod.toString().contains("cite/wms?REQUEST=GetLegendGraphic"));
-        assertTrue(mod.toString().contains("wms?REQUEST=GetLegendGraphic"));
-        assertTrue(mod.toString().contains("style=Ponds"));
+        tester.executeListener(img);
+        assertEquals("image/png", tester.getLastResponse().getContentType());
+        assertNotNull(
+                ImageIO.read(new ByteArrayInputStream(tester.getLastResponse().getBinaryContent())));
     }
 
     @Test

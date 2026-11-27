@@ -8,13 +8,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.net.URIBuilder;
 import org.geoserver.data.test.SystemTestData;
@@ -23,6 +28,7 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.RequestFilterChain;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
+import org.geoserver.security.oauth2.config.OpenIdRoleSource;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilter;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.LoginFormInfo;
@@ -30,42 +36,47 @@ import org.geoserver.web.security.oauth2.login.OAuth2LoginAuthProviderPanel;
 import org.geotools.util.logging.Logging;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.kordamp.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 
 /**
- * Verifies that two GeoServer OAuth2/OIDC filter instances backed by the same Keycloak realm produce two
- * <em>independent</em> login buttons and two <em>independent</em> Spring {@code ClientRegistration} entries.
+ * Verifies that two GeoServer OAuth2/OIDC filters of the same chain stay independent of each other.
  *
- * <p>Companion to the single-filter {@link KeyCloakIntegrationTest}. The end-to-end login flow is already covered
- * there; this test focuses on the multi-filter-specific guarantees:
+ * <p>Companion to the single-filter {@link KeyCloakIntegrationTest}. Each filter talks to its own Keycloak realm, as
+ * two identity providers would: {@code primary-idp} to {@code gs-realm} and {@code secondary-idp} to {@code partner}.
+ * The two realms sign their tokens with different keys, and each filter has its own role mapping.
+ *
+ * <p>The tests cover:
  *
  * <ol>
  *   <li>The home page renders <em>one button per active filter</em>, each with a filter-scoped login path of the form
  *       {@code /web/oauth2/authorization/<filterName>__oidc}.
- *   <li>Clicking each button drives Spring's
- *       {@link org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter
- *       OAuth2AuthorizationRequestRedirectFilter} to build a redirect that carries that filter's <em>own</em> scoped
- *       {@code redirect_uri}, so the Keycloak side cannot conflate the two requests.
- *   <li>The two filters produce different {@code state} parameters in their respective auth requests, proving that
- *       Spring keeps two separate {@code OAuth2AuthorizationRequest} sessions — one per filter.
- *   <li>The dynamic {@link LoginFormInfo} registry exposes exactly one bean per filter, each with its own
- *       {@link LoginFormInfo#getLoginPath()} which carries the scoped registration id (filterName__provider).
+ *   <li>A Bearer token is accepted when one of the two filters can validate it, and gets the roles of that filter.
  * </ol>
- *
- * <p>Both filters point at the same Keycloak client {@code gs-client} for simplicity — that's enough to prove the
- * per-filter routing works because GeoServer treats each filter as a distinct Spring {@code ClientRegistration}
- * regardless of whether their Keycloak-side configuration happens to overlap.
  */
 public class KeyCloakMultiFilterIntegrationTest extends KeyCloakIntegrationTestSupport {
 
     private static final Logger LOGGER = Logging.getLogger(KeyCloakMultiFilterIntegrationTest.class);
 
-    /** First filter name — drives a scoped registration ID of {@code primary-idp__oidc}. */
+    /** First filter of the chain, on {@code gs-realm}. Its scoped registration ID is {@code primary-idp__oidc}. */
     private static final String FILTER_PRIMARY = "primary-idp";
 
-    /** Second filter name — drives a scoped registration ID of {@code secondary-idp__oidc}. */
+    /** Second filter of the chain, on the {@code partner} realm. */
     private static final String FILTER_SECONDARY = "secondary-idp";
+
+    private static final String GS_REALM = "gs-realm";
+    private static final String PARTNER_REALM = "partner";
+
+    // defined in partner-realm.json
+    private static final String PARTNER_CLIENT_SECRET = "partner-secret";
+
+    private static final String BASE_URL = "http://localhost:8080/geoserver/";
+
+    private static final String ROLE_ADMINISTRATOR = "ROLE_ADMINISTRATOR";
+    private static final String ROLE_AUTHENTICATED = "ROLE_AUTHENTICATED";
 
     private static String scopedRegId(String filterName) {
         return filterName + "__oidc";
@@ -86,12 +97,12 @@ public class KeyCloakMultiFilterIntegrationTest extends KeyCloakIntegrationTestS
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        registerOidcFilter(FILTER_PRIMARY);
-        registerOidcFilter(FILTER_SECONDARY);
+        GeoServerSecurityManager manager = getSecurityManager();
+        manager.saveFilter(primaryFilter());
+        manager.saveFilter(secondaryFilter());
 
         // Bind both filters to the /web/** chain so GeoServerBasePage's isFilterInChain check passes
         // for both buttons. Anonymous stays last so it cannot pre-empt the OIDC filters.
-        GeoServerSecurityManager manager = getSecurityManager();
         SecurityManagerConfig config = manager.getSecurityConfig();
         GeoServerSecurityFilterChain chain = config.getFilterChain();
         RequestFilterChain web = chain.getRequestChainByName("web");
@@ -99,29 +110,50 @@ public class KeyCloakMultiFilterIntegrationTest extends KeyCloakIntegrationTestS
         manager.saveSecurityConfig(config);
     }
 
-    /** Configures a fresh OIDC filter against the running Keycloak container, scoped to the given filter name. */
-    private void registerOidcFilter(String filterName) throws Exception {
-        String baseKeycloakUrl = keycloakContainer.getAuthServerUrl() + "/realms/gs-realm/protocol/openid-connect";
+    /** Makes administrators of the users holding the client role {@code geoserverAdmin} in {@code gs-realm}. */
+    private GeoServerOAuth2LoginFilterConfig primaryFilter() {
+        GeoServerOAuth2LoginFilterConfig cfg = oidcFilter(FILTER_PRIMARY, GS_REALM, oidcClientSecret);
+        cfg.setTokenRolesClaim("resource_access.gs-client.roles");
+        cfg.setRoleConverterString("geoserverAdmin=" + ROLE_ADMINISTRATOR);
+        return cfg;
+    }
 
+    /** Makes administrators of the users holding the realm role {@code gis-admin} in the partner realm. */
+    private GeoServerOAuth2LoginFilterConfig secondaryFilter() {
+        GeoServerOAuth2LoginFilterConfig cfg = oidcFilter(FILTER_SECONDARY, PARTNER_REALM, PARTNER_CLIENT_SECRET);
+        cfg.setTokenRolesClaim("realm_access.roles");
+        cfg.setRoleConverterString("gis-admin=" + ROLE_ADMINISTRATOR);
+        return cfg;
+    }
+
+    /** An OIDC filter on a realm of the running Keycloak container, reading the roles from the access token. */
+    private GeoServerOAuth2LoginFilterConfig oidcFilter(String filterName, String realm, String clientSecret) {
         GeoServerOAuth2LoginFilterConfig cfg = new GeoServerOAuth2LoginFilterConfig();
         cfg.setName(filterName);
         cfg.setClassName(GeoServerOAuth2LoginAuthenticationFilter.class.getName());
         cfg.setOidcEnabled(true);
         cfg.setOidcClientId(oidcClient);
-        cfg.setOidcClientSecret(oidcClientSecret);
-        cfg.setBaseRedirectUri("http://localhost:8080/geoserver/");
+        cfg.setOidcClientSecret(clientSecret);
+        cfg.setBaseRedirectUri(BASE_URL);
         cfg.calculateRedirectUris();
-        cfg.setOidcTokenUri(baseKeycloakUrl + "/token");
-        cfg.setOidcAuthorizationUri(baseKeycloakUrl + "/authorize");
-        cfg.setOidcUserInfoUri(baseKeycloakUrl + "/userinfo");
-        cfg.setOidcLogoutUri(baseKeycloakUrl + "/endSession");
-        cfg.setOidcJwkSetUri(baseKeycloakUrl + "/certs");
+        cfg.setOidcTokenUri(endpoint(realm, "token"));
+        cfg.setOidcAuthorizationUri(endpoint(realm, "auth"));
+        cfg.setOidcUserInfoUri(endpoint(realm, "userinfo"));
+        cfg.setOidcLogoutUri(endpoint(realm, "logout"));
+        cfg.setOidcJwkSetUri(endpoint(realm, "certs"));
         cfg.setOidcScopes("openid profile email phone address");
         cfg.setOidcUserNameAttribute("email");
+        cfg.setRoleSource(OpenIdRoleSource.AccessToken);
+        cfg.setOnlyExternalListedRoles(true);
+        cfg.setEnableResourceServerMode(true);
         cfg.setEnableRedirectAuthenticationEntryPoint(false);
         cfg.setOidcForceAuthorizationUriHttps(false);
         cfg.setOidcForceTokenUriHttps(false);
-        getSecurityManager().saveFilter(cfg);
+        return cfg;
+    }
+
+    private static String endpoint(String realm, String name) {
+        return authServerUrl + "/realms/" + realm + "/protocol/openid-connect/" + name;
     }
 
     /**
@@ -291,5 +323,69 @@ public class KeyCloakMultiFilterIntegrationTest extends KeyCloakIntegrationTestS
                         || location.endsWith("/web")
                         || location.contains("/web/")
                         || location.contains("/web?"));
+    }
+
+    @Test
+    public void bearerTokenOfFirstProvider() throws Exception {
+        String token = accessToken(GS_REALM, oidcClient, oidcClientSecret, "admin", "admin");
+
+        Authentication admin = authenticateWithBearerToken(token);
+
+        assertRoles(admin, ROLE_ADMINISTRATOR, ROLE_AUTHENTICATED);
+    }
+
+    @Test
+    public void bearerTokenOfSecondProvider() throws Exception {
+        String daveToken = accessToken(PARTNER_REALM, oidcClient, PARTNER_CLIENT_SECRET, "dave", "dave");
+        String carolToken = accessToken(PARTNER_REALM, oidcClient, PARTNER_CLIENT_SECRET, "carol", "carol");
+
+        Authentication dave = authenticateWithBearerToken(daveToken);
+        Authentication carol = authenticateWithBearerToken(carolToken);
+
+        assertRoles(dave, ROLE_AUTHENTICATED);
+        assertRoles(carol, ROLE_ADMINISTRATOR, ROLE_AUTHENTICATED);
+    }
+
+    // a token of the master realm is a valid JWT, signed with keys unknown to both filters
+    @Test
+    public void bearerTokenOfUnknownProvider() throws Exception {
+        String token = accessToken("master", "admin-cli", null, masterRealmUser, masterRealmPassword);
+        AtomicReference<Authentication> authentication = new AtomicReference<>();
+
+        MockHttpServletResponse response = requestWithBearerToken(token, authentication);
+
+        assertEquals(401, response.getStatus());
+        assertTrue(response.getHeader("WWW-Authenticate").startsWith("Bearer error=\"invalid_token\""));
+        assertNull(authentication.get());
+    }
+
+    private String accessToken(String realm, String clientId, String clientSecret, String user, String password)
+            throws Exception {
+        JSONObject tokens = getTokenFromKeycloak(realm, clientId, clientSecret, user, password);
+        return tokens.getString("access_token");
+    }
+
+    private Authentication authenticateWithBearerToken(String token) throws Exception {
+        AtomicReference<Authentication> authentication = new AtomicReference<>();
+        requestWithBearerToken(token, authentication);
+        return authentication.get();
+    }
+
+    /** Sends a request with a Bearer token through the security filters, capturing its authentication if it passes. */
+    private MockHttpServletResponse requestWithBearerToken(String token, AtomicReference<Authentication> authentication)
+            throws Exception {
+        MockHttpServletRequest request = createRequest("web/", true);
+        request.addHeader("Authorization", "Bearer " + token);
+        return executeOnSecurityFiltersCapturingAuth(request, authentication);
+    }
+
+    private void assertRoles(Authentication authentication, String... expected) {
+        assertNotNull("not authenticated", authentication);
+        // Spring marks how a request authenticated with authorities such as FACTOR_BEARER: they are not roles
+        Set<String> roles = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .filter(authority -> !authority.startsWith("FACTOR_"))
+                .collect(Collectors.toCollection(TreeSet::new));
+        assertEquals(new TreeSet<>(Arrays.asList(expected)), roles);
     }
 }

@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.oauth2.config.GeoServerOAuth2LoginFilterConfig;
 import org.geoserver.security.oauth2.login.BearerAwareSecurityContextRepository;
+import org.geoserver.security.oauth2.login.ChainedBearerTokenFilter;
 import org.geoserver.security.oauth2.login.GeoServerJwtAudienceValidator;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2JwtAuthenticationConverter;
 import org.geoserver.security.oauth2.login.MicrosoftEntraTenant;
@@ -32,6 +33,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
@@ -132,6 +134,7 @@ public class HttpSecurityConfigurer {
         SecurityFilterChain chain = http.build();
         List<Filter> filters = chain.getFilters().stream()
                 .filter(f -> reqFilterTypes.contains(f.getClass()))
+                .map(this::preparedForSharedChain)
                 .collect(toList());
 
         String authEntryPoint = config.getAuthenticationEntryPointRedirectUri();
@@ -139,6 +142,17 @@ public class HttpSecurityConfigurer {
             filters.add(ctx.redirectToProviderFilter());
         }
         return filters;
+    }
+
+    /**
+     * Prepares a Spring filter for a chain with several OIDC filters: the Bearer token filter gives the other OIDC
+     * filters of the chain a turn.
+     */
+    private Filter preparedForSharedChain(Filter filter) {
+        if (filter instanceof BearerTokenAuthenticationFilter bearerTokenFilter) {
+            return new ChainedBearerTokenFilter(bearerTokenFilter);
+        }
+        return filter;
     }
 
     /**

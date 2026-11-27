@@ -213,7 +213,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilderTest {
         assertNotNull(sut.getRedirectToProviderFilter());
         Assert.assertSame(f1, lFilter.getNestedFilters().get(0));
         Assert.assertSame(f2, lFilter.getNestedFilters().get(1));
-        Assert.assertSame(fBearer, lFilter.getNestedFilters().get(2));
+        assertTrue(lFilter.getNestedFilters().get(2) instanceof ChainedBearerTokenFilter);
         Assert.assertSame(f3, lFilter.getNestedFilters().get(3));
         Assert.assertSame(
                 sut.getRedirectToProviderFilter(), lFilter.getNestedFilters().get(4));

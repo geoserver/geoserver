@@ -80,6 +80,8 @@ GeoServer can run several OAuth2 / OpenID Connect filters at the same time --- f
 
 When two or more OIDC filters are bound to the same chain, the GeoServer user dropdown shows **one login button per filter**. Each button is a deep link to that filter's scoped authorization endpoint (`/web/oauth2/authorization/<filterName>__<provider>`) so that Spring's OAuth2 filter chain routes the click to the matching `ClientRegistration`.
 
+When several filters of a chain have **Enable Resource Server (Bearer JWT)** checked, a Bearer token is accepted if one of them can validate it. The filters are tried in the order of the chain, and the request gets the roles of the filter that validated the token. If none of them can validate the token, the answer is `401 Unauthorized`.
+
 !!! tip "No restart needed when adding a filter"
     Saving a new OIDC filter through the UI registers the matching login button on the next page render --- no container restart required. The button is removed automatically when the filter is deleted or disabled.
 

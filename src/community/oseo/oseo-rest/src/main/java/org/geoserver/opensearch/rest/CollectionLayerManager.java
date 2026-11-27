@@ -39,7 +39,6 @@ import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -52,10 +51,12 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.rest.RestException;
 import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
 import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.MathTransform;
@@ -68,6 +69,7 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.DataUtilities;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.NameImpl;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.gce.imagemosaic.Utils;
@@ -92,6 +94,7 @@ class CollectionLayerManager {
     private static final String TIME_START = "timeStart";
     private static final String TIME_START_END = "timeStart;timeEnd";
     static final Hints EXCLUDE_MOSAIC_HINTS = new Hints(Utils.EXCLUDE_MOSAIC, true);
+    private static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
     public static final Pattern BAND_SPEC_PATTERN = Pattern.compile("([^\\[]+)(\\[(\\d+)\\])?");
 
     Catalog catalog;
@@ -158,6 +161,7 @@ class CollectionLayerManager {
     }
 
     void createMosaicAndLayer(String collection, CollectionLayer layer) throws Exception {
+        warnGranulesWithoutCRS(collection, layer);
         GeoServerResourceLoader rl = catalog.getResourceLoader();
 
         // grab the target directory and create it if needed
@@ -174,6 +178,41 @@ class CollectionLayerManager {
         }
     }
 
+    /**
+     * Logs a warning if the layer is heterogeneousCRS and granules have no product crs: granules outside the mosaic CRS
+     * without one are silently skipped.
+     */
+    private void warnGranulesWithoutCRS(String collection, CollectionLayer layer) throws IOException {
+        if (!layer.isHeterogeneousCRS()) {
+            return;
+        }
+        FeatureType collectionSchema =
+                accessProvider.getOpenSearchAccess().getCollectionSource().getSchema();
+        String nsURI = collectionSchema.getName().getNamespaceURI();
+        if (!layer.isSeparateBands()) {
+            warnGranulesWithoutCRS(nsURI, collection);
+            return;
+        }
+        for (String band : layer.getBands()) {
+            warnGranulesWithoutCRS(nsURI, collection + OpenSearchAccess.BAND_LAYER_SEPARATOR + band);
+        }
+    }
+
+    private void warnGranulesWithoutCRS(String nsURI, String typeName) throws IOException {
+        SimpleFeatureSource granules = DataUtilities.simple(
+                this.accessProvider.getOpenSearchAccess().getFeatureSource(new NameImpl(nsURI, typeName)));
+        Query query = new Query(typeName, FF.isNull(FF.property("crs")));
+        int count = granules.getFeatures(query).size();
+        if (count == 0) {
+            return;
+        }
+        query.setMaxFeatures(1);
+        SimpleFeature example = DataUtilities.first(granules.getFeatures(query));
+        LOGGER.warning(count + " granules of " + typeName + " belong to products with no crs value, e.g. "
+                + example.getAttribute("location")
+                + ". The layer is heterogeneousCRS: those not in the mosaic CRS will be skipped");
+    }
+
     private void configureSeparateBandsMosaic(
             String collection, CollectionLayer layerConfiguration, String relativePath, Resource mosaicDirectory)
             throws Exception {
@@ -183,12 +222,8 @@ class CollectionLayerManager {
         final FeatureType schema = collectionSource.getSchema();
         final String nsURI = schema.getName().getNamespaceURI();
 
-        // check we have a target CRS, if it is not 4326 we'll have to take care of setting up in the coverage
-        boolean targetCRS4326 = true;
-        if (layerConfiguration.getMosaicCRS() != null) {
-            CoordinateReferenceSystem targetCRS = CRS.decode(layerConfiguration.getMosaicCRS());
-            targetCRS4326 = CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, targetCRS);
-        }
+        CoordinateReferenceSystem mosaicCRS = CRS.decode(getMosaicCRSCode(layerConfiguration), true);
+        boolean heterogeneousCRS = isHeterogeneousCRS(layerConfiguration, mosaicCRS);
 
         // image mosaic won't automatically create the mosaic config for us in this case,
         // we have to setup both the mosaic property file and sample image for all bands
@@ -233,7 +268,7 @@ class CollectionLayerManager {
                             HttpStatus.PRECONDITION_FAILED);
                 }
                 imageLayout = reader.getImageLayout();
-                double[][] resolutionLevels = getResolutionLevelsInCRS(reader, DefaultGeographicCRS.WGS84);
+                double[][] resolutionLevels = getResolutionLevelsInCRS(reader, mosaicCRS);
                 nativeResolution = resolutionLevels[0];
             } finally {
                 if (reader != null) {
@@ -263,12 +298,10 @@ class CollectionLayerManager {
             if (spi != null) {
                 mosaicConfig.put("SuggestedSPI", spi.getClass().getName());
             }
-            // if the mosaic is heterogeneous in CRS, or not in 4326, we need to switch the
-            // mosaic to heterogeneous mode, while still maintaining 4326 as the mosaic CRS as the granule
-            // table is in 4326 anyways (we'll reproject the layer instead, mosaic can do reprojection on their own)
-            if (layerConfiguration.isHeterogeneousCRS() || !targetCRS4326) {
+            // the granule table is in 4326, the mosaic reprojects footprints to its own CRS
+            if (heterogeneousCRS) {
                 mosaicConfig.put("HeterogeneousCRS", "true");
-                mosaicConfig.put("MosaicCRS", "EPSG:4326");
+                mosaicConfig.put("MosaicCRS", getMosaicCRSCode(layerConfiguration));
                 mosaicConfig.put("CrsAttribute", "crs");
             }
             Resource propertyResource = mosaicDirectory.get(band + ".properties");
@@ -285,7 +318,7 @@ class CollectionLayerManager {
 
         // this is ridiculous, but for the moment, multi-crs mosaics won't work if there
         // is no indexer.properties around, even if no collection is actually done
-        buildIndexer(collection, layerConfiguration, mosaicDirectory, targetCRS4326);
+        buildIndexer(collection, layerConfiguration, mosaicDirectory, heterogeneousCRS);
 
         // mosaic datastore connection
         createDataStoreProperties(collection, mosaicDirectory);
@@ -300,11 +333,6 @@ class CollectionLayerManager {
         final CoverageView coverageView = new CoverageView(coverageName, coverageBands);
         CoverageInfo coverageInfo = coverageView.createCoverageInfo(coverageName, mosaicStoreInfo, cb);
         timeEnableResource(coverageInfo);
-        if (!targetCRS4326) {
-            coverageInfo.setNativeCRS(DefaultGeographicCRS.WGS84);
-            coverageInfo.setSRS(layerConfiguration.getMosaicCRS());
-            coverageInfo.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
-        }
         final LayerInfo layerInfo = cb.buildLayer(coverageInfo);
 
         catalog.add(coverageInfo);
@@ -487,14 +515,8 @@ class CollectionLayerManager {
                     HttpStatus.PRECONDITION_FAILED);
         }
 
-        // check we have a target CRS, if it is not 4326 we'll have to take care of setting up in the coverage
-        boolean targetCRS4326 = true;
-        if (layerConfiguration.getMosaicCRS() != null) {
-            CoordinateReferenceSystem targetCRS = CRS.decode(layerConfiguration.getMosaicCRS());
-            targetCRS4326 = CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, targetCRS);
-        }
-
-        buildIndexer(collection, layerConfiguration, mosaic, targetCRS4326);
+        CoordinateReferenceSystem mosaicCRS = CRS.decode(getMosaicCRSCode(layerConfiguration), true);
+        buildIndexer(collection, layerConfiguration, mosaic, isHeterogeneousCRS(layerConfiguration, mosaicCRS));
 
         createDataStoreProperties(collection, mosaic);
 
@@ -505,11 +527,6 @@ class CollectionLayerManager {
         CoverageInfo coverageInfo = cb.buildCoverage(layerConfiguration.getLayer());
         coverageInfo.setName(layerConfiguration.getLayer());
         timeEnableResource(coverageInfo);
-        if (!targetCRS4326) {
-            coverageInfo.setNativeCRS(DefaultGeographicCRS.WGS84);
-            coverageInfo.setSRS(layerConfiguration.getMosaicCRS());
-            coverageInfo.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
-        }
         catalog.add(coverageInfo);
         LayerInfo layerInfo = cb.buildLayer(coverageInfo);
         catalog.add(layerInfo);
@@ -518,8 +535,20 @@ class CollectionLayerManager {
         createStyle(layerConfiguration, layerInfo, mosaicStore);
     }
 
+    private static String getMosaicCRSCode(CollectionLayer layerConfiguration) {
+        String code = layerConfiguration.getMosaicCRS();
+        return code != null ? code : "EPSG:4326";
+    }
+
+    /** True when the mosaic must read granules on their own grid, in heterogeneous CRS mode. */
+    private static boolean isHeterogeneousCRS(CollectionLayer layerConfiguration, CoordinateReferenceSystem mosaicCRS) {
+        // grid from the reprojected EPSG:4326 footprints is not aligned with granule pixels, shifting them sub-pixel
+        return layerConfiguration.isHeterogeneousCRS()
+                || !CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, mosaicCRS);
+    }
+
     private void buildIndexer(
-            String collection, CollectionLayer layerConfiguration, Resource mosaic, boolean targetCRS4326)
+            String collection, CollectionLayer layerConfiguration, Resource mosaic, boolean heterogeneousCRS)
             throws IOException {
         // prepare the mosaic configuration
         Properties indexer = new Properties();
@@ -534,9 +563,9 @@ class CollectionLayerManager {
         }
         // TODO: should we setup also a end time and prepare a interval based time setup?
 
-        if (layerConfiguration.isHeterogeneousCRS() || !targetCRS4326) {
+        if (heterogeneousCRS) {
             indexer.put("HeterogeneousCRS", "true");
-            indexer.put("MosaicCRS", "EPSG:4326");
+            indexer.put("MosaicCRS", getMosaicCRSCode(layerConfiguration));
             indexer.put("CrsAttribute", "crs");
         }
         setCogConfig(indexer, layerConfiguration, true);

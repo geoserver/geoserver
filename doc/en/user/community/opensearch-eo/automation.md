@@ -50,7 +50,7 @@ In this case the user intend to both use the OpenSearch module for search purpos
 In this case the following approach should is recommended:
 
 - Create a collection via the REST API, using the ZIP file POST upload
-- Create at least one product in the collection in the REST API, using the ZIP file POST upload and providing a full `granules.json` content with all the granules of said product
+- Create at least one product in the collection in the REST API, using the ZIP file POST upload and providing a full `granules.json` content with all the granules of said product. If the layer is going to use `heterogeneousCRS`, the product JSON **must** also contain the `crs` attribute with the CRS of its granules (e.g., `"crs": "EPSG:32632"`). Granules of products without it are displayed only if they are in the layer `mosaicCRS`, the others are skipped. The layer creation logs a warning when it finds granules of products without `crs`
 - Post a layer publishing description file to `/oseo/collection/{COLLECTION}/layers` to have the module setup a set of mosaic configuration files, store, layer with eventual coverage view and style
 
 A collection can have multiple layers:
@@ -70,7 +70,7 @@ The layer configuration fields are:
 | timeRanges | A boolean value, indicating if the products are associated to a single time (false) or have have a time range of validity (true) |
 | bands | The list of bands used in this layer (to be specified only if "separateBands" is used) |
 | browseBands | An array of 1 or 3 band names used to create the default display for the layer |
-| mosaicCRS | The identifier of the CRS used by the mosaic (must match the granules table one) |
+| mosaicCRS | The identifier of the CRS used by the mosaic, which is also the native CRS of the published layer. Defaults to `EPSG:4326`. Unless `heterogeneousCRS` is true, all granules **must** be in this CRS. Any value other than `EPSG:4326` sets up the mosaic in heterogeneous CRS mode, so that granules are read on their own grid rather than on one derived from the `EPSG:4326` footprints, while products still need no `crs` attribute |
 | defaultLayer | A flag indicating if the layer is considered the default one for the collection (thus also appearing at `/oseo/collection/{COLLECTION}/layer` |
 
 The layer configuration specification will have different contents depending on the collection structure:

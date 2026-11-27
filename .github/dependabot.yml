@@ -12,7 +12,7 @@ updates:
     groups:
       maven-deps:
         group-by: dependency-name  
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 15
     labels:
       - "dependencies"
     commit-message:
